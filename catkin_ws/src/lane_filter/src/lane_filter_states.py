@@ -59,7 +59,7 @@ For more info on algorithm and parameters please refer to the google doc:
             self.sub_velocity = rospy.Subscriber("~velocity", Twist2DStamped, self.updateVelocity)
 
         self.sub        = rospy.Subscriber("~segment_list", SegmentList, self.processSegments, queue_size=1)
-        self.sub_mode   = rospy.Subscriber("fsm_node/mode",FSMState, self.processStateChange)
+        self.sub_mode   = rospy.Subscriber("~mode",FSMState, self.processStateChange)
 
         # Publishers
         self.pub_lane_pose  = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
@@ -108,8 +108,18 @@ For more info on algorithm and parameters please refer to the google doc:
         self.cov_mask = [rospy.get_param("~sigma_d_mask",0.05) , rospy.get_param("~sigma_phi_mask",0.05)]
 
     def processStateChange(self, msg):
-        if self.state == "INTERSECTION_CONTROL" and (msg.state == "LANE_FOLLOWING" or msg.state == "PARALLEL_AUTONOMY"):
-            rospy.loginfo("state changed...")
+	if msg.state == "LANE_FOLLOWING_TURN_RIGHT":
+            rospy.loginfo("**************Turn Right*****************")
+	elif msg.state == "LANE_FOLLOWING_TURN_LEFT":
+            rospy.loginfo("**************Turn Left*****************")
+	elif msg.state == "LANE_FOLLOWING":
+            rospy.loginfo("**************state not changed*****************")
+
+	else:
+	    rospy.loginfo("**************We don't have this state*****************")
+
+
+
         self.state=msg.state
 
     def cbSwitch(self, switch_msg):
@@ -126,9 +136,16 @@ For more info on algorithm and parameters please refer to the google doc:
 
         # initialize measurement likelihood
         measurement_likelihood = np.zeros(self.d.shape)
+	
 
         for segment in segment_list_msg.segments:
-            if segment.color != segment.WHITE and segment.color != segment.YELLOW:
+	    
+	    state_switch = segment.WHITE
+	    if self.state != "LANE_FOLLOWING":
+                state_switch = segment.YELLOW
+
+	
+            if segment.color != state_switch and segment.color != segment.YELLOW:
                 continue
             if segment.points[0].x < 0 or segment.points[1].x < 0:
                 continue

@@ -8,5 +8,11 @@
 	<node pkg="joy_mapper" type="joy_mapper.py" name="joy_mapper" output="screen">
 		<param name="~pub_timestep" value="0.02"/>
 	</node>
+	<node pkg="car_supervisor" type="car_supervisor.py" name="car_supervisor" output="screen">
+	        <param name="~pub_timestep" value="0.02"/>
+		<param name="~joystick_mode" value="True"/>
+	</node>
+	<node pkg="dagu_car" type="dagu_differential_drive.py" name="dagu_car" output="screen">
+	</node>
 	<!-- </group> -->
 </launch>

@@ -1,5 +1,14 @@
 # joy_mapper package
 
+
+# to test run:
+1) connect joystick
+2) roslaunch launch/joy_mapper_test.launch
+3) the robot should move when you push buttons
+
+n.b. only tested with wired joystick so far (LP)
+
+
 ## Dependencies
 * `rospy`
 * `sensor_msgs`: for the Joy.msg

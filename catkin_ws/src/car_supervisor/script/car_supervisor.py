@@ -11,13 +11,16 @@ class CarSupervisor(object):
         
         # Setup Parameters
         self.pub_timestep = self.setupParam("~pub_timestep",0.02)
+        self.joystick_mode = self.setupParam("~joystick_mode",True)
+        
 
         # Publications
         self.pub_car_control = rospy.Publisher("~car_control",CarControl,queue_size=1)
 
         # Subscriptions
-        self.sub_joy_ = rospy.Subscriber("~joy_control", CarControl, self.cbJoyControl,queue_size=1)
-        self.sub_lane_control = rospy.Subscriber("~lane_control",CarControl,self.cbLaneControl,queue_size=1)
+        self.sub_joy_ = rospy.Subscriber("joy_mapper/joy_control", CarControl, self.cbJoyControl,queue_size=1)
+        if not self.joystick_mode:
+            self.sub_lane_control = rospy.Subscriber("~lane_control",CarControl,self.cbLaneControl,queue_size=1)
 
         # timer
         self.pub_timer = rospy.Timer(rospy.Duration.from_sec(self.pub_timestep),self.cbPubTimer)
@@ -29,7 +32,7 @@ class CarSupervisor(object):
         return rospy.get_param(para_name)
 
     def cbJoyControl(self,joy_control_msg):
-        self.joy_control_ = joy_control_msg
+        self.joy_control = joy_control_msg
 
     def cbLaneControl(self,lane_control_msg):
         self.lane_control = lane_control_msg

@@ -17,7 +17,7 @@ class DaguCar(object):
         self.control_msg.steering = 0.0
 
         # Setup subscribers
-        self.sub_topic = rospy.Subscriber("~car_control", CarControl, self.cbControl)
+        self.sub_topic = rospy.Subscriber("/car_supervisor/car_control", CarControl, self.cbControl)
 
         # Create a timer that calls the cbTimer function every 1.0 second
         self.timer = rospy.Timer(rospy.Duration.from_sec(0.02),self.cbTimer)

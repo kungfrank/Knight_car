@@ -73,8 +73,14 @@ class VehicleDetectionNode(object):
 			image_cv = cv2.imdecode(np.fromstring(image_msg.data, np.uint8), 
 					cv2.CV_LOAD_IMAGE_COLOR)
 			start = rospy.Time.now()
-			(detection, corners) = cv2.findCirclesGridDefault(image_cv,
-					self.chessboard_dims, flags=cv2.CALIB_CB_SYMMETRIC_GRID)
+			params = cv2.SimpleBlobDetector_Params()
+			params.minArea = 25
+			params.minDistBetweenBlobs = 2
+			simple_blob_detector = cv2.SimpleBlobDetector(params)
+	
+			(detection, corners) = cv2.findCirclesGrid(image_cv,
+					self.chessboard_dims, flags=cv2.CALIB_CB_SYMMETRIC_GRID,
+					blobDetector=simple_blob_detector)
 			elapsed_time = (rospy.Time.now() - start).to_sec()
 			self.pub_time_elapsed.publish(elapsed_time)
 			cv2.drawChessboardCorners(image_cv, 

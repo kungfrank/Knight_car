@@ -76,9 +76,10 @@ class FSMNode(object):
             elif(self.vehicle_detected == True):
                 self.actual.state = self.actual.VEHICLE_AVOIDANCE
         elif(self.actual.state == self.actual.COORDINATION):
-            if(self.intersection_go == True):
-                self.actual.state = self.actual.INTERSECTION_CONTROL
-                self.intersection_go = False
+            self.actual.state = self.actual.LANE_FOLLOWING
+            #if(self.intersection_go == True):
+            #    self.actual.state = self.actual.INTERSECTION_CONTROL
+            #    self.intersection_go = False
         elif(self.actual.state == self.actual.INTERSECTION_CONTROL):
             if(self.in_lane == True and self.intersection_done == True):
                 self.actual.state = self.actual.LANE_FOLLOWING

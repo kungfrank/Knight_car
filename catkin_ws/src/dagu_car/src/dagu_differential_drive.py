@@ -5,9 +5,9 @@ from duckietown_msgs.msg import CarControl
 from dagu_car.daguddrive import DAGU_Differential_Drive
 
 class DaguCar(object):
-    def __init__(self):
+    def __init__(self,car_like_mode=True):
         # Setup publishers
-        self.dagu = DAGU_Differential_Drive()
+        self.dagu = DAGU_Differential_Drive(car_like_mode=car_like_mode)
         self.dagu.setSpeed(0.0)
         self.dagu.setSteerAngle(0.0)
 
@@ -36,8 +36,12 @@ if __name__ == '__main__':
     # Initialize the node with rospy
     rospy.init_node('dagu_car', anonymous=False)
 
+    car_like_mode = True
+    if rospy.has_param("~car_like_mode"):
+        car_like_mode = rospy.get_param("~car_like_mode")
+    
     # Create the DaguCar object
-    node = DaguCar()
+    node = DaguCar(car_like_mode=car_like_mode)
 
     # Setup proper shutdown behavior 
     rospy.on_shutdown(node.on_shutdown)

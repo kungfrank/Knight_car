@@ -23,11 +23,12 @@ class DAGU_Differential_Drive:
     AXEL_TO_RADIUS_RATIO = 1.0     # The axel length and turning radius ratio
     SPEED_TOLERANCE = 1.e-2;       # speed tolerance level
 
-    def __init__(self, verbose=False, debug=False, left_flip=False, right_flip=False):
-
+    def __init__(self, verbose=False, debug=False, left_flip=False, right_flip=False, car_like_mode=True):
+        self.car_like_mode = car_like_mode
         self.motorhat = Adafruit_MotorHAT(addr=0x60)
         self.leftMotor = self.motorhat.getMotor(1)
         self.rightMotor = self.motorhat.getMotor(2)
+
 
         self.verbose = verbose or debug
         self.debug = debug
@@ -61,8 +62,12 @@ class DAGU_Differential_Drive:
         v = self.speed * self.vmax;
         u = self.angle
 
-        vl = v * (1.0 - u * 0.5 * self.AXEL_TO_RADIUS_RATIO) * self.left_sgn
-        vr = v * (1.0 + u * 0.5 * self.AXEL_TO_RADIUS_RATIO) * self.right_sgn
+        if self.car_like_mode:
+            vl = v * (1.0 - u * 0.5 * self.AXEL_TO_RADIUS_RATIO) * self.left_sgn
+            vr = v * (1.0 + u * 0.5 * self.AXEL_TO_RADIUS_RATIO) * self.right_sgn
+        else:
+            vl = v + self.vmax * ( - u * 0.5 * self.AXEL_TO_RADIUS_RATIO) * self.left_sgn
+            vr = v + self.vmax * ( + u * 0.5 * self.AXEL_TO_RADIUS_RATIO) * self.right_sgn
 
         pwml = self.PWMvalue(vl, self.LEFT_MOTOR_MIN_PWM, self.LEFT_MOTOR_MAX_PWM)
         pwmr = self.PWMvalue(vr, self.RIGHT_MOTOR_MIN_PWM, self.RIGHT_MOTOR_MAX_PWM)

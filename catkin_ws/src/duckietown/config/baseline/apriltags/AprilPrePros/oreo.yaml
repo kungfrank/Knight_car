@@ -1,0 +1,11 @@
+# Parameters for apriltags preprocessing
+fast_period: 0.25
+global_period: 2.0
+fast_v_crop: 150
+fast_v_off:  -50
+fast_h_crop: 110
+fast_x_down:  1.8
+global_v_off:   0
+global_v_crop:  50
+global_h_crop:  50
+global_x_down:  1

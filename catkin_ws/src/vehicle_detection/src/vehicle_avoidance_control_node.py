@@ -49,20 +49,16 @@ class VehicleAvoidanceControlNode(object):
 		if not data.detection.data:
 			vehicle_too_close.data = False
 		else:
-			distance = data.rho.data
-			min_distance = self.distance_threshold
-			vehicle_too_close.data = False
-			if distance < min_distance:
-				vehicle_too_close.data = True
+			vehicle_too_close.data = True
 		self.publishCmd(data.header.stamp)
 		self.vehicle_detected_pub.publish(vehicle_too_close)
 
 	def publishCmd(self,stamp): 
-		cmd_msg = Twisted2DStamped()
+		cmd_msg = Twist2DStamped()
                 cmd_msg.header.stamp = stamp
 		cmd_msg.v = 0.0
 		cmd_msg.omega = 0.0
-		self.car_cmd_pub.publish(car_cmd_msg)
+		self.car_cmd_pub.publish(cmd_msg)
    
 if __name__ == '__main__':
 	rospy.init_node('vehicle_avoidance_control_node', anonymous=False)

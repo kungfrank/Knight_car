@@ -46,6 +46,7 @@ class LineDetectorNode(object):
         # Thread lock 
         self.thread_lock = threading.Lock()
        
+
         # Constructor of line detector 
         self.bridge = CvBridge()
         self.detector = LineDetector()

@@ -46,6 +46,7 @@ class FSMNode(object):
             rospy.signal_shutdown("[%s] Invalid event definition." %self.node_name)
             return          
 
+
         self.sub_list = list()
         self.event_trigger_dict = dict()
         for event_name, event_dict in param_events_dict.items():
@@ -77,7 +78,7 @@ class FSMNode(object):
                 rospy.logerr("[%s] Event %s missing topic definition." %(self.node_name,event_name))
                 pass_flag = False
             if "msg_type" not in event_dict:
-                rospy.logerr("[%s] Event %s missing topic definition." %(self.node_name,event_name))
+                rospy.logerr("[%s] Event %s missing msg_type definition." %(self.node_name,event_name))
                 pass_flag = False
             if "trigger" not in event_dict:
                 rospy.logerr("[%s] Event %s missing trigger definition." %(self.node_name,event_name))

@@ -64,7 +64,7 @@ class OpenLoopIntersectionNode(object):
             self.rate.sleep()
    
             #coordination with lane controller means part way through announce finished turn
-            self.pub_wheels_done.publish(True)
+        self.pub_wheels_done.publish(True)
 
         #move forward
         starting_time = rospy.Time.now()

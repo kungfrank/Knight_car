@@ -79,52 +79,6 @@ class FSMNode(object):
         self.pub_topic_mode.publish(self.actual.state)
 
 
-
-    def cbMode(self, mode_msg):
-        print mode_msg
-        if(mode_msg.data == "intersection_control"):
-            self.turnRight()
-
-
-    def turnRight(self):
-        #move forward
-        forward_for_time_leave = 2.0
-        turn_for_time = 0.7
-        forward_for_time_enter = 2.0
-        
-        starting_time = rospy.Time.now()
-        while((rospy.Time.now() - starting_time) < rospy.Duration(forward_for_time_leave)):
-            wheels_cmd_msg = WheelsCmdStamped()
-            wheels_cmd_msg.header.stamp = rospy.Time.now()
-            wheels_cmd_msg.vel_left = 0.4
-            wheels_cmd_msg.vel_right = 0.4
-            self.pub_wheels_cmd.publish(wheels_cmd_msg)    
-            rospy.loginfo("Moving?.")
-            self.rate.sleep()
-        #turn right
-        starting_time = rospy.Time.now()
-        while((rospy.Time.now() - starting_time) < rospy.Duration(turn_for_time)):
-            wheels_cmd_msg = WheelsCmdStamped()
-            wheels_cmd_msg.header.stamp = rospy.Time.now()
-            wheels_cmd_msg.vel_left = 0.25
-            wheels_cmd_msg.vel_right = -0.25
-            self.pub_wheels_cmd.publish(wheels_cmd_msg)    
-            rospy.loginfo("Moving?.")
-            self.rate.sleep()
-   
-            #coordination with lane controller means part way through announce finished turn
-            self.pub_wheels_done.publish(True)
-
-        #move forward
-        starting_time = rospy.Time.now()
-        while((rospy.Time.now() - starting_time) < rospy.Duration(forward_for_time_enter)):
-            wheels_cmd_msg = WheelsCmdStamped()
-            wheels_cmd_msg.header.stamp = rospy.Time.now()
-            wheels_cmd_msg.vel_left = 0.4
-            wheels_cmd_msg.vel_right = 0.4
-            self.pub_wheels_cmd.publish(wheels_cmd_msg)    
-            rospy.loginfo("Moving?.")
-            self.rate.sleep()
    
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

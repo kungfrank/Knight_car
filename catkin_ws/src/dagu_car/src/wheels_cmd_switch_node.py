@@ -40,8 +40,12 @@ class WheelsCmdSwitchNode(object):
 
     def pubWheelsCmd(self):
         cmd_msg = self.cmd_dict[self.mode_msg.state]
-        if cmd_msg is not None:
-            self.pub_wheels_cmd.publish(cmd_msg)
+        if cmd_msg is None:
+            cmd_msg = WheelsCmdStamped()
+            cmd_msg.vel_left=0.0
+            cmd_msg.vel_right=0.0
+            cmd_msg.header.stamp = rospy.Time.now()
+        self.pub_wheels_cmd.publish(cmd_msg)
 
     def cbMode(self,mode_msg):
         if not self.mode_msg.state == mode_msg.state:

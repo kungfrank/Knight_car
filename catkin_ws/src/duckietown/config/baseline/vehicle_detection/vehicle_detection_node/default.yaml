@@ -2,4 +2,4 @@ chessboard_dims:
   cols: 2
   data: [3, 7]
   rows: 1
-detection_max_time: 2.0
+detection_max_time: 1.0

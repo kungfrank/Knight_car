@@ -71,10 +71,11 @@ class VehicleDetectionNode(object):
 				corners_msg_out = VehicleCorners()
 				image_cv = cv2.imdecode(np.fromstring(image_msg.data, np.uint8), 
 						cv2.CV_LOAD_IMAGE_COLOR)
+				image_cv_gray = cv2.cvtColor(image_cv, cv2.COLOR_RGB2GRAY)
 				with stopit.ThreadingTimeout(self.detection_max_time) as \
 						ctx_mgr:
-					(detection, corners) = cv2.findChessboardCorners(image_cv, 
-						self.chessboard_dims)
+					(detection, corners) = cv2.findChessboardCorners(image_cv_gray, 
+						self.chessboard_dims, flags=cv2.CALIB_CB_FAST_CHECK)
 				if not ctx_mgr:	
 					corners_msg_out.detection.data = False
 					self.pub_corners.publish(corners_msg_out)

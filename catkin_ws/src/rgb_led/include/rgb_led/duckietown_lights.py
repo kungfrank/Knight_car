@@ -1,10 +1,10 @@
 import random
-__all__ = [
-	'DuckietownLights',
-	'cycle_LEDs_named',
-	'cycle_LEDs',
-	'cycle_LEDs_fancy1',
-]
+# __all__ = [
+# 	'DuckietownLights',
+# 	'cycle_LEDs_named',
+# 	'cycle_LEDs',
+# 	'cycle_LEDs_fancy1',
+# ]
 
 # names for lights
 TOP = 'top'
@@ -85,9 +85,18 @@ def create_patterns():
 		FRONT_LEFT:OFF,
 		FRONT_RIGHT:OFF,
 	}
+
+	conf_static_car = {
+		TOP: OFF, 
+		BACK_LEFT:RED, 
+		BACK_RIGHT:RED, 
+		FRONT_LEFT:WHITE,
+		FRONT_RIGHT:WHITE,
+	}
+	
 	
 	def conf_single_on(which, color):
-		x = dict(**conf_all_off)
+		x = dict(**others)
 		x[which] =color
 		return x
 	
@@ -97,10 +106,12 @@ def create_patterns():
 			x[k] = color
 		return x
 
-	def blink_one(which, color, period):
+	def blink_one(which, color, period, others=conf_all_off):
+		r = dict(**others)
+		r[which] = color
 		return [
-			(period/2, conf_all_off),
-			(period/2, conf_single_on(which, color)),
+			(period/2, others),
+			(period/2, r),
 		]
 	
 	def blink_all(color, period):
@@ -109,15 +120,27 @@ def create_patterns():
 			(period/2, conf_all_on(color)),
 		]
 	
+	def cat(*patterns):
+		p = []
+		for ps in patterns:
+			for a in ps:
+				#print(a)
+				p.append(a)
+
+		return p
+
 	colors = {
 		'white': [1, 1, 1],
 		'red': [1, 0, 0],
 		'green': [0, 1, 0],
 		'blue': [0,0,1],
 		'yellow': [1,1,0],
+		'orange': [1,0.4,0],
 	}
 		
-	frequencies = [1, 1.5, 2, 2.5, 3, 3.5, 4, 5, 6, 7, 8, 9,
+	frequencies = [1, 1.1, 1.2, 1.3, 1.4, 1.5, 
+					1.6, 1.7, 1.8, 1.9, 2, 2.1,2.2,2.3,2.4,
+					 2.5, 3, 3.5, 4.5, 5, 6, 7, 8, 9,
 					10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 	
 	for name in DuckietownLights.car_all_lights:
@@ -128,9 +151,25 @@ def create_patterns():
 
 	for color, rgb in colors.items():
 		for freq in frequencies:
+			comb = 'wr-%s-%1.1f' % (color, freq)
+			add_pattern(comb, blink_one(TOP, rgb, 1.0/freq,
+				others=conf_static_car))
+
+	for color, rgb in colors.items():
+		for freq in frequencies:
 			comb = 'all-%s-%1.1f' % (color, freq)
 			add_pattern(comb, blink_all(rgb, 1.0/freq))
+ 
+	static = {TOP: WHITE, FRONT_LEFT:RED, FRONT_RIGHT:GREEN,
+	BACK_LEFT:colors['orange'], BACK_RIGHT:colors['blue']}
 
+	# Do not change this one; the test in "test1" refers to it.
+	add_pattern('test_all_1', cat(
+		blink_all(RED, 1.0),
+		blink_all(GREEN, 1.0/2)*2,
+		blink_all(BLUE, 1.0/3)*3,
+		[(5.0, static)],
+		))
 
 create_patterns()
 
@@ -156,13 +195,14 @@ def get_current_step(t, t0, sequence):
 	tau = t - t0
 	while tau - period > 0:
 		tau -= period
-	
 	i = 0
-	t1 = 0
-	while t1 < tau: 
-		t1 += sequence[i][0]
-		i += 1
-		i = i % len(sequence)
+	while True: 
+		current = sequence[i][0]
+		if tau < current:
+			break
+		else:
+			i += 1
+			tau -= current
 
 	return i, sequence[i]
 
@@ -196,7 +236,7 @@ def cycle_LEDs(sequence):
 		sleep(0.01)
 
 
-def cycle_LEDs_fancy1(speed=10):
+def cycle_LEDs_fancy1(speed=1):
 	from time import sleep
 	import time
 
@@ -206,17 +246,24 @@ def cycle_LEDs_fancy1(speed=10):
 	from math import sin, cos
 
 	def get_config(t):
-		t = t * speed
-		a = 0.5 + 0.5 * cos(t * 1.0023234)
-		b = 0.5 + 0.5 * sin(t * 1.1231)
-		c = 0.5 + 0.5*cos(2*t)
+		slow = 0.00005*t
 
+		a = []
+		for i in range(15):
+			period = speed * (sin(i) + 0.1 * cos(slow+i))
+			x = 0.5 + 0.5 * cos(t * period)
+			a.append(x)
+
+		# nonlinear
+		f = lambda x : x*x*x *0.9 + 0
+		s = sum([f(x) for x in a])
+		a = [f(x)/s for x in a]
 		return {
-			TOP: [a,b,c],
-			BACK_LEFT: [b,c,a],
-			BACK_RIGHT: [a, c,b],
-			FRONT_LEFT: [b,a,c],
-			FRONT_RIGHT: [c,a,b],
+			TOP: [a[0], a[1], a[2]],
+			BACK_LEFT: [a[3],a[4],a[5]],
+			BACK_RIGHT: [a[6],a[7],a[8]],
+			FRONT_LEFT: [a[9],a[10],a[11]],
+			FRONT_RIGHT: [a[12],a[13],a[14]],
 		}
 
 	while True:

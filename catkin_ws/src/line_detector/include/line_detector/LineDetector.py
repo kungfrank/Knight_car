@@ -28,7 +28,6 @@ class LineDetector(object):
         self.hough_max_line_gap = 1
 
     def __colorFilter(self, color):
-        # tic = time.time()
         # threshold colors in HSV space
         if color == 'white':
             bw = cv2.inRange(self.hsv, self.hsv_white1, self.hsv_white2)
@@ -40,7 +39,6 @@ class LineDetector(object):
             bw = cv2.bitwise_or(bw1, bw2)
         else:
 	        raise Exception('Error: Undefined color strings...')
-        # print 'Color thresholding:' + str(time.time()-tic)
 
 		# binary dilation
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(self.dilation_kernel_size, self.dilation_kernel_size))
@@ -51,36 +49,48 @@ class LineDetector(object):
 
         return bw, edge_color
 
-    def __findEdge(self, gray):	
+    def __findEdge(self, gray):
         edges = cv2.Canny(gray, self.canny_thresholds[0], self.canny_thresholds[1], apertureSize = 3)
         return edges
 
     def __HoughLine(self, edge):
         lines = cv2.HoughLinesP(edge, 1, np.pi/180, self.hough_threshold, np.empty(1), self.hough_min_line_length, self.hough_max_line_gap)
         if lines is not None:
-            lines = lines[0]
+            lines = np.array(lines[0])
         else:
             lines = []
         return lines
     
     def __checkBounds(self, val, bound):
-        if val<0:
-            val = 0
-        elif val>=bound:
-            val = bound-1
+        val[val<0]=0
+        val[val>=bound]=bound-1
         return val
 
     def __correctPixelOrdering(self, lines, normals):
-       for i in range(len(lines)):
-            x1,y1,x2,y2 = lines[i, :]
-            dx, dy = normals[i, :]
-            if (x2-x1)*dy-(y2-y1)*dx>0:
-                lines[i, :] = [x2,y2,x1,y1]
-
+        flag = ((lines[:,2]-lines[:,0])*normals[:,1] - (lines[:,3]-lines[:,1])*normals[:,0])>0
+        for i in range(len(lines)):
+            if flag[i]:
+                x1,y1,x2,y2 = lines[i, :]
+                lines[i, :] = [x2,y2,x1,y1] 
+ 
     def __findNormal(self, bw, lines):
         normals = []
         if len(lines)>0:
-            normals = np.zeros((len(lines), 2))
+            length = np.sum((lines[:, 0:2] -lines[:, 2:4])**2, axis=1, keepdims=True)**0.5
+            dx = 1.* (lines[:,3:4]-lines[:,1:2])/length
+            dy = 1.* (lines[:,0:1]-lines[:,2:3])/length
+            x3 = ((lines[:,0:1]+lines[:,2:3])/2 - 3.*dx).astype('int')
+            y3 = ((lines[:,1:2]+lines[:,3:4])/2 - 3.*dy).astype('int')
+            x4 = ((lines[:,0:1]+lines[:,2:3])/2 + 3.*dx).astype('int')
+            y4 = ((lines[:,1:2]+lines[:,3:4])/2 + 3.*dy).astype('int')
+            x3 = self.__checkBounds(x3, bw.shape[1])
+            y3 = self.__checkBounds(y3, bw.shape[0])
+            x4 = self.__checkBounds(x4, bw.shape[1])
+            y4 = self.__checkBounds(y4, bw.shape[0])
+            flag_signs = (np.logical_and(bw[y3,x3]>0, bw[y4,x4]==0)).astype('int')*2-1
+            normals = np.hstack([dx, dy]) * flag_signs
+ 
+            """ # Old code with lists and loop, performs 4x slower 
             for cnt,line in enumerate(lines):
                 x1,y1,x2,y2 = line
                 dx = 1.*(y2-y1)/((x1-x2)**2+(y1-y2)**2)**0.5
@@ -97,6 +107,7 @@ class LineDetector(object):
                     normals[cnt,:] = [dx, dy] 
                 else:
                     normals[cnt,:] = [-dx, -dy]
+            """
             self.__correctPixelOrdering(lines, normals)
         return normals
 
@@ -118,8 +129,8 @@ class LineDetector(object):
         if len(lines)>0:
             for x1,y1,x2,y2 in lines:
                 cv2.line(self.bgr, (x1,y1), (x2,y2), paint, 2)
-                cv2.circle(self.bgr, (x1,y1), 3, (0,255,0))
-                cv2.circle(self.bgr, (x2,y2), 3, (0,0,255))
+                cv2.circle(self.bgr, (x1,y1), 2, (0,255,0))
+                cv2.circle(self.bgr, (x2,y2), 2, (0,0,255))
 
     def drawNormals(self, lines, normals):
         if len(lines)>0:
@@ -128,10 +139,6 @@ class LineDetector(object):
                 y3 = int((y1+y2)/2. - 4.*dy)
                 x4 = int((x1+x2)/2. + 4.*dx)
                 y4 = int((y1+y2)/2. + 4.*dy)
-                x3 = self.__checkBounds(x3, self.bgr.shape[1])
-                y3 = self.__checkBounds(y3, self.bgr.shape[0])
-                x4 = self.__checkBounds(x4, self.bgr.shape[1])
-                y4 = self.__checkBounds(y4, self.bgr.shape[0])
                 cv2.circle(self.bgr, (x3,y3), 3, (0,255,0))
                 cv2.circle(self.bgr, (x4,y4), 3, (0,0,255))
 

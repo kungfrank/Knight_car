@@ -83,9 +83,9 @@ class CameraNode(object):
             yield stream
             # Construct image_msg
             # Grab image from stream
+            stamp = rospy.Time.now()
             stream.seek(0)
             stream_data = stream.getvalue()
-            stamp = rospy.Time.now()
             if not self.decompress:
                 # Generate compressed image
                 image_msg = CompressedImage()

@@ -4,6 +4,7 @@
 	<arg name="bagout" doc="the full path to the output bag" /> 
 	<arg name="config" default="baseline" doc="Specify a config."/>
 	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+	<arg name="lighting" default="default" />
     <arg name="local" default="true"/>
     <arg name="pkg_name" value="line_detector"/>
     <arg name="node_name" default="line_detector_node_sweep_param"/>
@@ -24,12 +25,12 @@
     <group ns="$(arg veh)">
         <!-- run local -->
         <node if="$(arg local)" name="line_detector_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
-            <rosparam command="load" file="$(find duckietown)/config/$(arg config)/line_detector/line_detector_node/$(arg param_file_name).yaml"/>
+            <rosparam command="load" file="$(find duckietown)/config/$(arg config)/line_detector/line_detector_node/$(arg lighting).yaml"/>
         </node>
         <!-- run remote -->
         <include unless="$(arg local)" file="$(find duckietown)/machines"/>
         <node unless="$(arg local)" machine="$(arg veh)" name="line_detector_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
-            <rosparam command="load" file="$(find duckietown)/config/$(arg config)/line_detector/line_detector_node/$(arg param_file_name).yaml"/>
+            <rosparam command="load" file="$(find duckietown)/config/$(arg config)/line_detector/line_detector_node/$(arg lighting).yaml"/>
         </node>
     </group>
 

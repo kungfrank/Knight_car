@@ -4,6 +4,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
 #include <sensor_msgs/CameraInfo.h>
+#include <sensor_msgs/Image.h>
 #include <image_geometry/pinhole_camera_model.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -17,6 +18,7 @@
 #include "duckietown_msgs/Vector2D.h"
 #include "duckietown_msgs/Segment.h"
 #include "duckietown_msgs/SegmentList.h"
+#include <std_srvs/Empty.h>
 
 namespace enc = sensor_msgs::image_encodings;
 
@@ -39,28 +41,36 @@ class GroundProjection
   image_geometry::PinholeCameraModel pcm_;
   cv::Mat H_;
   bool rectified_input_;
+
+  std::string node_name_;
+  
+  std::string config_name_;
+  std::string config_file_name_;
+  std::string h_file_;
   
 public:
   GroundProjection()
   : nh_("~")
   {
-    // load from homography yaml file
-    std::string h_file;
-    nh_.param<std::string>("homography_file", h_file, "package://ground_projection/homography/homography.yaml");
-    h_file = get_package_filename(h_file);
 
-    std::ifstream fin(h_file.c_str());
+    node_name_ = ros::this_node::getName();
+    
+    // load from homography yaml file
+    nh_.param<std::string>("config",config_name_,"baseline");
+    nh_.param<std::string>("config_file_name",config_file_name_,"default");
+    h_file_ = ros::package::getPath("duckietown") + "/config/" + config_name_ + "/calibration/camera_extrinsic/" + config_file_name_ + ".yaml";    
+    std::ifstream fin(h_file_.c_str());
     if (!fin.good())
     {
-      ROS_WARN_STREAM("Can't find homography file: " << h_file << " Using default calibration instead.");
-      h_file = get_package_filename("package://ground_projection/homography/default.yaml");
+      ROS_WARN_STREAM("Can't find homography file: " << h_file_ << " Using default calibration instead.");
+      h_file_ = ros::package::getPath("duckietown") + "/config/" + config_name_ + "/calibration/camera_extrinsic/default.yaml";
+      // h_file_ = get_package_filename("package://ground_projection/homography/default.yaml");
     }
-
-    ROS_INFO("load from homography yaml file [%s].", h_file.c_str());
+    ROS_INFO("load from homography yaml file [%s].", h_file_.c_str());
 
     std::vector<float> h;
     h.resize(9);
-    read_homography_yaml(h_file, h);
+    read_homography_yaml(h_file_, h);
 
     // update homography matrix (H_)
     H_.create(3, 3, CV_32F);
@@ -73,27 +83,25 @@ public:
     }
 
     nh_.param<bool>("rectified_input", rectified_input_, false);
-
-    std::string camera_info_topic;
-    nh_.param<std::string>("camera_info_path", camera_info_topic, "/camera_node/camera_info");
-    ROS_INFO_STREAM("Waiting for message on topic " << camera_info_topic);
-    camera_info_ = ros::topic::waitForMessage<sensor_msgs::CameraInfo>(camera_info_topic, nh_);
     
-    if(!rectified_input_)
-    {
-      ROS_INFO("Point-wise undistortion enabled.");
-      pcm_.fromCameraInfo(camera_info_);
-    }
+    std::string camera_info_topic = nh_.resolveName("camera_info");
+    ROS_INFO("[%s] Waiting for message on topic: %s", node_name_.c_str(),camera_info_topic.c_str());    
+    camera_info_ = ros::topic::waitForMessage<sensor_msgs::CameraInfo>(camera_info_topic, nh_);
+    ROS_INFO("[%s] Got camera_info", node_name_.c_str());
+    
+    pcm_.fromCameraInfo(camera_info_);
 
+    // Publisher
+    pub_lineseglist_ = nh_.advertise<duckietown_msgs::SegmentList>("lineseglist_out", 1);
+
+    // Ready the services
     service_homog_ = nh_.advertiseService("estimate_homography", &GroundProjection::estimate_homography_cb, this);
     ROS_INFO("estimate_homography is ready.");
-
     service_coord_ = nh_.advertiseService("get_ground_coordinate", &GroundProjection::get_ground_coordinate_cb, this);
     ROS_INFO("get_ground_coordinate is ready.");
 
+    // Subscriber
     sub_lineseglist_ = nh_.subscribe("lineseglist_in", 1, &GroundProjection::lineseglist_cb, this);
-
-    pub_lineseglist_ = nh_.advertise<duckietown_msgs::SegmentList>("lineseglist_out", 1);
   }
 
   ~GroundProjection()
@@ -118,6 +126,15 @@ private:
     if(pixel.v > h-1)   pixel.v = h-1;
 
     return pixel;
+  }
+
+
+  void getRectifiedImage(const sensor_msgs::Image::ConstPtr img_msg, cv::Mat &mat_rect)
+  {
+    // Convert to cv::Mat
+    // cv_bridge::CvImagePtr cv_img = cv_bridge::toCvCopy(img_msg);
+    cv_bridge::CvImagePtr cv_img = cv_bridge::toCvCopy(img_msg,enc::MONO8);
+    pcm_.rectifyImage(cv_img->image,mat_rect);
   }
 
   void estimate_ground_coordinate(duckietown_msgs::Vector2D& vec, geometry_msgs::Point& point)
@@ -170,51 +187,41 @@ private:
     return true;
   }
 
-  bool estimate_homography_cb(ground_projection::EstimateHomography::Request &req, 
-                              ground_projection::EstimateHomography::Response &res)
+  
+  bool estimate_homography_cb(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response)
   {
-    cv_bridge::CvImagePtr cv_ptr;
+    ROS_INFO("Estimating homography...");
+    ROS_INFO_STREAM("Waiting from raw image on topic: " << nh_.resolveName("cali_image"));
+    sensor_msgs::Image::ConstPtr img_msg = ros::topic::waitForMessage<sensor_msgs::Image>("cali_image", nh_); 
+    ROS_INFO_STREAM("Received raw image on topic: " << nh_.resolveName("cali_image"));
 
-    try
-    {
-      if(enc::isColor(req.image.encoding))
-        cv_ptr = cv_bridge::toCvCopy(req.image, enc::BGR8);
-      else
-        cv_ptr = cv_bridge::toCvCopy(req.image, enc::MONO8);
+    cv::Mat mat_rect;
+    cv::Mat mat_homography;
+    getRectifiedImage(img_msg,mat_rect);
+    ROS_INFO("Raw image rectifed.");
+    
+    if(estimate_homography(mat_rect,mat_homography)){
+      ROS_INFO("Homography estimated.");
     }
-    catch (cv_bridge::Exception& e)
-    {
-      ROS_ERROR("cv_bridge exception: %s", e.what());
+    else{
+      ROS_WARN("Homography estimation failed.");
       return false;
     }
 
-    cv::Mat H;
-    if(!estimate_homography(cv_ptr->image, H))
-    {
-      return false;
-    }
-
-    // prepare response
-    res.homography.resize(9);
+    mat_homography.copyTo(H_);
+    std::vector<float> vec_homography(9,0);
+    // Fill homography vector 
     for(int r=0; r<3; r++)
     {
       for(int c=0; c<3; c++)
       {
-        res.homography[r*3+c] = H.at<float>(r, c);
+        vec_homography[r*3+c] = mat_homography.at<float>(r, c);
       }
     }
-
-    // update internal homography
-    H.copyTo(H_);
-
-    // save to yaml file
-    std::string h_file;
-    nh_.param<std::string>("homography_file", h_file, "package://ground_projection/homography/homography.yaml");
-    h_file = get_package_filename(h_file);
-
-    ROS_INFO("save to homography yaml file [%s].", h_file.c_str());
-    write_homography_yaml(h_file, res.homography);
-    
+    // Write to yaml file
+    std::string wrtie_file_path = ros::package::getPath("duckietown") + "/config/" + config_name_ + "/calibration/camera_extrinsic" + ros::this_node::getNamespace() + ".yaml";
+    ROS_INFO("Homography yaml file [%s].", wrtie_file_path.c_str());
+    write_homography_yaml(wrtie_file_path, vec_homography);
     return true;
   }
 
@@ -239,7 +246,7 @@ private:
     }
     else
     {
-      ROS_ERROR("Cound't find a checkerboard");
+      ROS_ERROR("Couldn't find a checkerboard");
       return false;
     }
 

@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   std_msgs
   geometry_msgs
+  visualization_msgs
   sensor_msgs
   tf_conversions
   tf
@@ -56,6 +57,7 @@ add_message_files(
   DuckieSensor.msg
   LanePose.msg
   WheelsCmd.msg
+  WheelsCmdStamped.msg
   TagDetection.msg
   AprilTags.msg
   Pixel.msg
@@ -66,6 +68,12 @@ add_message_files(
   Rect.msg
   Rects.msg
   SceneSegments.msg
+  CoordinationClearance.msg
+  IntersectionDetection.msg
+  RoofLight.msg
+  TrafficLightDetection.msg
+  VehicleDetection.msg
+  FSMState.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -122,7 +130,8 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES duckietown_msgs
-   CATKIN_DEPENDS geometry_msgs roscpp rospy sensor_msgs std_msgs message_runtime
+   CATKIN_DEPENDS geometry_msgs roscpp rospy sensor_msgs std_msgs message_runtime visualization_msgs
+
 #  DEPENDS system_lib
 )
 

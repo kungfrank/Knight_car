@@ -5,6 +5,8 @@
     <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman. Note that you will need a megaman.yaml in the config folder for every node you are launching. To test with only one megaman.yaml, the recommendation is to set this to default and then manually change the desired param file in the approprate rosparam tag below"/> 
     <arg name="use_vicon" default="false"/>
     <arg name="drive" default="true"/>
+    <arg name="live" default="true" doc="if set to true, run the camera and do live detection. "/>
+
 
     <include file="$(find duckietown)/machines"/>    
 
@@ -25,6 +27,7 @@
 	     <arg name="local" value="$(arg local)"/>
 	     <arg name="config" value="$(arg config)"/>
 	     <arg name="param_file_name" value="$(arg param_file_name)"/>
+	     <arg name="live" value="$(arg live)"/>
     </include>
 
     <!-- Lane controller -->
@@ -49,7 +52,7 @@
         </include>
 
         <!-- Wheel Driver -->
-    	<include file="$(find dagu_car)/launch/wheels_driver_node.launch">
+    	<include if="$(arg live)" file="$(find dagu_car)/launch/wheels_driver_node.launch">
             <arg name="veh" value="$(arg veh)"/>
         </include>
     </group>

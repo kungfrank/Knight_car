@@ -1,11 +1,11 @@
 <launch>
-	<node name="camera_node" pkg="pi_camera" type="camera_node_continuous.py" output="screen">
-		<param name="~img_low_framerate" value="30.0"/>
-		<param name="~img_high_framerate" value="5.0"/>
-		<param name="~img_low_res_w" value="320"/>
-		<param name="~img_low_res_h" value="200"/>
-		<param name="~img_high_res_w" value="640"/>
-		<param name="~img_high_res_h" value="400"/>
-		<param name="~uncompress" value="False"/>
+	<arg name="veh"/>
+    <include file="$(find duckietown)/machines"/>
+	<node machine="$(arg veh)" name="camera_node" pkg="pi_camera" type="camera_node_sequence.py" output="screen">
+	    <param name="~framerate" value="30.0"/>
+	    <param name="~res_w" value="640"/>
+	    <param name="~res_h" value="480"/>
+	    <param name="~decompress" value="false"/>
+	    <param name="~cali_file_name" value="$(arg veh)"/>
 	</node>
 </launch>

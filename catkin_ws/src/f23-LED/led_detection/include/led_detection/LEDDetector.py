@@ -89,7 +89,7 @@ class LEDDetector():
 
     def detect_peaks(self, image):
         """
-        Takes an image and detect the peaks usingthe local maximum filter.
+        Takes an image and detect the peaks using the local maximum filter.
         Returns a boolean mask of the peaks (i.e. 1 when
         the pixel's value is the neighborhood maximum, 0 otherwise)
         """
@@ -146,13 +146,13 @@ class LEDDetector():
         if not min_distance_between_LEDs_pixels > 0:
             raise ValueError(min_distance_between_LEDs_pixels)
 
-        channel = images['rgb'][:,:,:,0] # just using first channel
+        #channel = images['rgb'][:,:,:,0] # just using first channel
         
         # Go for the following lines if you want to use a grayscale image
         # as an input instead of preferring one specific channel 
-        #channel = np.zeros(images['rgb'].shape[0:-1])
-        #for i in range(n):
-        #    channel[i,:,:] = cv2.cvtColor(images['rgb'][i,:,:,:], cv2.COLOR_BGR2GRAY)
+        channel = np.zeros(images['rgb'].shape[0:-1])
+        for i in range(n):
+            channel[i,:,:] = cv2.cvtColor(images['rgb'][i,:,:,:], cv2.COLOR_BGR2GRAY)
 
         print('channel.shape {0}'.format(channel.shape))
 

@@ -11,7 +11,7 @@ class LEDDetectorNode(object):
     def __init__(self):
         self.first_timestamp = None
         self.data = []
-        self.capture_time = 2.3 # capture time
+        self.capture_time = 1 # capture time
         self.capture_finished = False
         self.tinit = None
         
@@ -20,7 +20,7 @@ class LEDDetectorNode(object):
         self.pub_detections = rospy.Publisher("~raw_led_detection",LEDDetectionArray,queue_size=1)
         self.pub_debug = rospy.Publisher("~debug_info",LEDDetectionDebugInfo,queue_size=1)
         # TODO get veh parameter
-        self.sub_cam = rospy.Subscriber("/argo/camera_node/image/compressed",CompressedImage, self.camera_callback)
+        self.sub_cam = rospy.Subscriber("/maserati/camera_node/image/compressed",CompressedImage, self.camera_callback)
 
     def camera_callback(self, msg):
         float_time = msg.header.stamp.to_sec()
@@ -39,6 +39,7 @@ class LEDDetectorNode(object):
             debug_msg.capturing = True
             debug_msg.capture_progress = 100.0*rel_time/self.capture_time
             self.pub_debug.publish(debug_msg)
+
         elif not self.capture_finished:
             self.capture_finished = True
             self.process_and_publish()
@@ -61,7 +62,7 @@ class LEDDetectorNode(object):
         rgb0 = self.data[0]['rgb']
         mask = np.ones(dtype='bool', shape=rgb0.shape)
         tic = time.time()
-        result = det.detect_led(images, mask, [1.0, 1.5, 2.0], 5)
+        result = det.detect_led(images, mask, [3.5, 4.1, 5.0], 5)
         self.pub_detections.publish(result)
         toc = time.time()-tic
         tac = time.time()-self.tinit

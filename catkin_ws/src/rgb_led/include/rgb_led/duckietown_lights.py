@@ -3,6 +3,7 @@ __all__ = [
 	'DuckietownLights',
 	'cycle_LEDs_named',
 	'cycle_LEDs',
+	'cycle_LEDs_fancy1',
 ]
 
 # names for lights
@@ -148,6 +149,8 @@ def get_current_step(t, t0, sequence):
 
 	return i, sequence[i]
 
+
+
 def cycle_LEDs(sequence):
 	from time import sleep
 	from .rgb_led import RGB_LED
@@ -176,4 +179,34 @@ def cycle_LEDs(sequence):
 
 		sleep(0.01)
 
+
+def cycle_LEDs_fancy1(speed=10):
+	from time import sleep
+	from .rgb_led import RGB_LED
+	led = RGB_LED()
+
+	from math import sin, cos
+
+	t0 = time.time()
+	def get_config(t):
+		t = t * speed
+		a = 0.5 + 0.5*cos(t)
+		b = 0.5 + 0.5*sin(t)
+		c = 0.5 + 0.5*cos(2*t)
+
+		return {
+			TOP: [a,b,c],
+			BACK_LEFT: [b,c,a],
+			BACK_RIGHT: [a, c,b],
+			FRONT_LEFT: [b,a,c],
+			FRONT_RIGHT: [c,a,b],
+		}
+
+	while True:
+		t = time.time()
+		config = get_config(t)
+		for name, col in config.items():
+			k = DuckietownLights.name2port[name]
+			led.setRGB(k, col)		
+		sleep(0.01)
 	del led

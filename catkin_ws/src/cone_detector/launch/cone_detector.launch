@@ -1,4 +1,0 @@
-<launch>
-	<node pkg="cone_detector" type="coney.py" name="cone_detector" output="screen">
-	</node>
-</launch>

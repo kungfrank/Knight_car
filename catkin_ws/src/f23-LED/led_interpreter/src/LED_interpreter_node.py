@@ -106,14 +106,15 @@ class LEDInterpreterNode(object):
 							for i in range(len(self.signalFrequencies)):
 								if abs(self.signalFrequencies[i] - detected_freq) < 0.1:
 									self.front = self.vehicleSignals[i]
+									rospy.loginfo("[%s]:\n current step = " + i + "\n signal = %s\n" %(self.node_name, i, vehicleSignals[i]))
 									break
 
 						#check if right vehicle detection
-						if item.pixels_normalized.x > self.label['right'] and item.pixels_normalized.y > self.label['top']:
+						elif item.pixels_normalized.x > self.label['right'] and item.pixels_normalized.y > self.label['top']:
 							#check signal of that vehicle
 							detected_freq = item.frequency
 							for i in range(len(self.signalFrequencies)):
-								if abs(self.signalFrequencies[i] == detected_freq)< 0.1:
+								if abs(self.signalFrequencies[i] - detected_freq)< 0.1:
 									self.right = self.vehicleSignals[i]
 									break	
 			

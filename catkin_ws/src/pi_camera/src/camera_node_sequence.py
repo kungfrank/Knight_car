@@ -72,7 +72,7 @@ class CameraNode(object):
  
     def startCapturing(self):
         rospy.loginfo("[%s] Start capturing." %(self.node_name))
-        while not self.is_shutdown:
+        while not self.is_shutdown and not rospy.is_shutdown():
             gen =  self.grabAndPublish(self.stream,self.pub_img)
             try:
                 self.camera.capture_sequence(gen,'jpeg',use_video_port=True,splitter_port=0)
@@ -86,7 +86,7 @@ class CameraNode(object):
         rospy.loginfo("[%s] Capture Ended." %(self.node_name))
 
     def grabAndPublish(self,stream,publisher):
-        while not self.update_framerate and not self.is_shutdown: 
+        while not self.update_framerate and not self.is_shutdown and not rospy.is_shutdown(): 
             yield stream
             # Construct image_msg
             # Grab image from stream
@@ -124,8 +124,6 @@ class CameraNode(object):
 
     def onShutdown(self):
         rospy.loginfo("[%s] Closing camera." %(self.node_name))
-        # self.camera.stop_recording(splitter_port=0)
-        # rospy.sleep(rospy.Duration.from_sec(2.0))
         self.is_shutdown=True
         rospy.loginfo("[%s] Shutdown." %(self.node_name))
 
@@ -163,8 +161,9 @@ class CameraNode(object):
             return False
 
 if __name__ == '__main__': 
-    rospy.init_node('camera',anonymous=False,disable_signals=True)
+    rospy.init_node('camera',anonymous=False, disable_signals=True)
     camera_node = CameraNode()
-    camera_node.startCapturing()
+    signal.signal(signal.SIGINT, camera_node.signal_handler)
     rospy.on_shutdown(camera_node.onShutdown)
+    camera_node.startCapturing()
     rospy.spin()

@@ -32,18 +32,22 @@ digraph D {
 		global_localizer;
 		stop_line_detector;
 		camera_node;
+		led_detector;
+		plate_detector;
+
 		// Connections
 		camera_node->img;
 		
 		img->line_detector;
+		img->april_tag_detector;
+		img->led_detector;
 		img->stop_line_detector;
 		img->relative_intersection_localizer;
 		img->duckie_detector;
 		img->vehicle_detector;
 		img->traffic_light_detector;
 		img->sign_detector;
-		img->april_tag_detector;
-
+		img->plate_detector;
 
 		line_detector->lines;
 		lines->lane_filter;

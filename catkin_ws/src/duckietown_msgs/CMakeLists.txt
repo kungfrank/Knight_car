@@ -11,6 +11,8 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   geometry_msgs
   sensor_msgs
+  tf_conversions
+  tf
 )
 
 ## System dependencies are found with CMake's conventions
@@ -52,6 +54,8 @@ add_message_files(
   CarControl.msg
   LaneReading.msg
   WheelsCmd.msg
+  TagDetection.msg
+  AprilTags.msg
 )
 
 ## Generate services in the 'srv' folder

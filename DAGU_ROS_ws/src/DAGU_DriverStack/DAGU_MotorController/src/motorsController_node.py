@@ -11,7 +11,7 @@
 #!/usr/bin/env python
 
 import rospy
-import DCMotorInterface 
+import DAGU_Differential_Drive 
 from std_msgs.msg import Float64
 
 class motorInterfaceNode():
@@ -19,7 +19,7 @@ class motorInterfaceNode():
     def __init__(self):
 
         # Initialize DC_motor controller
-        self.DCMI = DCMotorInterface.DCMotorInterface();
+        self.dagu = DAGU_Differential_Drive.DAGU_Differential_Drive();
         self.speedTimestamp = 0;
 
         rospy.Subscriber("/speed", Float64, self.speedCallback)
@@ -27,13 +27,13 @@ class motorInterfaceNode():
     def speedCallback(self, data):
         #self.speedTimestamp = rospy.Time.now()
 
-        self.DCMI.setSpeed(data.data)
+        self.dagu.setSpeed(data.data)
         #rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
             
 
 if __name__ == '__main__':
     
     # Init ROS network
-    rospy.init_node('motorsController')
+    rospy.init_node('DAGU Differential Drive')
     node = motorInterfaceNode()
     rospy.spin()

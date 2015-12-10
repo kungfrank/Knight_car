@@ -36,7 +36,7 @@ class Controller:
         self.numIt = 0
         self.totalTime = 0
 
-class DCMotorInterface:
+class CarMotorInterface:
 
     __driveDeadZone = 10       # Minimum speed to win static friction  
     __driveMaxSpeed = 255      # Maximum speed that can be commanded
@@ -83,8 +83,8 @@ class DCMotorInterface:
 
 
         self.rearMotor.setSpeed(int(round(\
-            abs(speed)*(DCMotorInterface.__driveMaxSpeed-DCMotorInterface.__driveDeadZone)\
-            +DCMotorInterface.__driveDeadZone)));
+            abs(speed)*(CarMotorInterface.__driveMaxSpeed-CarMotorInterface.__driveDeadZone)\
+            +CarMotorInterface.__driveDeadZone)));
         
         self.rearMotor.run(self.rearMotorMode);
 
@@ -114,19 +114,19 @@ class DCMotorInterface:
             # worst case Delta is pm 2
             cmd = self.steerController.P*delta
             cmd += self.steerController.I*self.steerController.integral
-            cmd *= DCMotorInterface.__steerMaxSpeed
+            cmd *= CarMotorInterface.__steerMaxSpeed
             if(self.verbose):
                 print("x: "+str(delta)+" xdot: "+str(derivative)+" int: "+str(self.steerController.integral))
                 print("rawcmd: "+str(int(cmd)))
 
-            if(abs(delta)>DCMotorInterface.__steerTolerance):
+            if(abs(delta)>CarMotorInterface.__steerTolerance):
                 if(cmd>0):
                     steerMotorMode = Adafruit_MotorHAT.BACKWARD
                 else:
                     steerMotorMode = Adafruit_MotorHAT.FORWARD
                 cmd = abs(cmd)
                 cmd += self.steerController.D*abs(derivative)
-                cmd = numpy.clip(cmd, DCMotorInterface.__steerDeadZone, DCMotorInterface.__steerMaxSpeed)
+                cmd = numpy.clip(cmd, CarMotorInterface.__steerDeadZone, CarMotorInterface.__steerMaxSpeed)
             else:
                 self.steerController.integral = 0 #resetting integral term
             

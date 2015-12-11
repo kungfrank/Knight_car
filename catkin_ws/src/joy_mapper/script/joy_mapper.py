@@ -11,8 +11,8 @@ class JoyMapper(object):
 
         # Setup Parameters
         self.pub_timestep = self.setupParam("~pub_timestep",0.02)
-        self.speed_gain = self.setupParam("~speed_gain",1.0)
-        self.steer_gain = self.setupParam("~steer_gain",np.pi*(15.0/180.0))
+        # self.speed_gain = self.setupParam("~speed_gain",1.0)
+        # self.steer_gain = self.setupParam("~steer_gain",np.pi*(15.0/180.0))
 
         # Publications
         self.pub_control = rospy.Publisher("~joy_control",CarControl,queue_size=1)
@@ -38,8 +38,8 @@ class JoyMapper(object):
     def publishControl(self,event):
         car_control_msg = CarControl()
         car_control_msg.need_steering = False
-        car_control_msg.speed = self.joy.axes[1]*self.speed_gain #Left stick V-axis. Up is positive
-        car_control_msg.steering = self.joy.axes[3]*self.steer_gain #Right stick H-axis. Right is negative
+        car_control_msg.speed = self.joy.axes[1] #*self.speed_gain #Left stick V-axis. Up is positive
+        car_control_msg.steering = self.joy.axes[3] #*self.steer_gain #Right stick H-axis. Right is negative
         self.pub_control.publish(car_control_msg)
 
 

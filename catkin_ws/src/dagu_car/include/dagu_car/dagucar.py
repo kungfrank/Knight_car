@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # Wrapping the Adafruit API to talk to DC motors with a simpler interface
 #
 # date:    11/17/2015
@@ -12,14 +10,13 @@
 #
 # Make sure that the front motor is connected in such a way that a positive
 # speed  causes an increase in the potentiometer reading!
-
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 import time
 import atexit
 import numpy
 import warnings
 from threading import Thread
-import pot
+from dagu_car import pot
 import math
 
 class Controller:
@@ -36,7 +33,7 @@ class Controller:
         self.numIt = 0
         self.totalTime = 0
 
-class DCMotorInterface:
+class DAGU_Car:
 
     __driveDeadZone = 10       # Minimum speed to win static friction  
     __driveMaxSpeed = 255      # Maximum speed that can be commanded
@@ -83,8 +80,8 @@ class DCMotorInterface:
 
 
         self.rearMotor.setSpeed(int(round(\
-            abs(speed)*(DCMotorInterface.__driveMaxSpeed-DCMotorInterface.__driveDeadZone)\
-            +DCMotorInterface.__driveDeadZone)));
+            abs(speed)*(DAGU_Car.__driveMaxSpeed-DAGU_Car.__driveDeadZone)\
+            +DAGU_Car.__driveDeadZone)));
         
         self.rearMotor.run(self.rearMotorMode);
 
@@ -114,19 +111,19 @@ class DCMotorInterface:
             # worst case Delta is pm 2
             cmd = self.steerController.P*delta
             cmd += self.steerController.I*self.steerController.integral
-            cmd *= DCMotorInterface.__steerMaxSpeed
+            cmd *= DAGU_Car.__steerMaxSpeed
             if(self.verbose):
                 print("x: "+str(delta)+" xdot: "+str(derivative)+" int: "+str(self.steerController.integral))
                 print("rawcmd: "+str(int(cmd)))
 
-            if(abs(delta)>DCMotorInterface.__steerTolerance):
+            if(abs(delta)>DAGU_Car.__steerTolerance):
                 if(cmd>0):
                     steerMotorMode = Adafruit_MotorHAT.BACKWARD
                 else:
                     steerMotorMode = Adafruit_MotorHAT.FORWARD
                 cmd = abs(cmd)
                 cmd += self.steerController.D*abs(derivative)
-                cmd = numpy.clip(cmd, DCMotorInterface.__steerDeadZone, DCMotorInterface.__steerMaxSpeed)
+                cmd = numpy.clip(cmd, DAGU_Car.__steerDeadZone, DAGU_Car.__steerMaxSpeed)
             else:
                 self.steerController.integral = 0 #resetting integral term
             

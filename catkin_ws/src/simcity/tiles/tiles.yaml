@@ -1,0 +1,9 @@
+road_north_south3:
+  bitmap: “road_north_south3.png”
+  connectivity: [[11,29]]
+highway_north_south:
+  bitmap: “highway_north_south.png”
+  connectivity: [[8,31],[9,30], [10,29],[11,28],[12,27], [13, 26], [14,25], [15,24]]
+indian_intersection:
+  bitmap: “indian_intersection.png”
+  connectivity: "todo (complete)"

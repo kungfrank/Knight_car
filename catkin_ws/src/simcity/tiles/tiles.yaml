@@ -1,3 +1,4 @@
+# connectivity = array of arrays of length two 
 road_north_south3:
   bitmap: “road_north_south3.png”
   connectivity: [[11,29]]

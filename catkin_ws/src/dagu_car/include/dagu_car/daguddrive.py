@@ -6,13 +6,9 @@
 #
 # authors: Valerio Varricchio <valerio@mit.edu>
 #          Luca Carlone <lcarlone@mit.edu>
+#          Dmitry Yershov <dmitry.s.yershov@gmail.com>
 #
 
-# ~~~~~ IMPORTANT !!! ~~~~~
-#
-# Make sure that the front motor is connected in such a way that a positive
-# speed  causes an increase in the potentiometer reading!
-# from Adafruit_MotorHAT import Adafruit_MotorHAT
 from Adafruit_MotorHAT import Adafruit_MotorHAT
 from math import fabs, floor
 
@@ -126,3 +122,48 @@ class DAGU_Differential_Drive:
         self.leftMotor.run(Adafruit_MotorHAT.RELEASE)
         self.rightMotor.run(Adafruit_MotorHAT.RELEASE)
         del self.motorhat
+
+# Simple example to test motors
+if __name__ == '__main__':
+
+    from time import sleep
+
+    N = 10;
+    delay = 100. / 1000.
+
+    dagu = DAGU_Differential_Drive()
+
+    # turn left
+    dagu.setSteerAngle(1.0)
+    # accelerate forward
+    for i in range(N):
+        dagu.setSpeed((1.0 + i) / N)
+        sleep(delay)
+    # decelerate forward
+    for i in range(N):
+        dagu.setSpeed((-1.0 - i + N) / N)
+        sleep(delay)
+
+    # turn right
+    dagu.setSteerAngle(-1.0)
+    # accelerate backward
+    for i in range(N):
+        dagu.setSpeed(-(1.0 + i) / N)
+        sleep(delay)
+    # decelerate backward
+    for i in range(N):
+        dagu.setSpeed(-(-1.0 - i + N) / N)
+        sleep(delay)
+
+    # turn left
+    dagu.setSteerAngle(1.0)
+    # accelerate forward
+    for i in range(N):
+        dagu.setSpeed((1.0 + i) / N)
+        sleep(delay)
+    # decelerate forward
+    for i in range(N):
+        dagu.setSpeed((-1.0 - i + N) / N)
+        sleep(delay)
+
+    del dagu

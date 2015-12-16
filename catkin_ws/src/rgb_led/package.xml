@@ -43,18 +43,9 @@
   
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>duckietown_msgs</build_depend>
-  <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
-  <build_depend>adafruit_drivers</build_depend>
-  <build_depend>pkg_name</build_depend>
-
   <run_depend>duckietown_msgs</run_depend>
-  <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>
-  <run_depend>adafruit_drivers</run_depend>
-  <run_depend>pkg_name</run_depend>
-
-
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->

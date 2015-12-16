@@ -60,13 +60,16 @@ int main(int argc, char **argv) {
     cv::Mat cv_img;
 
     std::string camera_info_url;
-    nh.param<std::string>("camera_info_url", camera_info_url, "");
+    nh.param<std::string>("camera_info_url", camera_info_url, "package://rosberrypi_cam/calibration/picamera.yaml");
     
     image_transport::ImageTransport it(nh);
     image_transport::CameraPublisher pub = it.advertiseCamera("image_raw", 1);
 
-    std::string camera_name = nh.getNamespace();
+    // std::string camera_name = nh.getNamespace();
+    std::string camera_name = ros::this_node::getName();
+    ROS_INFO_STREAM("[rosberrypi_cam] Camera Name:" << camera_name);
     camera_info_manager::CameraInfoManager cinfo_(nh, camera_name);
+    cinfo_.loadCameraInfo(camera_info_url);
 
     ros::Rate rate(fps);
     while(ros::ok()) {

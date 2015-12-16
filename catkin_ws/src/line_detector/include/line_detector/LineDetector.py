@@ -40,9 +40,6 @@ def lineDetector(bgr):
 	
 	return lines
 
-def laneFilter(lines):
-	pass
-
 """
 def _main():
 	if len(sys.argv)!=2:

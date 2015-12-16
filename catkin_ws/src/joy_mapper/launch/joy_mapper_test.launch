@@ -9,10 +9,13 @@
 		<param name="~pub_timestep" value="0.02"/>
 	</node>
 	<node pkg="car_supervisor" type="car_supervisor.py" name="car_supervisor" output="screen">
-	        <param name="~pub_timestep" value="0.02"/>
+        <param name="~pub_timestep" value="0.02"/>
 		<param name="~joystick_mode" value="True"/>
+		<remap from="~joy_control" to="joy_mapper/joy_control"/>
+		<!-- <remap from="~lane_control" to="lane_controller/lane_control"/> -->
 	</node>
 	<node pkg="dagu_car" type="dagu_differential_drive.py" name="dagu_car" output="screen">
+		<remap from="~car_control" to="car_supervisor/car_control"/>
 	</node>
 	<!-- </group> -->
 </launch>

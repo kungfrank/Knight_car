@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 import rospy
-from pkg_name.modulename import ModuleName
+# from pkg_name.modulename import ModuleName
 from duckietown_msgs.msg import CarControl
-
 from dagu_car.daguddrive import DAGU_Differential_Drive
 
 class DaguCar(object):

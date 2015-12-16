@@ -1,0 +1,5 @@
+<launch>
+	<node pkg="lane_filter" type="lane_filter_node.py" name="lane_filter" output="screen">
+		<remap from="~image" to="/rosberrypi_cam/image_raw"/>
+	</node>
+</launch>

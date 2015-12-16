@@ -11,12 +11,13 @@ class CarSupervisor(object):
         
         # Setup Parameters
         self.pub_timestep = self.setupParam("~pub_timestep",0.02)
-
+        self.joystick_mode = self.setupParam("~joystick_mode",True)
+        
         # Publications
         self.pub_car_control = rospy.Publisher("~car_control",CarControl,queue_size=1)
 
         # Subscriptions
-        self.sub_joy_ = rospy.Subscriber("~joy_control", CarControl, self.cbJoyControl,queue_size=1)
+        self.sub_joy = rospy.Subscriber("~joy_control",CarControl,self.cbJoyControl,queue_size=1)
         self.sub_lane_control = rospy.Subscriber("~lane_control",CarControl,self.cbLaneControl,queue_size=1)
 
         # timer
@@ -29,7 +30,7 @@ class CarSupervisor(object):
         return rospy.get_param(para_name)
 
     def cbJoyControl(self,joy_control_msg):
-        self.joy_control_ = joy_control_msg
+        self.joy_control = joy_control_msg
 
     def cbLaneControl(self,lane_control_msg):
         self.lane_control = lane_control_msg
@@ -38,11 +39,15 @@ class CarSupervisor(object):
         self.publishControl()
 
     def publishControl(self):
-        # TODO: Implement more intelligent mixing logic
-        if self.lane_control.need_steering:
-            self.pub_car_control.publish(self.lane_control)
-        else:
+        if self.joystick_mode:
+            # Always publishes joy_control when joystic_mode is true
             self.pub_car_control.publish(self.joy_control)
+        else:
+            # When not in joy stick mode, publish lane_control when need_settering is true.
+            if self.lane_control.need_steering:
+                self.pub_car_control.publish(self.lane_control)
+            else:
+                self.pub_car_control.publish(self.joy_control)
 
 if __name__ == "__main__":
     rospy.init_node("car_supervisor",anonymous=False)

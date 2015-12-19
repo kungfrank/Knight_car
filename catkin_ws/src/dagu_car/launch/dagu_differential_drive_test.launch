@@ -1,0 +1,8 @@
+<launch>
+	<!-- Start the dagu_differential_drive node -->
+	<node pkg="dagu_car" type="dagu_differential_drive.py" name="dagu_car" output="screen"/>
+	<!-- Start and tester node and remap -->
+	<node pkg="dagu_car" type="dagu_differential_drive_test.py" name="dagu_car_tester" output="screen">
+		<remap from="~car_control" to="dagu_car/car_control"/>
+	</node>
+</launch>

@@ -1,3 +1,0 @@
-<launch>
-	<machine name="ubuntu" address="ubuntu.local" user="ubuntu" password="ubuntu" env-loader="$(find duckietown_setup)/env_setup.sh"/>
-</launch>

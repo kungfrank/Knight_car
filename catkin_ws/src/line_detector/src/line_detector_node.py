@@ -23,9 +23,9 @@ class LineDetectorNode(object):
 	if lines_white is not None:	
 		rospy.loginfo("[LineDetectorNode] len(lines_white) = %s" %(len(lines_white)))
 	if lines_yellow is not None:
-	rospy.loginfo("[LineDetectorNode] len(lines_yellow) = %s" %(len(lines_yellow)))
+		rospy.loginfo("[LineDetectorNode] len(lines_yellow) = %s" %(len(lines_yellow)))
 	if lines_red is not None:
-	rospy.loginfo("[LineDetectorNode] len(lines_red) = %s" %(len(lines_red)))
+		rospy.loginfo("[LineDetectorNode] len(lines_red) = %s" %(len(lines_red)))
 
     def onShutdown(self):
         rospy.loginfo("[LineDetectorNode] Shutdown.")

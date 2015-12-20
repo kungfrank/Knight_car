@@ -3,7 +3,7 @@ import rospy
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
-from LineDetector2 import *
+from LineDetector import *
 # from picamera.array import PiRGBArray
 # from picamera import PiCamera
 

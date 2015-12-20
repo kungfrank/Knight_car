@@ -11,6 +11,8 @@ class LineDetectorNode(object):
     def __init__(self):
         self.bridge = CvBridge()
 	self.sub_image = rospy.Subscriber("~image", Image, self.cbImage)
+	# self.pub_lines = rospy.Publisher("segments", Segments)
+
 	self.detector = LineDetector()
 
     def cbImage(self,image_msg):
@@ -20,12 +22,12 @@ class LineDetectorNode(object):
 	lines_yellow = self.detector.detectLines(image_cv, 'yellow')
 	lines_red = self.detector.detectLines(image_cv, 'red') 
 	
-	if lines_white is not None:	
-		rospy.loginfo("[LineDetectorNode] len(lines_white) = %s" %(len(lines_white)))
-	if lines_yellow is not None:
-		rospy.loginfo("[LineDetectorNode] len(lines_yellow) = %s" %(len(lines_yellow)))
-	if lines_red is not None:
-		rospy.loginfo("[LineDetectorNode] len(lines_red) = %s" %(len(lines_red)))
+	if len(lines_white)>0:	
+		rospy.loginfo("[LineDetectorNode] number of white lines = %s" %(len(lines_white)))
+	if len(lines_yellow)>0:
+		rospy.loginfo("[LineDetectorNode] number of yellow lines = %s" %(len(lines_yellow)))
+	if len(lines_red)>0:
+		rospy.loginfo("[LineDetectorNode] number of red lines = %s" %(len(lines_red)))
 
     def onShutdown(self):
         rospy.loginfo("[LineDetectorNode] Shutdown.")

@@ -20,8 +20,11 @@ class LineDetectorNode(object):
 	lines_yellow = self.detector.detectLines(image_cv, 'yellow')
 	lines_red = self.detector.detectLines(image_cv, 'red') 
 	
-	rospy.loginfo("[LineDetectorNode] len(lines_white) = %s" %(len(lines_white)))
+	if lines_white is not None:	
+		rospy.loginfo("[LineDetectorNode] len(lines_white) = %s" %(len(lines_white)))
+	if lines_yellow is not None:
 	rospy.loginfo("[LineDetectorNode] len(lines_yellow) = %s" %(len(lines_yellow)))
+	if lines_red is not None:
 	rospy.loginfo("[LineDetectorNode] len(lines_red) = %s" %(len(lines_red)))
 
     def onShutdown(self):

@@ -3,7 +3,7 @@ import rospy
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
-from LineDetector import *
+from LineDetector2 import *
 # from picamera.array import PiRGBArray
 # from picamera import PiCamera
 
@@ -11,11 +11,18 @@ class LineDetectorNode(object):
     def __init__(self):
         self.bridge = CvBridge()
 	self.sub_image = rospy.Subscriber("~image", Image, self.cbImage)
+	self.detector = LineDetector()
 
     def cbImage(self,image_msg):
-        cv_image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
-        lines = lineDetector(cv_image)
-	rospy.loginfo("[LineDetectorNode] len(lines) = %s" %(len(lines)))
+        image_cv = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
+       
+	lines_white = self.detector.detectLines(image_cv, 'white')
+	lines_yellow = self.detector.detectLines(image_cv, 'yellow')
+	lines_red = self.detector.detectLines(image_cv, 'red') 
+	
+	rospy.loginfo("[LineDetectorNode] len(lines_white) = %s" %(len(lines_white)))
+	rospy.loginfo("[LineDetectorNode] len(lines_yellow) = %s" %(len(lines_yellow)))
+	rospy.loginfo("[LineDetectorNode] len(lines_red) = %s" %(len(lines_red)))
 
     def onShutdown(self):
         rospy.loginfo("[LineDetectorNode] Shutdown.")

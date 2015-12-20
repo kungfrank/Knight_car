@@ -10,7 +10,7 @@ from LineDetector import *
 class LineDetectorNode(object):
     def __init__(self):
         self.bridge = CvBridge()
-        self.sub_image = rospy.Subscriber("~image", Image, self.cbImage)
+	self.sub_image = rospy.Subscriber("~image", Image, self.cbImage)
 
     def cbImage(self,image_msg):
         cv_image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")

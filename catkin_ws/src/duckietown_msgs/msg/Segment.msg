@@ -1,0 +1,11 @@
+int32 u1
+int32 v1
+int32 u2
+int32 v2
+float32 x1
+float32 y1
+float32 z1
+float32 x2
+float32 y2
+float32 z2
+string color

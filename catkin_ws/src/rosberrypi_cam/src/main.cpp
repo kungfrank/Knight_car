@@ -11,6 +11,7 @@
 #include <std_msgs/Header.h>
 #include <camera_info_manager/camera_info_manager.h>
 #include <boost/unordered_map.hpp>
+#include <iostream>
 
 using namespace raspicam;
 
@@ -73,10 +74,12 @@ int main(int argc, char **argv) {
 
     ros::Rate rate(fps);
     while(ros::ok()) {
-        //printf("- %f... ", ros::Time::now().toSec());
+        // printf("- %f... ", ros::Time::now().toSec());
         camera_cv.grab();
         camera_cv.retrieve(cv_img);
+	// printf("done\n");
         std_msgs::Header header();
+
         cv_bridge::CvImage imgmsg;
         sensor_msgs::CameraInfo ci = cinfo_.getCameraInfo();
         imgmsg.header.frame_id = camera_name + "_optical_frame";

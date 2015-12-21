@@ -56,6 +56,7 @@ add_message_files(
   WheelsCmd.msg
   TagDetection.msg
   AprilTags.msg
+  Pixel.msg
   Segment.msg
   SegmentList.msg
 )

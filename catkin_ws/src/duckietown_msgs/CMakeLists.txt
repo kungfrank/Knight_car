@@ -56,6 +56,8 @@ add_message_files(
   WheelsCmd.msg
   TagDetection.msg
   AprilTags.msg
+  Segment.msg
+  SegmentList.msg
 )
 
 ## Generate services in the 'srv' folder

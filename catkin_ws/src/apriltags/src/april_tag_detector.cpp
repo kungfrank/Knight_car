@@ -28,8 +28,11 @@ public:
   AprilTagDetectorNode(const ros::NodeHandle& nh): nh_p_(nh), tag_detector_(AprilTags::TagDetector(AprilTags::tagCodes36h11)),has_camera_info_(false),tag_size_(0.2)
   {
     pub_detection_ = nh_p_.advertise<duckietown_msgs::AprilTags>("apriltags",1);
-    sub_image_ = nh_p_.subscribe("image", 1, &AprilTagDetectorNode::cbImage, this);
-    sub_camera_info_ = nh_p_.subscribe("camera_info", 1, &AprilTagDetectorNode::cbCameraInfo, this);
+    string image_topic, camera_info_topic;
+    //    nh_p_.getParam("image",image_topic);
+    //    nh_p_.getParam("camera_info",camera_info_topic);
+    sub_image_ = nh_p_.subscribe("/usb_cam/image_raw", 1, &AprilTagDetectorNode::cbImage, this);
+    sub_camera_info_ = nh_p_.subscribe("/usb_cam/camera_info", 1, &AprilTagDetectorNode::cbCameraInfo, this);
   }
 
   ~AprilTagDetectorNode(){}

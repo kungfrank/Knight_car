@@ -1,3 +1,2 @@
 int32 numSegments
-Segment[] segments
-
+duckietown_msgs/Segment[] segments

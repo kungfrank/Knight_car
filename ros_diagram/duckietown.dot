@@ -87,13 +87,17 @@ digraph D {
 		joy_mapper;
 		wheel_driver;
 		beeper;
+		safety_supervisor;
 		// CONNECTIONS
 		joy_node->joy_mapper [label="sensor_msgs/Joy.msg"];
 		joy_mapper-> car_supervisor [label="CarControl.msg"];
 		lane_reading->lane_controller [label="LaneReading.msg"];
 		lane_controller-> car_supervisor [label="CarControl.msg"];
-		car_supervisor -> beeper [label="std_msgs/Bool.msg"];
-		car_supervisor->car_emulator [label="CarControl.msg"];
+		//car_supervisor -> beeper [label="std_msgs/Bool.msg"];
+		//car_supervisor->car_emulator [label="CarControl.msg"];
+		car_supervisor->safety_supervisor [label="CarControl.msg"];
+		safety_supervisor->car_emulator [label="CarControl.msg"];
+		safety_supervisor->beeper [label="std_msgs/Bool.msg"];
 		car_emulator->wheel_driver [label="WheelCmd.msg"];
 	}
 }

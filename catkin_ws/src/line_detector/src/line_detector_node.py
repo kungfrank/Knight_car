@@ -14,7 +14,7 @@ class LineDetectorNode(object):
         self.bridge = CvBridge()
 
         self.sub_image = rospy.Subscriber("~image", Image, self.cbImage)
-        self.pub_lines = rospy.Publisher("~segmentList", SegmentList, queue_size=1)
+        self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
         self.pub_image = rospy.Publisher("~image_with_lines",Image, queue_size=1)
 
         self.detector = LineDetector()

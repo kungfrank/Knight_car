@@ -44,6 +44,8 @@ class LineDetector(object):
 		lines = cv2.HoughLinesP(edge, 1, np.pi/180, 100, np.empty(1), minLineLength=30, maxLineGap=20)
 		if lines is not None:
 			lines = lines[0]
+		else:
+			lines = []
 		return lines
 
 	def detectLines(self, bgr, color):
@@ -53,7 +55,7 @@ class LineDetector(object):
 		return lines
 	
 	def drawLines(self, bgr, lines, paint):
-		if lines is not None:
+		if len(lines)>0:
 			for x1,y1,x2,y2 in lines:
 				cv2.line(bgr, (x1,y1), (x2,y2), paint, 3)
 

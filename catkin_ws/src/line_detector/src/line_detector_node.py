@@ -4,7 +4,7 @@ import cv2
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 from duckietown_msgs.msg import Segment, SegmentList, Pixel
-from LineDetector import *
+from line_detector.LineDetector import *
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Point
 import time

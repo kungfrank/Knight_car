@@ -17,7 +17,8 @@ digraph D {
 		label="perception"
 		// TOPIC
 		img;
-		lines;
+		segment_list;
+		image_with_lines;
 		lane_reading; //LaneReading: y, phi, sigma_y, sigma_phi, status
 		// ROS Nodes
 		node [shape=box];
@@ -49,8 +50,9 @@ digraph D {
 		img->sign_detector;
 		img->plate_detector;
 
-		line_detector->lines;
-		lines->lane_filter;
+		line_detector->segment_list [label="SegmentList.msg"];
+		line_detector->image_with_lines [label="sensor_msgs/Image.msg"]
+		segment_list->lane_filter;
 		lane_filter->lane_reading [label="LaneReading.msg"];
 	}
 

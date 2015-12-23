@@ -4,16 +4,16 @@ import sys
 
 class LineDetector(object):
 	def __init__(self):
-		self.yuv_white1 = np.array([180, 100, 100])
-		self.yuv_white2 = np.array([255, 160, 160])
-		self.yuv_yellow1 = np.array([10, 100, 0])
-		self.yuv_yellow2 = np.array([200, 200, 100]) 
-		self.yuv_red1 = np.array([0, 150, 110])
-		self.yuv_red2 = np.array([100, 255, 140]) 
+		self.yuv_white1 = np.array([120, 120, 120])
+		self.yuv_white2 = np.array([255, 255, 255])
+		self.yuv_yellow1 = np.array([20, 150, 120])
+		self.yuv_yellow2 = np.array([40, 255, 255]) 
+		self.yuv_red1 = np.array([0, 120, 150])
+		self.yuv_red2 = np.array([10, 255, 255]) 
 
 	def __colorFilter(self, bgr, color):
 		# transform into YUV color space
-		yuv = cv2.cvtColor(bgr, cv2.COLOR_BGR2YUV)
+		yuv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
 		if color == 'white':
 			yuv_color1 = self.yuv_white1
 			yuv_color2 = self.yuv_white2		
@@ -27,7 +27,10 @@ class LineDetector(object):
 			raise Exception('Error: Undefined color strings...')
 		
 		# threshold lanes by color in YUV space
-		lane = cv2.inRange(yuv, yuv_color1, yuv_color2)
+                if color == 'white':
+                        lane = cv2.inRange(bgr, yuv_color1, yuv_color2)
+                else:
+                        lane = cv2.inRange(yuv, yuv_color1, yuv_color2)
 
 		# binary image processing
 		kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3, 3))
@@ -40,8 +43,8 @@ class LineDetector(object):
 		edges = cv2.Canny(gray, 10, 30, apertureSize = 3)
 		return edges
 
-	def __HoughLine(self, edge, bgr):
-		lines = cv2.HoughLinesP(edge, 1, np.pi/180, 100, np.empty(1), minLineLength=30, maxLineGap=20)
+	def __HoughLine(self, edge, bgr, votes):
+		lines = cv2.HoughLinesP(edge, 1, np.pi/180, votes, np.empty(1), minLineLength=5, maxLineGap=5)
 		if lines is not None:
 			lines = lines[0]
 		else:
@@ -51,7 +54,10 @@ class LineDetector(object):
 	def detectLines(self, bgr, color):
 		lane = self.__colorFilter(bgr, color)
 		edges = self.__findEdge(lane)
-		lines = self.__HoughLine(edges, bgr)	
+                if color=='red':
+                        lines = self.__HoughLine(edges, bgr,30)
+                else:
+                        lines = self.__HoughLine(edges, bgr, 60)
 		return lines
 	
 	def drawLines(self, bgr, lines, paint):

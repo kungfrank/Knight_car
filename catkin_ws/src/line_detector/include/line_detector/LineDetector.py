@@ -3,71 +3,66 @@ import cv2
 import sys
 
 class LineDetector(object):
-	def __init__(self):
-		self.yuv_white1 = np.array([120, 120, 120])
-		self.yuv_white2 = np.array([255, 255, 255])
-		self.yuv_yellow1 = np.array([20, 150, 120])
-		self.yuv_yellow2 = np.array([40, 255, 255]) 
-		self.yuv_red1 = np.array([0, 120, 150])
-		self.yuv_red2 = np.array([10, 255, 255]) 
+    def __init__(self):
+        self.bgr_white1 = np.array([120, 120, 120])
+        self.bgr_white2 = np.array([255, 255, 255])
+        self.hsv_yellow1 = np.array([20, 150, 120])
+        self.hsv_yellow2 = np.array([40, 255, 255]) 
+        self.hsv_red1 = np.array([0, 120, 150])
+        self.hsv_red2 = np.array([10, 255, 255]) 
+        self.hsv_red3 = np.array([245, 120, 150])
+        self.hsv_red4 = np.array([255, 255, 255]) 
 
-	def __colorFilter(self, bgr, color):
-		# transform into YUV color space
-		yuv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
-		if color == 'white':
-			yuv_color1 = self.yuv_white1
-			yuv_color2 = self.yuv_white2		
-		elif color == 'yellow':
-			yuv_color1 = self.yuv_yellow1
-			yuv_color2 = self.yuv_yellow2		
-		elif color == 'red':
-			yuv_color1 = self.yuv_red1
-			yuv_color2 = self.yuv_red2		
-		else:
-			raise Exception('Error: Undefined color strings...')
-		
-		# threshold lanes by color in YUV space
-                if color == 'white':
-                        lane = cv2.inRange(bgr, yuv_color1, yuv_color2)
-                else:
-                        lane = cv2.inRange(yuv, yuv_color1, yuv_color2)
+    def __colorFilter(self, bgr, color):
+        # filter white in BGR space, yellow and red in HSV space
+        # colors are hard-coded, making the code extremely ugly...could be further improved
+        if color == 'white':
+            lane = cv2.inRange(bgr, self.bgr_white1, self.bgr_white2)
+        elif color == 'yellow':
+            hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
+            lane = cv2.inRange(hsv, self.hsv_yellow1, self.hsv_yellow2)
+        elif color == 'red':
+            hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
+            lane1 = cv2.inRange(hsv, self.hsv_red1, self.hsv_red2)
+            lane2 = cv2.inRange(hsv, self.hsv_red3, self.hsv_red4)
+            lane = cv2.bitwise_or(lane1, lane2)
+        else:
+	        raise Exception('Error: Undefined color strings...')
 
 		# binary image processing
-		kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3, 3))
-		lane = cv2.erode(lane, kernel)
-		kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5, 5))
-		lane = cv2.dilate(lane, kernel)
-		return lane
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3, 3))
+        lane = cv2.erode(lane, kernel)
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5, 5))
+        lane = cv2.dilate(lane, kernel)
 
-	def __findEdge(self, gray):	
-		edges = cv2.Canny(gray, 10, 30, apertureSize = 3)
-		return edges
+        return lane
 
-	def __HoughLine(self, edge, bgr, votes):
-		lines = cv2.HoughLinesP(edge, 1, np.pi/180, votes, np.empty(1), minLineLength=5, maxLineGap=5)
-		if lines is not None:
-			lines = lines[0]
-		else:
-			lines = []
-		return lines
+    def __findEdge(self, gray):	
+        edges = cv2.Canny(gray, 10, 30, apertureSize = 3)
+        return edges
 
-	def detectLines(self, bgr, color):
-		lane = self.__colorFilter(bgr, color)
-		edges = self.__findEdge(lane)
-                if color=='red':
-                        lines = self.__HoughLine(edges, bgr,30)
-                else:
-                        lines = self.__HoughLine(edges, bgr, 60)
-		return lines
-	
-	def drawLines(self, bgr, lines, paint):
-		if len(lines)>0:
-			for x1,y1,x2,y2 in lines:
-				cv2.line(bgr, (x1,y1), (x2,y2), paint, 3)
+    def __HoughLine(self, edge, bgr):
+        lines = cv2.HoughLinesP(edge, 1, np.pi/180, 50, np.empty(1), minLineLength=5, maxLineGap=5)
+        if lines is not None:
+            lines = lines[0]
+        else:
+            lines = []
+        return lines
 
-	def getLane(self, bgr, color):
-		lane = self.__colorFilter(bgr, color)
-		return lane
+    def detectLines(self, bgr, color):
+        lane = self.__colorFilter(bgr, color)
+        edges = self.__findEdge(lane)
+        lines = self.__HoughLine(edges, bgr)
+        return lines
+
+    def drawLines(self, bgr, lines, paint):
+        if len(lines)>0:
+            for x1,y1,x2,y2 in lines:
+                cv2.line(bgr, (x1,y1), (x2,y2), paint, 3)
+
+    def getLane(self, bgr, color):
+        lane = self.__colorFilter(bgr, color)
+        return lane
 
 def _main():
 	# read video from file or camera

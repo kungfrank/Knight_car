@@ -1,18 +1,15 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(duckietown_msgs)
+project(lane_control)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  duckietown_msgs
+  geometry_msgs
   roscpp
   rospy
-  message_generation
   std_msgs
-  geometry_msgs
-  sensor_msgs
-  tf_conversions
-  tf
 )
 
 ## System dependencies are found with CMake's conventions
@@ -49,18 +46,11 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-  FILES
-  CarLanePose.msg
-  CarControl.msg
-  LaneReading.msg
-  WheelsCmd.msg
-  TagDetection.msg
-  AprilTags.msg
-  Pixel.msg
-  Segment.msg
-  SegmentList.msg
-)
+# add_message_files(
+#   FILES
+#   Message1.msg
+#   Message2.msg
+# )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -77,12 +67,10 @@ add_message_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-  std_msgs
-  geometry_msgs
-  sensor_msgs
-)
+# generate_messages(
+#   DEPENDENCIES
+#   duckietown_msgs#   geometry_msgs#   std_msgs
+# )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -115,8 +103,8 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES duckietown_msgs
-   CATKIN_DEPENDS geometry_msgs roscpp rospy sensor_msgs std_msgs message_runtime
+#  LIBRARIES lane_control
+#  CATKIN_DEPENDS duckietown_msgs geometry_msgs roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -132,24 +120,24 @@ include_directories(
 )
 
 ## Declare a C++ library
-# add_library(duckietown_msgs
-#   src/${PROJECT_NAME}/duckietown_msgs.cpp
+# add_library(lane_control
+#   src/${PROJECT_NAME}/lane_control.cpp
 # )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(duckietown_msgs ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(lane_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(duckietown_msgs_node src/duckietown_msgs_node.cpp)
+# add_executable(lane_control_node src/lane_control_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(duckietown_msgs_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(lane_control_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(duckietown_msgs_node
+# target_link_libraries(lane_control_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -168,7 +156,7 @@ include_directories(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS duckietown_msgs duckietown_msgs_node
+# install(TARGETS lane_control lane_control_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -193,7 +181,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_duckietown_msgs.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_lane_control.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

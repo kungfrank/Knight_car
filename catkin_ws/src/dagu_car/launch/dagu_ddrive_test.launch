@@ -1,0 +1,6 @@
+<launch>
+	<!-- Start the dagu_differential_drive node -->
+	<node pkg="dagu_car" type="dagu_differential_drive.py" name="dagu_car" output="screen">
+		<param name="~car_like_mode" value="false"/>
+	</node>
+</launch>

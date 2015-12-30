@@ -30,6 +30,8 @@ class DaguCar(object):
         self.dagu.setSteerAngle(self.control_msg.steering)
 
     def on_shutdown(self):
+	self.dagu.setSpeed(0.0)
+	self.dagu.setSteerAngle(0.0)
         rospy.loginfo("[DaguCar] Shutting down.")
 
 if __name__ == '__main__':

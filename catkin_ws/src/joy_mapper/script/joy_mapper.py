@@ -40,7 +40,7 @@ class JoyMapper(object):
         car_control_msg.need_steering = False
         car_control_msg.speed = self.joy.axes[1] #*self.speed_gain #Left stick V-axis. Up is positive
         car_control_msg.steering = self.joy.axes[3] #*self.steer_gain #Right stick H-axis. Right is negative
-        print "controls: speed %f, steeting %f" % (car_control_msg.speed, car_control_msg.steering)
+        print "controls: speed %f, steering %f" % (car_control_msg.speed, car_control_msg.steering)
         self.pub_control.publish(car_control_msg)
 
 

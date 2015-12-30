@@ -2,11 +2,11 @@
 	<!-- <group ns="veh_name"> -->
 	<!-- Launch lane_controller -->
 	<node pkg="lane_control" type="lane_controller.py" name="lane_controller" output="screen" >
-		<!--param name="~v_bar" value="0.2"/-->
-		<!--param name="~k_d" value="-5.0"/-->
-		<!--param name="~k_theta" value="-2.0"/-->
-		<!--param name="~theta_thres" value="0.523"/-->
-		<!--param name="~d_thres" value="0.209"/-->
+		<param name="~v_bar" value="0.5"/>
+		<param name="~k_d" value="-4.0"/>
+		<param name="~k_theta" value="-2.0"/>
+		<param name="~theta_thres" value="0.523"/>
+		<param name="~d_thres" value="0.2615"/>
 	</node>
 
 	<!-- Launch vicon_car_pose node -->

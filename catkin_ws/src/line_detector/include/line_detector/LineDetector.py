@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import sys
+import time
 
 class LineDetector(object):
     def __init__(self):
@@ -14,6 +15,7 @@ class LineDetector(object):
         self.hsv_red4 = np.array([255, 255, 255]) 
 
     def __colorFilter(self, bgr, color):
+        tic = time.time()
         # filter white in BGR space, yellow and red in HSV space
         # colors are hard-coded, making the code extremely ugly...could be further improved
         if color == 'white':
@@ -28,6 +30,7 @@ class LineDetector(object):
             lane = cv2.bitwise_or(lane1, lane2)
         else:
 	        raise Exception('Error: Undefined color strings...')
+        print 'Color thresholding:' + str(time.time()-tic)
 
 		# binary image processing
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3, 3))
@@ -65,38 +68,39 @@ class LineDetector(object):
         return lane
 
 def _main():
-	# read video from file or camera
-	if len(sys.argv)==2:
-		cap = cv2.VideoCapture(sys.argv[1])
-		if not cap.isOpened():
-			print 'Error opening file...'
-			return -1
-	elif len(sys.argv)==1:
-		cap = cv2.VideoCapture(0)
-		if not cap.isOpened():
-			print 'Error opening camera...'
-			return -1
-	else:
-		return -1
+    # read video from file or camera
+    if len(sys.argv)==2:
+        cap = cv2.VideoCapture(sys.argv[1])
+        if not cap.isOpened():
+            print 'Error opening file...'
+            return -1
+    elif len(sys.argv)==1:
+        cap = cv2.VideoCapture(0)
+        if not cap.isOpened():
+            print 'Error opening camera...'
+            return -1
+    else:
+        return -1
 
-	while True:
-		ret, bgr = cap.read()
-		if not ret:
-			print 'No frames grabbed...'
-			break
+    while True:
+        ret, bgr = cap.read()
+        if not ret:
+            print 'No frames grabbed...'
+            break
 
-		detector = LineDetector()
+        detector = LineDetector()
+        bgr = bgr[bgr.shape[0]/2:, :, :]
 
-		lines_white = detector.detectLines(bgr, 'white')
-		lines_yellow = detector.detectLines(bgr, 'yellow')
-		lines_red = detector.detectLines(bgr, 'red')
+        lines_white = detector.detectLines(bgr, 'white')
+        lines_yellow = detector.detectLines(bgr, 'yellow')
+        lines_red = detector.detectLines(bgr, 'red')
 
-		detector.drawLines(bgr, lines_white, (0,0,0))
-		detector.drawLines(bgr, lines_yellow, (255,0,0))
-		detector.drawLines(bgr, lines_red, (0,255,0))
+        detector.drawLines(bgr, lines_white, (0,0,0))
+        detector.drawLines(bgr, lines_yellow, (255,0,0))
+        detector.drawLines(bgr, lines_red, (0,255,0))
 
-		cv2.imshow('Line Detector', bgr)
-		cv2.waitKey(30)
+        cv2.imshow('Line Detector', bgr)
+        cv2.waitKey(30)
 
 		# lane = detector.getLane(bgr, 'yellow')
 		# cv2.imshow('Yellow lane', lane)

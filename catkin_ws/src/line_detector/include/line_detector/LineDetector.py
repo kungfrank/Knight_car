@@ -15,7 +15,7 @@ class LineDetector(object):
         self.hsv_red4 = np.array([255, 255, 255]) 
 
     def __colorFilter(self, bgr, color):
-        tic = time.time()
+        # tic = time.time()
         # filter white in BGR space, yellow and red in HSV space
         # colors are hard-coded, making the code extremely ugly...could be further improved
         if color == 'white':
@@ -30,7 +30,7 @@ class LineDetector(object):
             lane = cv2.bitwise_or(lane1, lane2)
         else:
 	        raise Exception('Error: Undefined color strings...')
-        print 'Color thresholding:' + str(time.time()-tic)
+        # print 'Color thresholding:' + str(time.time()-tic)
 
 		# binary image processing
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3, 3))

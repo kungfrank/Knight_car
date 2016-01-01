@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import numpy as np
+import tf
 from duckietown_msgs.msg import CarLanePose
 from geometry_msgs.msg import PoseStamped
 
@@ -40,13 +41,18 @@ class vicon_for_car(object):
 
     def pbCarPose(self,event):
         self.carPose.cross_track_err = self.viconPose.pose.position.x
-        self.carPose.heading_err = self.viconPose.pose.orientation.z
+        euler_angles = tf.transformations.euler_from_quaternion( \
+			[self.viconPose.pose.orientation.x, \
+			 self.viconPose.pose.orientation.y, \
+                         self.viconPose.pose.orientation.z, \
+			 self.viconPose.pose.orientation.w] )
+	self.carPose.heading_err = euler_angles[2]
         self.pub_carPose.publish(self.carPose)
 	# debugging
 	self.pub_counter += 1
-	if self.pub_counter % 1000 == 0:
+	if self.pub_counter % 250 == 0:
 		self.pub_counter = 1
-		print "from vicon_for_car node"
+		print "from vicon_for_car node, self.carPose"
 		print  self.carPose
 
 

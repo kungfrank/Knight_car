@@ -43,8 +43,8 @@ if __name__ == '__main__':
     pub_image = rospy.Publisher("~image/compressed",CompressedImage,queue_size=1)
     # pub_image = rospy.Publisher("~image",Image,queue_size=1)
 
-    resolution = (320,240)
-    # resolution = (640,480)
+    # resolution = (320,240)
+    resolution = (640,480)
     # initialize the camera
     with PiCamera() as camera:
         camera.resolution = resolution

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from duckietown_msgs.msg import CarControl
+import time
 
 class CarSupervisor(object):
     def __init__(self):
@@ -23,6 +24,8 @@ class CarSupervisor(object):
         # timer
         self.pub_timer = rospy.Timer(rospy.Duration.from_sec(self.pub_timestep),self.cbPubTimer)
         rospy.loginfo("[%s] Initialized " %(rospy.get_name()))
+        self.last = None
+        self.last_time = None
 
     def setupParam(self,para_name,default):
         if not rospy.has_param(para_name):
@@ -41,13 +44,25 @@ class CarSupervisor(object):
     def publishControl(self):
         if self.joystick_mode:
             # Always publishes joy_control when joystic_mode is true
-            self.pub_car_control.publish(self.joy_control)
+            what = self.joy_control
         else:
             # When not in joy stick mode, publish lane_control when need_settering is true.
             if self.lane_control.need_steering:
-                self.pub_car_control.publish(self.lane_control)
+                what = self.lane_control
             else:
-                self.pub_car_control.publish(self.joy_control)
+                what = self.joy_control
+
+        values = (what.speed, what.steering, what.need_steering)
+
+        if self.last == values:
+            delta = time.time() - self.last_time
+            if delta < 2.0:
+                return
+
+        self.pub_car_control.publish(what)
+        self.last = what
+        self.last_time = time.time()
+
 
 if __name__ == "__main__":
     rospy.init_node("car_supervisor",anonymous=False)

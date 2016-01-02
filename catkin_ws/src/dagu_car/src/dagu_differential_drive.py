@@ -3,6 +3,7 @@ import rospy
 # from pkg_name.modulename import ModuleName
 from duckietown_msgs.msg import CarControl
 from dagu_car.daguddrive import DAGU_Differential_Drive
+import time
 
 class DaguCar(object):
     def __init__(self,car_like_mode=True):
@@ -22,12 +23,30 @@ class DaguCar(object):
         self.timer = rospy.Timer(rospy.Duration.from_sec(0.02),self.cbTimer)
         rospy.loginfo("[DaguCar] Initialzed.")
 
+        self.last = None
+        self.last_time = None
+
     def cbControl(self,msg):
         self.control_msg = msg
 
     def cbTimer(self,event):
-        self.dagu.setSpeed(self.control_msg.speed)
-        self.dagu.setSteerAngle(self.control_msg.steering)
+        speed = self.control_msg.speed
+        steer = self.control_msg.steering
+        values = (speed, steer)
+        
+        # do not publish redundant values
+        if values == self.last:
+            delta = time.time() - self.last_time
+            # unless 2 seconds elapsed
+            if delta < 2.0:
+                return
+
+        self.dagu.setSpeed(speed)
+        self.dagu.setSteerAngle(steer)
+
+        self.last = values
+        self.last_time = time.time()
+
 
     def on_shutdown(self):
 	self.dagu.setSpeed(0.0)

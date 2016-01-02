@@ -7,6 +7,8 @@
 	</node>
 	<node pkg="joy_mapper" type="joy_mapper.py" name="joy_mapper" output="screen">
 		<param name="~pub_timestep" value="0.02"/>
+		<param name="~speed_gain" value="0.5"/>
+		<param name="~steer_gain" value="0.4"/>
 	</node>
 	<node pkg="car_supervisor" type="car_supervisor.py" name="car_supervisor" output="screen">
         <param name="~pub_timestep" value="0.02"/>

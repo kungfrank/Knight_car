@@ -1,3 +1,4 @@
+Header header
 duckietown_msgs/Segment[] segments
 uint8 WHITE=0
 uint8 YELLOW=1	

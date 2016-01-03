@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   duckietown_msgs # Every duckietown packages should use this.
+  std_msgs
 )
 
 ## System dependencies are found with CMake's conventions

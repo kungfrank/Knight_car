@@ -1,0 +1,7 @@
+<launch>
+	<!-- <group ns="veh_name"> -->
+	<node pkg="apriltags" type="april_tag_detector" name="apriltags" output="screen">
+		<remap from="~image_raw" to="/rosberrypi_cam/image_raw"/>
+		<remap from="~camera_info" to="/rosberrypi_cam/camera_info"/>
+	</node>
+</launch>

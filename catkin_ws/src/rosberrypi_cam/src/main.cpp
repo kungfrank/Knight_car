@@ -11,6 +11,7 @@
 #include <std_msgs/Header.h>
 #include <camera_info_manager/camera_info_manager.h>
 #include <boost/unordered_map.hpp>
+#include <iostream>
 
 using namespace raspicam;
 
@@ -71,12 +72,14 @@ int main(int argc, char **argv) {
     camera_info_manager::CameraInfoManager cinfo_(nh, camera_name);
     cinfo_.loadCameraInfo(camera_info_url);
 
+    bool published = false;
+
     ros::Rate rate(fps);
     while(ros::ok()) {
-        //printf("- %f... ", ros::Time::now().toSec());
         camera_cv.grab();
         camera_cv.retrieve(cv_img);
         std_msgs::Header header();
+
         cv_bridge::CvImage imgmsg;
         sensor_msgs::CameraInfo ci = cinfo_.getCameraInfo();
         imgmsg.header.frame_id = camera_name + "_optical_frame";
@@ -85,7 +88,12 @@ int main(int argc, char **argv) {
         // imgmsg.encoding = "bgr8";
         imgmsg.image = cv_img;
         pub.publish(*imgmsg.toImageMsg(), ci, ros::Time::now());
-        //printf("%f\n", ros::Time::now().toSec());
+
+        if (not published){
+            ROS_INFO_STREAM("[rosberrypi_cam] Published the first image.");
+            published = true;
+        }
+
         rate.sleep();
         ros::spinOnce();
     }

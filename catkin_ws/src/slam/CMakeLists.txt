@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(lane_detector)
+project(slam)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -7,8 +7,7 @@ project(lane_detector)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
-  duckietown_msgs # Every duckietown packages should use this.
-  cv_bridge
+  std_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -18,7 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-catkin_python_setup()
+# catkin_python_setup()
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -68,7 +67,7 @@ catkin_python_setup()
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   duckietown_msgs
+#   std_msgs
 # )
 
 ################################################
@@ -102,8 +101,8 @@ catkin_python_setup()
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES lane_detector
-#  CATKIN_DEPENDS duckietown_msgs roscpp rospy
+#  LIBRARIES slam
+#  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -119,24 +118,24 @@ include_directories(
 )
 
 ## Declare a C++ library
-# add_library(lane_detector
-#   src/${PROJECT_NAME}/lane_detector.cpp
+# add_library(slam
+#   src/${PROJECT_NAME}/slam.cpp
 # )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(lane_detector ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(slam ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(pkg_name_node src/pkg_name_node.cpp)
+# add_executable(slam_node src/slam_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(pkg_name_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(slam_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(pkg_name_node
+# target_link_libraries(slam_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -155,7 +154,7 @@ include_directories(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS lane_detector pkg_name_node
+# install(TARGETS slam slam_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -180,10 +179,20 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_pkg_name.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_slam.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+include_directories(include ${catkin_INCLUDE_DIRS})
+
+add_executable(talker src/talker.cpp)
+target_link_libraries(talker ${catkin_LIBRARIES})
+add_dependencies(talker beginner_tutorials_generate_messages_cpp)
+
+add_executable(listener src/listener.cpp)
+target_link_libraries(listener ${catkin_LIBRARIES})
+add_dependencies(listener beginner_tutorials_generate_messages_cpp)

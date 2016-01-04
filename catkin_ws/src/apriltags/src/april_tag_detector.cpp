@@ -16,6 +16,7 @@ class AprilTagDetectorNode{
 public:
   ros::NodeHandle nh_p_;
   ros::Publisher pub_detection_;
+  ros::Publisher pub_image_;
 
   ros::Subscriber sub_image_;
   ros::Subscriber sub_camera_info_;
@@ -28,7 +29,9 @@ public:
   AprilTagDetectorNode(const ros::NodeHandle& nh): nh_p_(nh), tag_detector_(AprilTags::TagDetector(AprilTags::tagCodes36h11)),has_camera_info_(false),tag_size_(0.2)
   {
     pub_detection_ = nh_p_.advertise<duckietown_msgs::AprilTags>("apriltags",1);
-    sub_image_ = nh_p_.subscribe("image", 1, &AprilTagDetectorNode::cbImage, this);
+    pub_image_     = nh_p_.advertise<sensor_msgs::Image>("tags_image",1); // remaps to /apriltags/...
+
+    sub_image_ = nh_p_.subscribe("image_raw", 1, &AprilTagDetectorNode::cbImage, this); // remaps in launch file
     sub_camera_info_ = nh_p_.subscribe("camera_info", 1, &AprilTagDetectorNode::cbCameraInfo, this);
   }
 
@@ -46,20 +49,22 @@ public:
     /* Convert image to cv::Mat */
     cv_bridge::CvImageConstPtr rgb_ptr = cv_bridge::toCvShare(image_msg);
     /* Convert to gray image*/
+    cv::Mat image = rgb_ptr->image;
     cv::Mat image_gray;
-    cv::cvtColor(rgb_ptr->image, image_gray, CV_BGR2GRAY);
+    cv::cvtColor(image, image_gray, CV_BGR2GRAY);
     /* Detect april tag */
     vector<AprilTags::TagDetection> detections = tag_detector_.extractTags(image_gray);
-    /* TODO convert to msg and publish */
-
-    duckietown_msgs::AprilTags msg;
+ 
+    duckietown_msgs::AprilTags tags_msg;
     for (int i = 0; i < detections.size(); ++i){
-      msg.detections.push_back(toMsg(detections[i]));
+      tags_msg.detections.push_back(toMsg(detections[i]));
+      detections[i].draw(image);
     }
-    msg.header.stamp = image_msg->header.stamp;
+    tags_msg.header.stamp = image_msg->header.stamp;
     /* TODO: Should use the id of image frame? or the vehicle frame? */
-    msg.header.frame_id = image_msg->header.frame_id;
-    pub_detection_.publish(msg);
+    tags_msg.header.frame_id = image_msg->header.frame_id;
+    pub_image_.publish(rgb_ptr->toImageMsg());
+    pub_detection_.publish(tags_msg);
   }
   /* Convert AprilTags::TagDetection to duckietown_msgs::TagDetection */
   duckietown_msgs::TagDetection toMsg (const AprilTags::TagDetection& detection)

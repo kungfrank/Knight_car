@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from pkg_name.util import HelloGoodbye #Imports module. Not limited to modules in this pkg. 
+from simcity.util import HelloGoodbye #Imports module. Not limited to modules in this pkg. 
 from std_msgs.msg import String #Imports msg
 
 class Talker(object):

@@ -1,5 +1,5 @@
 <launch>
-	<node name="talker" pkg="pkg_name" type="talker.py" output="screen">
+	<node name="talker" pkg="simcity" type="talker.py" output="screen">
 		<!-- Setup parameters -->
 		<param name="~pub_timestep" value="0.5"/>
 		<!-- Remapping topics -->

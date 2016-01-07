@@ -59,6 +59,13 @@ class LineDetector(object):
             val = bound-1
         return val
 
+    def __correctPixelOrdering(self, lines, normals):
+       for i in range(len(lines)):
+            x1,y1,x2,y2 = lines[i, :]
+            dx, dy = normals[i, :]
+            if (x2-x1)*dy-(y2-y1)*dx<0:
+                lines[i, :] = [x2,y2,x1,y1]
+
     def __findNormal(self, bw, lines):
         normals = []
         if len(lines)>0:
@@ -78,7 +85,9 @@ class LineDetector(object):
                 if bw[y3,x3]>0 and bw[y4,x4]==0:
                     normals[cnt,:] = [dx, dy] 
                 else:
-                    normals[cnt,:] = [-dx, -dy] 
+                    normals[cnt,:] = [-dx, -dy]
+
+            self.__correctPixelOrdering(lines, normals)
         return normals
 
     def detectLines(self, bgr, color):

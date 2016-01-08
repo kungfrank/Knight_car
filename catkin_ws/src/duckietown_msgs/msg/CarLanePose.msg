@@ -1,3 +1,0 @@
-Header header
-float32 cross_track_err
-float32 heading_err

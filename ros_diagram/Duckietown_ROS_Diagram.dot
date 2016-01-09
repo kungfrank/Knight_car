@@ -38,6 +38,7 @@ digraph D {
 	mission_planner;
 	rgb_led;
 	veh_detector;
+	street_name_detector;
 	//{rank=max; wheel_driver;beeper;rgb_led}
 	//{rank=min; map_reader;joy_node;camera_node}
 
@@ -63,6 +64,7 @@ digraph D {
 	lane_control;
 	joy_control;
 	intersection_control;
+	street_name_detection;
 
 	subgraph cluster_perception{
 		label="perception"
@@ -78,6 +80,7 @@ digraph D {
 		stop_line_filter;
 		traffic_light_detector;
 		intersection_filter;
+		street_name_detector
 		// Topics
 		segment_list;
 		img_low;
@@ -91,6 +94,7 @@ digraph D {
 		stop_line_reading;
 		traffic_light_detection;
 		intersection_reading;
+		street_name_detection;
 	}
 
 	subgraph cluster_control{
@@ -148,6 +152,9 @@ digraph D {
 	
 	img_high->april_tag_detector;
 	img_high->obj_detector;
+
+	img_high->street_name_detector;
+	street_name_detector->street_name_detection;
 
 	led_detector->led_detection;
 	led_detection->veh_detector;

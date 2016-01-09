@@ -52,7 +52,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   CarControl.msg
-  LaneReading.msg
+  LanePose.msg
   WheelsCmd.msg
   TagDetection.msg
   AprilTags.msg

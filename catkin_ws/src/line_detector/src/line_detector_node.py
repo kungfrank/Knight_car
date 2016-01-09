@@ -71,7 +71,7 @@ class LineDetectorNode(object):
         self.segmentList.segments = []
         self.segmentList.color = color
         
-        for u1,v1,u2,v2,norm_u,norm_v in np.hstack(lines,normals):
+        for u1,v1,u2,v2,norm_u,norm_v in np.hstack((lines,normals)):
             self.pixel1.u = int(u1)
             self.pixel1.v = int(v1)
             self.pixel2.u = int(u2)

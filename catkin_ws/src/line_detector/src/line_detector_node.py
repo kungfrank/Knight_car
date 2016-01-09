@@ -49,17 +49,21 @@ class LineDetectorNode(object):
 
         # TODO: Pixel frame to body frame covnersion
 
-        # Publish the segments
+        # Add segments to segmentList
+        self.segmentList.segments = []
         if len(lines_white)>0:
-            self.publishSegmentList(lines_white, normals_white, self.segmentList.WHITE)	
             rospy.loginfo("[LineDetectorNode] number of white lines = %s" %(len(lines_white)))
+            self.addSegments(self.segmentList.segments, lines_white, normals_white, self.segment.WHITE)	
         if len(lines_yellow)>0:
-            self.publishSegmentList(lines_yellow, normals_yellow, self.segmentList.YELLOW)	
             rospy.loginfo("[LineDetectorNode] number of yellow lines = %s" %(len(lines_yellow)))
+            self.addSegments(self.segmentList.segments, lines_yellow, normals_yellow, self.segment.YELLOW)	
         if len(lines_red)>0:
-            self.publishSegmentList(lines_red, normals_red, self.segmentList.RED)	
             rospy.loginfo("[LineDetectorNode] number of red lines = %s" %(len(lines_red)))
+            self.addSegments(self.segmentList.segments, lines_red, normals_red, self.segment.RED)	
         
+        # Publish segmentList
+        self.pub_lines.publish(self.segmentList)
+      
         # Publish the frame with lines
         image_msg = self.bridge.cv2_to_imgmsg(image_with_lines_cv, "bgr8")
         self.pub_image.publish(image_msg)
@@ -67,26 +71,22 @@ class LineDetectorNode(object):
     def onShutdown(self):
             rospy.loginfo("[LineDetectorNode] Shutdown.")
     
-    def publishSegmentList(self, lines, normals, color):
-        self.segmentList.segments = []
-        self.segmentList.color = color
-        
+    def addSegments(self, segments, lines, normals, color):
         for u1,v1,u2,v2,norm_u,norm_v in np.hstack((lines,normals)):
             self.pixel1.u = int(u1)
             self.pixel1.v = int(v1)
             self.pixel2.u = int(u2)
             self.pixel2.v = int(v2)
+            
+            self.segment.color = color
             self.segment.pixels[0] = self.pixel1
             self.segment.pixels[1] = self.pixel2
             self.segment.normal_u = norm_u
             self.segment.normal_v = norm_v
-                
+             
             # TODO: assign segment.points
         
-            self.segmentList.segments.append(self.segment)
-
-        self.pub_lines.publish(self.segmentList)
-          
+            segments.append(self.segment)
 
 if __name__ == '__main__': 
     rospy.init_node('line_detector',anonymous=False)

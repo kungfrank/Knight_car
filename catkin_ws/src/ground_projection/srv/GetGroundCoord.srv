@@ -1,0 +1,5 @@
+# image coordinate whose origin is the upper left corner of the image
+duckietown_msgs/Pixel uv 
+---
+# ground plane cooridnate whose origin is the center of the robot
+geometry_msgs/Point gp

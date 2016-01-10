@@ -5,7 +5,7 @@ import math
 #from duckietown_msgs.msg import CarLanePose
 from duckietown_msgs.msg import CarControl
 # from duckietown_msgs.msg import CarLanePose
-from duckietown_msgs.msg import LaneReading
+from duckietown_msgs.msg import LanePose
 
 class lane_controller(object):
     def __init__(self):
@@ -22,7 +22,7 @@ class lane_controller(object):
 
         # Subscriptions
         # self.sub_car_vicon_ = rospy.Subscriber("~lane_reading", CarLanePose, self.cbPose, queue_size=1)
-        self.sub_lane_reading = rospy.Subscriber("~lane_reading", LaneReading, self.cbPose, queue_size=1)
+        self.sub_lane_reading = rospy.Subscriber("~lane_reading", LanePose, self.cbPose, queue_size=1)
 
         # safe shutdown
         rospy.on_shutdown(self.custom_shutdown)
@@ -84,7 +84,7 @@ class lane_controller(object):
     def cbPose(self,msg):
         self.lane_reading = msg 
 
-        cross_track_err = msg.y
+        cross_track_err = msg.d
         heading_err = msg.phi
 
         car_control_msg = CarControl()

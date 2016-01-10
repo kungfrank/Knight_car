@@ -2,7 +2,7 @@
 import rospy
 import numpy as np
 import tf
-from duckietown_msgs.msg import LaneReading
+from duckietown_msgs.msg import LanePose
 from geometry_msgs.msg import PoseStamped
 
 class vicon_for_car(object):
@@ -10,7 +10,7 @@ class vicon_for_car(object):
         self.node_name = rospy.get_name()
         self.veh_name = self.setupParameter("~veh_name","duckiecar")
         self.vicon_pose = None
-        self.lane_reading = LaneReading()
+        self.lane_reading = LanePose()
 
         # self.pub_counter = 200
         # self.sub_counter = 0
@@ -19,7 +19,7 @@ class vicon_for_car(object):
         self.pub_timestep = self.setupParameter("~pub_timestep",0.02)  # 50 Hz
 
         # Publications
-        self.pub_lane_reading = rospy.Publisher("~lane_reading", LaneReading, queue_size=1)
+        self.pub_lane_reading = rospy.Publisher("~lane_reading", LanePose, queue_size=1)
 
         # Subscriptions
         self.sub_vicon = rospy.Subscriber(self.veh_name+"/pose", PoseStamped, self.cbPose)
@@ -50,7 +50,7 @@ class vicon_for_car(object):
         quat = self.vicon_pose.pose.orientation
         euler_angles = tf.transformations.euler_from_quaternion([quat.x, quat.y,quat.z,quat.w])
 
-        self.lane_reading.y = self.vicon_pose.pose.position.x
+        self.lane_reading.d = self.vicon_pose.pose.position.x
         self.lane_reading.phi = euler_angles[2]
         self.lane_reading.header.stamp = self.vicon_pose.header.stamp
         self.pub_lane_reading.publish(self.lane_reading)

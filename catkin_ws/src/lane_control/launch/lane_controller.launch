@@ -1,5 +1,14 @@
 <launch>
 	<!-- <group ns="veh_name"> -->
+
+	<arg name="vicon" default="false"/>
+
+	<!-- Launch vicon_car_pose node -->
+	<node if="$(arg vicon)" pkg="lane_control" type="vicon_for_car.py" name="vicon_car" output="screen">
+		<remap from="~lane_reading" to="~lane_controller/lane_reading"/>
+	</node>
+
+	
 	<!-- Launch lane_controller -->
 	<node pkg="lane_control" type="lane_controller.py" name="lane_controller" output="screen" >
 		<param name="~v_bar" value="0.5"/>
@@ -9,19 +18,17 @@
 		<param name="~d_thres" value="0.2615"/>
 	</node>
 
-	<!-- Launch vicon_car_pose node -->
-	<node if="$(arg vicon)" pkg="lane_control" type="vicon_for_car.py" name="vicon_car" output="screen">
-		<remap from="~car_vicon" to="lane_controller/car_vicon"/>
-	</node>
-		
 	<node pkg="car_supervisor" type="car_supervisor.py" name="car_supervisor" output="screen">
         <param name="~pub_timestep" value="0.02"/>
 		<param name="~joystick_mode" value="False"/>
 		<remap from="~joy_control" to="joy_mapper/joy_control"/>
 		<remap from="~lane_control" to="lane_controller/lane_control"/>
 	</node>
-	<node pkg="dagu_car" type="dagu_differential_drive.py" name="dagu_car" output="screen">
-		<remap from="~car_control" to="car_supervisor/car_control"/>
-	</node>
+
+	<!-- <node pkg="dagu_car" type="dagu_differential_drive.py" name="dagu_car" output="screen"> -->
+		<!-- <remap from="~car_control" to="car_supervisor/car_control"/> -->
+		<!-- <param name="~car_like_mode" value="false"/> -->
+	<!-- </node> -->
+	
 	<!-- </group> -->
 </launch>

@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package>
-  <name>pkg_name</name>
-  <version>0.0.0</version>
-  <description>The pkg_name package</description>
+  <name>simcity</name>
+  <version>0.0.1</version>
+  <description>The simcity package- map visualization, representation, validation.</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="syliu@mit.edu">Shih-Yuan Liu</maintainer>
+  <maintainer email="rmata@mit.edu">Roxana M</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->

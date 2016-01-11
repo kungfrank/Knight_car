@@ -12,6 +12,7 @@ class JoyMapper(object):
         
         self.joy = None
         self.last_pub_msg = None
+        self.last_pub_time = rospy.Time.now()
 
         # Setup Parameters
         self.pub_timestep = self.setupParam("~pub_timestep", 0.02)
@@ -40,7 +41,7 @@ class JoyMapper(object):
         self.joy = joy_msg
 
     def publishControl(self, event):
-        # Don't publish if having received any Joy msgs
+        # Don't publish if havn't received any Joy msgs
         if self.joy is None:
             if not self.has_complained:
                 rospy.loginfo("[%s] Has not received Joy msg yet. Not publishing." %(self.node_name))
@@ -55,7 +56,7 @@ class JoyMapper(object):
             same = (self.last_pub_msg.speed == speed) and (self.last_pub_msg.steering == steering)
             # if it's same, publish only every 2 seconds
             if same:
-                delta = event.current_real - self.last_pub_msg.header.stamp 
+                delta = event.current_real - self.last_pub_time 
                 if delta.to_sec() < 2.0:
                     return
 
@@ -67,6 +68,7 @@ class JoyMapper(object):
         rospy.loginfo("[%s] controls: speed %f, steering %f" % (self.node_name,car_control_msg.speed, car_control_msg.steering))
 
         self.pub_control.publish(car_control_msg)
+        self.last_pub_time = event.current_real
         self.last_pub_msg = car_control_msg
 
 if __name__ == "__main__":

@@ -1,0 +1,11 @@
+<launch>
+  <node pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen">
+    <rosparam command="load" file="$(find ground_projection)/homography.yaml"/>
+    <param name="~homography_file" value="package://ground_projection/homography.yaml"/>
+    <param name="~board_w" value="7"/>
+    <param name="~board_h" value="5"/>
+    <param name="~square_size" value="0.031"/>
+    <param name="~x_offset" value="0.191"/>
+    <param name="~y_offset" value="-0.093"/>
+  </node>
+</launch>

@@ -4,12 +4,14 @@ from simcity.util import TileProduction # For producing tile messages.
 from std_msgs.msg import String #Imports msg
 from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
+import rospkg
 #from duckietown_msgs.msg import MapTile
 
 class BasicMapTiler(object):
     def __init__(self):
         # Save the name of the node
         self.node_name = rospy.get_name()
+
         
         rospy.loginfo("[%s] Initializing." %(self.node_name))
 
@@ -23,10 +25,13 @@ class BasicMapTiler(object):
         # Read parameters
         self.pub_timestep = self.setupParameter("~pub_timestep",1.0)
         # TODO rmata: parameter for map: map.yam
-        self.mapfile = self.setupParameter("~map_file", \
-                            "/home/guest/duckietown/Software/catkin_ws/src/simcity/maps/map.yaml") 
-        self.tilesfile = self.setupParameter("~tiles_file", \
-                            "/home/guest/duckietown/Software/catkin_ws/src/simcity/tiles/tiles.yaml")
+
+        # === Load tiles and maps === #
+        rospack = rospkg.RosPack()
+        self.pkg_path = rospack.get_path('simcity')
+        self.mapfile = self.setupParameter("~map_file", self.pkg_path+"/maps/map.yaml") 
+        self.tilesfile = self.setupParameter("~tiles_file", self.pkg_path+"/tiles/tiles.yaml")
+
         # Create a timer that calls the cbTimer function every 1.0 second
         self.tile_factory = TileProduction(self.mapfile, self.tilesfile)
         self.timer = rospy.Timer(rospy.Duration.from_sec(self.pub_timestep),self.cbTimer)

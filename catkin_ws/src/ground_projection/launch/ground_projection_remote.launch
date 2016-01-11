@@ -1,6 +1,10 @@
 <launch>
 	<arg name="veh"/>
 	<include file="$(find duckietown_setup)/machines"/>
+
+	<arg name="camera" default="$(arg veh)/rosberrypi_cam"/>
+	<node ns="$(arg camera)" pkg="image_proc" type="image_proc" name="image_proc" output="screen"/>
+
 	<node ns="$(arg veh)" machine="$(arg veh)" pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen">
 		<rosparam command="load" file="$(find ground_projection)/homography.yaml"/>
 		<param name="~homography_file" value="package://ground_projection/homography.yaml"/>

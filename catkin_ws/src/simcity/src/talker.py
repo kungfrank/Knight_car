@@ -2,6 +2,7 @@
 import rospy
 from simcity.util import HelloGoodbye #Imports module. Not limited to modules in this pkg. 
 from std_msgs.msg import String #Imports msg
+from visualization_msgs.msg import Marker
 
 class Talker(object):
     def __init__(self):

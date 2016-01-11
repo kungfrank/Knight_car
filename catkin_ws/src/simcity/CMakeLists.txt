@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   duckietown_msgs # Every duckietown package should use this.
   std_msgs
+  visualization_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -130,6 +131,10 @@ include_directories(
 
 ## Declare a C++ executable
 # add_executable(pkg_name_node src/pkg_name_node.cpp)
+
+## sample for cpp:
+#add_executable(basic_shapes src/basic_map_tiler.cpp)
+#target_link_libraries(basic_shapes ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above

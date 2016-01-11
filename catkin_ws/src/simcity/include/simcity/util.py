@@ -35,12 +35,10 @@ class TileProduction(object):
     def get_certain_tile_message(self, array_index):
         '''
         Gets tile_index tile from the map, puts it into markerArray message format.
+        Arg array_index MUST be within the bounds of map_list 
+         when get_certain_tile_message is called.
         '''
         next_tile_info = self.map_list[array_index]
-        print 'marker',array_index,'being drawn'
-        #if array_index >= len(next_tile_info):
-        #    print 'whats going on'
-        #    return MarkerArray() # should be empty marker? end stream? what to do?
         tile_name = next_tile_info['tile_type']
         tile_center_position = next_tile_info['tile_center']
         
@@ -51,9 +49,7 @@ class TileProduction(object):
         Gets next tile from the map.
         '''
         next_tile_info = self.map_list[self.next_map_index]
-        print 'marker',self.next_map_index,'being drawn in get_next_tile_message'
         if self.next_map_index >= len(next_tile_info):
-            print 'whats going on'
             return MarkerArray() # should be empty marker? end stream? what to do?
         tile_name = next_tile_info['tile_type']
         tile_center_position = next_tile_info['tile_center']
@@ -82,24 +78,22 @@ class TileProduction(object):
                            + np.array(tile_origin_position)).tolist()
             arrow_end = (np.array(tile_info['nodes_positions'][lane[1]])*tile_length 
                          + np.array(tile_origin_position)).tolist()
-            print arrow_start
-            print arrow_end
             # add the appropriate marker
             arrow = Marker()
             arrow.type = 0 # arrow
             arrow.action = 0 # add
             arrow.header.frame_id  = "/map"
             arrow.id = arrow_ids[i]+8*array_index; i+=1
-            print arrow.id
+
             # scales of arrow
-            arrow.scale.x = 0.08
-            arrow.scale.y = 0.2
+            arrow.scale.x = 0.025
+            arrow.scale.y = 0.1
             arrow.scale.z = 0.1
             # start, end?
             arrow.points.append(Point(arrow_start[0], arrow_start[1], 0))
             arrow.points.append(Point(arrow_end[0], arrow_end[1], 0))
             # color
-            arrow.color.r = 0.0
+            arrow.color.r = 1.0
             arrow.color.b = 1.0
             arrow.color.g = 0.0
             arrow.color.a = 1.0
@@ -108,7 +102,6 @@ class TileProduction(object):
         return tilemsg
 
 if __name__ == '__main__':
-    # Test code for ModuleName
-    module = HelloGoodbye()
-    print module.sing('duckietown')
+    # Test code for ModuleNames
+    print 'No test code for simcity in main yet.'
 

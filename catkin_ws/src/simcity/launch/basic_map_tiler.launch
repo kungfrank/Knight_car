@@ -2,10 +2,7 @@
 	<node name="basic_map_tiler" pkg="simcity" type="basic_map_tiler.py" output="screen">
 		<!-- Setup parameters -->
 		<param name="~pub_timestep" value="0.5"/>
-<!--		<param name="~map_file" value=""/> -->
-		<!-- Remapping topics -->
-		<!-- <remap from="~topic_b" to="~topic_a"/> -->
-		<!-- <remap from="~topic_b" to="talker/topic_a"/> -->
+		<param name="~map_file" value="/home/guest/duckietown/Software/catkin_ws/src/simcity/maps/censi_map.yaml"/>
 	</node>
 	<node pkg="rviz" name="rviz" type="rviz">
 	</node>

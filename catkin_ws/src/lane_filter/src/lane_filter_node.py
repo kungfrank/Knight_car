@@ -46,12 +46,11 @@ class LaneFilterNode(object):
         return value
 
     def processSegments(self,segment_list_msg):
-        print "starting segment list processing:"
-	self.propagateBelief()
+	print len(segment_list_msg.segments)
+        self.propagateBelief()
         # initialize measurement likelihood
         measurement_likelihood = np.zeros(self.d.shape)
         for segment in segment_list_msg.segments:
-            print "processing segment"
             if segment.color != segment.WHITE and segment.color != segment.YELLOW:
                 continue
             d_i,phi_i = self.generateVote(segment)
@@ -59,16 +58,22 @@ class LaneFilterNode(object):
                 continue
             i = floor((d_i - self.d_min)/self.delta_d)
             j = floor((phi_i - self.phi_min)/self.delta_phi)
-            measurement_likelihood[i,j] += 1
+            print i,j
+            measurement_likelihood[i,j] = measurement_likelihood[i,j] +  1
+        if np.linalg.norm(measurement_likelihood) == 0:
+            return
         measurement_likelihood = measurement_likelihood/np.linalg.norm(measurement_likelihood)
-        self.updateBelief(measurement_likelihood)
+        #print measurement_likelihood.argmax()
+        #print measurement_likelihood
+        #self.updateBelief(measurement_likelihood)
+        #print self.beliefRV
+        self.beliefRV = measurement_likelihood
         # TODO entropy test:
-        # TODO publish
+        #print self.beliefRV.argmax()
         maxids = np.unravel_index(self.beliefRV.argmax(),self.beliefRV.shape)
-        self.lanePose.d = self.d_min + maxids[0]*self.delta_d
+        self.lanePose.d = -(self.d_min + maxids[0]*self.delta_d) # I should think about this - sign 
         self.lanePose.phi = self.phi_min + maxids[1]*self.delta_phi
         self.lanePose.status = self.lanePose.NORMAL
-        print "finished processing segment list - publist result"
         self.pub_lane_pose.publish(self.lanePose)
 
     def initializeBelief(self):
@@ -78,6 +83,8 @@ class LaneFilterNode(object):
         self.cov_0
         RV = multivariate_normal(self.mean_0,self.cov_0)
         self.beliefRV=RV.pdf(pos)
+#        print np.amax(self.beliefRV)
+#        print self.beliefRV.argmax()
 
     def propagateBelief(self):
         # starting with option 1 (don't read linear and angular velocity)
@@ -85,8 +92,10 @@ class LaneFilterNode(object):
         return
 
     def updateBelief(self,measurement_likelihood):
+ #       print (self.beliefRV)
         self.beliefRV=np.multiply(self.beliefRV,measurement_likelihood)
         self.beliefRV=self.beliefRV/np.linalg.norm(self.beliefRV)
+ #       print (self.beliefRV)
 
     def generateVote(self,segment):
         p1 = segment.points[0]

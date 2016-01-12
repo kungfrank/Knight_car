@@ -1,6 +1,7 @@
 <launch>
 	<!-- <group ns="veh_name"> -->
 	<arg name="veh"/>
+	<arg name="joy_mode" default="false"/>
 
 	<include file="$(find duckietown_setup)/machines"/>
 	
@@ -21,13 +22,26 @@
 		</node>
 
 		<!-- Line detector on laptop -->
-		<node pkg="line_detector" type="line_detector_node.py" name="line_detector" output="screen">
+		<node machine= "$(arg veh)" pkg="line_detector" type="line_detector_node.py" name="line_detector" output="screen">
 			<remap from="~image" to="rosberrypi_cam/image_raw"/>
+		</node>
+
+		<!-- Ground projection -->
+		<node pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen">
+			<remap from="~lineseglist_in" to="line_detector/segment_list"/>
+
+			<rosparam command="load" file="$(find ground_projection)/homography.yaml"/>
+			<param name="~homography_file" value="package://ground_projection/homography.yaml"/>
+			<param name="~board_w" value="7"/>
+			<param name="~board_h" value="5"/>
+			<param name="~square_size" value="0.031"/>
+			<param name="~x_offset" value="0.191"/>
+			<param name="~y_offset" value="-0.093"/>
 		</node>
 
 		<!--  Lane filter on laptop -->
 		<node pkg="lane_filter" type="lane_filter_node.py" name="lane_filter" output="screen">
-			<remap from="~segments" to="line_detector/segments"/>
+			<remap from="~segment_list" to="ground_projection/lineseglist_out"/>
 		</node>
 
 		<!-- Launch lane_controller on laptop -->
@@ -54,7 +68,7 @@
 		<!-- Launch car_supervisor on laptop  -->
 		<node pkg="car_supervisor" type="car_supervisor.py" name="car_supervisor" output="screen">
 	        <param name="~pub_timestep" value="0.02"/>
-			<param name="~joystick_mode" value="True"/>
+			<param name="~joystick_mode" value="$(arg joy_mode)"/>
 			<remap from="~joy_control" to="joy_mapper/joy_control"/>
 			<remap from="~lane_control" to="lane_controller/lane_control"/>
 		</node>

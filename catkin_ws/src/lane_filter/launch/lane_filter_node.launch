@@ -1,17 +1,17 @@
 <launch>
 	<node pkg="lane_filter" type="lane_filter_node.py" name="lane_filter" output="screen">
-		<remap from="~segments" to="/line_detector/segments"/>
+		<remap from="~segment_list" to="/megaman/ground_projection/lineseglist_out"/>
 		<param name="~mean_d_0" value="0"/>
 		<param name="~mean_phi_0" value="0"/>
 		<param name="~sigma_d_0" value="0.1"/>
 		<param name="~sigma_phi_0" value="0.01"/>
 		<param name="~delta_d" value="0.02"/>
 		<param name="~delta_phi" value="0.02"/>
-		<param name="~d_max", value="0.5"/>
-		<param name="~d_min", value="-0.5" />
-		<param name="~phi_min", value="-1.7" />
-		<param name="~phi_max", value="1.7" />
-		<param name="~cov_v" , value="0.5" />
+		<param name="~d_max" value="0.5"/>
+		<param name="~d_min" value="-0.5" />
+		<param name="~phi_min" value="-1.7" />
+		<param name="~phi_max" value="1.7" />
+		<param name="~cov_v"  value="0.5" />
 		<param name="~delta_omega" value="0.01"/>
 		<param name="~linewidth_white" value="0.04"/>
 		<param name="~linewidth_yellow" value="0.02"/>

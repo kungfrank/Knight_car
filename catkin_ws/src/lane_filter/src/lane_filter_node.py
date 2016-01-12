@@ -15,9 +15,6 @@ from math import floor, atan2, pi
 class LaneFilterNode(object):
     def __init__(self):
         self.node_name = "Lane Filter"
-        self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments)
-        # self.sub = rospy.Subscriber("~velocity",
-        self.pub_lane_pose = rospy.Publisher("~lane_pose", LanePose)
         self.mean_0 = [self.setupParam("~mean_d_0",0) , self.setupParam("~mean_phi_0",0)]
         self.cov_0  = [ [self.setupParam("~sigma_d_0",0.1) , 0] , [0, self.setupParam("~sigma_phi_0",0.01)] ] 
         self.delta_d     = self.setupParam("~delta_d",0.02) # in meters
@@ -36,8 +33,11 @@ class LaneFilterNode(object):
         self.d,self.phi = np.mgrid[self.d_min:self.d_max:self.delta_d,self.phi_min:self.phi_max:self.delta_phi]
         self.beliefRV=np.empty(self.d.shape)
         self.initializeBelief()
-        
         self.lanePose = LanePose()
+        self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments)
+        # self.sub = rospy.Subscriber("~velocity",
+        self.pub_lane_pose = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
+ 
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -45,28 +45,30 @@ class LaneFilterNode(object):
         rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
         return value
 
-
     def processSegments(self,segment_list_msg):
-	propagateBelief()
+        print "starting segment list processing:"
+	self.propagateBelief()
         # initialize measurement likelihood
-        measurement_likelihood = np.zeros(d.shape)
+        measurement_likelihood = np.zeros(self.d.shape)
         for segment in segment_list_msg.segments:
+            print "processing segment"
             if segment.color != segment.WHITE and segment.color != segment.YELLOW:
                 continue
             d_i,phi_i = self.generateVote(segment)
             if d_i > self.d_max or d_i < self.d_min or phi_i < self.phi_min or phi_i>self.phi_max:
                 continue
             i = floor((d_i - self.d_min)/self.delta_d)
-            j = floor((d_j - self.phi_min)/self.delta_phi)
+            j = floor((phi_i - self.phi_min)/self.delta_phi)
             measurement_likelihood[i,j] += 1
         measurement_likelihood = measurement_likelihood/np.linalg.norm(measurement_likelihood)
         self.updateBelief(measurement_likelihood)
         # TODO entropy test:
         # TODO publish
-        maxids = np.unravel_index(beliefRV.argmax(),beliefRV.shape)
+        maxids = np.unravel_index(self.beliefRV.argmax(),self.beliefRV.shape)
         self.lanePose.d = self.d_min + maxids[0]*self.delta_d
         self.lanePose.phi = self.phi_min + maxids[1]*self.delta_phi
-        self.lanePose.status = lanePose.NORMAL
+        self.lanePose.status = self.lanePose.NORMAL
+        print "finished processing segment list - publist result"
         self.pub_lane_pose.publish(self.lanePose)
 
     def initializeBelief(self):
@@ -83,8 +85,8 @@ class LaneFilterNode(object):
         return
 
     def updateBelief(self,measurement_likelihood):
-        self.beliefRV=multiply(self.beliefRV,measurement_likelihood)
-        self.beliefRV=beliefRV/np.linalg.norm(self.beliefRV)
+        self.beliefRV=np.multiply(self.beliefRV,measurement_likelihood)
+        self.beliefRV=self.beliefRV/np.linalg.norm(self.beliefRV)
 
     def generateVote(self,segment):
         p1 = segment.points[0]

@@ -11,24 +11,22 @@ import time
 
 class LineDetectorNode(object):
     def __init__(self):
+        self.node_name = "Line Detector"
         self.bridge = CvBridge()
-
-        self.sub_image = rospy.Subscriber("~image", Image, self.processImage)
-        self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
-        self.pub_image = rospy.Publisher("~image_with_lines",Image, queue_size=1)
-
         self.vert_image_pixels = self.setupParam("~vert_image_pixels",200)
         self.horz_image_pixels = self.setupParam("~horz_image_pixels",320)
         self.top_rows_cutoff   = self.setupParam("~top_rows_cutoff",0)
-
         self.detector = LineDetector()
-
         self.segmentList = SegmentList()
         self.segment = Segment()
         self.pixel1 = Pixel()
         self.pixel2 = Pixel()
         self.point1 = Point()
         self.point2 = Point()
+        self.sub_image = rospy.Subscriber("~image", Image, self.processImage)
+        self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
+        self.pub_image = rospy.Publisher("~image_with_lines",Image, queue_size=1)
+
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

@@ -17,6 +17,10 @@ class LineDetectorNode(object):
         self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
         self.pub_image = rospy.Publisher("~image_with_lines",Image, queue_size=1)
 
+        self.vert_image_pixels = self.setupParam("~vert_image_pixels",200)
+        self.horz_image_pixels = self.setupParam("~horz_image_pixels",320)
+        self.top_rows_cutoff   = self.setupParam("~top_rows_cutoff",0)
+
         self.detector = LineDetector()
 
         self.segmentList = SegmentList()
@@ -26,12 +30,19 @@ class LineDetectorNode(object):
         self.point1 = Point()
         self.point2 = Point()
 
+    def setupParam(self,param_name,default_value):
+        value = rospy.get_param(param_name,default_value)
+        rospy.set_param(param_name,value) #Write to parameter server for transparancy
+        rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
+        return value
+
+
     def processImage(self,image_msg):
         image_cv = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
         
         # Resize image
-        image_cv = cv2.resize(image_cv, (200,150))
-        image_cv = image_cv[image_cv.shape[0]/2:,:,:]
+        image_cv = cv2.resize(image_cv, (self.horz_image_pixels,self.vert_image_pixels))
+        image_cv = image_cv[self.top_rows_cutoff:,:,:]
 	
         # Detect lines and normals
         lines_white, normals_white = self.detector.detectLines(image_cv, 'white')

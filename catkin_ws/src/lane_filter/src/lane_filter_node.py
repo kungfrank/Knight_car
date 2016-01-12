@@ -37,7 +37,7 @@ class LaneFilterNode(object):
         self.beliefRV=np.empty(self.d.shape)
         self.initializeBelief()
         
-
+        self.lanePose = LanePose()
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -63,7 +63,11 @@ class LaneFilterNode(object):
         self.updateBelief(measurement_likelihood)
         # TODO entropy test:
         # TODO publish
-
+        maxids = np.unravel_index(beliefRV.argmax(),beliefRV.shape)
+        self.lanePose.d = self.d_min + maxids[0]*self.delta_d
+        self.lanePose.phi = self.phi_min + maxids[1]*self.delta_phi
+        self.lanePose.status = lanePose.NORMAL
+        self.pub_lane_pose.publish(self.lanePose)
 
     def initializeBelief(self):
         pos = np.empty(self.d.shape + (2,))

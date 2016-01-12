@@ -1,5 +1,8 @@
 <launch>
 	<node pkg="line_detector" type="line_detector_node.py" name="line_detector" output="screen">
 		<remap from="~image" to="/rosberrypi_cam/image_raw"/>
+		<param name="~vert_image_pixels" value="200" />
+		<param name="~horz_image_pixels" value="320" />
+		<param name="~top_rows_cutoff"   value="50" />
 	</node>
 </launch>

@@ -1,7 +1,7 @@
 <launch>
 	<!-- <group ns="veh_name"> -->
 	<arg name="veh"/>
-	<arg name="joy_mode" default="false"/>
+	<arg name="joy_mode" default="true"/>
 
 	<include file="$(find duckietown_setup)/machines"/>
 	
@@ -22,7 +22,7 @@
 		</node>
 
 		<!-- Line detector on laptop -->
-		<node machine= "$(arg veh)" pkg="line_detector" type="line_detector_node.py" name="line_detector" output="screen">
+		<node pkg="line_detector" type="line_detector_node.py" name="line_detector" output="screen">
 			<remap from="~image" to="rosberrypi_cam/image_raw"/>
 		</node>
 
@@ -40,15 +40,14 @@
 		</node>
 
 		<!--  Lane filter on laptop -->
-		<node pkg="lane_filter" type="lane_filter_node.py" name="lane_filter" output="screen">
+		<node pkg="lane_filter" type="lane_filter_node.py" name="lane_filter">
 			<remap from="~segment_list" to="ground_projection/lineseglist_out"/>
 		</node>
 
 		<!-- Launch lane_controller on laptop -->
 		<node pkg="lane_control" type="lane_controller.py" name="lane_controller" output="screen" >
 			<remap from="~lane_reading" to="lane_filter/lane_pose"/>
-
-			<param name="~v_bar" value="0.5"/>
+			<param name="~v_bar" value="0.2"/>
 			<param name="~k_d" value="-4.0"/>
 			<param name="~k_theta" value="-2.0"/>
 			<param name="~theta_thres" value="0.523"/>

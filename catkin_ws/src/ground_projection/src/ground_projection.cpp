@@ -10,6 +10,10 @@
 #include <boost/filesystem.hpp>
 #include "ground_projection/GetGroundCoord.h"
 #include "ground_projection/EstimateHomography.h"
+#include "duckietown_msgs/Pixel.h"
+#include "geometry_msgs/Point.h"
+#include "duckietown_msgs/Segment.h"
+#include "duckietown_msgs/SegmentList.h"
 
 namespace enc = sensor_msgs::image_encodings;
 
@@ -18,6 +22,8 @@ class GroundProjection
   ros::NodeHandle nh_;
   ros::ServiceServer service_homog_;
   ros::ServiceServer service_coord_;
+  ros::Subscriber sub_lineseglist_;
+  ros::Publisher pub_lineseglist_;
   cv::Mat H_;
   
 public:
@@ -41,6 +47,10 @@ public:
 
     service_coord_ = nh_.advertiseService("get_ground_coordinate", &GroundProjection::get_ground_coordinate_cb, this);
     ROS_INFO("get_ground_coordinate is ready.");
+
+    sub_lineseglist_ = nh_.subscribe("lineseglist_in", 1, &GroundProjection::lineseglist_cb, this);
+
+    pub_lineseglist_ = nh_.advertise<duckietown_msgs::SegmentList>("lineseglist_out", 1);
   }
 
   ~GroundProjection()
@@ -48,17 +58,34 @@ public:
   }
 
 private:
-  bool get_ground_coordinate_cb(ground_projection::GetGroundCoord::Request &req, 
-                                ground_projection::GetGroundCoord::Response &res)
+  void estimate_ground_coordinate(duckietown_msgs::Pixel& pixel, geometry_msgs::Point& point)
   {
-    cv::Point3f pt_img (float(req.uv.u), float(req.uv.v), 1.f);
+    cv::Point3f pt_img (float(pixel.u), float(pixel.v), 1.f);
     cv::Mat pt_gnd_ = H_ * cv::Mat(pt_img);
     cv::Point3f pt_gnd(pt_gnd_);
 
-    res.gp.x = pt_gnd.x/pt_gnd.z;
-    res.gp.y = pt_gnd.y/pt_gnd.z;
-    res.gp.z = 0.f;
-    
+    point.x = pt_gnd.x/pt_gnd.z;
+    point.y = pt_gnd.y/pt_gnd.z;
+    point.z = 0.f;
+  }
+
+  void lineseglist_cb(const duckietown_msgs::SegmentList::ConstPtr& msg)
+  {
+    duckietown_msgs::SegmentList msg_new = *msg;
+    for(int i=0; i<msg_new.segments.size(); i++)
+    {
+      // each line segment is composed of two end points [0:1]
+      estimate_ground_coordinate(msg_new.segments[i].pixels[0], msg_new.segments[i].points[0]);
+      estimate_ground_coordinate(msg_new.segments[i].pixels[1], msg_new.segments[i].points[1]);
+    }
+    pub_lineseglist_.publish(msg_new);
+  }
+
+  bool get_ground_coordinate_cb(ground_projection::GetGroundCoord::Request &req, 
+                                ground_projection::GetGroundCoord::Response &res)
+  {
+    estimate_ground_coordinate(req.uv, res.gp);
+
     ROS_INFO("image coord (u=%d, v=%d), ground coord (x=%f, y=%f, z=%f)", req.uv.u, req.uv.v, res.gp.x, res.gp.y, res.gp.z);
     return true;
   }

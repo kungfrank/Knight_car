@@ -1,0 +1,69 @@
+<launch>
+	<!-- <group ns="veh_name"> -->
+	<arg name="veh"/>
+
+	<include file="$(find duckietown_setup)/machines"/>
+	
+	<group ns="$(arg veh)">
+		<!-- Launch camera on veh-->
+		<node machine="$(arg veh)" pkg="rosberrypi_cam" type="rosberrypi_cam_node" name="rosberrypi_cam" output="screen">
+			<param name="~camera_info_url" value="package://rosberrypi_cam/calibration/picamera.yaml"/>
+			<param name="~fps" value="60"/>
+			<param name="~height" value="200"/>
+			<param name="~width" value="320"/>
+			<param name="~brightness" value="50"/>
+			<param name="~contrast" value="50"/>
+			<param name="~saturation" value="50"/>
+			<param name="~gain" value="50"/>
+			<param name="~exposure" value="50"/>
+			<param name="~white_balance_red_v" value="50"/>
+			<param name="~white_balance_blue_u" value="50"/>
+		</node>
+
+		<!-- Line detector on laptop -->
+		<node pkg="line_detector" type="line_detector_node.py" name="line_detector" output="screen">
+			<remap from="~image" to="rosberrypi_cam/image_raw"/>
+		</node>
+
+		<!--  Lane filter on laptop -->
+		<node pkg="lane_filter" type="lane_filter_node.py" name="lane_filter" output="screen">
+			<remap from="~segments" to="line_detector/segments"/>
+		</node>
+
+		<!-- Launch lane_controller on laptop -->
+		<node pkg="lane_control" type="lane_controller.py" name="lane_controller" output="screen" >
+			<remap from="~lane_reading" to="lane_filter/lane_pose"/>
+
+			<param name="~v_bar" value="0.5"/>
+			<param name="~k_d" value="-4.0"/>
+			<param name="~k_theta" value="-2.0"/>
+			<param name="~theta_thres" value="0.523"/>
+			<param name="~d_thres" value="0.2615"/>
+		</node>
+
+		<!-- Joy on laptop -->
+		<node pkg="joy" type="joy_node" name="joy" output="screen">
+		    <param name="~dev" value="/dev/input/js0"/>
+		    <param name="~deadzone" value="0.1"/>
+		</node>
+		<!-- Joy mapper on laptop -->
+		<node pkg="joy_mapper" type="joy_mapper.py" name="joy_mapper" output="screen">
+			<param name="~pub_timestep" value="0.02"/>
+		</node>
+
+		<!-- Launch car_supervisor on laptop  -->
+		<node pkg="car_supervisor" type="car_supervisor.py" name="car_supervisor" output="screen">
+	        <param name="~pub_timestep" value="0.02"/>
+			<param name="~joystick_mode" value="True"/>
+			<remap from="~joy_control" to="joy_mapper/joy_control"/>
+			<remap from="~lane_control" to="lane_controller/lane_control"/>
+		</node>
+
+		<!-- dagu_car -->
+		<node machine="$(arg veh)" pkg="dagu_car" type="dagu_differential_drive.py" name="dagu_car" output="screen">
+			<remap from="~car_control" to="car_supervisor/car_control"/>
+			<param name="~car_like_mode" value="false"/>
+		</node>
+		
+	</group>
+</launch>

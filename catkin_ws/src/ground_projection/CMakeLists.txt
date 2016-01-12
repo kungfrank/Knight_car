@@ -16,7 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
 )
 
-find_package(OpenCV REQUIRED)
+find_package(OpenCV 2.4.8 EXACT REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(PkgConfig)
 

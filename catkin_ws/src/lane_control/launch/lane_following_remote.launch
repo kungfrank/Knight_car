@@ -22,7 +22,7 @@
 		</node>
 
 		<!-- Line detector on laptop -->
-		<node pkg="line_detector" type="line_detector_node.py" name="line_detector" output="screen">
+		<node machine= "$(arg veh)" pkg="line_detector" type="line_detector_node.py" name="line_detector" output="screen">
 			<remap from="~image" to="rosberrypi_cam/image_raw"/>
 		</node>
 

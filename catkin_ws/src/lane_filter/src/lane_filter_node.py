@@ -14,7 +14,7 @@ from math import floor, atan2, pi
 
 class LaneFilterNode(object):
     def __init__(self):
-        self.node_name = "Lane Filter"
+        self.node_name = rospy.get_name()
         self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments)
         # self.sub = rospy.Subscriber("~velocity",
         self.pub_lane_pose = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
@@ -47,9 +47,9 @@ class LaneFilterNode(object):
 
 
     def processSegments(self,segment_list_msg):
-	propagateBelief()
+        self.propagateBelief()
         # initialize measurement likelihood
-        measurement_likelihood = np.zeros(d.shape)
+        measurement_likelihood = np.zeros(self.d.shape)
         for segment in segment_list_msg.segments:
             if segment.color != segment.WHITE and segment.color != segment.YELLOW:
                 continue

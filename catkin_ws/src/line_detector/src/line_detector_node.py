@@ -12,7 +12,7 @@ import time
 class LineDetectorNode(object):
     def __init__(self):
         self.bridge = CvBridge()
-
+        self.node_name = rospy.get_name()
         self.sub_image = rospy.Subscriber("~image", Image, self.processImage)
         self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
         self.pub_image = rospy.Publisher("~image_with_lines",Image, queue_size=1)

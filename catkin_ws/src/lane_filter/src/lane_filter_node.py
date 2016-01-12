@@ -17,7 +17,7 @@ class LaneFilterNode(object):
         self.node_name = "Lane Filter"
         self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments)
         # self.sub = rospy.Subscriber("~velocity",
-        self.pub_lane_pose = rospy.Publisher("~lane_pose", LanePose)
+        self.pub_lane_pose = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
         self.mean_0 = [self.setupParam("~mean_d_0",0) , self.setupParam("~mean_phi_0",0)]
         self.cov_0  = [ [self.setupParam("~sigma_d_0",0.1) , 0] , [0, self.setupParam("~sigma_phi_0",0.01)] ] 
         self.delta_d     = self.setupParam("~delta_d",0.02) # in meters

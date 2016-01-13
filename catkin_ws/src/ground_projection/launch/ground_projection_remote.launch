@@ -1,6 +1,6 @@
 <launch>
 	<arg name="veh"/>
-	<include file="$(find duckietown_setup)/machines"/>
+	<include file="$(find duckietown)/machines"/>
 
 	<arg name="camera" default="$(arg veh)/rosberrypi_cam"/>
 	<node ns="$(arg camera)" pkg="image_proc" type="image_proc" name="image_proc" output="screen"/>

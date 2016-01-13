@@ -3,7 +3,7 @@
 	<arg name="veh"/>
 	<arg name="joy_mode" default="true"/>
 
-	<include file="$(find duckietown_setup)/machines"/>
+	<include file="$(find duckietown)/machines"/>
 	
 	<group ns="$(arg veh)">
 		<!-- Launch camera on veh-->
@@ -54,8 +54,8 @@
 			<param name="~d_thres" value="0.2615"/>
 		</node>
 
-		<!-- Joy on laptop -->
-		<node pkg="joy" type="joy_node" name="joy" output="screen">
+		<!-- Joy on veh -->
+		<node machine="$(arg veh)" pkg="joy" type="joy_node" name="joy" output="screen">
 		    <param name="~dev" value="/dev/input/js0"/>
 		    <param name="~deadzone" value="0.1"/>
 		</node>

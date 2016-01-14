@@ -1,6 +1,6 @@
 <launch>
 	<!-- <group ns="veh_name"> -->
-	<arg name="veh"/>
+	<arg name="veh" default="megaman"/> <!-- this should probably get removed later-->
 	<arg name="joy_mode" default="true"/>
 
 	<include file="$(find duckietown)/machines"/>

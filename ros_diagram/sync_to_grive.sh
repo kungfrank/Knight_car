@@ -19,4 +19,5 @@ if [ "$(uname)" == "Linux" ]; then
     echo "Calling grive to sync to google drive if on Linux."
     cd $GRIVE_ROOT
     grive -V  
+    cd -
 fi

@@ -5,9 +5,9 @@ import time
 
 class LineDetector(object):
     def __init__(self):
-        self.bgr_white1 = np.array([100, 100, 100])
+        self.bgr_white1 = np.array([200, 200, 200])
         self.bgr_white2 = np.array([255, 255, 255])
-        self.hsv_yellow1 = np.array([25, 150, 120])
+        self.hsv_yellow1 = np.array([25, 100, 100])
         self.hsv_yellow2 = np.array([40, 255, 255]) 
         self.hsv_red1 = np.array([0, 120, 120])
         self.hsv_red2 = np.array([10, 255, 255]) 
@@ -45,7 +45,7 @@ class LineDetector(object):
         return edges
 
     def __HoughLine(self, edge, bgr):
-        lines = cv2.HoughLinesP(edge, 1, np.pi/180, 30, np.empty(1), minLineLength=5, maxLineGap=5)
+        lines = cv2.HoughLinesP(edge, 1, np.pi/180, 30, np.empty(1), minLineLength=10, maxLineGap=1)
         if lines is not None:
             lines = lines[0]
         else:

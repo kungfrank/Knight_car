@@ -46,27 +46,24 @@ class LaneFilterNode(object):
         return value
 
     def processSegments(self,segment_list_msg):
-	print len(segment_list_msg.segments)
         self.propagateBelief()
         # initialize measurement likelihood
         measurement_likelihood = np.zeros(self.d.shape)
         for segment in segment_list_msg.segments:
             if segment.color != segment.WHITE and segment.color != segment.YELLOW:
                 continue
+            if segment.points[0].x < 0 or segment.points[1].x < 0:
+                continue
             d_i,phi_i = self.generateVote(segment)
             if d_i > self.d_max or d_i < self.d_min or phi_i < self.phi_min or phi_i>self.phi_max:
                 continue
             i = floor((d_i - self.d_min)/self.delta_d)
             j = floor((phi_i - self.phi_min)/self.delta_phi)
-            print i,j
             measurement_likelihood[i,j] = measurement_likelihood[i,j] +  1
         if np.linalg.norm(measurement_likelihood) == 0:
             return
         measurement_likelihood = measurement_likelihood/np.linalg.norm(measurement_likelihood)
-        #print measurement_likelihood.argmax()
-        #print measurement_likelihood
         #self.updateBelief(measurement_likelihood)
-        #print self.beliefRV
         self.beliefRV = measurement_likelihood
         # TODO entropy test:
         #print self.beliefRV.argmax()
@@ -83,8 +80,6 @@ class LaneFilterNode(object):
         self.cov_0
         RV = multivariate_normal(self.mean_0,self.cov_0)
         self.beliefRV=RV.pdf(pos)
-#        print np.amax(self.beliefRV)
-#        print self.beliefRV.argmax()
 
     def propagateBelief(self):
         # starting with option 1 (don't read linear and angular velocity)
@@ -92,16 +87,16 @@ class LaneFilterNode(object):
         return
 
     def updateBelief(self,measurement_likelihood):
- #       print (self.beliefRV)
         self.beliefRV=np.multiply(self.beliefRV,measurement_likelihood)
         self.beliefRV=self.beliefRV/np.linalg.norm(self.beliefRV)
- #       print (self.beliefRV)
 
     def generateVote(self,segment):
         p1 = segment.points[0]
         p2 = segment.points[1]
-        d_i = 0.5*(p1.x+p2.x)
+        print p1.y,p2.y
+        d_i = 0.5*(p1.y+p2.y)
         if segment.color == segment.WHITE:
+            # discard the white on the other side of the road?
             d_i -= 0.5*self.lanewidth
             if p2.x > p1.x:
                 d_i -= self.linewidth_white
@@ -109,7 +104,8 @@ class LaneFilterNode(object):
             d_i += self.lanewidth
             if p2.x > p1.x:
                 d_i += self.linewidth_yellow
-        phi_i = pi/2 - atan2(abs(p2.x - p1.x), p2.y-p2.y)
+        phi_i = pi/2 - atan2(abs(p2.x - p1.x), p1.y-p2.y)
+        print d_i, phi_i
         return d_i, phi_i
     
     def onShutdown(self):

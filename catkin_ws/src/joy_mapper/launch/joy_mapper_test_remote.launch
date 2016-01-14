@@ -1,6 +1,6 @@
 <launch>
 	<arg name="veh" />
-	<include file="$(find duckietown_setup)/machines"/>
+	<include file="$(find duckietown)/machines"/>
 	<group ns="$(arg veh)">
 		<!-- joy -->
 		<node machine="$(arg veh)" pkg="joy" type="joy_node" name="joy" output="screen">

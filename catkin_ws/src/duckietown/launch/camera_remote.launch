@@ -1,9 +1,9 @@
 <launch>
-	<!-- Setup machine -->
+	<!-- <group ns="veh_name"> -->
 	<arg name="veh"/>
 	<include file="$(find duckietown)/machines"/>
-	<!-- Launch the rosberrypi_cam remotely -->
 	<group ns="$(arg veh)">
+		<!-- Launch camera on veh-->
 		<node machine="$(arg veh)" pkg="rosberrypi_cam" type="rosberrypi_cam_node" name="rosberrypi_cam" output="screen">
 			<param name="~camera_info_url" value="package://rosberrypi_cam/calibration/picamera.yaml"/>
 			<param name="~fps" value="60"/>
@@ -19,4 +19,3 @@
 		</node>
 	</group>
 </launch>
-

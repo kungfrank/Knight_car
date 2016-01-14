@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>duckietown_setup</name>
+  <name>duckiebot_visualizer</name>
   <version>0.0.0</version>
-  <description>The duckietown_setup package</description>
+  <description>The duckiebot_visualizer package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/duckietown_setup</url> -->
+  <!-- <url type="website">http://wiki.ros.org/duckiebot_visualizer</url> -->
 
 
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
@@ -41,13 +41,18 @@
   <!--   <test_depend>gtest</test_depend> -->
   
   <buildtool_depend>catkin</buildtool_depend>
-  <!-- <build_depend>duckietown_msgs</build_depend> -->
-  <!-- <build_depend>roscpp</build_depend> -->
-  <!-- <build_depend>rospy</build_depend> -->
+  <build_depend>duckietown_msgs</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
 
-  <!-- <run_depend>duckietown_msgs</run_depend> -->
-  <!-- <run_depend>roscpp</run_depend> -->
-  <!-- <run_depend>rospy</run_depend> -->
+  <run_depend>duckietown_msgs</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>visualization_msgs</run_depend>
+  <run_depend>geometry_msgs</run_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

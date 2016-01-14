@@ -31,19 +31,21 @@ digraph D {
 		stop_line_filter[label="stop_line_filter (LP)"];
 		led_detector[label="led_detector (?)"];
 		obj_detector[label="obj_detector (?)"];
-		mission_planner[label="mission_planner (MN)"];
 		beeper[label="beeper (?)"];
 		veh_detector[label="veh_detector (?)"];
 	}
 	subgraph node_designed{
 		node [fillcolor=pink];
+		mission_planner[label="mission_planner (MN)"];
 		street_name_detector[label="street_name_detector (NW)"];
-		safety_supervisor[label="safety_supervisor (DH)"];
+		safety_supervisor[label="safety_supervisor (HA)"];
 		map_reader[label="map_reader (RM)"];
+		veh_coordinator[label="veh_coordinator (DH)"]
+		wheel_driver_mux[label="wheel_driver_mux (SY)"]
 	}
 	subgraph node_development{
 		node [fillcolor=orange];
-		wheel_driver[label="wheel_driver (DY)"];
+		wheel_driver[label="wheel_driver (DY,SY)"];
 		rgb_led[label="rgb_led (AC)"];
 		camera_node[label="camera_node (AC)"];
 		lane_filter[label="lane_filter (LP)"]; 
@@ -53,7 +55,7 @@ digraph D {
 		node [fillcolor=yellow];
 		line_detector[label="line_detector (LP,HZ)"];
 		april_tag_detector[label="april_tag_detector (LP)"];
-		car_supervisor[label="car_supervisor (SY)"];
+		lane_supervisor[label="lane_supervisor (SY)"];
 		joy_mapper[label="joy_mapper (SY)"];
 		ground_projection[label="ground_projection (CC)"]
 	}
@@ -88,6 +90,9 @@ digraph D {
 	segment_list_proj;
 	image_with_lines;
 	lane_reading; //LaneReading: y, phi, sigma_y, sigma_phi, status
+	lane_control;
+	lane_control_sup[label="lane_control"];
+	lane_control_safe[label="lane_control"];
 	april_tag_detection;
 	led_detection;
 	veh_detection;
@@ -98,12 +103,13 @@ digraph D {
 	stop_line_reading;
 	mode;
 	mission;
-	lane_control;
 	joy_control;
 	intersection_control;
 	street_name_detection;
 	img_low_rect;
 	img_high_rect;
+	veh_coord_go;
+	wheel_command;
 
 	subgraph cluster_perception{
 		label="perception"
@@ -148,13 +154,17 @@ digraph D {
 		joy_mapper;
 		lane_controller;
 		intersection_controller;
-		car_supervisor;
+		lane_supervisor;
 		safety_supervisor;
+		wheel_driver_mux;
 		// Topics
 		joy_control;
 		joy;
 		lane_control;
+		lane_control_sup;
+		lane_control_safe;
 		intersection_control;
+		wheel_command;
 		{rank=same; intersection_controller;lane_controller;}
 	}
 
@@ -170,10 +180,12 @@ digraph D {
 	}
 
 	subgraph cluster_planning{
-		label="planning"
+		label="planning & coordination"
 		// Nodes
 		mission_planner;
+		veh_coordinator;
 		// Topics
+		veh_coord_go;
 		mission;
 		mode;
 	}
@@ -240,27 +252,43 @@ digraph D {
 	map_representation->mission_planner;
 	
 	joy_node->joy->joy_mapper->joy_control;
-	joy_control-> car_supervisor #[label="CarControl.msg"];
+	joy_control-> lane_supervisor #[label="CarControl.msg"];
 	lane_controller->lane_control;
-	lane_control-> car_supervisor #[label="CarControl.msg"];
-	car_supervisor->safety_supervisor #[label="CarControl.msg"];
-	safety_supervisor->wheel_driver;
+	lane_control-> lane_supervisor #[label="CarControl.msg"];
+	lane_supervisor-> lane_control_sup;
+	lane_control_sup->safety_supervisor;
+	safety_supervisor->lane_control_safe;
 	safety_supervisor->beeper;
 	
 	intersection_reading->intersection_controller;
 	intersection_reading->mission_planner;
 	traffic_light_detection->intersection_controller;
-	mode->intersection_controller;
-	mode->lane_controller;
 
 	veh_detection->safety_supervisor;
 	intersection_controller->intersection_control;
-	intersection_control->safety_supervisor;
 	global_readings->mission_planner;
 	mission_planner->mode;
 	mission->mission_planner;
 
 	segment_list->ground_projection;
 	ground_projection->segment_list_proj;
+
+	obj_detection->veh_coordinator;
+	veh_detection->veh_coordinator;
+	traffic_light_detection->veh_coordinator;
+	//veh_coord_go->mission_planner;
+	veh_coord_go->veh_coordinator [dir=back];
+	mission_planner->veh_coord_go [dir=back];
+
+	mode->veh_coordinator;
+	mode->lane_controller;
+	mode->intersection_controller;
+
+	mode->wheel_driver_mux;
+	lane_control_safe->wheel_driver_mux;
+	intersection_control->wheel_driver_mux;
+	wheel_driver_mux->wheel_command;
+	wheel_command->wheel_driver;
+
 	//TODO annotate msg type.
 }

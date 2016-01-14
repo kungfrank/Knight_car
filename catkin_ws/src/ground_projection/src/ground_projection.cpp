@@ -60,8 +60,8 @@ public:
 private:
   void estimate_ground_coordinate(duckietown_msgs::Pixel& pixel, geometry_msgs::Point& point)
   {
-    // cv::Point3f pt_img (float(pixel.u), float(pixel.v), 1.f);
-    cv::Point3f pt_img (float(pixel.u*2), float(pixel.v*2), 1.f);
+    cv::Point3f pt_img (float(pixel.u), float(pixel.v), 1.f);
+    // cv::Point3f pt_img (float(pixel.u*2), float(pixel.v*2), 1.f);
     cv::Mat pt_gnd_ = H_ * cv::Mat(pt_img);
     cv::Point3f pt_gnd(pt_gnd_);
 

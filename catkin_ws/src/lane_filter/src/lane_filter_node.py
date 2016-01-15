@@ -93,7 +93,7 @@ class LaneFilterNode(object):
     def generateVote(self,segment):
         p1 = segment.points[0]
         p2 = segment.points[1]
-        print p1.y,p2.y
+#        print p1.y,p2.y
         d_i = 0.5*(p1.y+p2.y)
         if segment.color == segment.WHITE:
             # discard the white on the other side of the road?

@@ -5,26 +5,24 @@ import time
 
 class LineDetector(object):
     def __init__(self):
-        self.bgr_white1 = np.array([200, 200, 200])
-        self.bgr_white2 = np.array([255, 255, 255])
-        self.hsv_yellow1 = np.array([25, 100, 100])
-        self.hsv_yellow2 = np.array([40, 255, 255]) 
-        self.hsv_red1 = np.array([0, 120, 120])
+        self.hsv_white1 = np.array([0, 0, 220])
+        self.hsv_white2 = np.array([255, 25, 255]) 
+        self.hsv_yellow1 = np.array([25, 100, 200])
+        self.hsv_yellow2 = np.array([45, 255, 255]) 
+        self.hsv_red1 = np.array([0, 100, 120])
         self.hsv_red2 = np.array([10, 255, 255]) 
-        self.hsv_red3 = np.array([245, 120, 120])
+        self.hsv_red3 = np.array([245, 100, 120])
         self.hsv_red4 = np.array([255, 255, 255]) 
 
     def __colorFilter(self, bgr, color):
-        # filter white in BGR space, yellow and red in HSV space
-        # colors are hard-coded, making the code extremely ugly...could be further improved
         # tic = time.time()
+        # filter colors in HSV space
+        hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
         if color == 'white':
-            lane = cv2.inRange(bgr, self.bgr_white1, self.bgr_white2)
+            lane = cv2.inRange(hsv, self.hsv_white1, self.hsv_white2)
         elif color == 'yellow':
-            hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
             lane = cv2.inRange(hsv, self.hsv_yellow1, self.hsv_yellow2)
         elif color == 'red':
-            hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
             lane1 = cv2.inRange(hsv, self.hsv_red1, self.hsv_red2)
             lane2 = cv2.inRange(hsv, self.hsv_red3, self.hsv_red4)
             lane = cv2.bitwise_or(lane1, lane2)

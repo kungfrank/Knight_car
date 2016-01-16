@@ -8,8 +8,12 @@ class LineDetector(object):
         self.bgr = []
         self.hsv = []
 
+        # self.hei = 200
+        # self.wid = 320
+        # self.top_cutoff = 80
+
         # Color value range in HSV space
-        self.hsv_white1 = np.array([0, 0, 220])
+        self.hsv_white1 = np.array([0, 0, 200])
         self.hsv_white2 = np.array([255, 25, 255]) 
         self.hsv_yellow1 = np.array([25, 100, 200])
         self.hsv_yellow2 = np.array([45, 255, 255]) 
@@ -34,19 +38,18 @@ class LineDetector(object):
         # print 'Color thresholding:' + str(time.time()-tic)
 
 		# binary image processing
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(2, 2))
-        lane = cv2.erode(lane, kernel)
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(4, 4))
-        lane = cv2.dilate(lane, kernel)
-
+        #kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(2, 2))
+        #lane = cv2.erode(lane, kernel)
+        #kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(2, 2))
+        #lane = cv2.dilate(lane, kernel)
         return lane
 
     def __findEdge(self, gray):	
-        edges = cv2.Canny(gray, 10, 30, apertureSize = 3)
+        edges = cv2.Canny(gray, 10, 20, apertureSize = 3)
         return edges
 
     def __HoughLine(self, edge):
-        lines = cv2.HoughLinesP(edge, 1, np.pi/180, 30, np.empty(1), minLineLength=5, maxLineGap=1)
+        lines = cv2.HoughLinesP(edge, 1, np.pi/180, 20, np.empty(1), minLineLength=3, maxLineGap=1)
         if lines is not None:
             lines = lines[0]
         else:

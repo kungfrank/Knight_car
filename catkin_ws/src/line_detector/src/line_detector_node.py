@@ -15,7 +15,7 @@ class LineDetectorNode(object):
         
         self.hei_image = self.setupParam("~hei_image", 200)
         self.wid_image = self.setupParam("~wid_image", 320)
-        self.top_cutoff  = self.setupParam("~top_cutoff", 0)
+        self.top_cutoff  = self.setupParam("~top_cutoff", 80)
         
         self.bridge = CvBridge()
         self.detector = LineDetector()

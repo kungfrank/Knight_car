@@ -3,6 +3,6 @@
 		<remap from="~image" to="rosberrypi_cam/image_raw"/>
 		<param name="~hei_image" value="200" />
 		<param name="~wid_image" value="320" />
-		<param name="~top_cutoff"   value="0" />
+		<param name="~top_cutoff" value="80" />
 	</node>
 </launch>

@@ -28,7 +28,7 @@ class CameraNode(object):
         self.bridge = CvBridge()
         self.camera = PiCamera()
         self.camera.framerate = self.framerate_for_low
-        self.camera.resolution = (320,240)
+        self.camera.resolution = (320,200)
         # TODO setup other parameters of the camera such as exposure and white balance etc
 
         # Setup timer

@@ -1,0 +1,4 @@
+<launch>
+	<node ns="megaman" name="camera_node" pkg="pi_camera" type="camera_node.py" output="screen">
+	</node>
+</launch>

@@ -6,5 +6,6 @@
 		<param name="~img_low_res_h" value="200"/>
 		<param name="~img_high_res_w" value="640"/>
 		<param name="~img_high_res_h" value="400"/>
+		<param name="~uncompress" value="False"/>
 	</node>
 </launch>

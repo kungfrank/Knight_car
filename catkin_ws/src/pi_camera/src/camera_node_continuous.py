@@ -22,12 +22,19 @@ class CameraNode(object):
         self.img_low_res_h = self.setupParam("~img_low_res_h",200)
         self.img_high_res_w = self.setupParam("~img_high_res_w",640)
         self.img_high_res_h = self.setupParam("~img_high_res_h",400)
+        self.uncompress = self.setupParam("~uncompress",False)
 
         # TODO: load camera info yaml file and publish CameraInfo
-        self.pub_img_low = rospy.Publisher("~img_low/compressed",CompressedImage,queue_size=1)
-        self.pub_img_high= rospy.Publisher("~img_high/compressed",CompressedImage,queue_size=1)
+
+        if self.uncompress:
+            self.pub_img_low = rospy.Publisher("~img_low/raw",Image,queue_size=1)
+            self.pub_img_high= rospy.Publisher("~img_high/raw",Image,queue_size=1)    
+        else:
+            self.pub_img_low = rospy.Publisher("~img_low/compressed",CompressedImage,queue_size=1)
+            self.pub_img_high= rospy.Publisher("~img_high/compressed",CompressedImage,queue_size=1)
         
         self.has_published = False
+        self.bridge = CvBridge()
 
         # Setup PiCamera
         self.stream = io.BytesIO()
@@ -59,13 +66,22 @@ class CameraNode(object):
         self.grabAndPublish(self.stream,self.pub_img_high)
 
     def grabAndPublish(self,stream,publisher):
-        # Construct image_msg
-        image_msg = CompressedImage()
-        image_msg.header.stamp = rospy.Time.now()
-        image_msg.format = "jpeg"
         # Grab image from stream
         stream.seek(0)
-        image_msg.data = stream.getvalue()
+        img_data = stream.getvalue()
+
+        if self.uncompress:
+            # Publish raw image
+            data = np.fromstring(img_data, dtype=np.uint8)
+            image = cv2.imdecode(data, 1)
+            image_msg = self.bridge.cv2_to_imgmsg(image)
+        else:
+            # Publish compressed image only
+            image_msg = CompressedImage()
+            image_msg.data = img_data
+            image_msg.format = "jpeg"
+            
+        image_msg.header.stamp = rospy.Time.now()
         # Publish 
         publisher.publish(image_msg)
         # Clear stream

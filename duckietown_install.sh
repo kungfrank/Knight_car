@@ -22,3 +22,6 @@ cd $START_PATH
 sudo apt-get install ros-indigo-{tf-conversions,cv-bridge,image-transport,camera-info-manager,theora-image-transport,joy,image-proc} -y
 sudo apt-get install libyaml-cpp-dev -y
 
+# packages for the IMU
+sudo apt-get install ros-indigo-phidgets-drivers
+sudo apt-get install ros-indigo-imu-tools

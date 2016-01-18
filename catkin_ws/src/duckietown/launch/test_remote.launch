@@ -21,12 +21,13 @@
 		<!-- Joy on veh -->
 		<node machine="$(arg veh)" pkg="joy" type="joy_node" name="joy" output="screen">
 		    <param name="~dev" value="/dev/input/js0"/>
-		    <param name="~deadzone" value="0.1"/>
+		    <param name="~deadzone" value="0.01"/>
 		</node>
 
 		<!-- Joy mapper on veh -->
 		<node machine="$(arg veh)" pkg="joy_mapper" type="joy_mapper.py" name="joy_mapper" output="screen">
 			<param name="~pub_timestep" value="0.02"/>
+			<param name="~left_right_ratio" value="1.0"/>
 		</node>
 
 		<group if="$(arg imu)">

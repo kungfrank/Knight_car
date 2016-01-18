@@ -18,6 +18,7 @@ class JoyMapper(object):
         self.pub_timestep = self.setupParam("~pub_timestep", 0.02)
         self.speed_gain = self.setupParam("~speed_gain", 1.0)
         self.steer_gain = self.setupParam("~steer_gain", 1.0)
+        self.left_right_ratio = self.setupParam("~left_right_ratio", 1.0)
 
         # Publications
         self.pub_control = rospy.Publisher("~joy_control", CarControl, queue_size=1)
@@ -77,13 +78,12 @@ class JoyMapper(object):
         # wheels_cmd_msg.vel_right = self.joy.axes[4]
 
         # Car Steering Mode
-        ratio = 1.0
-
+        ratio = self.left_right_ratio
+        
         gain = 1.0
         vel_left = gain*(speed - steering)*ratio
         vel_right = gain*(speed + steering)*(1.0/ratio)
         
-
         wheels_cmd_msg.vel_left = np.clip(vel_left,-1.0,1.0)
         wheels_cmd_msg.vel_right = np.clip(vel_right,-1.0,1.0)
         rospy.loginfo("[%s] left %f, right %f" % (self.node_name,self.joy.axes[1],self.joy.axes[4]))

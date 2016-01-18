@@ -24,4 +24,5 @@ sudo apt-get install libyaml-cpp-dev -y
 
 # packages for the IMU
 sudo apt-get install ros-indigo-phidgets-drivers
-sudo apt-get install ros-indigo-imu-tools
+#sudo apt-get install ros-indigo-imu-tools
+sudo apt-get install ros-indigo-imu-complementary-filter ros-indigo-imu-filter-madgwick

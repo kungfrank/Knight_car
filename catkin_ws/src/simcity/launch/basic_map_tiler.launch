@@ -1,0 +1,11 @@
+<launch>
+	<node name="basic_map_tiler" pkg="simcity" type="basic_map_tiler.py" output="screen">
+		<!-- Setup parameters -->
+		<param name="~pub_timestep" value="0.5"/>
+		<!-- <param name="~map_file" value="/home/shihyuan/duckietown/catkin_ws/src/simcity/maps/censi_map.yaml"/> -->
+		<param name="~map_file" value="$(find simcity)/maps/censi_map.yaml"/>
+		<param name="~tiles_file" value="$(find simcity)/tiles/tiles.yaml"/>
+	</node>
+	<node pkg="rviz" name="rviz" type="rviz">
+	</node>
+</launch>

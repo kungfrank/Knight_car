@@ -16,9 +16,11 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
 )
 
-find_package(OpenCV REQUIRED)
+find_package(OpenCV 2.4.8 EXACT REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(PkgConfig)
+
+# libyaml-cpp-dev
 if (ANDROID)
   find_package(yaml-cpp)
   add_definitions(-DHAVE_NEW_YAMLCPP)
@@ -167,7 +169,7 @@ add_executable(ground_projection
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(ground_projection ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(ground_projection ${ground_projection_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(ground_projection

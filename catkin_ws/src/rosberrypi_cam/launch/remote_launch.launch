@@ -1,7 +1,7 @@
 <launch>
 	<!-- Setup machine -->
 	<arg name="veh"/>
-	<include file="$(find duckietown_setup)/machines"/>
+	<include file="$(find duckietown)/machines"/>
 	<!-- Launch the rosberrypi_cam remotely -->
 	<group ns="$(arg veh)">
 		<node machine="$(arg veh)" pkg="rosberrypi_cam" type="rosberrypi_cam_node" name="rosberrypi_cam" output="screen">

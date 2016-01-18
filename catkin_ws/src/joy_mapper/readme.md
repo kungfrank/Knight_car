@@ -6,8 +6,6 @@
 2) roslaunch launch/joy_mapper_test.launch
 3) the robot should move when you push buttons
 
-n.b. only tested with wired joystick so far (LP)
-
 
 ## Dependencies
 * `rospy`

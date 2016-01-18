@@ -1,5 +1,8 @@
 <launch>
-	<node pkg="line_detector" type="line_detector_node.py" name="line_detector" output="screen">
-		<remap from="~image" to="/rosberrypi_cam/image_raw"/>
+	<node ns="megaman" pkg="line_detector" type="line_detector_node.py" name="line_detector" output="screen">
+		<remap from="~image" to="rosberrypi_cam/image_raw"/>
+		<param name="~hei_image" value="200" />
+		<param name="~wid_image" value="320" />
+		<param name="~top_cutoff" value="80" />
 	</node>
 </launch>

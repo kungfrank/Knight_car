@@ -1,13 +1,15 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(duckietown_setup)
+project(pi_camera
+)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  # roscpp
-  # rospy
-  # duckietown_msgs # Every duckietown packages should use this.
+  roscpp
+  rospy
+  duckietown_msgs # Every duckietown packages should use this.
+  std_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -17,7 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
+catkin_python_setup()
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -101,7 +103,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES duckietown_setup
+#  LIBRARIES pi_camera
 #  CATKIN_DEPENDS duckietown_msgs roscpp rospy
 #  DEPENDS system_lib
 )
@@ -118,14 +120,15 @@ include_directories(
 )
 
 ## Declare a C++ library
-# add_library(duckietown_setup
-#   src/${PROJECT_NAME}/duckietown_setup.cpp
+# add_library(pi_camera
+
+#   src/${PROJECT_NAME}/pi_camera.cpp
 # )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(duckietown_setup ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(pi_camera ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 # add_executable(pkg_name_node src/pkg_name_node.cpp)
@@ -154,7 +157,7 @@ include_directories(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS duckietown_setup pkg_name_node
+# install(TARGETS pi_camera pkg_name_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

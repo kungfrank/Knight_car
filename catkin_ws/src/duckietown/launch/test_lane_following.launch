@@ -1,0 +1,52 @@
+<launch>
+	<!-- <group ns="veh_name"> -->
+	<arg name="veh"/> <!-- this should probably get removed later-->
+	<arg name="move" default="true"/>
+	<!-- <arg name="joy" default="true"/> -->
+	<!-- <arg name="joy_mode" default="true"/> -->
+
+	<include file="$(find duckietown)/machines"/>
+	
+	<group ns="$(arg veh)">
+		<!-- Launch camera on veh-->
+		<node machine="$(arg veh)" name="camera_node" pkg="pi_camera" type="camera_node_continuous.py" output="screen">
+			<param name="~img_low_framerate" value="30.0"/>
+			<param name="~img_high_framerate" value="5.0"/>
+			<param name="~img_low_res_w" value="320"/>
+			<param name="~img_low_res_h" value="200"/>
+			<param name="~img_high_res_w" value="640"/>
+			<param name="~img_high_res_h" value="400"/>
+			<param name="~uncompress" value="False"/>
+		</node>
+
+		<!-- Joy on veh -->
+<!-- 		<node machine="$(arg veh)" pkg="joy" type="joy_node" name="joy" output="screen"> -->
+<!-- 		    <param name="~dev" value="/dev/input/js0"/> -->
+<!-- 		    <param name="~deadzone" value="0.1"/> -->
+<!-- 		</node> -->
+
+		<!-- Joy mapper on veh -->
+<!-- 		<node machine="$(arg veh)" pkg="joy_mapper" type="joy_mapper.py" name="joy_mapper" output="screen"> -->
+<!-- 			<param name="~pub_timestep" value="0.02"/> -->
+<!-- 		</node> -->
+
+		<node pkg="lane_control" type="vicon_for_car.py" name="vicon_for_car" output="screen">
+			<param name="~x_offset" value="-1.24"/>
+			<param name="~veh_name" value="$(arg veh)"/>
+		</node>
+
+		<node pkg="lane_control" type="lane_controller.py" name="lane_controller" output="screen" >
+			<remap from="~lane_reading" to="vicon_for_car/lane_reading"/>
+			<param name="~v_bar" value="0.5"/>
+			<param name="~k_d" value="-4.0"/>
+			<param name="~k_theta" value="-2.0"/>
+			<param name="~theta_thres" value="0.523"/>
+			<param name="~d_thres" value="0.2615"/>
+		</node>
+
+		<node if="$(arg move)" machine="$(arg veh)" pkg="dagu_car" type="wheels_driver.py" name="wheels_driver" output="screen">
+			<!-- <remap from="~wheels_cmd" to="joy_mapper/wheels_cmd"/> -->
+			<remap from="~wheels_cmd" to="lane_controller/wheels_control"/>
+		</node>
+	</group>
+</launch>

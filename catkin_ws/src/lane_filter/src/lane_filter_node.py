@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 import rospy
 import numpy as np
+from cv_bridge import CvBridge, CvBridgeError
+from sensor_msgs.msg import Image
 from duckietown_msgs.msg import SegmentList, Segment, Pixel, LanePose
 from scipy.stats import multivariate_normal
-from math import floor, atan2, pi
+from math import floor, atan2, pi, cos, sin
 
 # Lane Filter Node
 # Author: Liam Paull
@@ -15,9 +17,6 @@ from math import floor, atan2, pi
 class LaneFilterNode(object):
     def __init__(self):
         self.node_name = "Lane Filter"
-        self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments)
-        # self.sub = rospy.Subscriber("~velocity",
-        self.pub_lane_pose = rospy.Publisher("~lane_pose", LanePose)
         self.mean_0 = [self.setupParam("~mean_d_0",0) , self.setupParam("~mean_phi_0",0)]
         self.cov_0  = [ [self.setupParam("~sigma_d_0",0.1) , 0] , [0, self.setupParam("~sigma_phi_0",0.01)] ] 
         self.delta_d     = self.setupParam("~delta_d",0.02) # in meters
@@ -36,8 +35,13 @@ class LaneFilterNode(object):
         self.d,self.phi = np.mgrid[self.d_min:self.d_max:self.delta_d,self.phi_min:self.phi_max:self.delta_phi]
         self.beliefRV=np.empty(self.d.shape)
         self.initializeBelief()
-        
-
+        self.lanePose = LanePose()
+        self.lanePose.d=self.mean_0[0]
+        self.lanePose.phi=self.mean_0[1]
+        self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments)
+        # self.sub = rospy.Subscriber("~velocity",
+        self.pub_lane_pose  = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
+        self.pub_belief_img = rospy.Publisher("~belief_img", Image, queue_size=1)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -45,25 +49,39 @@ class LaneFilterNode(object):
         rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
         return value
 
-
     def processSegments(self,segment_list_msg):
-	propagateBelief()
+        self.propagateBelief()
         # initialize measurement likelihood
-        measurement_likelihood = np.zeros(d.shape)
+        measurement_likelihood = np.zeros(self.d.shape)
         for segment in segment_list_msg.segments:
             if segment.color != segment.WHITE and segment.color != segment.YELLOW:
+                continue
+            if segment.points[0].x < 0 or segment.points[1].x < 0:
                 continue
             d_i,phi_i = self.generateVote(segment)
             if d_i > self.d_max or d_i < self.d_min or phi_i < self.phi_min or phi_i>self.phi_max:
                 continue
             i = floor((d_i - self.d_min)/self.delta_d)
-            j = floor((d_j - self.phi_min)/self.delta_phi)
-            measurement_likelihood[i,j] += 1
+            j = floor((phi_i - self.phi_min)/self.delta_phi)
+            measurement_likelihood[i,j] = measurement_likelihood[i,j] +  1
+        if np.linalg.norm(measurement_likelihood) == 0:
+            return
         measurement_likelihood = measurement_likelihood/np.linalg.norm(measurement_likelihood)
-        self.updateBelief(measurement_likelihood)
+        #self.updateBelief(measurement_likelihood)
+        self.beliefRV = measurement_likelihood
         # TODO entropy test:
-        # TODO publish
+        #print self.beliefRV.argmax()
+        
+        maxids = np.unravel_index(self.beliefRV.argmax(),self.beliefRV.shape)
+        self.lanePose.d = self.d_min + maxids[0]*self.delta_d
+        self.lanePose.phi = self.phi_min + maxids[1]*self.delta_phi
+        self.lanePose.status = self.lanePose.NORMAL
 
+        # publish the belief image
+        bridge = CvBridge()
+        belief_img = bridge.cv2_to_imgmsg((255*self.beliefRV).astype('uint8'), "mono8")
+        self.pub_lane_pose.publish(self.lanePose)
+        self.pub_belief_img.publish(belief_img)
 
     def initializeBelief(self):
         pos = np.empty(self.d.shape + (2,))
@@ -79,22 +97,32 @@ class LaneFilterNode(object):
         return
 
     def updateBelief(self,measurement_likelihood):
-        self.beliefRV=multiply(self.beliefRV,measurement_likelihood)
-        self.beliefRV=beliefRV/np.linalg.norm(self.beliefRV)
+        self.beliefRV=np.multiply(self.beliefRV,measurement_likelihood)
+        self.beliefRV=self.beliefRV/np.linalg.norm(self.beliefRV)
 
     def generateVote(self,segment):
-        p1 = segment.points[0]
-        p2 = segment.points[1]
-        d_i = 0.5*(p1.x+p2.x)
-        if segment.color == segment.WHITE:
-            d_i -= 0.5*self.lanewidth
-            if p2.x > p1.x:
-                d_i -= self.linewidth_white
-        else: # yellow
-            d_i += self.lanewidth
-            if p2.x > p1.x:
-                d_i += self.linewidth_yellow
-        phi_i = pi/2 - atan2(abs(p2.x - p1.x), p2.y-p2.y)
+        print "input:"
+        p1 = np.array([segment.points[0].x, segment.points[0].y]) 
+        p2 = np.array([segment.points[1].x, segment.points[1].y])
+        print p1,p2
+        t_hat = (p2-p1)/np.linalg.norm(p2-p1)
+        n_hat = np.array([-t_hat[1],t_hat[0]])
+        d1 = np.inner(n_hat,p1)
+        d2 = np.inner(n_hat,p2)
+        d_i = (d1+d2)/2
+        phi_i = np.arcsin(-t_hat[1])
+        if segment.color == segment.WHITE: # right hand side
+            if(p2[0] > p1[0]):
+                d_i =  -d_i - self.lanewidth/2
+            else:
+                d_i = d_i - (self.lanewidth/2 + self.linewidth_white)
+        elif segment.color == segment.YELLOW: # left hand side
+            if(p1[0] > p2[0]):
+                d_i = -d_i - self.lanewidth/2
+            else:
+                d_i = d_i - (self.lanewidth/2 + self.linewidth_yellow)
+        print "output"
+        print d_i, phi_i
         return d_i, phi_i
     
     def onShutdown(self):

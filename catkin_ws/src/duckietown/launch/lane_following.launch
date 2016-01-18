@@ -14,8 +14,8 @@
 			<param name="~fps" value="15"/>
 			<!-- <param name="~height" value="200"/> -->
 			<!-- <param name="~width" value="320"/> -->
-			<param name="~height" value="400"/>
-			<param name="~width" value="640"/>
+			<param name="~height" value="200"/>
+			<param name="~width" value="320"/>
 			<param name="~brightness" value="50"/>
 			<param name="~contrast" value="50"/>
 			<param name="~saturation" value="50"/>

@@ -5,8 +5,8 @@
 		<param name="~mean_phi_0" value="0"/>
 		<param name="~sigma_d_0" value="0.5"/>
 		<param name="~sigma_phi_0" value="0.1"/>
-		<param name="~delta_d" value="0.02"/>
-		<param name="~delta_phi" value="0.05"/>
+		<param name="~delta_d" value="0.05"/>
+		<param name="~delta_phi" value="0.1"/>
 		<param name="~d_max" value="0.5"/>
 		<param name="~d_min" value="-0.5" />
 		<param name="~phi_min" value="-1.7" />

@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 import rospy
 import numpy as np
+from cv_bridge import CvBridge, CvBridgeError
+from sensor_msgs.msg import Image
 from duckietown_msgs.msg import SegmentList, Segment, Pixel, LanePose
 from scipy.stats import multivariate_normal
-from math import floor, atan2, pi
+from math import floor, atan2, pi, cos, sin
 
 # Lane Filter Node
 # Author: Liam Paull
@@ -34,10 +36,12 @@ class LaneFilterNode(object):
         self.beliefRV=np.empty(self.d.shape)
         self.initializeBelief()
         self.lanePose = LanePose()
+        self.lanePose.d=self.mean_0[0]
+        self.lanePose.phi=self.mean_0[1]
         self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments)
         # self.sub = rospy.Subscriber("~velocity",
-        self.pub_lane_pose = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
- 
+        self.pub_lane_pose  = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
+        self.pub_belief_img = rospy.Publisher("~belief_img", Image, queue_size=1)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -67,11 +71,17 @@ class LaneFilterNode(object):
         self.beliefRV = measurement_likelihood
         # TODO entropy test:
         #print self.beliefRV.argmax()
+        
         maxids = np.unravel_index(self.beliefRV.argmax(),self.beliefRV.shape)
-        self.lanePose.d = -(self.d_min + maxids[0]*self.delta_d) # I should think about this - sign 
+        self.lanePose.d = self.d_min + maxids[0]*self.delta_d
         self.lanePose.phi = self.phi_min + maxids[1]*self.delta_phi
         self.lanePose.status = self.lanePose.NORMAL
+
+        # publish the belief image
+        bridge = CvBridge()
+        belief_img = bridge.cv2_to_imgmsg((255*self.beliefRV).astype('uint8'), "mono8")
         self.pub_lane_pose.publish(self.lanePose)
+        self.pub_belief_img.publish(belief_img)
 
     def initializeBelief(self):
         pos = np.empty(self.d.shape + (2,))
@@ -91,20 +101,27 @@ class LaneFilterNode(object):
         self.beliefRV=self.beliefRV/np.linalg.norm(self.beliefRV)
 
     def generateVote(self,segment):
-        p1 = segment.points[0]
-        p2 = segment.points[1]
-#        print p1.y,p2.y
-        d_i = 0.5*(p1.y+p2.y)
-        if segment.color == segment.WHITE:
-            # discard the white on the other side of the road?
-            d_i -= 0.5*self.lanewidth
-            if p2.x > p1.x:
-                d_i -= self.linewidth_white
-        else: # yellow
-            d_i += self.lanewidth
-            if p2.x > p1.x:
-                d_i += self.linewidth_yellow
-        phi_i = pi/2 - atan2(abs(p2.x - p1.x), p1.y-p2.y)
+        print "input:"
+        p1 = np.array([segment.points[0].x, segment.points[0].y]) 
+        p2 = np.array([segment.points[1].x, segment.points[1].y])
+        print p1,p2
+        t_hat = (p2-p1)/np.linalg.norm(p2-p1)
+        n_hat = np.array([-t_hat[1],t_hat[0]])
+        d1 = np.inner(n_hat,p1)
+        d2 = np.inner(n_hat,p2)
+        d_i = (d1+d2)/2
+        phi_i = np.arcsin(-t_hat[1])
+        if segment.color == segment.WHITE: # right hand side
+            if(p2[0] > p1[0]):
+                d_i =  -d_i - self.lanewidth/2
+            else:
+                d_i = d_i - (self.lanewidth/2 + self.linewidth_white)
+        elif segment.color == segment.YELLOW: # left hand side
+            if(p1[0] > p2[0]):
+                d_i = -d_i - self.lanewidth/2
+            else:
+                d_i = d_i - (self.lanewidth/2 + self.linewidth_yellow)
+        print "output"
         print d_i, phi_i
         return d_i, phi_i
     

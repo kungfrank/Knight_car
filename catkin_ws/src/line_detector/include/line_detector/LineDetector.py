@@ -46,7 +46,7 @@ class LineDetector(object):
         return edges
 
     def __HoughLine(self, edge):
-        lines = cv2.HoughLinesP(edge, 1, np.pi/180, 30, np.empty(1), minLineLength=10, maxLineGap=1)
+        lines = cv2.HoughLinesP(edge, 1, np.pi/180, 30, np.empty(1), minLineLength=2, maxLineGap=1)
         if lines is not None:
             lines = lines[0]
         else:

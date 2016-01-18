@@ -14,8 +14,8 @@
 			<param name="~fps" value="15"/>
 			<!-- <param name="~height" value="200"/> -->
 			<!-- <param name="~width" value="320"/> -->
-			<param name="~height" value="400"/>
-			<param name="~width" value="640"/>
+			<param name="~height" value="200"/>
+			<param name="~width" value="320"/>
 			<param name="~brightness" value="50"/>
 			<param name="~contrast" value="50"/>
 			<param name="~saturation" value="50"/>
@@ -25,12 +25,12 @@
 			<param name="~white_balance_blue_u" value="50"/>
 		</node>
 		<!-- image rect -->
-		<node machine="$(arg veh)" ns="$(arg camera)" pkg="image_proc" type="image_proc" name="image_proc" output="screen"/>
+		<!-- <node machine="$(arg veh)" ns="$(arg camera)" pkg="image_proc" type="image_proc" name="image_proc" output="screen"/> -->
 
 		<!-- Line detector on laptop -->
 		<node pkg="line_detector" type="line_detector_node.py" name="line_detector" output="screen">
-			<remap from="~image" to="rosberrypi_cam/image_rect_color"/>
-			<!-- <remap from="~image" to="rosberrypi_cam/image_raw"/> -->
+			<!-- <remap from="~image" to="rosberrypi_cam/image_rect_color"/> -->
+			<remap from="~image" to="rosberrypi_cam/image_raw"/>
 		</node>
 
 		<!-- Ground projection -->
@@ -44,6 +44,12 @@
 			<param name="~square_size" value="0.031"/>
 			<param name="~x_offset" value="0.191"/>
 			<param name="~y_offset" value="-0.093"/>
+		</node>
+
+		<!-- Duckiebot visualizer -->
+		<node name="duckiebot_visualizer" pkg="duckiebot_visualizer" type="duckiebot_visualizer.py" output="screen">
+			<param name="~veh_name" value="$(arg veh)"/>
+			<remap from="~segment_list" to="ground_projection/lineseglist_out"/>
 		</node>
 
 		<!--  Lane filter on laptop -->

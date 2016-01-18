@@ -77,7 +77,7 @@ class JoyMapper(object):
         # wheels_cmd_msg.vel_right = self.joy.axes[4]
 
         # Car Steering Mode
-        ratio = 0.875
+        ratio = 1.0
 
         gain = 1.0
         vel_left = gain*(speed - steering)*ratio

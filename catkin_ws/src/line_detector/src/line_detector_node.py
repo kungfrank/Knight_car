@@ -15,7 +15,7 @@ class LineDetectorNode(object):
         
         self.hei_image = self.setupParam("~hei_image", 200)
         self.wid_image = self.setupParam("~wid_image", 320)
-        self.top_cutoff  = self.setupParam("~top_cutoff", 0)
+        self.top_cutoff  = self.setupParam("~top_cutoff", 80)
         
         self.bridge = CvBridge()
         self.detector = LineDetector()
@@ -32,9 +32,11 @@ class LineDetectorNode(object):
 
     def processImage(self,image_msg):
         image_cv = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
+        hei_original = image_cv.shape[0]
+        wid_original = image_cv.shape[1]
         
         # Resize and crop image
-        if self.hei_image!=image_cv.shape[0] or self.wid_image!=image_cv.shape[1]:
+        if self.hei_image!=hei_original or self.wid_image!=wid_original:
             image_cv = cv2.resize(image_cv, (self.wid_image, self.hei_image))
         image_cv = image_cv[self.top_cutoff:,:,:]
 
@@ -56,21 +58,27 @@ class LineDetectorNode(object):
 
         # TODO: Pixel frame to body frame covnersion
 
-        # Add segments to segmentList
+        # Convert to position in original resolution, and add segments to segmentList
         segmentList = SegmentList()
+        arr_cutoff = np.array((0, self.top_cutoff, 0, self.top_cutoff))
+        arr_ratio = np.array((1.*wid_original/self.wid_image, 1.*hei_original/self.hei_image, 1.*wid_original/self.wid_image, 1.*hei_original/self.hei_image))
+  
         if len(lines_white)>0:
             rospy.loginfo("[LineDetectorNode] number of white lines = %s" %(len(lines_white)))
+            lines_white = ((lines_white + arr_cutoff) * arr_ratio).astype('int')
             segmentList.segments.extend(self.toSegmentMsg(lines_white, normals_white, Segment.WHITE))
         if len(lines_yellow)>0:
             rospy.loginfo("[LineDetectorNode] number of yellow lines = %s" %(len(lines_yellow)))
+            lines_yellow = ((lines_yellow + arr_cutoff) * arr_ratio).astype('int')
             segmentList.segments.extend(self.toSegmentMsg(lines_yellow, normals_yellow, Segment.YELLOW))
         if len(lines_red)>0:
             rospy.loginfo("[LineDetectorNode] number of red lines = %s" %(len(lines_red)))
+            lines_red = ((lines_red + arr_cutoff) * arr_ratio).astype('int')
             segmentList.segments.extend(self.toSegmentMsg(lines_red, normals_red, Segment.RED))
         
         # Publish segmentList
         self.pub_lines.publish(segmentList)
-      
+         
         # Publish the frame with lines
         image_msg = self.bridge.cv2_to_imgmsg(self.detector.getImage(), "bgr8")
         self.pub_image.publish(image_msg)

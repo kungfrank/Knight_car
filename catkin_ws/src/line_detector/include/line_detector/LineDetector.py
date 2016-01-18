@@ -8,8 +8,12 @@ class LineDetector(object):
         self.bgr = []
         self.hsv = []
 
+        # self.hei = 200
+        # self.wid = 320
+        # self.top_cutoff = 80
+
         # Color value range in HSV space
-        self.hsv_white1 = np.array([0, 0, 220])
+        self.hsv_white1 = np.array([0, 0, 200])
         self.hsv_white2 = np.array([255, 25, 255]) 
         self.hsv_yellow1 = np.array([25, 100, 200])
         self.hsv_yellow2 = np.array([45, 255, 255]) 
@@ -34,19 +38,18 @@ class LineDetector(object):
         # print 'Color thresholding:' + str(time.time()-tic)
 
 		# binary image processing
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(2, 2))
-        lane = cv2.erode(lane, kernel)
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(4, 4))
-        lane = cv2.dilate(lane, kernel)
-
+        #kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(2, 2))
+        #lane = cv2.erode(lane, kernel)
+        #kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(2, 2))
+        #lane = cv2.dilate(lane, kernel)
         return lane
 
     def __findEdge(self, gray):	
-        edges = cv2.Canny(gray, 10, 30, apertureSize = 3)
+        edges = cv2.Canny(gray, 10, 20, apertureSize = 3)
         return edges
 
     def __HoughLine(self, edge):
-        lines = cv2.HoughLinesP(edge, 1, np.pi/180, 30, np.empty(1), minLineLength=2, maxLineGap=1)
+        lines = cv2.HoughLinesP(edge, 1, np.pi/180, 20, np.empty(1), minLineLength=3, maxLineGap=1)
         if lines is not None:
             lines = lines[0]
         else:
@@ -64,7 +67,7 @@ class LineDetector(object):
        for i in range(len(lines)):
             x1,y1,x2,y2 = lines[i, :]
             dx, dy = normals[i, :]
-            if (x2-x1)*dy-(y2-y1)*dx<0:
+            if (x2-x1)*dy-(y2-y1)*dx>0:
                 lines[i, :] = [x2,y2,x1,y1]
 
     def __findNormal(self, bw, lines):
@@ -109,6 +112,8 @@ class LineDetector(object):
         if len(lines)>0:
             for x1,y1,x2,y2 in lines:
                 cv2.line(self.bgr, (x1,y1), (x2,y2), paint, 2)
+                cv2.circle(self.bgr, (x1,y1), 3, (0,255,0))
+                cv2.circle(self.bgr, (x2,y2), 3, (0,0,255))
 
     def drawNormals(self, lines, normals):
         if len(lines)>0:
@@ -121,8 +126,8 @@ class LineDetector(object):
                 y3 = self.__checkBounds(y3, self.bgr.shape[0])
                 x4 = self.__checkBounds(x4, self.bgr.shape[1])
                 y4 = self.__checkBounds(y4, self.bgr.shape[0])
-                cv2.circle(self.bgr, (x3,y3), 3, (0,255,0))
-                cv2.circle(self.bgr, (x4,y4), 3, (0,0,255))
+                #cv2.circle(self.bgr, (x3,y3), 3, (0,255,0))
+                #cv2.circle(self.bgr, (x4,y4), 3, (0,0,255))
 
     def getLane(self, color):
         return self.__colorFilter(self.bgr, color)

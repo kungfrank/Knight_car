@@ -1,21 +1,22 @@
 <launch>
 	<!-- <group ns="veh_name"> -->
-	<arg name="veh" default="megaman"/> <!-- this should probably get removed later-->
-	<arg name="joy_mode" default="true"/>
+	<arg name="veh"/> <!-- this should probably get removed later-->
+	<!-- <arg name="joy_mode" default="true"/> -->
+	<arg name="imu" default="false"/>
+
 	<include file="$(find duckietown)/machines"/>
 	
 	<group ns="$(arg veh)">
 		<!-- Launch camera on veh-->
-		
-<!-- 		<node machine="$(arg veh)" name="camera_node" pkg="pi_camera" type="camera_node_continuous.py" output="screen"> -->
-<!-- 			<param name="~img_low_framerate" value="30.0"/> -->
-<!-- 			<param name="~img_high_framerate" value="5.0"/> -->
-<!-- 			<param name="~img_low_res_w" value="320"/> -->
-<!-- 			<param name="~img_low_res_h" value="200"/> -->
-<!-- 			<param name="~img_high_res_w" value="640"/> -->
-<!-- 			<param name="~img_high_res_h" value="400"/> -->
-<!-- 			<param name="~uncompress" value="False"/> -->
-<!-- 		</node> -->
+		<node machine="$(arg veh)" name="camera_node" pkg="pi_camera" type="camera_node_continuous.py" output="screen">
+			<param name="~img_low_framerate" value="30.0"/>
+			<param name="~img_high_framerate" value="5.0"/>
+			<param name="~img_low_res_w" value="320"/>
+			<param name="~img_low_res_h" value="200"/>
+			<param name="~img_high_res_w" value="640"/>
+			<param name="~img_high_res_h" value="400"/>
+			<param name="~uncompress" value="False"/>
+		</node>
 
 		<!-- Joy on veh -->
 		<node machine="$(arg veh)" pkg="joy" type="joy_node" name="joy" output="screen">
@@ -28,18 +29,9 @@
 			<param name="~pub_timestep" value="0.02"/>
 		</node>
 
-<!-- 		<node machine="$(arg veh)" pkg="car_supervisor" type="car_supervisor.py" name="car_supervisor" output="screen"> -->
-<!-- 	        <param name="~pub_timestep" value="0.02"/> -->
-<!-- 			<param name="~joystick_mode" value="$(arg joy_mode)"/> -->
-<!-- 			<remap from="~joy_control" to="joy_mapper/joy_control"/> -->
-<!-- 			<remap from="~lane_control" to="lane_controller/lane_control"/> -->
-<!-- 		</node> -->
-
-		<!-- dagu_car -->
-<!-- 		<node machine="$(arg veh)" pkg="dagu_car" type="dagu_differential_drive.py" name="dagu_car" output="screen"> -->
-<!-- 			<remap from="~car_control" to="car_supervisor/car_control"/> -->
-<!-- 			<param name="~car_like_mode" value="false"/> -->
-<!-- 		</node> -->
+		<include file="$(find duckietown)/launch/imu_remote.launch">
+			<arg name="veh" value="$(arg veh)"/>
+		</include>
 
 		<node machine="$(arg veh)" pkg="dagu_car" type="wheels_driver.py" name="wheels_driver" output="screen">
 			<remap from="~wheels_cmd" to="joy_mapper/wheels_cmd"/>

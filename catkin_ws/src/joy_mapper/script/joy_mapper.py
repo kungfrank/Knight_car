@@ -79,14 +79,13 @@ class JoyMapper(object):
 
         # Car Steering Mode
         ratio = self.left_right_ratio
-        
         gain = 1.0
         vel_left = gain*(speed - steering)*ratio
         vel_right = gain*(speed + steering)*(1.0/ratio)
         
         wheels_cmd_msg.vel_left = np.clip(vel_left,-1.0,1.0)
         wheels_cmd_msg.vel_right = np.clip(vel_right,-1.0,1.0)
-        rospy.loginfo("[%s] left %f, right %f" % (self.node_name,self.joy.axes[1],self.joy.axes[4]))
+        rospy.loginfo("[%s] left %f, right %f" % (self.node_name,wheels_cmd_msg.vel_left,wheels_cmd_msg.vel_right))
         self.pub_wheels.publish(wheels_cmd_msg)
 
         # self.last_pub_time = event.current_real

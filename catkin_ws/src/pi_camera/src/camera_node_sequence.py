@@ -58,8 +58,8 @@ class CameraNode(object):
                 rospy.loginfo("[%s] Published the first image." %(self.node_name))
                 self.has_published = True
 
-        self.camera.close()
-        rospy.loginfo("[%s] Shutting down...." %(self.node_name))
+        # self.camera.close()
+        rospy.loginfo("[%s] Stopping stream...." %(self.node_name))
         return
 
     def setupParam(self,param_name,default_value):
@@ -69,7 +69,9 @@ class CameraNode(object):
         return value
 
     def onShutdown():
+        rospy.loginfo("[%s] Closing camera." %(self.node_name))
         self.camera.close()
+        rospy.sleep(rospy.Duration.from_sec(2.0))
         rospy.loginfo("[%s] Shutdown." %(self.node_name))
 
 # def output(publisher):

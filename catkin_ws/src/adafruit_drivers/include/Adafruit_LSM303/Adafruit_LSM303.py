@@ -199,7 +199,7 @@ if __name__ == '__main__':
 
     from time import sleep
 
-    lsm = Adafruit_LSM303(accel_gain=Adafruit_LSM303.LSM303_ACCEL_GAIN_4)
+    lsm = Adafruit_LSM303()
 
     print '[(Accelerometer X, Y, Z), (Magnetometer X, Y, Z, orientation)]'
     while True:

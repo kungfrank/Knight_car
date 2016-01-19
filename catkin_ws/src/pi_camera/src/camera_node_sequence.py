@@ -36,10 +36,18 @@ class CameraNode(object):
 
     def startCapturing(self):
         rospy.loginfo("[%s] Start capturing." %(self.node_name))
-        self.camera.capture_sequence(self.gen,'jpeg',use_video_port=True)
+        self.camera.capture_sequence(self.gen,'jpeg',use_video_port=True,splitter_port=0)
+        self.camera.close()
+        rospy.loginfo("[%s] Capture Ended." %(self.node_name))
 
     def grabAndPublish(self,stream,publisher):
-        while not rospy.is_shutdown(): #TODO not being triggere correctly when shutting down.
+        while True: #TODO not being triggere correctly when shutting down.
+            if rospy.is_shutdown():
+                rospy.loginfo("[%s] Stopping stream...." %(self.node_name))
+                # raise StopIteration
+                # yield None
+                return
+
             yield stream
             # Construct image_msg
             image_msg = CompressedImage()
@@ -58,9 +66,6 @@ class CameraNode(object):
                 rospy.loginfo("[%s] Published the first image." %(self.node_name))
                 self.has_published = True
 
-        # self.camera.close()
-        rospy.loginfo("[%s] Stopping stream...." %(self.node_name))
-        return
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -70,6 +75,8 @@ class CameraNode(object):
 
     def onShutdown():
         rospy.loginfo("[%s] Closing camera." %(self.node_name))
+        # self.camera.stop_recording(splitter_port=0)
+        # rospy.sleep(rospy.Duration.from_sec(2.0))
         self.camera.close()
         rospy.sleep(rospy.Duration.from_sec(2.0))
         rospy.loginfo("[%s] Shutdown." %(self.node_name))
@@ -101,8 +108,8 @@ class CameraNode(object):
 if __name__ == '__main__': 
     rospy.init_node('camera',anonymous=False)
     camera_node = CameraNode()
-    camera_node.startCapturing()
     rospy.on_shutdown(camera_node.onShutdown)
+    camera_node.startCapturing()
     # pub_image = rospy.Publisher("~image/compressed",CompressedImage,queue_size=1)
     # pub_image = rospy.Publisher("~image",Image,queue_size=1)
     # resolution = (320,240)

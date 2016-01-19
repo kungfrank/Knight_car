@@ -75,11 +75,10 @@ class Adafruit_LSM303(Adafruit_I2C):
     LSM303_ACCEL_GAIN_16 = 0x30 # +/- 16 g
 
     # Sensitivity settings for getAccelSens()
-    LSM303_ACCEL_SENSITIVITY_2  = 0.0001 # 1  mg/LSB
-    LSM303_ACCEL_SENSITIVITY_4  = 0.0002 # 2  mg/LSB
-    LSM303_ACCEL_SENSITIVITY_8  = 0.0004 # 4  mg/LSB
-    LSM303_ACCEL_SENSITIVITY_16 = 0.0012 # 12 mg/LSB As in the datasheet, but why?
-
+    LSM303_ACCEL_SENSITIVITY_2  = 0.001 # 1  mg/LSB
+    LSM303_ACCEL_SENSITIVITY_4  = 0.002 # 2  mg/LSB
+    LSM303_ACCEL_SENSITIVITY_8  = 0.004 # 4  mg/LSB
+    LSM303_ACCEL_SENSITIVITY_16 = 0.012 # 12 mg/LSB As in the datasheet, but why?
 
     def __init__(self, accel_gain=LSM303_ACCEL_GAIN_2,
                  mag_gain=LSM303_MAG_GAIN_1_3,
@@ -200,7 +199,7 @@ if __name__ == '__main__':
 
     from time import sleep
 
-    lsm = Adafruit_LSM303()
+    lsm = Adafruit_LSM303(accel_gain=Adafruit_LSM303.LSM303_ACCEL_GAIN_4)
 
     print '[(Accelerometer X, Y, Z), (Magnetometer X, Y, Z, orientation)]'
     while True:

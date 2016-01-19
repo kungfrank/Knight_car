@@ -9,6 +9,8 @@ from sensor_msgs.msg import CompressedImage
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 import time
+import signal
+import sys
 
 class CameraNode(object):
     def __init__(self):
@@ -30,6 +32,7 @@ class CameraNode(object):
         self.camera.framerate = self.framerate
         self.camera.resolution = (self.res_w,self.res_h)
 
+        self.is_shutdown = False
         # Setup timer
         self.gen = self.grabAndPublish(self.stream,self.pub_img)
         rospy.loginfo("[%s] Initialized." %(self.node_name))
@@ -38,14 +41,14 @@ class CameraNode(object):
         rospy.loginfo("[%s] Start capturing." %(self.node_name))
         self.camera.capture_sequence(self.gen,'jpeg',use_video_port=True,splitter_port=0)
         self.camera.close()
+        rospy.sleep(rospy.Duration.from_sec(2.0))
         rospy.loginfo("[%s] Capture Ended." %(self.node_name))
 
     def grabAndPublish(self,stream,publisher):
         while True: #TODO not being triggere correctly when shutting down.
-            if rospy.is_shutdown():
+            if self.is_shutdown:
                 rospy.loginfo("[%s] Stopping stream...." %(self.node_name))
                 # raise StopIteration
-                # yield None
                 return
 
             yield stream
@@ -81,6 +84,11 @@ class CameraNode(object):
         rospy.sleep(rospy.Duration.from_sec(2.0))
         rospy.loginfo("[%s] Shutdown." %(self.node_name))
 
+    def signal_handler(self, signal, frame):
+        print "==== Ctrl-C Pressed ==== "
+        self.is_shutdown = True
+        
+
 # def output(publisher):
 #     stream = io.BytesIO()
 #     # image_msg = Image()
@@ -105,9 +113,14 @@ class CameraNode(object):
 #         stream.truncate()
 #     return
 
+
+
+
+
 if __name__ == '__main__': 
-    rospy.init_node('camera',anonymous=False)
+    rospy.init_node('camera',anonymous=False,disable_signals=True)
     camera_node = CameraNode()
+    signal.signal(signal.SIGINT, camera_node.signal_handler)
     rospy.on_shutdown(camera_node.onShutdown)
     camera_node.startCapturing()
     # pub_image = rospy.Publisher("~image/compressed",CompressedImage,queue_size=1)

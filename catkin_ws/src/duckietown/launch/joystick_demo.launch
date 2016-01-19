@@ -12,8 +12,8 @@
 		<!-- Joy mapper on veh -->
 		<node pkg="joy_mapper" type="joy_mapper.py" name="joy_mapper" output="screen">
 			<param name="~left_right_ratio" value="1.0"/>
-			<param name="~speed_gain" value="0.6"/>
-			<param name="~steer_gain" value="0.6"/>
+			<param name="~speed_gain" value="0.5"/>
+			<param name="~steer_gain" value="0.4"/>
 			<remap from="~wheels_cmd" to="wheels_driver/wheels_cmd"/> 
 		</node>
 		<!-- Wheel Driver -->

@@ -1,0 +1,20 @@
+<launch>
+	<arg name="veh" />
+	<group ns="$(arg veh)">
+		<!-- Joy on veh -->
+		<node pkg="joy" type="joy_node" name="joy" output="screen">
+		    <param name="~dev" value="/dev/input/js0"/>
+		    <param name="~deadzone" value="0.01"/>
+		</node>
+
+		<!-- Joy mapper on veh -->
+		<node pkg="joy_mapper" type="joy_mapper.py" name="joy_mapper" output="screen">
+			<param name="~left_right_ratio" value="1.0"/>
+			<param name="~speed_gain" value="0.6"/>
+			<param name="~steer_gain" value="0.6"/>
+			<remap from="~wheels_cmd" to="wheels_driver/wheels_cmd"/> 
+		</node>
+		<!-- Wheel Driver -->
+		<node pkg="dagu_car" type="wheels_driver.py" name="wheels_driver" output="screen"/>
+	</group>
+</launch>

@@ -2,7 +2,7 @@
 import rospy
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
-from sensor_msgs.msg import CompressedImage
+from sensor_msgs.msg import CompressedImage, Image
 from duckietown_msgs.msg import Segment, SegmentList, Pixel
 from line_detector.LineDetector import *
 from visualization_msgs.msg import Marker
@@ -34,9 +34,7 @@ class LineDetectorNode(object):
     def processImage(self,image_msg):
         np_arr = np.fromstring(image_msg.data, np.uint8)
         image_cv = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
-        print "image acquired"
-        print image_cv.shape()
-#        image_cv = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
+        #image_cv = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
         hei_original = image_cv.shape[0]
         wid_original = image_cv.shape[1]
         

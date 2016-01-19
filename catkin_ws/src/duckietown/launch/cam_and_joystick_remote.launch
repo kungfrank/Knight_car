@@ -1,10 +1,9 @@
 <launch>
-	<!-- <group ns="veh_name"> -->
-	<arg name="veh"/> <!-- this should probably get removed later-->
-	<!-- <arg name="joy_mode" default="true"/> -->
-	<arg name="imu" default="false"/>
+	<arg name="veh" doc="Set the name of the vehicle. Corresponds to the names in the machines file."/>
+	<arg name="imu" default="false" doc="Whether or not the imu nodes should be launched. Default to false."/>
 
 	<include file="$(find duckietown)/machines"/>
+
 	<group ns="$(arg veh)">
 		<!-- Launch camera on veh-->
 		<node machine="$(arg veh)" name="camera_node" pkg="pi_camera" type="camera_node_continuous.py" output="screen">
@@ -17,6 +16,12 @@
 			<param name="~uncompress" value="False"/>
 		</node>
 
+		<group if="$(arg imu)">
+			<include file="$(find duckietown)/launch/imu_remote.launch">
+				<arg name="veh" value="$(arg veh)"/>
+			</include>
+		</group>
+
 		<!-- Joy on veh -->
 		<node machine="$(arg veh)" pkg="joy" type="joy_node" name="joy" output="screen">
 		    <param name="~dev" value="/dev/input/js0"/>
@@ -25,20 +30,12 @@
 
 		<!-- Joy mapper on veh -->
 		<node machine="$(arg veh)" pkg="joy_mapper" type="joy_mapper.py" name="joy_mapper" output="screen">
-			<param name="~pub_timestep" value="0.02"/>
 			<param name="~left_right_ratio" value="1.0"/>
-			<param name="~speed_gain" value="0.75"/>
-			<param name="~steer_gain" value="0.75"/>
+			<param name="~speed_gain" value="0.6"/>
+			<param name="~steer_gain" value="0.6"/>
+			<remap from="~wheels_cmd" to="wheels_driver/wheels_cmd"/> 
 		</node>
-
-		<group if="$(arg imu)">
-			<include file="$(find duckietown)/launch/imu_remote.launch">
-				<arg name="veh" value="$(arg veh)"/>
-			</include>
-		</group>
-
-		<node machine="$(arg veh)" pkg="dagu_car" type="wheels_driver.py" name="wheels_driver" output="screen">
-			<remap from="~wheels_cmd" to="joy_mapper/wheels_cmd"/>
-		</node>
+		<!-- Wheel Driver -->
+		<node machine="$(arg veh)" pkg="dagu_car" type="wheels_driver.py" name="wheels_driver" output="screen"/>
 	</group>
 </launch>

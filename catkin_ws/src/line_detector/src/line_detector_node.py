@@ -32,13 +32,12 @@ class LineDetectorNode(object):
         return value
 
     def processImage(self,image_msg):
-        np_arr = np.fromstring(image_msg.data, np.uint8)
-        image_cv = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
+        image_cv = cv2.imdecode(np.fromstring(image_msg.data, np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
         #image_cv = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
-        hei_original = image_cv.shape[0]
-        wid_original = image_cv.shape[1]
         
         # Resize and crop image
+        hei_original = image_cv.shape[0]
+        wid_original = image_cv.shape[1]
         if self.hei_image!=hei_original or self.wid_image!=wid_original:
             image_cv = cv2.resize(image_cv, (self.wid_image, self.hei_image))
         image_cv = image_cv[self.top_cutoff:,:,:]

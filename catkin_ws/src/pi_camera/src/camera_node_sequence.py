@@ -14,37 +14,29 @@ class CameraNode(object):
     def __init__(self):
         self.node_name = rospy.get_name()
         rospy.loginfo("[%s] Initializing......" %(self.node_name))
-        # TODO: load parameters
-        self.framerate_for_low = 90.0
 
-        # TODO: load camera info yaml file
-        self.pub_img_low = rospy.Publisher("~img_low/compressed",CompressedImage,queue_size=1)
-        # self.pub_img_high= rospy.Publisher("~img_high/compressed",CompressedImage,queue_size=1)
+        self.framerate = self.setupParam("~framerate",60.0)
+        self.res_w = self.setupParam("~res_w",320)
+        self.res_h = self.setupParam("~res_h",200)
+        # self.uncompress = self.setupParam("~uncompress",False)
         
         self.has_published = False
+        self.pub_img= rospy.Publisher("~image/compressed",CompressedImage,queue_size=1)
 
         # Setup PiCamera
         self.stream = io.BytesIO()
         self.bridge = CvBridge()
         self.camera = PiCamera()
-        self.camera.framerate = self.framerate_for_low
-        self.camera.resolution = (320,200)
-        # TODO setup other parameters of the camera such as exposure and white balance etc
+        self.camera.framerate = self.framerate
+        self.camera.resolution = (self.res_w,self.res_h)
 
         # Setup timer
-        # self.timer_img_low = rospy.Timer(rospy.Duration.from_sec(1.0/self.framerate_for_low),self.cbTimerLow)
-        self.gen = self.grabAndPublish(self.stream,self.pub_img_low)
+        self.gen = self.grabAndPublish(self.stream,self.pub_img)
         rospy.loginfo("[%s] Initialized." %(self.node_name))
 
     def startCapturing(self):
         rospy.loginfo("[%s] Start capturing." %(self.node_name))
         self.camera.capture_sequence(self.gen,'jpeg',use_video_port=True)
-
-    def cbTimerLow(self,event):
-        self.grabAndPublish(self.stream,self.pub_img_low)
-    
-    def cbTimerHigh(self,event):
-        self.grabAndPublish(self.stream,self.pub_img_high)
 
     def grabAndPublish(self,stream,publisher):
         while not rospy.is_shutdown(): #TODO not being triggere correctly when shutting down.
@@ -70,8 +62,14 @@ class CameraNode(object):
         rospy.loginfo("[%s] Shutting down...." %(self.node_name))
         return
 
+    def setupParam(self,param_name,default_value):
+        value = rospy.get_param(param_name,default_value)
+        rospy.set_param(param_name,value) #Write to parameter server for transparancy
+        rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
+        return value
+
     def onShutdown():
-        # self.camera.close()
+        self.camera.close()
         rospy.loginfo("[%s] Shutdown." %(self.node_name))
 
 # def output(publisher):

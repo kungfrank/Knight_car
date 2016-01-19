@@ -14,7 +14,7 @@ class LineDetectorNode(object):
     def __init__(self):
         self.node_name = "Line Detector"
         
-        self.hei_image = self.setupParam("~hei_image", 200)
+        self.hei_image = self.setupParam("~hei_image", 240)
         self.wid_image = self.setupParam("~wid_image", 320)
         self.top_cutoff  = self.setupParam("~top_cutoff", 80)
         

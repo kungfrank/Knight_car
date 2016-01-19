@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>joy_mapper</name>
+  <name>adafruit_imu</name>
   <version>0.0.0</version>
   <description>The Adafruit IMU package for duckietown. Reads sensor data from adafruit IMU and publishes it to sensor_msgs.Imu and sensor_msgs.MagneticField.</description>
 

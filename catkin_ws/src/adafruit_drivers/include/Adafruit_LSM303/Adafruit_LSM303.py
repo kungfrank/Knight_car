@@ -177,7 +177,7 @@ class Adafruit_LSM303(Adafruit_I2C):
         list = self.mag.readList(self.LSM303_REGISTER_MAG_OUT_X_H_M, 6)
         res.append((self.getMagXYSens(self.mag16(list, 0)),
                     self.getMagXYSens(self.mag16(list, 2)),
-                    self.getMagXSens(self.mag16(list, 4)) ))
+                    self.getMagZSens(self.mag16(list, 4)) ))
         # ToDo: Calculate orientation
 
         return res

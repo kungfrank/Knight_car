@@ -183,14 +183,14 @@ class Adafruit_LSM303(Adafruit_I2C):
         return res
 
 
-    def setAccelGain(accel_gain):
+    def setAccelGain(self, accel_gain):
         reg = accel_gain
         if self.hires:
             reg |= 0b00001000
         self.accel.write8(self.LSM303_REGISTER_ACCEL_CTRL_REG4_A, reg)
         self.accel_gain = accel_gain
 
-    def setMagGain(mag_gain):
+    def setMagGain(self, mag_gain):
         self.mag.write8(LSM303_REGISTER_MAG_CRB_REG_M, mag_gain)
         self.mag_gain = mag_gain
 

@@ -13,7 +13,7 @@ class LineDetector(object):
         # self.top_cutoff = 80
 
         # Color value range in HSV space
-        self.hsv_white1 = np.array([0, 0, 200])
+        self.hsv_white1 = np.array([0, 0, 180])
         self.hsv_white2 = np.array([255, 25, 255]) 
         self.hsv_yellow1 = np.array([25, 100, 200])
         self.hsv_yellow2 = np.array([45, 255, 255]) 
@@ -26,26 +26,28 @@ class LineDetector(object):
         # tic = time.time()
         # threshold colors in HSV space
         if color == 'white':
-            lane = cv2.inRange(self.hsv, self.hsv_white1, self.hsv_white2)
+            bw = cv2.inRange(self.hsv, self.hsv_white1, self.hsv_white2)
         elif color == 'yellow':
-            lane = cv2.inRange(self.hsv, self.hsv_yellow1, self.hsv_yellow2)
+            bw = cv2.inRange(self.hsv, self.hsv_yellow1, self.hsv_yellow2)
         elif color == 'red':
-            lane1 = cv2.inRange(self.hsv, self.hsv_red1, self.hsv_red2)
-            lane2 = cv2.inRange(self.hsv, self.hsv_red3, self.hsv_red4)
-            lane = cv2.bitwise_or(lane1, lane2)
+            bw1 = cv2.inRange(self.hsv, self.hsv_red1, self.hsv_red2)
+            bw2 = cv2.inRange(self.hsv, self.hsv_red3, self.hsv_red4)
+            bw = cv2.bitwise_or(bw1, bw2)
         else:
 	        raise Exception('Error: Undefined color strings...')
         # print 'Color thresholding:' + str(time.time()-tic)
 
-		# binary image processing
-        #kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(2, 2))
-        #lane = cv2.erode(lane, kernel)
-        #kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(2, 2))
-        #lane = cv2.dilate(lane, kernel)
-        return lane
+		# binary dilation
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3, 3))
+        bw = cv2.dilate(bw, kernel)
+        
+        # refine edge
+        edge_color = cv2.bitwise_and(bw, self.edges)
+
+        return bw, edge_color
 
     def __findEdge(self, gray):	
-        edges = cv2.Canny(gray, 10, 20, apertureSize = 3)
+        edges = cv2.Canny(gray, 80, 200, apertureSize = 3)
         return edges
 
     def __HoughLine(self, edge):
@@ -78,10 +80,10 @@ class LineDetector(object):
                 x1,y1,x2,y2 = line
                 dx = 1.*(y2-y1)/((x1-x2)**2+(y1-y2)**2)**0.5
                 dy = 1.*(x1-x2)/((x1-x2)**2+(y1-y2)**2)**0.5
-                x3 = int((x1+x2)/2. - 2.*dx)
-                y3 = int((y1+y2)/2. - 2.*dy)
-                x4 = int((x1+x2)/2. + 2.*dx)
-                y4 = int((y1+y2)/2. + 2.*dy)
+                x3 = int((x1+x2)/2. - 3.*dx)
+                y3 = int((y1+y2)/2. - 3.*dy)
+                x4 = int((x1+x2)/2. + 3.*dx)
+                y4 = int((y1+y2)/2. + 3.*dy)
                 x3 = self.__checkBounds(x3, bw.shape[1])
                 y3 = self.__checkBounds(y3, bw.shape[0])
                 x4 = self.__checkBounds(x4, bw.shape[1])
@@ -90,21 +92,21 @@ class LineDetector(object):
                     normals[cnt,:] = [dx, dy] 
                 else:
                     normals[cnt,:] = [-dx, -dy]
-
             self.__correctPixelOrdering(lines, normals)
         return normals
 
     def detectLines(self, color):
-        bw = self.__colorFilter(color)
-        edges = self.__findEdge(bw)
-        lines = self.__HoughLine(edges)
+        bw, edge_color = self.__colorFilter(color)
+        # edges = self.__findEdge(bw)
+        lines = self.__HoughLine(edge_color)
         normals = self.__findNormal(bw, lines)
         return lines, normals
 
     def setImage(self, bgr):
         self.bgr = np.copy(bgr)
         self.hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
-   
+        self.edges = self.__findEdge(self.bgr)
+  
     def getImage(self):
         return self.bgr
  
@@ -160,8 +162,9 @@ def _main():
         detector.drawNormals(lines_white, normals_white)
         detector.drawNormals(lines_red, normals_red)
 
-        cv2.imwrite('lines_with_normal.png', detector.getImg()) 
-        cv2.imshow('frame', detector.getImg())
+        cv2.imwrite('lines_with_normal.png', detector.getImage()) 
+        cv2.imshow('frame', detector.getImage())
+        cv2.imshow('edge', detector.edges)
         cv2.waitKey(0)
 
     elif len(sys.argv)==1:
@@ -199,6 +202,7 @@ def _main():
             detector.drawNormals(lines_red, normals_red)
 
             cv2.imshow('Line Detector', detector.getImage())
+            cv2.imshow('Edge', detector.edges)
             cv2.waitKey(30)
 
     else:

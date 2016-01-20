@@ -4,13 +4,15 @@ import cv2
 import io
 import numpy as np
 from cv_bridge import CvBridge, CvBridgeError
-from sensor_msgs.msg import Image
-from sensor_msgs.msg import CompressedImage
+from sensor_msgs.msg import Image, CompressedImage, CameraInfo
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 import time
 import signal
 import sys
+import rospkg
+import os.path
+import yaml
 
 class CameraNode(object):
     def __init__(self):
@@ -20,14 +22,32 @@ class CameraNode(object):
         self.framerate = self.setupParam("~framerate",60.0)
         self.res_w = self.setupParam("~res_w",320)
         self.res_h = self.setupParam("~res_h",200)
-        # self.uncompress = self.setupParam("~uncompress",False)
-        
+        self.decompress = self.setupParam("~decompress",False)
+        self.cali_file_name = self.setupParam("~cali_file_name","default")
+
+        rospack = rospkg.RosPack()
+        self.cali_file = rospack.get_path('pi_camera') + "/calibration/" + self.cali_file_name + ".yaml" 
+        self.camera_info_msg = None
+
+        if not os.path.isfile(self.cali_file):
+            rospy.logwarn("[%s] Can't find calibration file: %s.\nUsing default calibration instead." %(self.node_name,self.cali_file))
+            self.cali_file = rospack.get_path('pi_camera') + "/calibration/default.yaml" 
+
+        rospy.loginfo("[%s] Using calibration file: %s" %(self.node_name,self.cali_file))
+        self.camera_info_msg = self.loadCameraInfo(self.cali_file)
+        self.pub_camera_info = rospy.Publisher("~camera_info",CameraInfo,queue_size=1,latch=True)
+        self.pub_camera_info.publish(self.camera_info_msg)
+
         self.has_published = False
-        self.pub_img= rospy.Publisher("~image/compressed",CompressedImage,queue_size=1)
+        
+        if self.decompress:
+            self.pub_img= rospy.Publisher("~image/raw",Image,queue_size=1)
+            self.bridge = CvBridge()
+        else:
+            self.pub_img= rospy.Publisher("~image/compressed",CompressedImage,queue_size=1)
 
         # Setup PiCamera
         self.stream = io.BytesIO()
-        self.bridge = CvBridge()
         self.camera = PiCamera()
         self.camera.framerate = self.framerate
         self.camera.resolution = (self.res_w,self.res_h)
@@ -53,14 +73,25 @@ class CameraNode(object):
 
             yield stream
             # Construct image_msg
-            image_msg = CompressedImage()
-            image_msg.header.stamp = rospy.Time.now()
-            image_msg.format = "jpeg"
             # Grab image from stream
             stream.seek(0)
-            image_msg.data = stream.getvalue()
-            # Publish 
+            stream_data = stream.getvalue()
+            stamp = rospy.Time.now()
+            if not self.decompress:
+                # Generate compressed image
+                image_msg = CompressedImage()
+                image_msg.format = "jpeg"
+                image_msg.data = stream_data
+            else:
+                # Generate raw image
+                image_msg = Image()
+                data = np.fromstring(stream_data, dtype=np.uint8)  #320 by 240 90Hz
+                image = cv2.imdecode(data, cv2.CV_LOAD_IMAGE_COLOR) # drop to about 60Hz
+                image_msg = self.bridge.cv2_to_imgmsg(image) # drop to about 30hz..
+
+            image_msg.header.stamp = stamp
             publisher.publish(image_msg)
+            
             # Clear stream
             stream.seek(0)
             stream.truncate()
@@ -69,6 +100,7 @@ class CameraNode(object):
                 rospy.loginfo("[%s] Published the first image." %(self.node_name))
                 self.has_published = True
 
+            rospy.sleep(rospy.Duration.from_sec(0.001))
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -76,7 +108,7 @@ class CameraNode(object):
         rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
         return value
 
-    def onShutdown():
+    def onShutdown(self):
         rospy.loginfo("[%s] Closing camera." %(self.node_name))
         # self.camera.stop_recording(splitter_port=0)
         # rospy.sleep(rospy.Duration.from_sec(2.0))
@@ -88,6 +120,18 @@ class CameraNode(object):
         print "==== Ctrl-C Pressed ==== "
         self.is_shutdown = True
         
+    def loadCameraInfo(self, filename):
+        stream = file(filename, 'r')
+        calib_data = yaml.load(stream)
+        cam_info = CameraInfo()
+        cam_info.width = calib_data['image_width']
+        cam_info.height = calib_data['image_height']
+        cam_info.K = calib_data['camera_matrix']['data']
+        cam_info.D = calib_data['distortion_coefficients']['data']
+        cam_info.R = calib_data['rectification_matrix']['data']
+        cam_info.P = calib_data['projection_matrix']['data']
+        cam_info.distortion_model = calib_data['distortion_model']
+        return cam_info
 
 # def output(publisher):
 #     stream = io.BytesIO()

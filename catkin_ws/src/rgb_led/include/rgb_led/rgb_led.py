@@ -35,7 +35,7 @@ class RGB_LED:
     def setRGBint24(self, led, color):
         r = color >> 16 & 0xFF
         g = color >> 8 & 0xFF
-        b = color >> 8 & 0xFF
+        b = color >> 0 & 0xFF
         self.setRGBvint8(led, [r, g, b])
         
     def setRGBvint8(self, led, color):

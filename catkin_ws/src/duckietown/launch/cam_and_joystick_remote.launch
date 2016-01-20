@@ -13,6 +13,7 @@
             <param name="~framerate" value="30.0"/>
             <param name="~res_w" value="640"/>
             <param name="~res_h" value="480"/>
+            <param name="~decompress" value="false"/>
         </node>
 
         <group if="$(arg imu)">

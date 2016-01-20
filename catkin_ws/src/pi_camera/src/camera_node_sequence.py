@@ -4,12 +4,15 @@ import cv2
 import io
 import numpy as np
 from cv_bridge import CvBridge, CvBridgeError
-from sensor_msgs.msg import Image, CompressedImage
+from sensor_msgs.msg import Image, CompressedImage, CameraInfo
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 import time
 import signal
 import sys
+import rospkg
+import os.path
+import yaml
 
 class CameraNode(object):
     def __init__(self):
@@ -20,8 +23,21 @@ class CameraNode(object):
         self.res_w = self.setupParam("~res_w",320)
         self.res_h = self.setupParam("~res_h",200)
         self.decompress = self.setupParam("~decompress",False)
-        # self.uncompress = self.setupParam("~uncompress",False)
-        
+        self.cali_file_name = self.setupParam("~cali_file_name","default")
+
+        rospack = rospkg.RosPack()
+        self.cali_file = rospack.get_path('pi_camera') + "/calibration/" + self.cali_file_name + ".yaml" 
+        self.camera_info_msg = None
+
+        if not os.path.isfile(self.cali_file):
+            rospy.logwarn("[%s] Can't find calibration file: %s.\nUsing default calibration instead." %(self.node_name,self.cali_file))
+            self.cali_file = rospack.get_path('pi_camera') + "/calibration/default.yaml" 
+
+        rospy.loginfo("[%s] Using calibration file: %s" %(self.node_name,self.cali_file))
+        self.camera_info_msg = self.loadCameraInfo(self.cali_file)
+        self.pub_camera_info = rospy.Publisher("~camera_info",CameraInfo,queue_size=1,latch=True)
+        self.pub_camera_info.publish(self.camera_info_msg)
+
         self.has_published = False
         
         if self.decompress:
@@ -83,7 +99,7 @@ class CameraNode(object):
             if not self.has_published:
                 rospy.loginfo("[%s] Published the first image." %(self.node_name))
                 self.has_published = True
-                
+
             rospy.sleep(rospy.Duration.from_sec(0.001))
 
     def setupParam(self,param_name,default_value):
@@ -104,6 +120,18 @@ class CameraNode(object):
         print "==== Ctrl-C Pressed ==== "
         self.is_shutdown = True
         
+    def loadCameraInfo(self, filename):
+        stream = file(filename, 'r')
+        calib_data = yaml.load(stream)
+        cam_info = CameraInfo()
+        cam_info.width = calib_data['image_width']
+        cam_info.height = calib_data['image_height']
+        cam_info.K = calib_data['camera_matrix']['data']
+        cam_info.D = calib_data['distortion_coefficients']['data']
+        cam_info.R = calib_data['rectification_matrix']['data']
+        cam_info.P = calib_data['projection_matrix']['data']
+        cam_info.distortion_model = calib_data['distortion_model']
+        return cam_info
 
 # def output(publisher):
 #     stream = io.BytesIO()

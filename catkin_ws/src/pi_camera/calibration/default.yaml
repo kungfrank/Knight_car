@@ -1,6 +1,6 @@
 image_width: 640
 image_height: 400
-camera_name: /megaman/rosberrypi_cam
+camera_name: /default/pi_camera
 camera_matrix:
   rows: 3
   cols: 3

@@ -12,12 +12,6 @@
 
     <group ns="$(arg veh)">
         <!-- Launch camera on veh-->
-        <group if="$(arg camera)">
-            <include file="$(find pi_camera)/launch/camera_node.launch">
-                <arg name="veh" value="$(arg veh)"/>
-            </include>
-        </group>
-
         <group if="$(arg imu)">
             <include file="$(find duckietown)/launch/imu_remote.launch">
                 <arg name="veh" value="$(arg veh)"/>
@@ -43,4 +37,11 @@
         <!-- Wheel Driver -->
         <node if="$(arg drive)" machine="$(arg veh)" pkg="dagu_car" type="wheels_driver.py" name="wheels_driver" output="screen"/>
     </group>
+
+    <group if="$(arg camera)">
+        <include file="$(find pi_camera)/launch/camera_node.launch">
+            <arg name="veh" value="$(arg veh)"/>
+        </include>
+    </group>
+
 </launch>

@@ -8,10 +8,6 @@ class LineDetector(object):
         self.bgr = []
         self.hsv = []
 
-        # self.hei = 200
-        # self.wid = 320
-        # self.top_cutoff = 80
-
         # Color value range in HSV space
         self.hsv_white1 = np.array([0, 0, 200])
         self.hsv_white2 = np.array([255, 100, 255]) 
@@ -128,8 +124,8 @@ class LineDetector(object):
                 y3 = self.__checkBounds(y3, self.bgr.shape[0])
                 x4 = self.__checkBounds(x4, self.bgr.shape[1])
                 y4 = self.__checkBounds(y4, self.bgr.shape[0])
-                #cv2.circle(self.bgr, (x3,y3), 3, (0,255,0))
-                #cv2.circle(self.bgr, (x4,y4), 3, (0,0,255))
+                cv2.circle(self.bgr, (x3,y3), 3, (0,255,0))
+                cv2.circle(self.bgr, (x4,y4), 3, (0,0,255))
 
     def getLane(self, color):
         return self.__colorFilter(self.bgr, color)

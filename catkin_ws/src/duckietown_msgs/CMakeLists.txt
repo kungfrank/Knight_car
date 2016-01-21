@@ -59,6 +59,7 @@ add_message_files(
   TagDetection.msg
   AprilTags.msg
   Pixel.msg
+  Vector2D.msg
   Segment.msg
   SegmentList.msg
 )

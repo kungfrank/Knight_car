@@ -3,12 +3,11 @@ import rospy
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import CompressedImage, Image
-from duckietown_msgs.msg import Segment, SegmentList, Pixel
+from duckietown_msgs.msg import Segment, SegmentList, Pixel, Vector2D
 from line_detector.LineDetector import *
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Point
 import numpy as np
-import time
 
 class LineDetectorNode(object):
     def __init__(self):
@@ -16,7 +15,7 @@ class LineDetectorNode(object):
         
         self.hei_image = self.setupParam("~hei_image", 240)
         self.wid_image = self.setupParam("~wid_image", 320)
-        self.top_cutoff  = self.setupParam("~top_cutoff", 80)
+        self.top_cutoff  = self.setupParam("~top_cutoff", 90)
         
         self.bridge = CvBridge()
         self.detector = LineDetector()
@@ -54,11 +53,9 @@ class LineDetectorNode(object):
         self.detector.drawLines(lines_white, (0,0,0))
         self.detector.drawLines(lines_yellow, (255,0,0))
         self.detector.drawLines(lines_red, (0,255,0))
-        self.detector.drawNormals(lines_white, normals_white)
-        self.detector.drawNormals(lines_yellow, normals_yellow)
-        self.detector.drawNormals(lines_red, normals_red)
-
-        # TODO: Pixel frame to body frame covnersion
+        #self.detector.drawNormals(lines_white, normals_white)
+        #self.detector.drawNormals(lines_yellow, normals_yellow)
+        #self.detector.drawNormals(lines_red, normals_red)
 
         # Convert to position in original resolution, and add segments to segmentList
         segmentList = SegmentList()
@@ -68,15 +65,15 @@ class LineDetectorNode(object):
         if len(lines_white)>0:
             rospy.loginfo("[LineDetectorNode] number of white lines = %s" %(len(lines_white)))
             lines_white = ((lines_white + arr_cutoff) * arr_ratio).astype('int')
-            segmentList.segments.extend(self.toSegmentMsg(lines_white, normals_white, Segment.WHITE))
+            segmentList.segments.extend(self.toSegmentMsg(lines_white, normals_white, Segment.WHITE, wid_original, hei_original))
         if len(lines_yellow)>0:
             rospy.loginfo("[LineDetectorNode] number of yellow lines = %s" %(len(lines_yellow)))
             lines_yellow = ((lines_yellow + arr_cutoff) * arr_ratio).astype('int')
-            segmentList.segments.extend(self.toSegmentMsg(lines_yellow, normals_yellow, Segment.YELLOW))
+            segmentList.segments.extend(self.toSegmentMsg(lines_yellow, normals_yellow, Segment.YELLOW, wid_original, hei_original))
         if len(lines_red)>0:
             rospy.loginfo("[LineDetectorNode] number of red lines = %s" %(len(lines_red)))
             lines_red = ((lines_red + arr_cutoff) * arr_ratio).astype('int')
-            segmentList.segments.extend(self.toSegmentMsg(lines_red, normals_red, Segment.RED))
+            segmentList.segments.extend(self.toSegmentMsg(lines_red, normals_red, Segment.RED, wid_original, hei_original))
         
         # Publish segmentList
         self.pub_lines.publish(segmentList)
@@ -88,27 +85,24 @@ class LineDetectorNode(object):
     def onShutdown(self):
             rospy.loginfo("[LineDetectorNode] Shutdown.")
             
-    def toSegmentMsg(self,  lines, normals, color):
+    def toSegmentMsg(self,  lines, normals, color, wid, hei):
         
         segmentMsgList = []
         for u1,v1,u2,v2,norm_u,norm_v in np.hstack((lines,normals)):
-            pixel1 = Pixel()
-            pixel2 = Pixel()
-            pixel1.u = int(u1)
-            pixel1.v = int(v1)
-            pixel2.u = int(u2)
-            pixel2.v = int(v2)
-            
             segment = Segment()
             segment.color = color
-            segment.pixels[0] = pixel1
-            segment.pixels[1] = pixel2
-            segment.normal_u = norm_u
-            segment.normal_v = norm_v
+            segment.pixels[0].u = int(u1)
+            segment.pixels[0].v = int(v1)
+            segment.pixels[1].u = int(u2)
+            segment.pixels[1].v = int(v2)
+            segment.pixels_normalized[0].x = u1/wid
+            segment.pixels_normalized[0].y = v1/hei
+            segment.pixels_normalized[1].x = u2/wid
+            segment.pixels_normalized[1].y = v2/hei
+            segment.normal.x = norm_u
+            segment.normal.y = norm_v
              
             segmentMsgList.append(segment)
-            # TODO: assign segment.points
-
         return segmentMsgList
 
 if __name__ == '__main__': 

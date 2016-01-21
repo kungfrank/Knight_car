@@ -26,13 +26,13 @@ digraph D {
 	subgraph node_missing{
 		node [fillcolor=red];
 		global_localizer[label="global_localizer (LC)"];
-		intersection_filter[label="intersection_filter (?)"];
+		intersection_filter[label="intersection_filter (LP)"];
 		intersection_controller[label="intersection_controller (MN)"];
 		stop_line_filter[label="stop_line_filter (LP)"];
-		led_detector[label="led_detector (?)"];
-		obj_detector[label="obj_detector (?)"];
-		beeper[label="beeper (?)"];
-		veh_detector[label="veh_detector (?)"];
+		led_detector[label="led_detector (CC)"];
+		obj_detector[label="obj_detector (CC)"];
+		beeper[label="beeper (LP)"];
+		veh_detector[label="veh_detector (CC)"];
 	}
 	subgraph node_designed{
 		node [fillcolor=pink];

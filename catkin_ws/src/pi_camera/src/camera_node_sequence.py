@@ -92,6 +92,7 @@ class CameraNode(object):
                 image_msg = self.bridge.cv2_to_imgmsg(image) # drop to about 30hz..
 
             image_msg.header.stamp = stamp
+            image_msg.header.frame_id = self.frame_id
             publisher.publish(image_msg)
             
             

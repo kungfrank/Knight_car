@@ -8,21 +8,20 @@ from geometry_msgs.msg import PoseStamped
 class vicon_for_car(object):
     def __init__(self):
         self.node_name = rospy.get_name()
-        self.veh_name = self.setupParameter("~veh_name","duckiecar")
+        self.vicon_name = self.setupParameter("~vicon_veh_name","duckiecar")
+        self.veh_name = self.setupParameter("~veh_name","lambo")
         self.vicon_pose = None
         self.lane_reading = LanePose()
 
-        # self.pub_counter = 200
-        # self.sub_counter = 0
-
         # Setup Parameters
         self.pub_timestep = self.setupParameter("~pub_timestep",0.02)  # 50 Hz
+        self.x_offset = self.setupParameter("~x_offset",0.0)
 
         # Publications
         self.pub_lane_reading = rospy.Publisher("~lane_reading", LanePose, queue_size=1)
 
         # Subscriptions
-        self.sub_vicon = rospy.Subscriber(self.veh_name+"/pose", PoseStamped, self.cbPose)
+        self.sub_vicon = rospy.Subscriber("/"+self.vicon_name+"/pose", PoseStamped, self.cbPose)
         
         # timer
         self.pub_timer = rospy.Timer(rospy.Duration.from_sec(self.pub_timestep),self.cbPubPose)
@@ -50,7 +49,7 @@ class vicon_for_car(object):
         quat = self.vicon_pose.pose.orientation
         euler_angles = tf.transformations.euler_from_quaternion([quat.x, quat.y,quat.z,quat.w])
 
-        self.lane_reading.d = self.vicon_pose.pose.position.x
+        self.lane_reading.d = self.vicon_pose.pose.position.x - self.x_offset
         self.lane_reading.phi = euler_angles[2]
         self.lane_reading.header.stamp = self.vicon_pose.header.stamp
         self.pub_lane_reading.publish(self.lane_reading)

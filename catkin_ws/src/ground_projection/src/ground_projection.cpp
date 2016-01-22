@@ -3,6 +3,7 @@
 #include <fstream>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
+#include <sensor_msgs/CameraInfo.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
@@ -24,7 +25,11 @@ class GroundProjection
   ros::ServiceServer service_coord_;
   ros::Subscriber sub_lineseglist_;
   ros::Publisher pub_lineseglist_;
+  sensor_msgs::CameraInfo::ConstPtr camera_info_;
+  cv::Mat intrinsic_;
+  cv::Mat distortion_;
   cv::Mat H_;
+  bool rectified_input_;
   
 public:
   GroundProjection()
@@ -40,6 +45,32 @@ public:
       {
         H_.at<float>(r, c) = h[r*3+c];
       }
+    }
+
+    // TODO: make it automatic?
+    nh_.param<bool>("rectified_input", rectified_input_, false);
+
+    if(!rectified_input_)
+    {
+      std::string camera_info_topic;
+      nh_.param<std::string>("camera_info_path", camera_info_topic, "/rosberrypi_cam/camera_info");
+      ROS_INFO_STREAM(" Waiting for message on topic " << camera_info_topic);
+      camera_info_ = ros::topic::waitForMessage<sensor_msgs::CameraInfo>(camera_info_topic, nh_);
+
+      std::string distortion_model = camera_info_->distortion_model;
+      std::cout << "distortion model: " << distortion_model << std::endl;
+
+      if(distortion_model.compare(std::string("plumb_bob")) != 0)
+        ROS_ERROR("Unexpected distortion_model: %s", distortion_model.c_str());
+      
+      intrinsic_.create(3, 3, CV_32F);
+      for(int r=0; r<3; r++)
+        for(int c=0; c<3; c++)
+          intrinsic_.at<float>(r, c) = camera_info_->K[r*3+c];
+
+      distortion_.create(1, 5, CV_32F);
+      for(int i=0; i<5; i++)
+        distortion_.at<float>(0, i) = camera_info_->D[i];
     }
 
     service_homog_ = nh_.advertiseService("estimate_homography", &GroundProjection::estimate_homography_cb, this);
@@ -60,8 +91,22 @@ public:
 private:
   void estimate_ground_coordinate(duckietown_msgs::Pixel& pixel, geometry_msgs::Point& point)
   {
-    cv::Point3f pt_img (float(pixel.u), float(pixel.v), 1.f);
-    // cv::Point3f pt_img (float(pixel.u*2), float(pixel.v*2), 1.f);
+    // cv::Point3f pt_img(float(pixel.u), float(pixel.v), 1.f);
+    cv::Point3f pt_img (float(pixel.u*2), float(pixel.v*2), 1.f);
+
+    if(!rectified_input_)
+    {
+      // undistort online
+      std::vector<cv::Point2f> vpt_dist;
+      vpt_dist.push_back(cv::Point2f(pt_img.x, pt_img.y));
+      std::vector<cv::Point2f> vpt_undist;
+
+      cv::undistortPoints(vpt_dist, vpt_undist, intrinsic_, distortion_, cv::Mat::eye(3, 3, CV_32F), intrinsic_);
+      
+      pt_img.x = vpt_undist[0].x;
+      pt_img.y = vpt_undist[0].y;
+    }
+    
     cv::Mat pt_gnd_ = H_ * cv::Mat(pt_img);
     cv::Point3f pt_gnd(pt_gnd_);
 

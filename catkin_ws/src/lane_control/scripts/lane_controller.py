@@ -3,7 +3,7 @@ import rospy
 import numpy as np
 import math
 #from duckietown_msgs.msg import CarLanePose
-from duckietown_msgs.msg import CarControl
+from duckietown_msgs.msg import CarControl, WheelsCmd
 # from duckietown_msgs.msg import CarLanePose
 from duckietown_msgs.msg import LanePose
 
@@ -17,11 +17,11 @@ class lane_controller(object):
         # Setup parameters
         self.setGains()
 
-        # Publications
-        self.pub_control = rospy.Publisher("~lane_control",CarControl,queue_size=1)
+        # Publicaiton
+        self.pub_lane_cmd = rospy.Publisher("~lane_control",CarControl,queue_size=1)
+        self.pub_wheels_cmd = rospy.Publisher("~wheels_control",WheelsCmd,queue_size=1)
 
         # Subscriptions
-        # self.sub_car_vicon_ = rospy.Subscriber("~lane_reading", CarLanePose, self.cbPose, queue_size=1)
         self.sub_lane_reading = rospy.Subscriber("~lane_reading", LanePose, self.cbPose, queue_size=1)
 
         # safe shutdown
@@ -44,11 +44,11 @@ class lane_controller(object):
         theta_thres = math.pi / 6
         d_thres = math.fabs(k_theta / k_d) * theta_thres
 
-        self.v_bar = self.setupParameter("~v_bar",v_bar)
-        self.k_d = self.setupParameter("~k_d",k_theta)
-        self.k_theta = self.setupParameter("~k_theta",k_d)
-        self.d_thres = self.setupParameter("~d_thres",theta_thres)
-        self.theta_thres = self.setupParameter("~theta_thres",d_thres)
+        self.v_bar = self.setupParameter("~v_bar",v_bar) # Linear velocity
+        self.k_d = self.setupParameter("~k_d",k_theta) # P gain for theta
+        self.k_theta = self.setupParameter("~k_theta",k_d) # P gain for d
+        self.d_thres = self.setupParameter("~d_thres",theta_thres) # Cap for error in d
+        self.theta_thres = self.setupParameter("~theta_thres",d_thres) # Maximum desire theta
 
     def getGains_event(self, event):
         v_bar = rospy.get_param("~v_bar")
@@ -77,9 +77,29 @@ class lane_controller(object):
         car_control_msg.need_steering = True
         car_control_msg.speed = 0.0
         car_control_msg.steering = 0.0
-        self.pub_control.publish(car_control_msg)
+        self.pub_lane_cmd.publish(car_control_msg)
         rospy.sleep(0.5) #To make sure that it gets published.
         rospy.loginfo("[%s] Shutdown" %self.node_name)
+
+
+    def publishCmd(self,stamp,speed,steering):
+        lane_cmd_msg = CarControl()
+        lane_cmd_msg.header.stamp = stamp
+        lane_cmd_msg.speed = speed
+        lane_cmd_msg.steering = steering
+        lane_cmd_msg.need_steering = True
+
+        wheels_cmd_msg = WheelsCmd()
+        # wheels_cmd_msg.header.stamp = stamp 
+        ratio = 1.0
+        gain = 0.5
+        vel_left = gain*(speed - steering)*ratio
+        vel_right = gain*(speed + steering)*(1.0/ratio)
+        wheels_cmd_msg.vel_left = np.clip(vel_left,-1.0,1.0)
+        wheels_cmd_msg.vel_right = np.clip(vel_right,-1.0,1.0)
+
+        self.pub_lane_cmd.publish(lane_cmd_msg)
+        self.pub_wheels_cmd.publish(wheels_cmd_msg)
 
     def cbPose(self,msg):
         self.lane_reading = msg 
@@ -97,7 +117,8 @@ class lane_controller(object):
         # controller mapping issue
         # car_control_msg.steering = -car_control_msg.steering
         # print "controls: speed %f, steering %f" % (car_control_msg.speed, car_control_msg.steering)
-        self.pub_control.publish(car_control_msg)
+        # self.pub_.publish(car_control_msg)
+        self.publishCmd(msg.header.stamp,self.v_bar,car_control_msg.steering)
 
         # debuging
         # self.pub_counter += 1

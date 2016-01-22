@@ -11,7 +11,7 @@
 		    <param name="~cali_file_name" value="$(arg veh)"/>
 		</node>
 		<!-- <node if="$(arg raw)" machine="$(arg veh)" name="decoder_high_freq" pkg="image_transport" type="republish" output="screen" args="compressed in:=/$(arg veh)/camera_node/image raw out:=/$(arg veh)/camera_node/image/raw"/> -->
-		<node machine="$(arg veh)" name="decoder_node" pkg="pi_camera" type="decoder_node.py" output="screen">
+		<node if="$(arg raw)" machine="$(arg veh)" name="decoder_node" pkg="pi_camera" type="decoder_node.py" output="screen">
 			<remap from="~compressed_image" to="camera_node/image/compressed"/>
 			<remap from="~image/raw" to="camera_node/image/raw"/>
 			<param name="~publish_freq" value="1.0"/>

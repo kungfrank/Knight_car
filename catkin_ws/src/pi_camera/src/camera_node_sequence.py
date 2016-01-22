@@ -19,13 +19,15 @@ class CameraNode(object):
         self.node_name = rospy.get_name()
         rospy.loginfo("[%s] Initializing......" %(self.node_name))
 
-        self.framerate = self.setupParam("~framerate",60.0)
-        self.res_w = self.setupParam("~res_w",320)
-        self.res_h = self.setupParam("~res_h",200)
+        self.framerate = self.setupParam("~framerate",30.0)
+        self.res_w = self.setupParam("~res_w",640)
+        self.res_h = self.setupParam("~res_h",480)
         self.decompress = self.setupParam("~decompress",False)
         self.cali_file_name = self.setupParam("~cali_file_name","default")
+        self.frame_id = rospy.get_namespace() + "camera_optical_frame"
 
         rospack = rospkg.RosPack()
+        # TODO: change this to look into the duckietown/configuration folder
         self.cali_file = rospack.get_path('pi_camera') + "/calibration/" + self.cali_file_name + ".yaml" 
         self.camera_info_msg = None
 
@@ -34,10 +36,10 @@ class CameraNode(object):
             self.cali_file = rospack.get_path('pi_camera') + "/calibration/default.yaml" 
 
         rospy.loginfo("[%s] Using calibration file: %s" %(self.node_name,self.cali_file))
-        self.camera_info_msg = self.loadCameraInfo(self.cali_file)
-        self.pub_camera_info = rospy.Publisher("~camera_info",CameraInfo,queue_size=1,latch=True)
-        self.pub_camera_info.publish(self.camera_info_msg)
-
+        self.camera_info_msg = self.loadCameraInfo(self.cali_file)        
+        self.camera_info_msg.header.frame_id = self.frame_id
+        
+        self.pub_camera_info = rospy.Publisher("~camera_info",CameraInfo,queue_size=1)
         self.has_published = False
         
         if self.decompress:
@@ -92,10 +94,14 @@ class CameraNode(object):
             image_msg.header.stamp = stamp
             publisher.publish(image_msg)
             
+            
             # Clear stream
             stream.seek(0)
             stream.truncate()
 
+            self.camera_info_msg.header.stamp = stamp
+            self.pub_camera_info.publish(self.camera_info_msg)
+            
             if not self.has_published:
                 rospy.loginfo("[%s] Published the first image." %(self.node_name))
                 self.has_published = True

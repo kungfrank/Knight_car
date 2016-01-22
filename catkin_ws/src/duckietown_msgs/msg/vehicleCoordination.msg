@@ -1,3 +1,4 @@
+#Output message of the veh_coordinator
 bool is_good2go
 uint8 light_color
 

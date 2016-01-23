@@ -4,6 +4,7 @@
     <arg name="camera" default="true" doc="True on the camera. Default to true."/>
     <arg name="joy" default="true"/>
     <arg name="drive" default="true"/>
+    <arg name="raw" default="false"/>
 
     <!-- <arg name="bag" default="false" doc="Whether to record bag file. (On the vehicle)"/> -->
     <!-- <arg name="bag_name" default="log" doc="Name of the bag that will be saved."/> -->
@@ -41,7 +42,7 @@
     <group if="$(arg camera)">
         <include file="$(find pi_camera)/launch/camera_node.launch">
             <arg name="veh" value="$(arg veh)"/>
+            <arg name="raw" value="$(arg raw)"/>
         </include>
     </group>
-
 </launch>

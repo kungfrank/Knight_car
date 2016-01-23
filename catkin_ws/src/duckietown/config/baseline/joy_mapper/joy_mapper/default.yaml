@@ -1,0 +1,4 @@
+# Parameters for joy_mapper/joy_mapper
+left_right_ratio: 1.0 
+speed_gain: 0.5
+steer_gain: 0.4

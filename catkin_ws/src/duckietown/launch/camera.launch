@@ -1,0 +1,34 @@
+<launch>
+	<arg name="veh" doc="Name of vehicle. ex: megaman"/>
+	<arg name="local" default="false" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+	<arg name="config" default="baseline" doc="Specify a config."/>
+	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+	<arg name="raw" default="true" doc="If set to true, also publish raw image using decoder."/> 
+
+    	<include file="$(find duckietown)/machines"/>
+	<group ns="$(arg veh)">
+		<node machine="$(arg veh)" name="camera_node" pkg="pi_camera" type="camera_node_sequence.py" output="screen">
+		      <rosparam command="load" file="$(find duckietown)/config/$(arg config)/pi_camera/camera_node/$(arg param_file_name).yaml"/>
+		      <param name="~cali_file_name" value="$(arg param_file_name)"/>
+		      <param name="~config" value="$(arg config)"/>
+		</node>
+
+
+		<group if="$(arg raw)">
+		<!-- Run on local -->
+		       <node if="$(arg local)"  name="decoder_node" pkg="pi_camera" type="decoder_node.py" output="screen">
+		       	     <rosparam command="load" file="$(find duckietown)/config/$(arg config)/pi_camera/decoder_node/$(arg param_file_name).yaml"/>
+		      	     <remap from="~compressed_image" to="camera_node/image/compressed"/>
+		      	     <remap from="~image/raw" to="camera_node/image/raw"/>
+			</node>
+		
+		<!-- Run remote -->
+		
+			<node  unless="$(arg local)" machine="$(arg veh)" name="decoder_node" pkg="pi_camera" type="decoder_node.py" output="screen">
+		      	      <rosparam command="load" file="$(find duckietown)/config/$(arg config)/pi_camera/decoder_node/$(arg param_file_name).yaml"/>
+		      	      <remap from="~compressed_image" to="camera_node/image/compressed"/>
+		      	      <remap from="~image/raw" to="camera_node/image/raw"/>
+			</node>
+		</group>
+	</group>
+</launch>

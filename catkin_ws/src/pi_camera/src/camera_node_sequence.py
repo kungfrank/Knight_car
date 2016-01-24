@@ -18,27 +18,33 @@ class CameraNode(object):
     def __init__(self):
         self.node_name = rospy.get_name()
         rospy.loginfo("[%s] Initializing......" %(self.node_name))
+        print "initializing"
 
         self.framerate = self.setupParam("~framerate",30.0)
         self.res_w = self.setupParam("~res_w",640)
         self.res_h = self.setupParam("~res_h",480)
         self.decompress = self.setupParam("~decompress",False)
+        self.publish_info = self.setupParam("~publish_info",True)
         self.cali_file_name = self.setupParam("~cali_file_name","default")
+        self.config         = self.setupParam("~config","baseline")
         self.frame_id = rospy.get_namespace() + "camera_optical_frame"
 
         rospack = rospkg.RosPack()
-        # TODO: change this to look into the duckietown/configuration folder
-        self.cali_file = rospack.get_path('pi_camera') + "/calibration/" + self.cali_file_name + ".yaml" 
+        self.cali_file = rospack.get_path('duckietown') + "/config/" + self.config + "/calibration/camera_intrinsic/" +  self.cali_file_name + ".yaml" 
         self.camera_info_msg = None
 
         if not os.path.isfile(self.cali_file):
             rospy.logwarn("[%s] Can't find calibration file: %s.\nUsing default calibration instead." %(self.node_name,self.cali_file))
-            self.cali_file = rospack.get_path('pi_camera') + "/calibration/default.yaml" 
+            self.cali_file = rospack.get_path('duckietown') + "/config/" + self.config + "/calibration/camera_intrinsic/default.yaml" 
+
+        if not os.path.isfile(self.cali_file):
+            rospy.signal_shutdown("Found no calibration file ... aborting")
 
         rospy.loginfo("[%s] Using calibration file: %s" %(self.node_name,self.cali_file))
         self.camera_info_msg = self.loadCameraInfo(self.cali_file)        
         self.camera_info_msg.header.frame_id = self.frame_id
         
+
         self.pub_camera_info = rospy.Publisher("~camera_info",CameraInfo,queue_size=1)
         self.has_published = False
         
@@ -100,8 +106,9 @@ class CameraNode(object):
             stream.seek(0)
             stream.truncate()
 
-            self.camera_info_msg.header.stamp = stamp
-            self.pub_camera_info.publish(self.camera_info_msg)
+            if self.publish_info:
+                self.camera_info_msg.header.stamp = stamp
+                self.pub_camera_info.publish(self.camera_info_msg)
             
             if not self.has_published:
                 rospy.loginfo("[%s] Published the first image." %(self.node_name))

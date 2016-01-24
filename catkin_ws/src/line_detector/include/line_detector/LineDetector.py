@@ -9,14 +9,21 @@ class LineDetector(object):
         self.hsv = []
 
         # Color value range in HSV space
-        self.hsv_white1 = np.array([0, 0, 200])
-        self.hsv_white2 = np.array([255, 100, 255]) 
-        self.hsv_yellow1 = np.array([25, 150, 150])
-        self.hsv_yellow2 = np.array([45, 255, 255]) 
-        self.hsv_red1 = np.array([0, 100, 120])
-        self.hsv_red2 = np.array([10, 255, 255]) 
-        self.hsv_red3 = np.array([245, 100, 120])
-        self.hsv_red4 = np.array([255, 255, 255]) 
+        self.hsv_white1 = np.empty
+        self.hsv_white2 = np.empty 
+        self.hsv_yellow1 = np.empty
+        self.hsv_yellow2 = np.empty
+        self.hsv_red1 = np.empty
+        self.hsv_red2 = np.empty
+        self.hsv_red3 = np.empty
+        self.hsv_red4 = np.empty
+
+        self.dilation_kernel_size = 3
+        self.canny_thresholds = [80,200]
+        self.hough_threshold  = 20
+        self.hough_min_line_length = 3
+        self.hough_max_line_gap = 1
+        
 
     def __colorFilter(self, color):
         # tic = time.time()
@@ -34,7 +41,7 @@ class LineDetector(object):
         # print 'Color thresholding:' + str(time.time()-tic)
 
 		# binary dilation
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3, 3))
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(self.dilation_kernel_size, self.dilation_kernel_size))
         bw = cv2.dilate(bw, kernel)
         
         # refine edge
@@ -43,11 +50,11 @@ class LineDetector(object):
         return bw, edge_color
 
     def __findEdge(self, gray):	
-        edges = cv2.Canny(gray, 80, 200, apertureSize = 3)
+        edges = cv2.Canny(gray, self.canny_thresholds[0], self.canny_thresholds[1], apertureSize = 3)
         return edges
 
     def __HoughLine(self, edge):
-        lines = cv2.HoughLinesP(edge, 1, np.pi/180, 20, np.empty(1), minLineLength=3, maxLineGap=1)
+        lines = cv2.HoughLinesP(edge, 1, np.pi/180, self.hough_threshold, np.empty(1), self.hough_min_line_length, self.hough_max_line_gap)
         if lines is not None:
             lines = lines[0]
         else:

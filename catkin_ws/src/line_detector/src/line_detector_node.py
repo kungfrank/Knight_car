@@ -13,26 +13,26 @@ class LineDetectorNode(object):
     def __init__(self):
         self.node_name = "Line Detector"
  
-        self.image_size = rospy.getparam('~img_size')
-        self.top_cutoff = rospy.getparam('~top_cutoff')
+        self.image_size = rospy.get_param('~img_size')
+        self.top_cutoff = rospy.get_param('~top_cutoff')
         
         self.bridge = CvBridge()
         self.detector = LineDetector()
 
-        self.detector.hsv_white1 = np.array(rospy.getparam('~hsv_white1'))
-        self.detector.hsv_white2 = np.array(rospy.getparam('~hsv_white2'))
-        self.detector.hsv_yellow1 = np.array(rospy.getparam('~hsv_yellow1'))
-        self.detector.hsv_yellow2 = np.array(rospy.getparam('~hsv_yellow2'))
-        self.detector.hsv_red1 = np.array(rospy.getparam('~hsv_red1'))
-        self.detector.hsv_red2 = np.array(rospy.getparam('~hsv_red2'))
-        self.detector.hsv_red3 = np.array(rospy.getparam('~hsv_red3'))
-        self.detector.hsv_red4 = np.array(rospy.getparam('~hsv_red4'))
+        self.detector.hsv_white1 = np.array(rospy.get_param('~hsv_white1'))
+        self.detector.hsv_white2 = np.array(rospy.get_param('~hsv_white2'))
+        self.detector.hsv_yellow1 = np.array(rospy.get_param('~hsv_yellow1'))
+        self.detector.hsv_yellow2 = np.array(rospy.get_param('~hsv_yellow2'))
+        self.detector.hsv_red1 = np.array(rospy.get_param('~hsv_red1'))
+        self.detector.hsv_red2 = np.array(rospy.get_param('~hsv_red2'))
+        self.detector.hsv_red3 = np.array(rospy.get_param('~hsv_red3'))
+        self.detector.hsv_red4 = np.array(rospy.get_param('~hsv_red4'))
 
-        self.detector.dilation_kernel_size = rospy.getparam('~dilation_kernel_size')
-        self.detector.canny_thresholds = rospy.getparam('~canny_thresholds')
-        self.detector.hough_min_line_length = rospy.getparam('~hough_min_line_length')
-        self.detector.hough_max_line_gap    = rospy.getparam('~hough_max_line_gap')
-        self.detector.hough_threshold = rospy.getparam('~hough_threshold')
+        self.detector.dilation_kernel_size = rospy.get_param('~dilation_kernel_size')
+        self.detector.canny_thresholds = rospy.get_param('~canny_thresholds')
+        self.detector.hough_min_line_length = rospy.get_param('~hough_min_line_length')
+        self.detector.hough_max_line_gap    = rospy.get_param('~hough_max_line_gap')
+        self.detector.hough_threshold = rospy.get_param('~hough_threshold')
        
         self.sub_image = rospy.Subscriber("~image", CompressedImage, self.processImage)
         self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
@@ -46,7 +46,7 @@ class LineDetectorNode(object):
         # Resize and crop image
         hei_original = image_cv.shape[0]
         wid_original = image_cv.shape[1]
-        if self.hei_image!=hei_original or self.wid_image!=wid_original:
+        if self.image_size[0]!=hei_original or self.image_size[1]!=wid_original:
             image_cv = cv2.resize(image_cv, (self.image_size[1], self.image_size[0]))
         image_cv = image_cv[self.top_cutoff:,:,:]
 
@@ -69,7 +69,7 @@ class LineDetectorNode(object):
         # Convert to position in original resolution, and add segments to segmentList
         segmentList = SegmentList()
         arr_cutoff = np.array((0, self.top_cutoff, 0, self.top_cutoff))
-        arr_ratio = np.array((1.*wid_original/self.wid_image, 1.*hei_original/self.hei_image, 1.*wid_original/self.wid_image, 1.*hei_original/self.hei_image))
+        arr_ratio = np.array((1.*wid_original/self.image_size[1], 1.*hei_original/self.image_size[0], 1.*wid_original/self.image_size[1], 1.*hei_original/self.image_size[0]))
   
         if len(lines_white)>0:
             rospy.loginfo("[LineDetectorNode] number of white lines = %s" %(len(lines_white)))

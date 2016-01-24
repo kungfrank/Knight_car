@@ -50,7 +50,7 @@ class LineDetector(object):
         return bw, edge_color
 
     def __findEdge(self, gray):	
-        edges = cv2.Canny(gray, self.canny_thresh_low, self.canny_thresh_high, apertureSize = 3)
+        edges = cv2.Canny(gray, self.canny_thresholds[0], self.canny_thresholds[1], apertureSize = 3)
         return edges
 
     def __HoughLine(self, edge):

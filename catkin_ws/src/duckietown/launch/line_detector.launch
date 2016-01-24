@@ -20,6 +20,4 @@
 	    <arg name="config" value="$(arg config)"/>
 	    <arg name="param_file_name" value="$(arg param_file_name)"/>
 	</include>
-
-
 </launch>

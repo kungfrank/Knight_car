@@ -22,7 +22,7 @@ class lane_controller(object):
         self.pub_wheels_cmd = rospy.Publisher("~wheels_control",WheelsCmd,queue_size=1)
 
         # Subscriptions
-        self.sub_lane_reading = rospy.Subscriber("~lane_reading", LanePose, self.cbPose, queue_size=1)
+        self.sub_lane_reading = rospy.Subscriber("~lane_pose", LanePose, self.cbPose, queue_size=1)
 
         # safe shutdown
         rospy.on_shutdown(self.custom_shutdown)

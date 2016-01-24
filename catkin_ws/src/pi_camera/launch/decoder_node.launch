@@ -8,7 +8,7 @@
         <node if="$(arg local)" pkg="pi_camera" type="decoder_node.py" name="decoder_node" output="screen">
             <rosparam command="load" file="$(find duckietown)/config/$(arg config)/pi_camera/decoder_node/$(arg param_file_name).yaml"/>
         </node>
-        <node unless="$(arg local)" machines="$(arg veh)" pkg="pi_camera" type="decoder_node.py" name="decoder_node" output="screen" >
+        <node unless="$(arg local)" machine="$(arg veh)" pkg="pi_camera" type="decoder_node.py" name="decoder_node" output="screen" >
             <rosparam command="load" file="$(find duckietown)/config/$(arg config)/pi_camera/decoder_node/$(arg param_file_name).yaml"/>
         </node>
     </group>

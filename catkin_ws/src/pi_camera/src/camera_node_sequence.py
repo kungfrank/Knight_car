@@ -44,8 +44,9 @@ class CameraNode(object):
         self.camera_info_msg = self.loadCameraInfo(self.cali_file)        
         self.camera_info_msg.header.frame_id = self.frame_id
         
-
-        self.pub_camera_info = rospy.Publisher("~camera_info",CameraInfo,queue_size=1)
+        if self.publish_info:
+            self.pub_camera_info = rospy.Publisher("~camera_info",CameraInfo,queue_size=1)
+        
         self.has_published = False
         
         if self.decompress:

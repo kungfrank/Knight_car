@@ -29,19 +29,10 @@ digraph D {
 		intersection_filter[label="intersection_filter (LP)"];
 		intersection_controller[label="intersection_controller (MN)"];
 		stop_line_filter[label="stop_line_filter (LP)"];
-<<<<<<< HEAD
 		led_detector[label="led_detector (CC)"];
 		obj_detector[label="obj_detector (CC)"];
 		beeper[label="beeper (LP)"];
 		veh_detector[label="veh_detector (CC)"];
-=======
-		led_detector[label="led_detector (?)"];
-		obj_detector[label="obj_detector (?)"];
-		beeper[label="beeper (?)"];
-		veh_detector[label="veh_detector (?)"];
-		traffic_light_detector[label="traffic_light_detector (?)"];
-		//img_downsampler[label="img_downsampler (?)"];
->>>>>>> 53e4124a36c1ee661f2f8554c0f25baae7211ffa
 	}
 	subgraph node_designed{
 		node [fillcolor=pink];
@@ -56,11 +47,13 @@ digraph D {
 		node [fillcolor=orange];
 		wheels_driver[label="wheels_driver (DY,SY)"];
 		rgb_led[label="rgb_led (DY)"];
-		camera_node[label="camera_node (AC)"];
 		lane_filter[label="lane_filter (LP)"]; 
 	}
 	subgraph node_compiled{
 		node [fillcolor=yellow];
+		camera_node[label="camera_node (SY,AC)"];
+		decoder_node[label="decoder_node (SY)"];
+		cam_info_reader_node[label="cam_info_reader_node (SY)"];
 		lane_controller[label="lane_controller (SY,SC)"];
 		line_detector[label="line_detector (LP,HZ)"];
 		april_tag_detector[label="april_tag_detector (LP)"];
@@ -122,6 +115,8 @@ digraph D {
 		label="perception"
 		// Nodes
 		camera_node;
+		decoder_node;
+		cam_info_reader_node;
 		obj_detector;
 		line_detector;
 		lane_filter;
@@ -153,8 +148,11 @@ digraph D {
 		street_name_detection;
 		//img_low_rect;
 		//img_high_rect;
-		image_compressed[label="image/compressed"];
+		image_compressed[label="camera_node/image/compressed"];
+		image_raw[label="camera_node/image/raw"];
 		camera_info;
+		{rank=same; image_compressed;image_raw;camera_info}
+		{rank=same; decoder_node;camera_node}
 	}
 
 	subgraph cluster_control{
@@ -217,16 +215,20 @@ digraph D {
 	//image_proc->img_low_rect;
 	//image_proc->img_high_rect;
 
-	camera_node->camera_info;
+	//camera_node->camera_info;
 	camera_node->image_compressed;
-
+	cam_info_reader_node->camera_info;
 	//image_compressed->img_downsampler;
 	//img_downsampler->img_high;
 	//img_downsampler->img_low;
 
+
 	image_compressed->line_detector;
 	image_compressed->led_detector;
-	
+	decoder_node->image_compressed [dir=back];
+	decoder_node->image_raw;
+
+
 	image_compressed->april_tag_detector;
 	image_compressed->obj_detector;
 	image_compressed->street_name_detector;

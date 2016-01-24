@@ -18,6 +18,7 @@ class CameraNode(object):
     def __init__(self):
         self.node_name = rospy.get_name()
         rospy.loginfo("[%s] Initializing......" %(self.node_name))
+        print "initializing"
 
         self.framerate = self.setupParam("~framerate",30.0)
         self.res_w = self.setupParam("~res_w",640)
@@ -29,12 +30,12 @@ class CameraNode(object):
         self.frame_id = rospy.get_namespace() + "camera_optical_frame"
 
         rospack = rospkg.RosPack()
-        self.cali_file = rospack.get_path('duckietown') + "config/" + self.config + "/calibration/camera_intrinsic/" +  self.cali_file_name + ".yaml" 
+        self.cali_file = rospack.get_path('duckietown') + "/config/" + self.config + "/calibration/camera_intrinsic/" +  self.cali_file_name + ".yaml" 
         self.camera_info_msg = None
 
         if not os.path.isfile(self.cali_file):
             rospy.logwarn("[%s] Can't find calibration file: %s.\nUsing default calibration instead." %(self.node_name,self.cali_file))
-            self.cali_file = rospack.get_path('duckietown') + "config/" + self.config + "/calibration/camera_intrinsic/default.yaml" 
+            self.cali_file = rospack.get_path('duckietown') + "/config/" + self.config + "/calibration/camera_intrinsic/default.yaml" 
 
         if not os.path.isfile(self.cali_file):
             rospy.signal_shutdown("Found no calibration file ... aborting")

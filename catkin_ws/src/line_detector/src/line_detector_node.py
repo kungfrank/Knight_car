@@ -12,23 +12,32 @@ import numpy as np
 class LineDetectorNode(object):
     def __init__(self):
         self.node_name = "Line Detector"
-        
-        self.hei_image = self.setupParam("~hei_image", 240)
-        self.wid_image = self.setupParam("~wid_image", 320)
-        self.top_cutoff  = self.setupParam("~top_cutoff", 90)
+ 
+        self.image_size = rospy.getparam('~img_size')
+        self.top_cutoff = rospy.getparam('~top_cutoff')
         
         self.bridge = CvBridge()
         self.detector = LineDetector()
-        
+
+        self.detector.hsv_white1 = np.array(rospy.getparam('~hsv_white1'))
+        self.detector.hsv_white2 = np.array(rospy.getparam('~hsv_white2'))
+        self.detector.hsv_yellow1 = np.array(rospy.getparam('~hsv_yellow1'))
+        self.detector.hsv_yellow2 = np.array(rospy.getparam('~hsv_yellow2'))
+        self.detector.hsv_red1 = np.array(rospy.getparam('~hsv_red1'))
+        self.detector.hsv_red2 = np.array(rospy.getparam('~hsv_red2'))
+        self.detector.hsv_red3 = np.array(rospy.getparam('~hsv_red3'))
+        self.detector.hsv_red4 = np.array(rospy.getparam('~hsv_red4'))
+
+        self.detector.dilation_kernel_size = rospy.getparam('~dilation_kernel_size')
+        self.detector.canny_thresholds = rospy.getparam('~canny_thresholds')
+        self.detector.hough_min_line_length = rospy.getparam('~hough_min_line_length')
+        self.detector.hough_max_line_gap    = rospy.getparam('~hough_max_line_gap')
+        self.detector.hough_threshold = rospy.getparam('~hough_threshold')
+       
         self.sub_image = rospy.Subscriber("~image", CompressedImage, self.processImage)
         self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
         self.pub_image = rospy.Publisher("~image_with_lines", Image, queue_size=1)
 
-    def setupParam(self, param_name, default_value):
-        value = rospy.get_param(param_name, default_value)
-        rospy.set_param(param_name, value) # Write to parameter server for transparancy
-        rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
-        return value
 
     def processImage(self,image_msg):
         image_cv = cv2.imdecode(np.fromstring(image_msg.data, np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
@@ -38,7 +47,7 @@ class LineDetectorNode(object):
         hei_original = image_cv.shape[0]
         wid_original = image_cv.shape[1]
         if self.hei_image!=hei_original or self.wid_image!=wid_original:
-            image_cv = cv2.resize(image_cv, (self.wid_image, self.hei_image))
+            image_cv = cv2.resize(image_cv, (self.image_size[1], self.image_size[0]))
         image_cv = image_cv[self.top_cutoff:,:,:]
 
         # Set the image to be detected

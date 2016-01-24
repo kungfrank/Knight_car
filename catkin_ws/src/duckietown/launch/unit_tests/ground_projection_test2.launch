@@ -6,7 +6,7 @@
 	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
 	
 
-	<include file="$(find duckietown)/launch/line_detector.launch">
+	<include file="$(find duckietown)/launch/ground_projection.launch">
 		 <arg name="veh" value="$(arg veh)"/>
 		 <arg name="local" value="true" />
 		 <arg name="config" value="$(arg config)"/>
@@ -16,5 +16,4 @@
 
 	<node  pkg="rosbag" type="play" name="rosbag_play" args="$(arg bagin)"/>
 	<node  pkg="rosbag" type="record" name="rosbag_record" args="-a  -O $(arg bagout)"/> 
-
 </launch>

@@ -9,7 +9,7 @@
   	<arg name="rectify" default="false" doc="If set to true, rectify image before process."/>
 	<arg name="view_markers" default="true" doc="should we output markers for rviz?"/>
 
-	<include if="$(arg live)" file="$(find duckietown)/launch/line_detector.launch">
+	<include  file="$(find duckietown)/launch/line_detector.launch">
 		 <arg name="veh" value="$(arg veh)"/>
 		 <arg name="local" value="$(arg local)"/>
 		 <arg name="config" value="$(arg config)"/>

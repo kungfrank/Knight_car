@@ -17,8 +17,7 @@ class DecoderNode(object):
         self.publish_freq = self.setupParam("~publish_freq",1.0)
         self.publish_duration = rospy.Duration.from_sec(1.0/self.publish_freq)
         self.pub_raw = rospy.Publisher("~image/raw",Image,queue_size=1)
-        self.last_stamp = rospy.Time.now()
-        
+        self.last_stamp = rospy.Time.now()        
         self.sub_compressed_img = rospy.Subscriber("~compressed_image",CompressedImage,self.cbImg,queue_size=1)
 
     def setupParam(self,param_name,default_value):

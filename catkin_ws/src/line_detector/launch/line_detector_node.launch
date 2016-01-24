@@ -1,8 +1,18 @@
 <launch>
-	<node ns="ferrari" pkg="line_detector" type="line_detector_node.py" name="line_detector" output="screen">
-		<remap from="~image" to="camera_node/image/compressed"/>
-		<param name="~hei_image" value="240" />
-		<param name="~wid_image" value="320" />
-		<param name="~top_cutoff" value="90" />
-	</node>
+    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
+    <arg name="local" default="false" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+    <arg name="config" default="baseline" doc="Specify a config."/>
+    <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+
+    <group ns="$(arg veh)">        
+           <!-- run local -->
+            <node if="$(arg local)" name="line_detector_node" pkg="line_detector" type="line_detector_node.py" output="screen">
+                <rosparam command="load" file="$(find duckietown)/config/$(arg config)/line_detector/line_detector_node/$(arg param_file_name).yaml"/>
+            </node>
+
+            <!-- run remote -->
+            <node unless="$(arg local)" machine="$(arg veh)" name="line_detector" pkg="line_detector" type="line_detector_node.py" output="screen">
+                <rosparam command="load" file="$(find duckietown)/config/$(arg config)/line_detector/line_detector_node/$(arg param_file_name).yaml"/>
+            </node>
+    </group>
 </launch>

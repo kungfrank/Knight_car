@@ -1,0 +1,4 @@
+<launch>
+    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
+    <node ns="$(arg veh)" machine="$(arg veh)" pkg="dagu_car" type="wheels_driver.py" name="wheels_driver" output="screen"/>
+</launch>

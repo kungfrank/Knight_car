@@ -1,11 +1,17 @@
 <launch>
-  <node pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen">
-    <rosparam command="load" file="$(find ground_projection)/homography.yaml"/>
-    <param name="~homography_file" value="package://ground_projection/homography.yaml"/>
+  <arg name="camera" default="/$(arg veh)/camera_node"/>
+  <arg name="rectify" default="false" doc="If set to true, rectify image before process."/>
+  <node if="$(arg rectify)" ns="$(arg camera)" pkg="image_proc" type="image_proc" name="image_proc" output="screen">
+    <remap from="$(arg camera)/image_raw" to="$(arg camera)/image/raw"/>
+  </node>
+  <node ns="$(arg veh)" pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen">
+    <param name="~homography_file" value="package://ground_projection/homography/$(arg veh).yaml"/>
     <param name="~board_w" value="7"/>
     <param name="~board_h" value="5"/>
     <param name="~square_size" value="0.031"/>
     <param name="~x_offset" value="0.191"/>
     <param name="~y_offset" value="-0.093"/>
+    <param name="~camera_info_path" value="$(arg camera)/camera_info"/>
+    <param name="~rectified_input" type="bool" value="$(arg rectify)"/>
   </node>
 </launch>

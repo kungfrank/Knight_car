@@ -5,25 +5,27 @@ import time
 
 class LineDetector(object):
     def __init__(self):
-        self.bgr = []
-        self.hsv = []
+        # Images to be processed
+        self.bgr = np.empty(0)
+        self.hsv = np.empty(0)
+        self.edges = np.empty(0)
 
         # Color value range in HSV space
-        self.hsv_white1 = np.empty
-        self.hsv_white2 = np.empty 
-        self.hsv_yellow1 = np.empty
-        self.hsv_yellow2 = np.empty
-        self.hsv_red1 = np.empty
-        self.hsv_red2 = np.empty
-        self.hsv_red3 = np.empty
-        self.hsv_red4 = np.empty
+        self.hsv_white1 = np.empty(0)
+        self.hsv_white2 = np.empty(0)
+        self.hsv_yellow1 = np.empty(0)
+        self.hsv_yellow2 = np.empty(0)
+        self.hsv_red1 = np.empty(0)
+        self.hsv_red2 = np.empty(0)
+        self.hsv_red3 = np.empty(0)
+        self.hsv_red4 = np.empty(0)
 
+        # Parameters for dilation, Canny, and Hough transform
         self.dilation_kernel_size = 3
         self.canny_thresholds = [80,200]
         self.hough_threshold  = 20
         self.hough_min_line_length = 3
         self.hough_max_line_gap = 1
-        
 
     def __colorFilter(self, color):
         # tic = time.time()
@@ -44,7 +46,7 @@ class LineDetector(object):
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(self.dilation_kernel_size, self.dilation_kernel_size))
         bw = cv2.dilate(bw, kernel)
         
-        # refine edge
+        # refine edge for certain color
         edge_color = cv2.bitwise_and(bw, self.edges)
 
         return bw, edge_color
@@ -204,6 +206,7 @@ def _main():
             detector.drawNormals(lines_white, normals_white)
             detector.drawNormals(lines_red, normals_red)
 
+            # show frame
             cv2.imshow('Line Detector', detector.getImage())
             cv2.imshow('Edge', detector.edges)
             cv2.waitKey(30)

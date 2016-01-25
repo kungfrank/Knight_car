@@ -1,0 +1,5 @@
+Header header
+uint8 mode
+uint8 LANE_FOLLOWING=0
+uint8 INTERSECTION_CONTROL=1
+uint8 COORDINATION_CONTROL=2

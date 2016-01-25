@@ -62,6 +62,7 @@ add_message_files(
   Vector2D.msg
   Segment.msg
   SegmentList.msg
+  ControlMode.msg
 )
 
 ## Generate services in the 'srv' folder

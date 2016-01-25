@@ -1,7 +1,6 @@
 digraph D {
 	fontname="sans";
 
-
 	subgraph cluster_legend{
 		label="legend"
 		// ROS Topics
@@ -41,7 +40,6 @@ digraph D {
 		safety_supervisor[label="safety_supervisor (HA)"];
 		map_reader[label="map_reader (RM)"];
 		veh_coordinator[label="veh_coordinator (DH)"]
-		wheel_driver_mux[label="wheel_driver_mux (SY)"]
 	}
 	subgraph node_development{
 		node [fillcolor=orange];
@@ -51,6 +49,7 @@ digraph D {
 	}
 	subgraph node_compiled{
 		node [fillcolor=yellow];
+		wheels_cmd_switch[label="wheels_cmd_switch (SY)"]
 		camera_node[label="camera_node (SY,AC)"];
 		decoder_node[label="decoder_node (SY)"];
 		cam_info_reader_node[label="cam_info_reader_node (SY)"];
@@ -164,7 +163,7 @@ digraph D {
 		intersection_controller;
 		lane_supervisor;
 		safety_supervisor;
-		wheel_driver_mux;
+		wheels_cmd_switch;
 		// Topics
 		joy_control;
 		joy;
@@ -303,10 +302,10 @@ digraph D {
 	mode->lane_controller;
 	mode->intersection_controller;
 
-	mode->wheel_driver_mux;
-	lane_control_safe->wheel_driver_mux;
-	intersection_control->wheel_driver_mux;
-	wheel_driver_mux->wheels_command;
+	mode->wheels_cmd_switch;
+	lane_control_safe->wheels_cmd_switch;
+	intersection_control->wheels_cmd_switch;
+	wheels_cmd_switch->wheels_command;
 	wheels_command->wheels_driver;
 
 	//TODO annotate msg type.

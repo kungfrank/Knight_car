@@ -1,0 +1,4 @@
+# parameters for cam_info_reader/cam_info_reader
+# frequency to publish camera_info
+hz: 1 
+

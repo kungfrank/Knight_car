@@ -1,0 +1,17 @@
+<launch>
+	<arg name="veh" doc="Name of vehicle. ex: megaman"/>
+	<arg name="local" default="false" doc="true for running on laptop. false for running on vehicle."/>
+	<arg name="config" default="baseline" doc="Specify a config."/>
+	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman"/>
+
+	<!-- Run on local (laptop) -->
+	<node if="$(arg local)" ns="$(arg veh)" pkg="joy_mapper" type="joy_mapper.py" name="joy_mapper" output="screen">
+		<rosparam command="load" file="$(find duckietown)/config/$(arg config)/joy_mapper/joy_mapper/$(arg param_file_name).yaml"/>
+	</node>
+
+	<!-- Run on remote (vehicle) -->
+	<include unless="$(arg local)" file="$(find duckietown)/machines"/>
+	<node unless="$(arg local)" ns="$(arg veh)" machine="$(arg veh)" pkg="joy_mapper" type="joy_mapper.py" name="joy_mapper" output="screen">
+		<rosparam command="load" file="$(find duckietown)/config/$(arg config)/joy_mapper/joy_mapper/$(arg param_file_name).yaml"/>
+	</node>	
+</launch>

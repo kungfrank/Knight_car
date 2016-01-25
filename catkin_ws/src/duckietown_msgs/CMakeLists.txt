@@ -52,13 +52,17 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   CarControl.msg
+  LEDControl.msg
+  DuckieSensor.msg
   LanePose.msg
   WheelsCmd.msg
   TagDetection.msg
   AprilTags.msg
   Pixel.msg
+  Vector2D.msg
   Segment.msg
   SegmentList.msg
+  ControlMode.msg
 )
 
 ## Generate services in the 'srv' folder

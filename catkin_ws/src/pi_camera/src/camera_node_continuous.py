@@ -16,22 +16,27 @@ class CameraNode(object):
         rospy.loginfo("[%s] Initializing......" %(self.node_name))
         # TODO: load parameters
 
-        self.img_low_framerate = self.setupParam("~img_low_framerate",30.0)
-        self.img_high_framerate = self.setupParam("~img_high_framerate",5.0)
-        self.img_low_res_w = self.setupParam("~img_low_res_w",320)
-        self.img_low_res_h = self.setupParam("~img_low_res_h",200)
-        self.img_high_res_w = self.setupParam("~img_high_res_w",640)
-        self.img_high_res_h = self.setupParam("~img_high_res_h",400)
-        self.uncompress = self.setupParam("~uncompress",False)
+        self.framerate = self.setupParam("~framerate",60.0)
+        self.res_w = self.setupParam("~res_w",320)
+        self.res_h = self.setupParam("~res_h",200)
+
+        # self.img_low_framerate = self.setupParam("~img_low_framerate",30.0)
+        # self.img_high_framerate = self.setupParam("~img_high_framerate",5.0)
+        # self.img_low_res_w = self.setupParam("~img_low_res_w",320)
+        # self.img_low_res_h = self.setupParam("~img_low_res_h",200)
+        # self.img_high_res_w = self.setupParam("~img_high_res_w",640)
+        # self.img_high_res_h = self.setupParam("~img_high_res_h",400)
+        # self.uncompress = self.setupParam("~uncompress",False)
 
         # TODO: load camera info yaml file and publish CameraInfo
+        self.pub_img= rospy.Publisher("~image/compressed",CompressedImage,queue_size=1)
 
-        if self.uncompress:
-            self.pub_img_low = rospy.Publisher("~img_low/raw",Image,queue_size=1)
-            self.pub_img_high= rospy.Publisher("~img_high/raw",Image,queue_size=1)    
-        else:
-            self.pub_img_low = rospy.Publisher("~img_low/compressed",CompressedImage,queue_size=1)
-            self.pub_img_high= rospy.Publisher("~img_high/compressed",CompressedImage,queue_size=1)
+        # if self.uncompress:
+        #     self.pub_img_low = rospy.Publisher("~img_low/raw",Image,queue_size=1)
+        #     self.pub_img_high= rospy.Publisher("~img_high/raw",Image,queue_size=1)    
+        # else:
+        #     self.pub_img_low = rospy.Publisher("~img_low/compressed",CompressedImage,queue_size=1)
+        #     self.pub_img_high= rospy.Publisher("~img_high/compressed",CompressedImage,queue_size=1)
         
         self.has_published = False
         self.bridge = CvBridge()
@@ -40,14 +45,14 @@ class CameraNode(object):
         self.stream = io.BytesIO()
         self.bridge = CvBridge()
         self.camera = PiCamera()
-        self.camera.framerate = self.img_low_framerate
-        self.camera.resolution = (self.img_low_res_w,self.img_low_res_h)
+        self.camera.framerate = self.framerate
+        self.camera.resolution = (self.res_w,self.res_h)
 
         # TODO setup other parameters of the camera such as exposure and white balance etc
 
         # Setup timer
         self.camera_capture = self.camera.capture_continuous(self.stream,'jpeg',use_video_port=True)
-        self.timer_img_low = rospy.Timer(rospy.Duration.from_sec(1.0/self.img_low_framerate),self.cbTimerLow)
+        self.timer_img_low = rospy.Timer(rospy.Duration.from_sec(1.0/self.framerate),self.cbTimer)
         rospy.loginfo("[%s] Initialized." %(self.node_name))
 
     def setupParam(self,param_name,default_value):
@@ -56,14 +61,11 @@ class CameraNode(object):
         rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
         return value
 
-    def cbTimerLow(self,event):
+    def cbTimer(self,event):
         if not rospy.is_shutdown():
             self.camera_capture.next()
-            self.grabAndPublish(self.stream,self.pub_img_low)
+            self.grabAndPublish(self.stream,self.pub_img)
             # Maybe for every 5 img_low, change the setting of the camera and capture a higher res img and publish.
-    
-    def cbTimerHigh(self,event):
-        self.grabAndPublish(self.stream,self.pub_img_high)
 
     def grabAndPublish(self,stream,publisher):
         # Grab image from stream

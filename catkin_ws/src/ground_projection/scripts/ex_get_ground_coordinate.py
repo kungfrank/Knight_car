@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import sys
 import rospy
-from ground_projection.srv import EstimateHomography, GetGroundCoord
-from duckietown_msgs.msg import Pixel
+from ground_projection.srv import GetGroundCoord
+from duckietown_msgs.msg import Vector2D, Pixel
 from geometry_msgs.msg import Point
 import numpy as np
 import IPython
@@ -26,10 +26,10 @@ if __name__ == "__main__":
 
   rospy.init_node("ex_get_ground_coordinate")
 
-  uv = Pixel()
-  uv.u = 320
-  uv.v = 300
-
-  gp = call_service_get_ground_coordinate(uv, veh)
+  normalized_uv = Vector2D()
+  normalized_uv.x = 0.5
+  normalized_uv.y = 0.7
+  
+  gp = call_service_get_ground_coordinate(normalized_uv, veh)
 
   print "ground coordinate: (%f, %f, %f)" % (gp.x, gp.y, gp.z)

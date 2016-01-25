@@ -1,0 +1,25 @@
+<launch>
+    <arg name="veh"/>
+    <arg name="local" default="false" doc="true to launch locally on laptop. false to launch of vehicle"/>
+    <arg name="pkg_name" default="dagu_car" doc="name of the package"/>
+    <arg name="node_name" default="wheels_cmd_switch" doc="name of the node"/>
+    <!--
+ 	Params
+    
+    Inputs
+    ~mode: duckietown_msgs/ControlMode specifies the current mode
+    ~wheels_cmd_lane: duckietown_msgs/WheelsCmd from the lane_controller
+    ~wheels_cmd_intersectoin: duckietown_msgs/WheelsCmd from the intersectoin controller
+    ~wheels_cmd_coordination: duckietown_msgs/WheelsCmd from the coordination controller
+    
+    Outputs
+    ~wheels_cmd: Output duckietown_msgs/WheelsCmd of the current mode
+    -->
+    
+    <group ns="$(arg veh)">
+        <!-- Local -->
+        <node if="$(arg local)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen"/>
+        <!-- Remote -->
+        <node unless="$(arg local)" machine="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen"/>
+    </group>
+</launch>

@@ -6,13 +6,15 @@
 
     <group ns="$(arg veh)">        
            <!-- run local -->
-            <node if="$(arg local)" name="line_detector_node" pkg="line_detector" type="line_detector_node.py" output="screen">
+            <node if="$(arg local)" name="line_detector" pkg="line_detector" type="line_detector_node.py" output="screen">
                 <rosparam command="load" file="$(find duckietown)/config/$(arg config)/line_detector/line_detector_node/$(arg param_file_name).yaml"/>
+		<remap from="~image" to="camera_node/image/compressed"/>
             </node>
 
             <!-- run remote -->
             <node unless="$(arg local)" machine="$(arg veh)" name="line_detector" pkg="line_detector" type="line_detector_node.py" output="screen">
                 <rosparam command="load" file="$(find duckietown)/config/$(arg config)/line_detector/line_detector_node/$(arg param_file_name).yaml"/>
+		<remap from="~image" to="camera_node/image/compressed"/>
             </node>
     </group>
 </launch>

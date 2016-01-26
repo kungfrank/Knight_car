@@ -6,12 +6,14 @@
 	<arg name="raw" default="false" doc="If set to true, also publish raw image using decoder."/> 
 	<arg name="live" default="true" doc="if set to true, run the camera and do live detection. "/>
 
-	<include if="$(arg live)" file="$(find duckietown)/launch/camera.launch">
+	<include file="$(find duckietown)/launch/camera.launch">
 		<arg name="veh" value="$(arg veh)"/>
 		<arg name="local" value="$(arg local)"/>
 		<arg name="config" value="$(arg config)"/>
 		<arg name="param_file_name" value="$(arg param_file_name)"/>
 		<arg name="raw" value="$(arg raw)"/>
+	    	<arg name="cam_info" value="false"/> <!-- this should possible change later when we take logs without camera info but let's leave for now -->
+		<arg name="live" value="$(arg live)"/>
 	</include>
 
 	<include file="$(find line_detector)/launch/line_detector_node.launch">

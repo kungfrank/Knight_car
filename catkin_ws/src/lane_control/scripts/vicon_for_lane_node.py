@@ -2,6 +2,7 @@
 import rospy
 import numpy as np
 import tf
+import math
 from duckietown_msgs.msg import LanePose
 from geometry_msgs.msg import PoseStamped
 
@@ -18,7 +19,8 @@ class ViconToLanePose(object):
         # Setup Parameters
         self.pub_freq = self.setupParameter("~pub_freq",50.0)  # 50 Hz
         self.pub_delay = self.setupParameter("~pub_delay",0.0)
-        self.x_offset = self.setupParameter("~x_offset",0.0)
+        self.x_goal = self.setupParameter("~x_goal",0.0)
+        self.phi_goal = self.setupParameter("~phi_goal",-math.pi/2)
 
         # Publications
         self.pub_lane_reading = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
@@ -27,6 +29,8 @@ class ViconToLanePose(object):
         
         # timer
         self.pub_timer = rospy.Timer(rospy.Duration.from_sec(1.0/self.pub_freq),self.cbTimerPub)
+        self.timer_param = rospy.Timer(rospy.Duration.from_sec(1.0),self.cbParamUpdate)
+
         rospy.loginfo("[%s] Initialized " %(rospy.get_name()))
 
     def setupParameter(self,param_name,default_value):
@@ -35,16 +39,24 @@ class ViconToLanePose(object):
         rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
         return value
 
+    def cbParamUpdate(self,event):
+        self.pub_freq = rospy.get_param("~pub_freq")
+        self.pub_delay = rospy.get_param("~pub_delay")
+        self.x_goal = rospy.get_param("~x_goal")
+        self.phi_goal = rospy.get_param("~phi_goal")
+
     def cbPose(self,vicon_pose_msg):
-        self.vicon_pose.append(vicon_pose_msg)
+        vicon_pose_msg.header.stamp = rospy.Time.now()
+        self.vicon_pose_queue.append(vicon_pose_msg)
 
     def toLanePose(self,vicon_pose_msg):
-        quat = self.vicon_pose_msg.pose.orientation
+        quat = vicon_pose_msg.pose.orientation
         euler_angles = tf.transformations.euler_from_quaternion([quat.x, quat.y,quat.z,quat.w])
         lane_pose = LanePose()
-        lane_pose.d = vicon_pose_msg.pose.position.x - self.x_offset
-        lane_pose.phi = euler_angles[2]
+        lane_pose.d = vicon_pose_msg.pose.position.x - self.x_goal
+        lane_pose.phi = euler_angles[2] - self.phi_goal
         lane_pose.header.stamp = vicon_pose_msg.header.stamp
+        return lane_pose
 
     def cbTimerPub(self,event):
         if len(self.vicon_pose_queue) == 0:
@@ -57,10 +69,13 @@ class ViconToLanePose(object):
             lane_pose = self.toLanePose(vicon_pose)
             self.pub_lane_reading.publish(lane_pose)
         else:
+            rospy.loginfo("[%s] len(vicon_pose_queue). %s" %(self.node_name,len(self.vicon_pose_queue)))
             while len(self.vicon_pose_queue) > 0:
                 vicon_pose = self.vicon_pose_queue.pop(0)
-                delaied_time = (event.current_real - vicon_pose.header.stamp).to_sec()
-                if delaied_time >= self.pub_delay:
+                delaied_time = (rospy.Time.now() - vicon_pose.header.stamp).to_sec()
+                if delaied_time < self.pub_delay:
+                    # The first one within delay threshold
+                    rospy.loginfo("[%s] Delaied time. %s" %(self.node_name,delaied_time))
                     lane_pose = self.toLanePose(vicon_pose)
                     self.pub_lane_reading.publish(lane_pose)
                     break

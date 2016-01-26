@@ -28,7 +28,7 @@ class lane_controller(object):
         rospy.on_shutdown(self.custom_shutdown)
 
         # timer
-        self.gains_timer = rospy.Timer(rospy.Duration.from_sec(2.0), self.getGains_event)
+        self.gains_timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.getGains_event)
         rospy.loginfo("[%s] Initialized " %(rospy.get_name()))
 
     def setupParameter(self,param_name,default_value):

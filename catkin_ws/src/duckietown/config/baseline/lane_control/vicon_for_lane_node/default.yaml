@@ -1,4 +1,5 @@
 #lane_control/vicon_for_lane_node
-pub_freq: 50.0  # 50 Hz
-pub_delay: 0.0
-x_offset: 0.0
+pub_freq: 10.0  # 50 Hz
+pub_delay: 0.1
+x_goal: -7.56
+phi_goal: rad(-pi/2.0)

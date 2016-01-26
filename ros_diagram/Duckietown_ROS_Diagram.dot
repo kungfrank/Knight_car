@@ -58,7 +58,8 @@ digraph D {
 		april_tag_detector[label="april_tag_detector (LP)"];
 		lane_supervisor[label="lane_supervisor (SY)"];
 		joy_mapper[label="joy_mapper (SY)"];
-		ground_projection[label="ground_projection (CC)"]
+		ground_projection[label="ground_projection (CC)"];
+		wheels_trimmer[label="wheels_trimmer (SY)"];
 	}
 	subgraph node_documented{
 		node [fillcolor=green];
@@ -109,6 +110,7 @@ digraph D {
 	street_name_detection;
 	veh_coord_go;
 	wheels_command;
+	wheels_command_switch[label="wheels_command"];
 
 	subgraph cluster_perception{
 		label="perception"
@@ -171,6 +173,7 @@ digraph D {
 		lane_control_sup;
 		lane_control_safe;
 		intersection_control;
+		wheels_command_switch;
 		{rank=same; intersection_controller;lane_controller;}
 	}
 
@@ -199,6 +202,7 @@ digraph D {
 	subgraph cluster_driver{
 		label="driver"
 		// Nodes
+		wheels_trimmer;
 		wheels_driver;
 		beeper;
 		rgb_led;
@@ -216,6 +220,7 @@ digraph D {
 
 	//camera_node->camera_info;
 	camera_node->image_compressed;
+	cam_info_reader_node->image_compressed[dir=back];
 	cam_info_reader_node->camera_info;
 	//image_compressed->img_downsampler;
 	//img_downsampler->img_high;
@@ -303,9 +308,11 @@ digraph D {
 	mode->intersection_controller;
 
 	mode->wheels_cmd_switch;
+	wheels_cmd_switch->wheels_command_switch;
+	wheels_command_switch->wheels_trimmer;
+	wheels_trimmer->wheels_command;
 	lane_control_safe->wheels_cmd_switch;
 	intersection_control->wheels_cmd_switch;
-	wheels_cmd_switch->wheels_command;
 	wheels_command->wheels_driver;
 
 	//TODO annotate msg type.

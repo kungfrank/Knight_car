@@ -5,7 +5,7 @@
 	<!-- Launch the rosberrypi_cam remotely -->
 	<group ns="$(arg veh)">
 		<node machine="$(arg veh)" pkg="rosberrypi_cam" type="rosberrypi_cam_node" name="rosberrypi_cam" output="screen">
-			<param name="~camera_info_url" value="package://pi_camera/calibration/$(arg veh).yaml"/>
+			<param name="~camera_info_url" value="package://duckietown/config/$(arg config)/calibration/camera_intrinsic/$(arg veh).yaml"/>
 			<param name="~fps" value="30"/>
 			<param name="~height" value="480"/>
 			<param name="~width" value="640"/>

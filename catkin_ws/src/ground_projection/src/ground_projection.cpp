@@ -4,6 +4,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
 #include <sensor_msgs/CameraInfo.h>
+#include <image_geometry/pinhole_camera_model.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
@@ -35,8 +36,7 @@ class GroundProjection
   ros::Subscriber sub_lineseglist_;
   ros::Publisher pub_lineseglist_;
   sensor_msgs::CameraInfo::ConstPtr camera_info_;
-  cv::Mat intrinsic_;
-  cv::Mat distortion_;
+  image_geometry::PinholeCameraModel pcm_;
   cv::Mat H_;
   bool rectified_input_;
   
@@ -78,21 +78,11 @@ public:
     nh_.param<std::string>("camera_info_path", camera_info_topic, "/camera_node/camera_info");
     ROS_INFO_STREAM("Waiting for message on topic " << camera_info_topic);
     camera_info_ = ros::topic::waitForMessage<sensor_msgs::CameraInfo>(camera_info_topic, nh_);
-
+    
     if(!rectified_input_)
     {
-      std::string distortion_model = camera_info_->distortion_model;
-      if(distortion_model.compare(std::string("plumb_bob")) != 0)
-        ROS_ERROR("Unexpected distortion_model: %s", distortion_model.c_str());
-      
-      intrinsic_.create(3, 3, CV_32F);
-      for(int r=0; r<3; r++)
-        for(int c=0; c<3; c++)
-          intrinsic_.at<float>(r, c) = camera_info_->K[r*3+c];
-
-      distortion_.create(1, 5, CV_32F);
-      for(int i=0; i<5; i++)
-        distortion_.at<float>(0, i) = camera_info_->D[i];
+      ROS_INFO("Point-wise undistortion enabled.");
+      pcm_.fromCameraInfo(camera_info_);
     }
 
     service_homog_ = nh_.advertiseService("estimate_homography", &GroundProjection::estimate_homography_cb, this);
@@ -142,15 +132,13 @@ private:
 
     if(!rectified_input_)
     {
-      // undistort online
-      std::vector<cv::Point2f> vpt_dist;
-      vpt_dist.push_back(cv::Point2f(pt_img.x, pt_img.y));
-      std::vector<cv::Point2f> vpt_undist;
+      // point-wise undistortion
+      cv::Point2d pt_undistorted = pcm_.rectifyPoint(
+        cv::Point2d(static_cast<double>(pt_img.x), static_cast<double>(pt_img.y))
+      );
 
-      cv::undistortPoints(vpt_dist, vpt_undist, intrinsic_, distortion_, cv::Mat::eye(3, 3, CV_32F), intrinsic_);
-      
-      pt_img.x = vpt_undist[0].x;
-      pt_img.y = vpt_undist[0].y;
+      pt_img.x = static_cast<float>(pt_undistorted.x);
+      pt_img.y = static_cast<float>(pt_undistorted.y);
     }
     
     cv::Mat pt_gnd_ = H_ * cv::Mat(pt_img);

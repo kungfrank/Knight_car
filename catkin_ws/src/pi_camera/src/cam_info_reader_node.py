@@ -9,7 +9,7 @@ class CamInfoReader(object):
     def __init__(self):
         self.node_name = rospy.get_name()
         # Load parameters
-        self.pub_freq       = self.setupParam("~pub_freq",1.0)
+        # self.pub_freq       = self.setupParam("~pub_freq",1.0)
         self.config         = self.setupParam("~config","baseline")
         self.cali_file_name = self.setupParam("~cali_file_name","default")
 
@@ -34,11 +34,17 @@ class CamInfoReader(object):
         self.camera_info_msg = self.loadCameraInfo(self.cali_file)
         self.camera_info_msg.header.frame_id = rospy.get_namespace() + "camera_optical_frame"
         rospy.loginfo("[%s] CameraInfo: %s" %(self.node_name,self.camera_info_msg))
-        self.timer_pub = rospy.Timer(rospy.Duration.from_sec(1.0/self.pub_freq),self.cbTimer)
+        # self.timer_pub = rospy.Timer(rospy.Duration.from_sec(1.0/self.pub_freq),self.cbTimer)
+        self.sub_img_compressed = rospy.Subscriber("~compressed_image",CompressedImage,self.cbCompressedImage,queue_size=1)
     
-    def cbTimer(self,event):
-        self.camera_info_msg.header.stamp = rospy.Time.now()
-        self.pub_camera_info.publish(self.camera_info_msg)
+    def cbCompressedImage(self,msg):
+        if self.camera_info_msg is not None:
+            self.camera_info_msg.header.stamp = msg.header.stamp
+            self.pub_camera_info.publish(self.camera_info_msg)
+
+    # def cbTimer(self,event):
+    #     self.camera_info_msg.header.stamp = rospy.Time.now()
+    #     self.pub_camera_info.publish(self.camera_info_msg)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

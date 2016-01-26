@@ -31,6 +31,7 @@
 	<!-- cam_info_reader_node -->
 	<group if="$(arg cam_info)">
 		<remap from="cam_info_reader_node/camera_info" to="camera_node/camera_info"/>
+		<remap from="cam_info_reader_node/compressed_image" to="camera_node/image/compressed"/>
 		<include file="$(find pi_camera)/launch/cam_info_reader_node.launch"> 
 			<arg name="veh" value="$(arg veh)"/>
 			<arg name="local" value="$(arg local)"/>

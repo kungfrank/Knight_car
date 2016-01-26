@@ -15,7 +15,7 @@ class WheelsTrimmer(object):
         # Setup subscribers
         self.sub_topic = rospy.Subscriber("~wheels_cmd", WheelsCmd, self.cbWheelsCmd, queue_size=1)
         # Setup timer for parameter update
-        rospy.loginfo("[%s] Trim:  " %(self.node_name, self.trim))
+        rospy.loginfo("[%s] Trim: %s" %(self.node_name, self.trim))
         self.timer_trim = rospy.Timer(rospy.Duration.from_sec(1.0),self.cbTrim)
 
     def setupParam(self,param_name,default_value):

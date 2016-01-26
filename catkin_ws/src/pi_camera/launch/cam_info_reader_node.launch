@@ -9,7 +9,7 @@
 		<!-- These are special in that the configs are set as parameter and should alway obey the arg -->
 		<rosparam command="load" file="$(find duckietown)/config/$(arg config)/pi_camera/cam_info_reader_node/$(arg param_file_name).yaml"/>
 		<param name="~config" value="$(arg config)"/>
-		<param name="~cali_file_name" value="$(arg param_file_name)"/>
+		<param name="~cali_file_name" value="$(arg veh)"/>
 	</node>
 
 	<!-- Run on remote (vehicle) -->

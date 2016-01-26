@@ -69,7 +69,7 @@ class LineDetectorNode(object):
         # Convert to normalized pixel coordinates, and add segments to segmentList
         segmentList = SegmentList()
         arr_cutoff = np.array((0, self.top_cutoff, 0, self.top_cutoff))
-        arr_ratio = np.array((1.*/self.image_size[1], 1.*/self.image_size[0], 1./self.image_size[1], 1./self.image_size[0]))
+        arr_ratio = np.array((1./self.image_size[1], 1./self.image_size[0], 1./self.image_size[1], 1./self.image_size[0]))
   
         if len(lines_white)>0:
             rospy.loginfo("[LineDetectorNode] number of white lines = %s" %(len(lines_white)))

@@ -1,11 +1,12 @@
 <launch>
-  <arg name="camera" default="/$(arg veh)/camera_node"/>
+  <arg name="veh"/>
   <arg name="rectify" default="false" doc="If set to true, rectify image before process."/>
+  <arg name="camera" default="/$(arg veh)/camera_node"/>
   <node if="$(arg rectify)" ns="$(arg camera)" pkg="image_proc" type="image_proc" name="image_proc" output="screen">
     <remap from="$(arg camera)/image_raw" to="$(arg camera)/image/raw"/>
   </node>
   <node ns="$(arg veh)" pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen">
-    <param name="~homography_file" value="package://ground_projection/homography/$(arg veh).yaml"/>
+    <param name="~homography_file" value="package://duckietown/config/baseline/calibration/camera_extrinsic/$(arg veh).yaml"/>
     <param name="~board_w" value="7"/>
     <param name="~board_h" value="5"/>
     <param name="~square_size" value="0.031"/>

@@ -15,8 +15,18 @@
     </node>
 
     <!-- joy_mapper -->
-    <remap from="joy_mapper/wheels_cmd" to="wheels_driver/wheels_cmd"/>
+    <!-- <remap from="joy_mapper/wheels_cmd" to="wheels_driver/wheels_cmd"/> -->
     <include file="$(find joy_mapper)/launch/joy_mapper.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="local" value="$(arg local)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+    </include>
+
+    <!-- Wheels Trimmer -->
+    <remap from="wheels_trimmer/wheels_cmd" to="joy_mapper/wheels_cmd"/>
+    <remap from="wheels_trimmer/trimmed_wheels_cmd" to="wheels_driver/wheels_cmd"/>
+    <include file="$(find dagu_car)/launch/wheels_trimmer.launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>
         <arg name="config" value="$(arg config)"/>

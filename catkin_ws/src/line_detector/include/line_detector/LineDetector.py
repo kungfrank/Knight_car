@@ -10,17 +10,17 @@ class LineDetector(object):
         self.hsv = np.empty(0)
         self.edges = np.empty(0)
 
-        # Color value range in HSV space
-        self.hsv_white1 = np.empty(0)
-        self.hsv_white2 = np.empty(0)
-        self.hsv_yellow1 = np.empty(0)
-        self.hsv_yellow2 = np.empty(0)
-        self.hsv_red1 = np.empty(0)
-        self.hsv_red2 = np.empty(0)
-        self.hsv_red3 = np.empty(0)
-        self.hsv_red4 = np.empty(0)
+        # Color value range in HSV space: default
+        self.hsv_white1 = np.array([0, 0, 200])
+        self.hsv_white2 = np.array([255, 100, 255]) 
+        self.hsv_yellow1 = np.array([25, 150, 150])
+        self.hsv_yellow2 = np.array([45, 255, 255]) 
+        self.hsv_red1 = np.array([0, 100, 120])
+        self.hsv_red2 = np.array([10, 255, 255]) 
+        self.hsv_red3 = np.array([245, 100, 120])
+        self.hsv_red4 = np.array([255, 255, 255]) 
 
-        # Parameters for dilation, Canny, and Hough transform
+        # Parameters for dilation, Canny, and Hough transform: default
         self.dilation_kernel_size = 3
         self.canny_thresholds = [80,200]
         self.hough_threshold  = 20
@@ -102,7 +102,6 @@ class LineDetector(object):
 
     def detectLines(self, color):
         bw, edge_color = self.__colorFilter(color)
-        # edges = self.__findEdge(bw)
         lines = self.__HoughLine(edge_color)
         normals = self.__findNormal(bw, lines)
         return lines, normals
@@ -136,8 +135,9 @@ class LineDetector(object):
                 cv2.circle(self.bgr, (x3,y3), 3, (0,255,0))
                 cv2.circle(self.bgr, (x4,y4), 3, (0,0,255))
 
-    def getLane(self, color):
-        return self.__colorFilter(self.bgr, color)
+    def getColorPixels(self, color):
+        bw, edge_color = self.__colorFilter(color)
+        return bw
 
 def _main():
     detector = LineDetector()
@@ -186,7 +186,6 @@ def _main():
 
             # crop and resize frame
             bgr = cv2.resize(bgr, (200, 150))
-            #bgr = bgr[bgr.shape[0]/2:, :, :]
           
             # set the image to be detected 
             detector.setImage(bgr)

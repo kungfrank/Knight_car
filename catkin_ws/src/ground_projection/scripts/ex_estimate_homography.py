@@ -4,7 +4,7 @@ import rospy
 from ground_projection.srv import EstimateHomography
 from sensor_msgs.msg import CameraInfo, Image
 import numpy as np
-import IPython
+# import IPython
 
 def call_service_estimate_homography(req, veh):
   rospy.wait_for_service(veh + "/ground_projection/estimate_homography")

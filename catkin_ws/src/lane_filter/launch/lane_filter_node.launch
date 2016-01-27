@@ -1,21 +1,22 @@
 <launch>
-	<node ns="megaman" pkg="lane_filter" type="lane_filter_node.py" name="lane_filter" output="screen">
-		<remap from="~segment_list" to="ground_projection/lineseglist_out"/>
-		<param name="~mean_d_0" value="0"/>
-		<param name="~mean_phi_0" value="0"/>
-		<param name="~sigma_d_0" value="0.5"/>
-		<param name="~sigma_phi_0" value="0.1"/>
-		<param name="~delta_d" value="0.05"/>
-		<param name="~delta_phi" value="0.1"/>
-		<param name="~d_max" value="0.5"/>
-		<param name="~d_min" value="-0.5" />
-		<param name="~phi_min" value="-1.7" />
-		<param name="~phi_max" value="1.7" />
-		<param name="~cov_v"  value="0.5" />
-		<param name="~delta_omega" value="0.01"/>
-		<param name="~linewidth_white" value="0.05"/>
-		<param name="~linewidth_yellow" value="0.025"/>
-		<param name="~lanewidth" value="0.2"/>
-		<param name="~max_entropy" value="0.04"/>
-	</node>
+    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
+    <arg name="local" default="false" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+    <arg name="config" default="baseline" doc="Specify a config."/>
+    <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+    <arg name="live" default="true" doc="Are we actually running live or just testing?" />
+
+    <group ns="$(arg veh)">        
+           <!-- run local -->
+            <node if="$(arg local)" name="lane_filter" pkg="lane_filter" type="lane_filter_node.py" output="screen">
+                <rosparam command="load" file="$(find duckietown)/config/$(arg config)/lane_filter/lane_filter_node/$(arg param_file_name).yaml"/>
+		<remap if="$(arg live) from="~segment_list" to="ground_projection/lineseglist_out"/>
+		<remap unless="$(arg live) from="~segment_list" to="lane_filter_tester/segment_list"/>
+            </node>
+
+            <!-- run remote -->
+            <node unless="$(arg local)" machine="$(arg veh)" name="lane_filter" pkg="lane_filter" type="lane_filter_node.py" output="screen">
+                <rosparam command="load" file="$(find duckietown)/config/$(arg config)/lane_filter/lane_filterdetector_node/$(arg param_file_name).yaml"/>
+		<remap unless="$(arg live) from="~segment_list" to="lane_filter_tester/segment_list"/>
+            </node>
+    </group>
 </launch>

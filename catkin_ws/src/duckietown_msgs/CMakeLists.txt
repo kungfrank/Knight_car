@@ -63,6 +63,9 @@ add_message_files(
   Segment.msg
   SegmentList.msg
   ControlMode.msg
+  Rect.msg
+  Rects.msg
+  SceneSegments.msg
 )
 
 ## Generate services in the 'srv' folder

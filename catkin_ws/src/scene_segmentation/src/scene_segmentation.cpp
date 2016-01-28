@@ -106,6 +106,7 @@ class SceneSegmentation
   image_transport::Publisher pub_image_;
   ros::Publisher pub_rects_;
   ros::Publisher pub_segments_;
+  bool half_;
   
   Segmentor::Ptr segmentor_;
   sensor_msgs::CameraInfo::ConstPtr camera_info_;
@@ -131,10 +132,16 @@ public:
     nh_.param<float>("k", k_, 500.f);
     nh_.param<int>("min", min_, 20);
 
+    nh_.param<bool>("half", half_, true);
+
     ROS_INFO("Waiting for message on camera info topic.");
     camera_info_ = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("camera_info", nh_);
 
-    segmentor_ = Segmentor::Ptr(new Segmentor(camera_info_->width, camera_info_->height));
+    // segmentor_ = Segmentor::Ptr(new Segmentor(camera_info_->width, camera_info_->height, half_));
+    if(half_)
+      segmentor_ = Segmentor::Ptr(new Segmentor(camera_info_->width/2, camera_info_->height/2));
+    else
+      segmentor_ = Segmentor::Ptr(new Segmentor(camera_info_->width, camera_info_->height));
 
     srv_segment_ = nh_.advertiseService("segment_image", &SceneSegmentation::segment_image_cb, this);
     ROS_INFO("segment_image is ready.");
@@ -180,7 +187,31 @@ private:
     seg_ptr->header = cv_ptr->header;
     seg_ptr->encoding = cv_ptr->encoding;
 
-    segment(cv_ptr->image, seg_ptr->image, rects_);
+    if(half_)
+    {
+      // shrink & expand
+      cv::Size half_size = cv::Size(cv_ptr->image.cols/2, cv_ptr->image.rows/2);
+      cv::Mat half_img = cv::Mat(half_size, CV_8UC3);
+      cv::Mat half_seg = cv::Mat(half_size, CV_8UC3);
+      cv::resize(cv_ptr->image, half_img, half_size);
+
+      segment(half_img, half_seg, rects_);
+
+      cv::Size full_size = cv::Size(cv_ptr->image.cols, cv_ptr->image.rows);
+      cv::resize(half_seg, seg_ptr->image, full_size);
+
+      // expand `rects`
+      for(int i=0; i<rects_.size(); i++)
+      {
+        rects_[i].x *= 2;
+        rects_[i].y *= 2;
+        rects_[i].w *= 2;
+        rects_[i].h *= 2;
+      }
+    }
+    else
+      segment(cv_ptr->image, seg_ptr->image, rects_);
+
     pub_image_.publish(seg_ptr->toImageMsg());
 
     rects_msg_.rects = rects_;

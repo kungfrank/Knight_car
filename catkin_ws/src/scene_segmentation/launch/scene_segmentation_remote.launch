@@ -1,10 +1,11 @@
 <launch>
   <arg name="veh"/>
+  <include file="$(find duckietown)/machines"/>
   <arg name="camera" default="/$(arg veh)/camera_node"/>
-  <node if="$(arg rectify)" ns="$(arg camera)" pkg="image_proc" type="image_proc" name="image_proc" output="screen">
+  <node if="$(arg rectify)" machine="$(arg veh)" ns="$(arg camera)" pkg="image_proc" type="image_proc" name="image_proc" output="screen">
     <remap from="$(arg camera)/image_raw" to="$(arg camera)/image/raw"/>
   </node>
-  <node ns="$(arg veh)" pkg="scene_segmentation" type="scene_segmentation" name="scene_segmentation" output="screen">
+  <node machine="$(arg veh)" ns="$(arg veh)" pkg="scene_segmentation" type="scene_segmentation" name="scene_segmentation" output="screen">
     <remap if="$(arg rectify)" from="~image_in" to="$(arg camera)/image_rect_color"/>
     <remap unless="$(arg rectify)" from="~image_in" to="$(arg camera)/image/raw"/> -->
     <remap from="~camera_info" to="$(arg camera)/camera_info"/>

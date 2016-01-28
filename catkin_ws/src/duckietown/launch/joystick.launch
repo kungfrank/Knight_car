@@ -15,8 +15,7 @@
     </node>
 
     <!-- joy_mapper -->
-    <!-- <remap from="joy_mapper/wheels_cmd" to="wheels_driver/wheels_cmd"/> -->
-    <include file="$(find joy_mapper)/launch/joy_mapper.launch">
+    <include file="$(find joy_mapper)/launch/joy_mapper_node.launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>
         <arg name="config" value="$(arg config)"/>

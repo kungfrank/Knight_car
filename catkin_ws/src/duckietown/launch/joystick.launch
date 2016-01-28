@@ -22,7 +22,7 @@
     </include>
 
     <!-- Wheels Trimmer -->
-    <remap from="wheels_trimmer_node/wheels_cmd" to="joy_mapper/wheels_cmd"/>
+    <remap from="wheels_trimmer_node/wheels_cmd" to="joy_mapper_node/wheels_cmd"/>
     <remap from="wheels_trimmer_node/trimmed_wheels_cmd" to="wheels_driver_node/wheels_cmd"/>
     <include file="$(find dagu_car)/launch/wheels_trimmer_node.launch">
         <arg name="veh" value="$(arg veh)"/>

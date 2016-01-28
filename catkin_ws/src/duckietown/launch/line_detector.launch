@@ -6,20 +6,27 @@
 	<arg name="raw" default="false" doc="If set to true, also publish raw image using decoder."/> 
 	<arg name="live" default="true" doc="if set to true, run the camera and do live detection. "/>
 
-	<include file="$(find duckietown)/launch/camera.launch">
+	<arg name="camera" default="true" doc="If set to false, won't launch the camera. This is for easier relaunching of the line_detector_node only "/>
+
+	<!-- Camera -->
+	<include if="$(arg camera)" file="$(find duckietown)/launch/camera.launch">
 		<arg name="veh" value="$(arg veh)"/>
 		<arg name="local" value="$(arg local)"/>
 		<arg name="config" value="$(arg config)"/>
 		<arg name="param_file_name" value="$(arg param_file_name)"/>
 		<arg name="raw" value="$(arg raw)"/>
-	    	<arg name="cam_info" value="false"/> <!-- this should possible change later when we take logs without camera info but let's leave for now -->
+    	<arg name="cam_info" value="false"/> <!-- this should possible change later when we take logs without camera info but let's leave for now -->
 		<arg name="live" value="$(arg live)"/>
 	</include>
 
+
+	<!-- Line Detector -->
+	<remap from="line_detector_node/image" to="camera_node/image/compressed"/>
 	<include file="$(find line_detector)/launch/line_detector_node.launch">
 	    <arg name="veh" value="$(arg veh)"/>
 	    <arg name="local" value="$(arg local)"/>
 	    <arg name="config" value="$(arg config)"/>
 	    <arg name="param_file_name" value="$(arg param_file_name)"/>
 	</include>
+	
 </launch>

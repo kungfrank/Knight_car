@@ -101,27 +101,45 @@ class LaneFilterNode(object):
         self.beliefRV=self.beliefRV/np.linalg.norm(self.beliefRV)
 
     def generateVote(self,segment):
-        print "input:"
+        print "generate vote input: [x0, y0] [x1, y1]"
         p1 = np.array([segment.points[0].x, segment.points[0].y]) 
         p2 = np.array([segment.points[1].x, segment.points[1].y])
         print p1,p2
         t_hat = (p2-p1)/np.linalg.norm(p2-p1)
+        print "t_hat"
+        print t_hat
         n_hat = np.array([-t_hat[1],t_hat[0]])
+        print "n_hat"
+        print n_hat
         d1 = np.inner(n_hat,p1)
+        print "d_1"
+        print d1
         d2 = np.inner(n_hat,p2)
+        print "d_2"
+        print d2
         d_i = (d1+d2)/2
-        phi_i = np.arcsin(-t_hat[1])
-        if segment.color == segment.WHITE: # right hand side
-            if(p2[0] > p1[0]):
-                d_i =  -d_i - self.lanewidth/2
-            else:
-                d_i = d_i - (self.lanewidth/2 + self.linewidth_white)
-        elif segment.color == segment.YELLOW: # left hand side
-            if(p1[0] > p2[0]):
-                d_i = -d_i - self.lanewidth/2
-            else:
-                d_i = d_i - (self.lanewidth/2 + self.linewidth_yellow)
-        print "output"
+        print "d_i - preprocessing"
+        print d_i
+        phi_i = np.arcsin(t_hat[1])
+        print "phi_i"
+        print phi_i
+        if segment.color == segment.WHITE: # right lane is white
+            print "color = white"
+            if(p1[0] > p2[0]): # right edge of white lane
+                d_i = d_i - self.linewidth_white
+            else: # left edge of white lane
+                d_i = - d_i
+                phi_i = -phi_i
+            d_i = d_i - self.lanewidth/2
+        elif segment.color == segment.YELLOW: # left lane is yellow
+            print "color = yellow"
+            if (p2[0] > p1[0]): # left edge of yellow lane
+                d_i = d_i - self.linewidth_yellow
+                phi_i = -phi_i
+            else: # right edge of white lane
+                d_i = -d_i
+            d_i =  self.lanewidth/2 - d_i
+        print "generate vote output [d phi]:"
         print d_i, phi_i
         return d_i, phi_i
     

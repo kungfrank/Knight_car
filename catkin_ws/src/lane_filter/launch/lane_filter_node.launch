@@ -1,22 +1,22 @@
 <launch>
-    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
-    <arg name="local" default="false" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+    <arg name="veh" default="pontiac" doc="Name of vehicle. ex: megaman"/>
+    <arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
     <arg name="config" default="baseline" doc="Specify a config."/>
     <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
-    <arg name="live" default="true" doc="Are we actually running live or just testing?" />
+    <arg name="live" default="false" doc="Are we actually running live or just testing?" />
 
     <group ns="$(arg veh)">        
            <!-- run local -->
             <node if="$(arg local)" name="lane_filter" pkg="lane_filter" type="lane_filter_node.py" output="screen">
                 <rosparam command="load" file="$(find duckietown)/config/$(arg config)/lane_filter/lane_filter_node/$(arg param_file_name).yaml"/>
-		<remap if="$(arg live) from="~segment_list" to="ground_projection/lineseglist_out"/>
-		<remap unless="$(arg live) from="~segment_list" to="lane_filter_tester/segment_list"/>
+		<remap if="$(arg live)" from="~segment_list" to="ground_projection/lineseglist_out"/>
+		<remap unless="$(arg live)" from="~segment_list" to="lane_filter_tester/segment_list"/>
             </node>
 
             <!-- run remote -->
             <node unless="$(arg local)" machine="$(arg veh)" name="lane_filter" pkg="lane_filter" type="lane_filter_node.py" output="screen">
-                <rosparam command="load" file="$(find duckietown)/config/$(arg config)/lane_filter/lane_filterdetector_node/$(arg param_file_name).yaml"/>
-		<remap unless="$(arg live) from="~segment_list" to="lane_filter_tester/segment_list"/>
+                <rosparam command="load" file="$(find duckietown)/config/$(arg config)/lane_filter/lane_filter/$(arg param_file_name).yaml"/>
+		<remap unless="$(arg live)" from="~segment_list" to="lane_filter_tester/segment_list"/>
             </node>
     </group>
 </launch>

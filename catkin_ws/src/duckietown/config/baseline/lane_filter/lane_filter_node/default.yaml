@@ -1,8 +1,8 @@
 # default parameters for lane_filter/lane_filter_node
 mean_d_0: 0
 mean_phi_0: 0
-sigma_d_0: 0
-sigma_phi_0: 0
+sigma_d_0: 0.1
+sigma_phi_0: 0.1
 delta_d: 0.05
 delta_phi: 0.1
 d_max: 0.5

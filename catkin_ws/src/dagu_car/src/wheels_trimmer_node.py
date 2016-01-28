@@ -3,7 +3,7 @@ import rospy
 from duckietown_msgs.msg import WheelsCmd
 import numpy as np
 
-class WheelsTrimmer(object):
+class WheelsTrimmerNode(object):
     def __init__(self):
         self.node_name = rospy.get_name()
         rospy.loginfo("[%s] Initializing " %(self.node_name))
@@ -41,9 +41,9 @@ class WheelsTrimmer(object):
 
 if __name__ == '__main__':
     # Initialize the node with rospy
-    rospy.init_node('wheels_trimmer', anonymous=False)
+    rospy.init_node('wheels_trimmer_node', anonymous=False)
     # Create the DaguCar object
-    node = WheelsTrimmer()
+    node = WheelsTrimmerNode()
     # Setup proper shutdown behavior 
     rospy.on_shutdown(node.on_shutdown)
     # Keep it spinning to keep the node alive

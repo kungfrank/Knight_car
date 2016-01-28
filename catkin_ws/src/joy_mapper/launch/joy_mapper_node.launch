@@ -1,6 +1,6 @@
 <launch>
 	<arg pkg="pkg_name" value="joy_mapper"/>
-	<arg pkg="node_name" value="joy_mapper_node"/>
+	<arg pkg="node_name" default="joy_mapper_node"/>
 		
 	<arg name="veh" doc="Name of vehicle. ex: megaman"/>
 	<arg name="local" default="false" doc="true for running on laptop. false for running on vehicle."/>

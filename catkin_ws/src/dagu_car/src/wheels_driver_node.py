@@ -25,11 +25,11 @@ class WheelsDriverNode(object):
 
     def on_shutdown(self):
         self.driver.setWheelsSpeed(left=0.0,right=0.0)
-        rospy.loginfo("[DaguCar] Shutting down.")
+        rospy.loginfo("[%s] Shutting down."%(rospy.get_name()))
 
 if __name__ == '__main__':
     # Initialize the node with rospy
-    rospy.init_node('wheels_driver', anonymous=False)
+    rospy.init_node('wheels_driver_node', anonymous=False)
     # Create the DaguCar object
     node = WheelsDriverNode()
     # Setup proper shutdown behavior 

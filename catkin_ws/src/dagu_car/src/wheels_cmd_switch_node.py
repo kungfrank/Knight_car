@@ -2,7 +2,7 @@
 import rospy
 from duckietown_msgs.msg import WheelsCmd, ControlMode
 
-class WheelsCmdSwitch(object):
+class WheelsCmdSwitchNode(object):
     def __init__(self):
         self.node_name = rospy.get_name()
         rospy.loginfo("[%s] Initializing " %(self.node_name))
@@ -60,9 +60,9 @@ class WheelsCmdSwitch(object):
 
 if __name__ == '__main__':
     # Initialize the node with rospy
-    rospy.init_node('wheels_cmd_switch', anonymous=False)
+    rospy.init_node('wheels_cmd_switch_node', anonymous=False)
     # Create the DaguCar object
-    node = WheelsCmdSwitch()
+    node = WheelsCmdSwitchNode()
     # Setup proper shutdown behavior 
     rospy.on_shutdown(node.on_shutdown)
     # Keep it spinning to keep the node alive

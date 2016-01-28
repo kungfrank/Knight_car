@@ -4,7 +4,7 @@
     <arg name="config" default="baseline" doc="Specify a config."/>
     <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman"/>
     <arg name="pkg_name" default="dagu_car" doc="name of the package"/>
-    <arg name="node_name" default="wheels_trimmer" doc="name of the node"/>
+    <arg name="node_name" default="wheels_trimmer_node" doc="name of the node"/>
     
     <group ns="$(arg veh)">
         <!-- Run on local (laptop) -->
@@ -18,4 +18,9 @@
             <rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
         </node>
     </group>
+
+    <!-- Subscriptions -->
+    <!-- "~wheels_cmd": duckietown_msgs/WheelsCmd. Input of untrimmed wheels command.-->
+    <!-- Publications -->
+    <!-- "~trimmed_wheels_cmd" : duckietown_msgs/WheelsCmd. Output of trimmed wheels command according to the ~trim parameter -->
 </launch>

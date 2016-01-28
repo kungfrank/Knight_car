@@ -15,7 +15,7 @@
 
             <!-- run remote -->
             <node unless="$(arg local)" machine="$(arg veh)" name="lane_filter" pkg="lane_filter" type="lane_filter_node.py" output="screen">
-                <rosparam command="load" file="$(find duckietown)/config/$(arg config)/lane_filter/lane_filter/$(arg param_file_name).yaml"/>
+                <rosparam command="load" file="$(find duckietown)/config/$(arg config)/lane_filter/lane_filter_node/$(arg param_file_name).yaml"/>
 		<remap from="~segment_list" to="lane_filter_tester/segment_list"/>
             </node>
     </group>

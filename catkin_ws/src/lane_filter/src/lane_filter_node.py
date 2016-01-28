@@ -6,6 +6,7 @@ from sensor_msgs.msg import Image
 from duckietown_msgs.msg import SegmentList, Segment, Pixel, LanePose
 from scipy.stats import multivariate_normal
 from math import floor, atan2, pi, cos, sin
+import time
 
 # Lane Filter Node
 # Author: Liam Paull
@@ -50,6 +51,7 @@ class LaneFilterNode(object):
         return value
 
     def processSegments(self,segment_list_msg):
+        t_start = rospy.get_time()
         self.propagateBelief()
         # initialize measurement likelihood
         measurement_likelihood = np.zeros(self.d.shape)
@@ -58,6 +60,7 @@ class LaneFilterNode(object):
                 continue
             if segment.points[0].x < 0 or segment.points[1].x < 0:
                 continue
+            # todo eliminate the white segments that are on the other side of the road
             d_i,phi_i = self.generateVote(segment)
             if d_i > self.d_max or d_i < self.d_min or phi_i < self.phi_min or phi_i>self.phi_max:
                 continue
@@ -82,6 +85,9 @@ class LaneFilterNode(object):
         belief_img = bridge.cv2_to_imgmsg((255*self.beliefRV).astype('uint8'), "mono8")
         self.pub_lane_pose.publish(self.lanePose)
         self.pub_belief_img.publish(belief_img)
+        print "time to process segments:"
+        print rospy.get_time() - t_start
+
 
     def initializeBelief(self):
         pos = np.empty(self.d.shape + (2,))
@@ -101,30 +107,15 @@ class LaneFilterNode(object):
         self.beliefRV=self.beliefRV/np.linalg.norm(self.beliefRV)
 
     def generateVote(self,segment):
-        print "generate vote input: [x0, y0] [x1, y1]"
         p1 = np.array([segment.points[0].x, segment.points[0].y]) 
         p2 = np.array([segment.points[1].x, segment.points[1].y])
-        print p1,p2
         t_hat = (p2-p1)/np.linalg.norm(p2-p1)
-        print "t_hat"
-        print t_hat
         n_hat = np.array([-t_hat[1],t_hat[0]])
-        print "n_hat"
-        print n_hat
         d1 = np.inner(n_hat,p1)
-        print "d_1"
-        print d1
         d2 = np.inner(n_hat,p2)
-        print "d_2"
-        print d2
         d_i = (d1+d2)/2
-        print "d_i - preprocessing"
-        print d_i
         phi_i = np.arcsin(t_hat[1])
-        print "phi_i"
-        print phi_i
         if segment.color == segment.WHITE: # right lane is white
-            print "color = white"
             if(p1[0] > p2[0]): # right edge of white lane
                 d_i = d_i - self.linewidth_white
             else: # left edge of white lane
@@ -132,15 +123,12 @@ class LaneFilterNode(object):
                 phi_i = -phi_i
             d_i = d_i - self.lanewidth/2
         elif segment.color == segment.YELLOW: # left lane is yellow
-            print "color = yellow"
             if (p2[0] > p1[0]): # left edge of yellow lane
                 d_i = d_i - self.linewidth_yellow
                 phi_i = -phi_i
             else: # right edge of white lane
                 d_i = -d_i
             d_i =  self.lanewidth/2 - d_i
-        print "generate vote output [d phi]:"
-        print d_i, phi_i
         return d_i, phi_i
     
     def onShutdown(self):

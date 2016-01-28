@@ -5,7 +5,7 @@
 	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
 	<arg name="live" default="true" doc="if set to true, run the camera and do live detection. "/>
 
-
+	<!-- Ground projection -->
 	<include file="$(find duckietown)/launch/ground_projection.launch">
 	    <arg name="veh" value="$(arg veh)"/>
 	    <arg name="local" value="$(arg local)"/>
@@ -14,6 +14,8 @@
 	    <arg name="live" value="$(arg live)"/>
 	</include>
 
+	<!-- Lane Filter -->
+	<remap from="lane_filter_node/segment_list" to="ground_projection/lineseglist_out"/>
 	<include file="$(find lane_filter)/launch/lane_filter_node.launch">
 	    <arg name="veh" value="$(arg veh)"/>
 	    <arg name="local" value="$(arg local)"/>

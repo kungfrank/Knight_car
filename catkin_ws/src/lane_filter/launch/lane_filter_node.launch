@@ -3,20 +3,29 @@
     <arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
     <arg name="config" default="baseline" doc="Specify a config."/>
     <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
-    <arg name="testing" default="false" doc="using for test purposes." />
+    <!-- <arg name="testing" default="false" doc="using for test purposes." /> -->
+
+    <arg name="pkg_name" value="lane_filter"/>
+    <arg name="node_name" default="lane_filter_node"/>
 
     <group ns="$(arg veh)">        
-           <!-- run local -->
-            <node if="$(arg local)" name="lane_filter" pkg="lane_filter" type="lane_filter_node.py" output="screen">
-                <rosparam command="load" file="$(find duckietown)/config/$(arg config)/lane_filter/lane_filter_node/$(arg param_file_name).yaml"/>
-		<remap unless="$(arg testing)" from="~segment_list" to="ground_projection/lineseglist_out"/>
-		<remap if="$(arg testing)" from="~segment_list" to="lane_filter_tester/segment_list"/>
-            </node>
+        <!-- run local -->
+        <node if="$(arg local)" name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
+            <rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
+            <!-- <remap unless="$(arg testing)" from="~segment_list" to="ground_projection/lineseglist_out"/> -->
+            <!-- <remap if="$(arg testing)" from="~segment_list" to="lane_filter_tester/segment_list"/> -->
+        </node>
 
-            <!-- run remote -->
-            <node unless="$(arg local)" machine="$(arg veh)" name="lane_filter" pkg="lane_filter" type="lane_filter_node.py" output="screen">
-                <rosparam command="load" file="$(find duckietown)/config/$(arg config)/lane_filter/lane_filter_node/$(arg param_file_name).yaml"/>
-		<remap from="~segment_list" to="lane_filter_tester/segment_list"/>
-            </node>
+        <!-- run remote -->
+        <node unless="$(arg local)" machine="$(arg veh)" name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
+            <rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
+            <!-- <remap from="~segment_list" to="lane_filter_tester/segment_list"/> -->
+        </node>
     </group>
+
+    <!-- Publications -->
+
+    <!-- Subscriptions -->
+
+    
 </launch>

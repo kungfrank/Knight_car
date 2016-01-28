@@ -3,6 +3,8 @@
 	<arg name="config" default="baseline"/>
 	<arg name="local" default="false"/>
 	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman"/>
+	<arg name="pkg_name" value="pi_camera"/>
+	<arg name="node_name" default="cam_info_reader_node"/>
 
 	<!-- Run on local (laptop) -->
 	<node if="$(arg local)" ns="$(arg veh)" pkg="pi_camera" type="cam_info_reader_node.py" name="cam_info_reader_node" output="screen">
@@ -20,4 +22,10 @@
 		<param name="~config" value="$(arg config)"/>
 		<param name="~cali_file_name" value="$(arg param_file_name)"/>		
 	</node>	
+
+	<!-- Publication -->
+	<!-- "~camera_info": sensor_msgs/CameraInfo. Publishing camera info load from yaml file specified by parameters-->
+	
+	<!-- Subscription -->
+	<!-- "~compressed_image": sensor_msgs/CompressedImage. Input compressed image for the time stamp of the camera_info-->
 </launch>

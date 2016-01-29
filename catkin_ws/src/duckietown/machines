@@ -6,4 +6,5 @@
 	<machine name="ferrari" address="ferrari.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="pontiac" address="pontiac.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="megaman" address="megaman.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+	<machine name="kitt" address="kitt.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 </launch>

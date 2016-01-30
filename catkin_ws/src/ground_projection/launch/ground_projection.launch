@@ -20,16 +20,16 @@
     		      <param name="~homography_file" value="package://duckietown/config/$(arg config)/calibration/camera_extrinsic/$(arg veh).yaml"/>
     	      	      <param name="~camera_info_path" value="/$(arg veh)/$(arg camera_topic)/camera_info"/>
     	      	      <param name="~rectified_input" type="bool" value="$(arg rectify)"/>
-		      <remap from="~lineseglist_in" to="line_detector/segment_list"/>
+		      <remap from="~lineseglist_in" to="line_detector_node/segment_list"/>
   		</node>
 
 		<!-- run remote -->
 	  	<node unless="$(arg local)" machine="$(arg veh)" pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen">
     		      <rosparam command="load" file="$(find duckietown)/config/$(arg config)/ground_projection/ground_projection/$(arg param_file_name).yaml"/>
     		      <param name="~homography_file" value="package://duckietown/config/$(arg config)/calibration/camera_extrinsic/$(arg veh).yaml"/>
-    	      	      <param name="~camera_info_path" value="$(arg camera_topic)/camera_info"/>
+    	      	      <param name="~camera_info_path" value="/$(arg veh)/$(arg camera_topic)/camera_info"/>
     	      	      <param name="~rectified_input" type="bool" value="$(arg rectify)"/>
-		      <remap from="~lineseglist_in" to="line_detector/segment_list"/>
+		      <remap from="~lineseglist_in" to="line_detector_node/segment_list"/>
   		</node>
 	</group>
 </launch>

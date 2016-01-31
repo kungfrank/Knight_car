@@ -13,7 +13,7 @@ class Talker(object):
 
         # Setup publishers
         self.pub_topic_a = rospy.Publisher("~topic_a",String, queue_size=1)
-        self.pub_wheels_cmd = rospy.Publisher("/kitt/wheels_driver/wheels_cmd",WheelsCmd, queue_size=1)
+        self.pub_wheels_cmd = rospy.Publisher("/kitt/wheels_driver_node/wheels_cmd",WheelsCmd, queue_size=1)
         # Setup subscriber
         self.sub_topic_b = rospy.Subscriber("~topic_b", String, self.cbTopic)
         # Read parameters
@@ -41,8 +41,8 @@ class Talker(object):
         starting_time = rospy.Time.now()
         while((rospy.Time.now() - starting_time) < rospy.Duration(turn_for_time)):
             wheels_cmd_msg = WheelsCmd()
-            wheels_cmd_msg.vel_left = 0.5
-            wheels_cmd_msg.vel_right = -0.5
+            wheels_cmd_msg.vel_left = 0.4
+            wheels_cmd_msg.vel_right = -0.4
             self.pub_wheels_cmd.publish(wheels_cmd_msg)    
             rospy.loginfo("Moving?.")
             rate.sleep()

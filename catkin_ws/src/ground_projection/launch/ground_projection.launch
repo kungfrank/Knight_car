@@ -6,11 +6,13 @@
  	<arg name="camera_topic" default="camera_node"/>
   	<arg name="rectify" default="false" doc="If set to true, rectify image before process."/>
 
+	<include file="$(find duckietown)/machines"/>
 
 	<group ns="$(arg veh)">
 
   	       <node if="$(arg rectify)"  pkg="image_proc" type="image_proc" name="image_proc" output="screen">
-    	       	     <remap from="$(arg camera_topic)/image_raw" to="$(arg camera_topic)/image/raw"/>
+    	       	     <remap from="image_raw" to="$(arg camera_topic)/image/raw"/>
+    	       	     <remap from="camera_info" to="$(arg camera_topic)/camera_info"/>
   	       </node>
 
 

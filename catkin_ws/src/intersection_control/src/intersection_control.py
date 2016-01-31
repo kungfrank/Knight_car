@@ -25,9 +25,9 @@ class Talker(object):
 
         rate = rospy.Rate(30) # 10hz
         #move forward
-        forward_for_time_leave = 2.25
-        turn_for_time = 0.75
-        forward_for_time_enter = 1
+        forward_for_time_leave = 2.0
+        turn_for_time = 0.7
+        forward_for_time_enter = 2.0
         
         starting_time = rospy.Time.now()
         while((rospy.Time.now() - starting_time) < rospy.Duration(forward_for_time_leave)):
@@ -41,8 +41,8 @@ class Talker(object):
         starting_time = rospy.Time.now()
         while((rospy.Time.now() - starting_time) < rospy.Duration(turn_for_time)):
             wheels_cmd_msg = WheelsCmd()
-            wheels_cmd_msg.vel_left = 0.4
-            wheels_cmd_msg.vel_right = -0.4
+            wheels_cmd_msg.vel_left = 0.25
+            wheels_cmd_msg.vel_right = -0.25
             self.pub_wheels_cmd.publish(wheels_cmd_msg)    
             rospy.loginfo("Moving?.")
             rate.sleep()

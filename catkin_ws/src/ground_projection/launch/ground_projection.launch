@@ -8,28 +8,23 @@
 
   <include file="$(find duckietown)/machines"/>
   <group ns="$(arg veh)">
-<!--     <node if="$(arg rectify)" ns="$(arg camera_topic)" machine="$(arg veh)" pkg="image_proc" type="image_proc" name="image_proc" output="screen"> -->
-<!--       <remap from="image_raw" to="image/raw"/> -->
-<!--     </node> -->
 
     <!-- run local -->
     <node if="$(arg local)"  pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen">
-      <rosparam command="load" file="$(find duckietown)/config/$(arg config)/ground_projection/ground_projection/$(arg param_file_name).yaml"/>
-      <param name="~homography_file" value="package://duckietown/config/$(arg config)/calibration/camera_extrinsic/$(arg veh).yaml"/>
-      <param name="~camera_info_path" value="/$(arg veh)/$(arg camera_topic)/camera_info"/>
-      <param name="~rectified_input" type="bool" value="$(arg rectify)"/>
+      <param name="~config" value="$(arg config)"/>
+      <param name="~config_file_name" value="$(arg veh)"/>
       <remap from="~lineseglist_in" to="line_detector_node/segment_list"/>
       <remap from="~cali_image" to="$(arg camera_topic)/image/raw"/>
+      <remap from="~camera_info" to="$(arg camera_topic)/camera_info"/>
     </node>
 
     <!-- run remote -->
     <node unless="$(arg local)" machine="$(arg veh)" pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen">
-      <rosparam command="load" file="$(find duckietown)/config/$(arg config)/ground_projection/ground_projection/$(arg param_file_name).yaml"/>
-      <param name="~homography_file" value="package://duckietown/config/$(arg config)/calibration/camera_extrinsic/$(arg veh).yaml"/>
-      <param name="~camera_info_path" value="/$(arg veh)/$(arg camera_topic)/camera_info"/>
-      <param name="~rectified_input" type="bool" value="$(arg rectify)"/>
+      <param name="~config" value="$(arg config)"/>
+      <param name="~config_file_name" value="$(arg veh)"/>
       <remap from="~lineseglist_in" to="line_detector_node/segment_list"/>
       <remap from="~cali_image" to="$(arg camera_topic)/image/raw"/>
+      <remap from="~camera_info" to="$(arg camera_topic)/camera_info"/>
     </node>
   </group>
 </launch>

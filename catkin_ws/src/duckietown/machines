@@ -1,11 +1,13 @@
 <launch>
-	<arg name="env_script_path" default="~/duckietown/environment.sh"/>
-	<machine name="tesla" address="tesla.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-	<machine name="lambo" address="lambo.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-	<machine name="porsche911" address="porsche911.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-	<machine name="ferrari" address="ferrari.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-	<machine name="pontiac" address="pontiac.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-	<machine name="megaman" address="megaman.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-	<machine name="kitt" address="kitt.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+    <arg name="env_script_path" default="~/duckietown/environment.sh"/>
+    <machine name="tesla" address="tesla.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+    <machine name="lambo" address="lambo.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+    <machine name="porsche911" address="porsche911.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+    <machine name="ferrari" address="ferrari.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+    <machine name="pontiac" address="pontiac.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+    <machine name="megaman" address="megaman.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+    <machine name="kitt" address="kitt.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+    <machine name="2cv" address="2cv.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
     <machine name="sonata" address="sonata.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+    <machine name="shamrock" address="shamrock.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 </launch>

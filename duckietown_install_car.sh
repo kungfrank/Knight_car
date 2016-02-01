@@ -19,8 +19,8 @@ sudo ldconfig
 cd $START_PATH
 
 # Install some packages that were missed in v1.1
-sudo apt-get install ros-indigo-{tf-conversions,cv-bridge,image-transport,camera-info-manager,theora-image-transport,joy,image-proc} -y
-sudo apt-get install ros-indigo-compressed-image-transport -y
+sudo apt-get install ros-indigo-{tf-conversions,cv-bridge,image-transport,camera-info-manager,theora-image-transport,joy,image-proc} -y --force-yes
+sudo apt-get install ros-indigo-compressed-image-transport -y --force-yes
 sudo apt-get install libyaml-cpp-dev -y
 
 # packages for the IMU

@@ -12,7 +12,10 @@ import numpy as np
 class LineDetectorNode(object):
     def __init__(self):
         self.node_name = "Line Detector"
- 
+        
+        # Verbose for timer 
+        self.verbose = rospy.get_param('~verbose')
+
         self.image_size = rospy.get_param('~img_size')
         self.top_cutoff = rospy.get_param('~top_cutoff')
         
@@ -40,8 +43,14 @@ class LineDetectorNode(object):
 
 
     def processImage(self,image_msg):
+        # Decode from compressed image
         image_cv = cv2.imdecode(np.fromstring(image_msg.data, np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
-        #image_cv = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
+        # Convert from uncompressed image message
+        # image_cv = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
+        
+        # Timer
+        if self.verbose:
+            tic = rospy.get_time()   
         
         # Resize and crop image
         hei_original = image_cv.shape[0]
@@ -72,18 +81,24 @@ class LineDetectorNode(object):
         arr_ratio = np.array((1./self.image_size[1], 1./self.image_size[0], 1./self.image_size[1], 1./self.image_size[0]))
   
         if len(lines_white)>0:
-            rospy.loginfo("[LineDetectorNode] number of white lines = %s" %(len(lines_white)))
+            rospy.loginfo("[LineDetectorNode] number of white segments = %d" %(len(lines_white)))
             lines_normalized_white = ((lines_white + arr_cutoff) * arr_ratio)
             segmentList.segments.extend(self.toSegmentMsg(lines_normalized_white, normals_white, Segment.WHITE))
         if len(lines_yellow)>0:
-            rospy.loginfo("[LineDetectorNode] number of yellow lines = %s" %(len(lines_yellow)))
+            rospy.loginfo("[LineDetectorNode] number of yellow segments = %d" %(len(lines_yellow)))
             lines_normalized_yellow = ((lines_yellow + arr_cutoff) * arr_ratio)
             segmentList.segments.extend(self.toSegmentMsg(lines_normalized_yellow, normals_yellow, Segment.YELLOW))
         if len(lines_red)>0:
-            rospy.loginfo("[LineDetectorNode] number of red lines = %s" %(len(lines_red)))
+            rospy.loginfo("[LineDetectorNode] number of red segments = %d" %(len(lines_red)))
             lines_normalized_red = ((lines_red + arr_cutoff) * arr_ratio)
             segmentList.segments.extend(self.toSegmentMsg(lines_normalized_red, normals_red, Segment.RED))
-        
+       
+        # Timer
+        if self.verbose:
+            toc = rospy.get_time() 
+            rospy.loginfo("[LineDetectorNode] Processing time: %.4f s" %(toc-tic))
+            rospy.loginfo("[LineDetectorNode] Total segments detected: %d" %(len(lines_white)+len(lines_yellow)+len(lines_red)))
+ 
         # Publish segmentList
         self.pub_lines.publish(segmentList)
          

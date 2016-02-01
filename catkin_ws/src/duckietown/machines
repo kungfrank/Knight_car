@@ -7,4 +7,5 @@
 	<machine name="pontiac" address="pontiac.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="megaman" address="megaman.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="kitt" address="kitt.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+	<machine name="2cv" address="2cv.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 </launch>

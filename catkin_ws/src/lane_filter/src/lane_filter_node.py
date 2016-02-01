@@ -61,12 +61,12 @@ class LaneFilterNode(object):
             if segment.points[0].x < 0 or segment.points[1].x < 0:
                 continue
             # todo eliminate the white segments that are on the other side of the road
-            d_i,phi_i = self.generateVote(segment)
+            d_i,phi_i,l_i = self.generateVote(segment)
             if d_i > self.d_max or d_i < self.d_min or phi_i < self.phi_min or phi_i>self.phi_max:
                 continue
             i = floor((d_i - self.d_min)/self.delta_d)
             j = floor((phi_i - self.phi_min)/self.delta_phi)
-            measurement_likelihood[i,j] = measurement_likelihood[i,j] +  1
+            measurement_likelihood[i,j] = measurement_likelihood[i,j] +  1/l_i
         if np.linalg.norm(measurement_likelihood) == 0:
             return
         measurement_likelihood = measurement_likelihood/np.linalg.norm(measurement_likelihood)
@@ -113,6 +113,13 @@ class LaneFilterNode(object):
         n_hat = np.array([-t_hat[1],t_hat[0]])
         d1 = np.inner(n_hat,p1)
         d2 = np.inner(n_hat,p2)
+        l1 = np.inner(t_hat,p1)
+        l2 = np.inner(t_hat,p2)
+        if (l1 < 0):
+            l1 = -l1;
+        if (l2 < 0):
+            l2 = -l2;
+        l_i = (l1+l2)/2
         d_i = (d1+d2)/2
         phi_i = np.arcsin(t_hat[1])
         if segment.color == segment.WHITE: # right lane is white
@@ -129,7 +136,7 @@ class LaneFilterNode(object):
             else: # right edge of white lane
                 d_i = -d_i
             d_i =  self.lanewidth/2 - d_i
-        return d_i, phi_i
+        return d_i, phi_i, l_i
     
     def onShutdown(self):
         rospy.loginfo("[LaneFilterNode] Shutdown.")

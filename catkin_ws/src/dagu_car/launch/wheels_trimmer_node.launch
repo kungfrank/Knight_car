@@ -9,13 +9,13 @@
     <group ns="$(arg veh)">
         <!-- Run on local (laptop) -->
         <node if="$(arg local)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen">
-            <rosparam command="load" file="$(find duckietown)/config/$(arg config)/calibration/wheels_trim/$(arg param_file_name).yaml"/>
+            <rosparam command="load" file="$(find duckietown)/config/$(arg config)/calibration/wheels_trim/$(arg veh).yaml"/>
         </node>
 
         <!-- Run on remote (vehicle) -->
         <include unless="$(arg local)" file="$(find duckietown)/machines"/>
         <node unless="$(arg local)" machine="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen">
-            <rosparam command="load" file="$(find duckietown)/config/$(arg config)/calibration/wheels_trim/$(arg param_file_name).yaml"/>
+            <rosparam command="load" file="$(find duckietown)/config/$(arg config)/calibration/wheels_trim/$(arg veh).yaml"/>
         </node>
     </group>
 

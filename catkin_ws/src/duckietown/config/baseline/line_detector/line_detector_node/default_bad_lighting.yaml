@@ -1,7 +1,7 @@
 img_size: [240,320]
 top_cutoff: 90
 dilation_kernel_size: 3
-canny_thresholds: [60,150]
+canny_thresholds: [50,150]
 hough_threshold: 20
 hough_min_line_length: 3
 hough_max_line_gap:    1

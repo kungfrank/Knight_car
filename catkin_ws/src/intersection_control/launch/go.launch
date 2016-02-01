@@ -1,5 +1,5 @@
 <launch>
-	<node name="intersection_move" pkg="intersection_control" type="intersection_control.py" output="screen">
+	<node name="open_loop_intersection_node" pkg="intersection_control" type="open_loop_intersection_control.py" output="screen">
 		<!-- Setup parameters -->
 		<param name="~pub_timestep" value="0.1"/>
 		<!-- Remapping topics -->

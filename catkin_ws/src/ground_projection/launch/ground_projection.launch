@@ -10,9 +10,8 @@
 
 	<group ns="$(arg veh)">
 
-  	       <node if="$(arg rectify)"  pkg="image_proc" type="image_proc" name="image_proc" output="screen">
-    	       	     <remap from="image_raw" to="$(arg camera_topic)/image/raw"/>
-    	       	     <remap from="camera_info" to="$(arg camera_topic)/camera_info"/>
+  	       <node if="$(arg rectify)" ns="$(arg camera_topic)" machine="$(arg veh)" pkg="image_proc" type="image_proc" name="image_proc" output="screen">
+                   <remap from="image_raw" to="image/raw"/>
   	       </node>
 
 

@@ -6,15 +6,6 @@
 
     <include file="$(find duckietown)/machines"/>
     <!-- intersection control -->
-
-    <include file="$(find intersection_control)/launch/open_loop_intersection_control_node.launch">
-        <arg name="veh" value="$(arg veh)"/>        
-        <arg name="local" value="$(arg local)"/>        
-        <arg name="config" value="$(arg config)"/>        
-        <arg name="param_file_name" value="$(arg param_file_name)"/>        
-    </include>
-
-<!--     
     <node ns="$(arg veh)" if="$(arg local)" pkg="intersection_control" type="open_loop_intersection_control_node.py" name="open_loop_intersection_control_node" output="screen">
         <rosparam command="load" file="$(find duckietown)/config/$(arg config)/intersection_control/open_loop_intersection_node/$(arg param_file_name).yaml"/>
     </node>
@@ -22,4 +13,9 @@
         <rosparam command="load" file="$(find duckietown)/config/$(arg config)/intersection_control/open_loop_intersection_node/$(arg param_file_name).yaml"/>
     </node>
 
- --></launch>
+    <!-- Publicaitons -->
+
+    <!-- Subscriptions -->
+
+    
+</launch>

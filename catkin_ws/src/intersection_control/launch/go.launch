@@ -1,9 +1,0 @@
-<launch>
-	<node name="open_loop_intersection_node" pkg="intersection_control" type="open_loop_intersection_control_node.py" output="screen">
-		<!-- Setup parameters -->
-		<param name="~pub_timestep" value="0.1"/>
-		<!-- Remapping topics -->
-		<remap from="~topic_b" to="~topic_a"/>
-		<!-- <remap from="~topic_b" to="talker/topic_a"/> -->
-	</node>
-</launch>

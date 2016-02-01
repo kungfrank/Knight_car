@@ -1,6 +1,7 @@
 <launch>
 	<!-- Setup machine -->
 	<arg name="veh"/>
+	<arg name="config" default="baseline"/>
 	<include file="$(find duckietown)/machines"/>
 	<!-- Launch the rosberrypi_cam remotely -->
 	<group ns="$(arg veh)">

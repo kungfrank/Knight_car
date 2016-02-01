@@ -134,8 +134,8 @@ private:
   void getRectifiedImage(const sensor_msgs::Image::ConstPtr img_msg, cv::Mat &mat_rect)
   {
     // Convert to cv::Mat
-    cv_bridge::CvImagePtr cv_img = cv_bridge::toCvCopy(img_msg);
-    // cv_bridge::CvImagePtr cv_img = cv_bridge::toCvCopy(img_msg,enc::MONO8);
+    // cv_bridge::CvImagePtr cv_img = cv_bridge::toCvCopy(img_msg);
+    cv_bridge::CvImagePtr cv_img = cv_bridge::toCvCopy(img_msg,enc::MONO8);
     pcm_.rectifyImage(cv_img->image,mat_rect);
   }
 

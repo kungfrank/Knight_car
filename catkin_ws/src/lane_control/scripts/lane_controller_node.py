@@ -18,7 +18,7 @@ class lane_controller(object):
         self.setGains()
 
         # Publicaiton
-        self.pub_lane_cmd = rospy.Publisher("~lane_control",CarControl,queue_size=1)
+        # self.pub_lane_cmd = rospy.Publisher("~lane_control",CarControl,queue_size=1)
         self.pub_wheels_cmd = rospy.Publisher("~wheels_control",WheelsCmd,queue_size=1)
 
         # Subscriptions
@@ -77,7 +77,7 @@ class lane_controller(object):
         car_control_msg.need_steering = True
         car_control_msg.speed = 0.0
         car_control_msg.steering = 0.0
-        self.pub_lane_cmd.publish(car_control_msg)
+        # self.pub_lane_cmd.publish(car_control_msg)
         rospy.sleep(0.5) #To make sure that it gets published.
         rospy.loginfo("[%s] Shutdown" %self.node_name)
 
@@ -98,7 +98,7 @@ class lane_controller(object):
         wheels_cmd_msg.vel_left = np.clip(vel_left,-1.0,1.0)
         wheels_cmd_msg.vel_right = np.clip(vel_right,-1.0,1.0)
 
-        self.pub_lane_cmd.publish(lane_cmd_msg)
+        # self.pub_lane_cmd.publish(lane_cmd_msg)
         self.pub_wheels_cmd.publish(wheels_cmd_msg)
 
     def cbPose(self,msg):

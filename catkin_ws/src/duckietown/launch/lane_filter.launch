@@ -4,9 +4,10 @@
 	<arg name="config" default="baseline" doc="Specify a config."/>
 	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
 	<arg name="live" default="true" doc="if set to true, run the camera and do live detection. "/>
+	<arg name="only" default="false" doc="Only run the ground_projection part when set to true."/>
 
 	<!-- Ground projection -->
-	<include file="$(find duckietown)/launch/ground_projection.launch">
+	<include unless="$(arg only)" file="$(find duckietown)/launch/ground_projection.launch">
 	    <arg name="veh" value="$(arg veh)"/>
 	    <arg name="local" value="$(arg local)"/>
 	    <arg name="config" value="$(arg config)"/>

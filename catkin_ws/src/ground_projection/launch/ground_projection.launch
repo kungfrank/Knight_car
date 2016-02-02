@@ -4,7 +4,7 @@
   <arg name="config" default="baseline" doc="Specify a config."/>
   <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
   <arg name="camera_topic" default="camera_node"/>
-  <arg name="rectify" default="false" doc="If set to true, rectify image before process."/>
+  <!-- <arg name="rectify" default="false" doc="If set to true, rectify image before process."/> -->
 
   <include file="$(find duckietown)/machines"/>
   <group ns="$(arg veh)">

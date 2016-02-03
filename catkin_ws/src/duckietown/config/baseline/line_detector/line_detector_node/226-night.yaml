@@ -1,5 +1,5 @@
-img_size: [240,320]
-top_cutoff: 90
+img_size: [120,160]
+top_cutoff: 40
 dilation_kernel_size: 3
 canny_thresholds: [80,200]
 hough_threshold: 20

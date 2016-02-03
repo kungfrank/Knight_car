@@ -1,5 +1,5 @@
-img_size: [240,320]
-top_cutoff: 90
+img_size: [120,160]
+top_cutoff: 40
 dilation_kernel_size: 3
 canny_thresholds: [80,200]
 hough_threshold: 20
@@ -7,7 +7,7 @@ hough_min_line_length: 3
 hough_max_line_gap:    1
 
 
-hsv_white1:  [0,0,170]
+hsv_white1:  [0,0,150]
 hsv_white2:  [255,60,255]
 hsv_yellow1: [25,140,100]
 hsv_yellow2: [45,255,255]

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from rgb_led import *
 from time import sleep
 

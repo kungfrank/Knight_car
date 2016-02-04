@@ -10,4 +10,5 @@
     <machine name="2cv" address="2cv.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
     <machine name="sonata" address="sonata.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
     <machine name="shamrock" address="shamrock.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+    <machine name="leon" address="leon.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 </launch>

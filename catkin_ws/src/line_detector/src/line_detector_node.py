@@ -114,7 +114,7 @@ class LineDetectorNode(object):
         # Publish the frame with lines
 
         image_msg_out = self.bridge.cv2_to_imgmsg(self.detector.getImage(), "bgr8")
-        image_msg_out.header.stamp = image_msg.stamp
+        image_msg_out.header.stamp = image_msg.header.stamp
         self.pub_image.publish(image_msg_out)
 
     def onShutdown(self):

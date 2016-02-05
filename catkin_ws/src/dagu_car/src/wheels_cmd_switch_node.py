@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from duckietown_msgs.msg import WheelsCmd, ControlMode
+from duckietown_msgs.msg import WheelsCmdStamped, ControlMode
 
 class WheelsCmdSwitchNode(object):
     def __init__(self):
@@ -22,13 +22,13 @@ class WheelsCmdSwitchNode(object):
         self.mode_name_dict[ControlMode.COORDINATION_CONTROL] = "COORDINATION_CONTROL"
 
         # Setup publishers
-        self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd", WheelsCmd, queue_size=1)
+        self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd", WheelsCmdStamped, queue_size=1)
 
         # Setup subscribers
         self.sub_mode = rospy.Subscriber("~mode", ControlMode, self.cbMode, queue_size=1)
-        self.sub_lane = rospy.Subscriber("~wheels_cmd_lane", WheelsCmd, self.cbWheelsCmd, queue_size=1, callback_args=ControlMode.LANE_FOLLOWING)
-        self.sub_interestion = rospy.Subscriber("~wheels_cmd_intersection", WheelsCmd, self.cbWheelsCmd, queue_size=1, callback_args=ControlMode.INTERSECTION_CONTROL)
-        self.sub_coordination = rospy.Subscriber("~wheels_cmd_coordination", WheelsCmd, self.cbWheelsCmd, queue_size=1, callback_args=ControlMode.COORDINATION_CONTROL)
+        self.sub_lane = rospy.Subscriber("~wheels_cmd_lane", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=ControlMode.LANE_FOLLOWING)
+        self.sub_interestion = rospy.Subscriber("~wheels_cmd_intersection", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=ControlMode.INTERSECTION_CONTROL)
+        self.sub_coordination = rospy.Subscriber("~wheels_cmd_coordination", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=ControlMode.COORDINATION_CONTROL)
 
     def pubWheelsCmd(self):
         cmd_msg = self.cmd_dict[mode]

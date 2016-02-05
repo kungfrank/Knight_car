@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import numpy as np
-from duckietown_msgs.msg import CarControl, WheelsCmd
+from duckietown_msgs.msg import CarControl, WheelsCmdStamped
 from sensor_msgs.msg import Joy
 import time
 
@@ -19,7 +19,7 @@ class JoyMapper(object):
         self.steer_gain = self.setupParam("~steer_gain", 1.0)
 
         # Publications
-        self.pub_wheels = rospy.Publisher("~wheels_cmd", WheelsCmd, queue_size=1)
+        self.pub_wheels = rospy.Publisher("~wheels_cmd", WheelsCmdStamped, queue_size=1)
 
         # Subscriptions
         self.sub_joy_ = rospy.Subscriber("joy", Joy, self.cbJoy, queue_size=1)
@@ -41,11 +41,12 @@ class JoyMapper(object):
     def publishControl(self):
         speed = self.joy.axes[1] * self.speed_gain #Left stick V-axis. Up is positive
         steering = self.joy.axes[3] * self.steer_gain
-        wheels_cmd_msg = WheelsCmd()
+        wheels_cmd_msg = WheelsCmdStamped()
 
         # Car Steering Mode
         vel_left = (speed - steering)
         vel_right = (speed + steering)
+        wheels_cmd_msg.header.stamp = self.joy.header.stamp
         wheels_cmd_msg.vel_left = np.clip(vel_left,-1.0,1.0)
         wheels_cmd_msg.vel_right = np.clip(vel_right,-1.0,1.0)
         rospy.loginfo("[%s] left %f, right %f" % (self.node_name,wheels_cmd_msg.vel_left,wheels_cmd_msg.vel_right))

@@ -76,6 +76,7 @@ class LaneFilterNode(object):
         #print self.beliefRV.argmax()
         
         maxids = np.unravel_index(self.beliefRV.argmax(),self.beliefRV.shape)
+        self.lanePose.header.stamp = segment_list_msg.header.stamp
         self.lanePose.d = self.d_min + maxids[0]*self.delta_d
         self.lanePose.phi = self.phi_min + maxids[1]*self.delta_phi
         self.lanePose.status = self.lanePose.NORMAL
@@ -83,6 +84,7 @@ class LaneFilterNode(object):
         # publish the belief image
         bridge = CvBridge()
         belief_img = bridge.cv2_to_imgmsg((255*self.beliefRV).astype('uint8'), "mono8")
+        belief_img.header.stamp = segment_list_msg.header.stamp
         self.pub_lane_pose.publish(self.lanePose)
         self.pub_belief_img.publish(belief_img)
         print "time to process segments:"

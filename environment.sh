@@ -7,4 +7,5 @@ echo "Activating development"
 source ~/duckietown/catkin_ws/devel/setup.bash
 echo "Setup ROS_HOSTNAME"
 export ROS_HOSTNAME=$HOSTNAME.local
+export DUCKIETOWN_ROOT=$HOME/duckietown
 exec "$@" #Passes arguments. Need this for ROS remote launching to work.

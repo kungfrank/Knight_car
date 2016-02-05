@@ -1,0 +1,8 @@
+<launch>
+	<node ns="ferrari" pkg="line_detector" type="line_detector_node.py" name="line_detector" output="screen">
+		<remap from="~image" to="camera_node/image/compressed"/>
+		<param name="~hei_image" value="240" />
+		<param name="~wid_image" value="320" />
+		<param name="~top_cutoff" value="90" />
+	</node>
+</launch>

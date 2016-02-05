@@ -1,8 +1,27 @@
 <launch>
-	<node ns="tesla" pkg="line_detector" type="line_detector_node.py" name="line_detector" output="screen">
-		<remap from="~image" to="camera_node/image/compressed"/>
-		<param name="~hei_image" value="200" />
-		<param name="~wid_image" value="320" />
-		<param name="~top_cutoff" value="80" />
-	</node>
+    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
+    <arg name="local" default="false" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+    <arg name="config" default="baseline" doc="Specify a config."/>
+    <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+
+    <arg name="pkg_name" value="line_detector"/>
+    <arg name="node_name" default="line_detector_node"/>
+
+    <group ns="$(arg veh)">        
+        <!-- run local -->
+        <node if="$(arg local)" name="line_detector_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
+            <rosparam command="load" file="$(find duckietown)/config/$(arg config)/line_detector/$(arg node_name)/$(arg param_file_name).yaml"/>
+        </node>
+
+        <!-- run remote -->
+        <include unless="$(arg local)" file="$(find duckietown)/machines"/>
+        <node unless="$(arg local)" machine="$(arg veh)" name="line_detector_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
+            <rosparam command="load" file="$(find duckietown)/config/$(arg config)/line_detector/$(arg node_name)/$(arg param_file_name).yaml"/>
+        </node>
+    </group>
+
+    <!-- Publications -->
+
+    <!-- Subscriptions -->
+
 </launch>

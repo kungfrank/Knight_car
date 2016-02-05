@@ -1,11 +1,35 @@
 <launch>
-  <node pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen">
-    <rosparam command="load" file="$(find ground_projection)/homography.yaml"/>
-    <param name="~homography_file" value="package://ground_projection/homography.yaml"/>
-    <param name="~board_w" value="7"/>
-    <param name="~board_h" value="5"/>
-    <param name="~square_size" value="0.031"/>
-    <param name="~x_offset" value="0.191"/>
-    <param name="~y_offset" value="-0.093"/>
-  </node>
+	<arg name="veh" doc="Name of vehicle. ex: megaman"/>
+	<arg name="local" default="false" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+	<arg name="config" default="baseline" doc="Specify a config."/>
+	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+ 	<arg name="camera_topic" default="camera_node"/>
+  	<arg name="rectify" default="false" doc="If set to true, rectify image before process."/>
+
+
+	<group ns="$(arg veh)">
+
+  	       <node if="$(arg rectify)"  pkg="image_proc" type="image_proc" name="image_proc" output="screen">
+    	       	     <remap from="$(arg camera_topic)/image_raw" to="$(arg camera_topic)/image/raw"/>
+  	       </node>
+
+
+	       <!-- run local -->
+	  	<node if="$(arg local)"  pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen">
+    		      <rosparam command="load" file="$(find duckietown)/config/$(arg config)/ground_projection/ground_projection/$(arg param_file_name).yaml"/>
+    		      <param name="~homography_file" value="package://duckietown/config/$(arg config)/calibration/camera_extrinsic/$(arg veh).yaml"/>
+    	      	      <param name="~camera_info_path" value="/$(arg veh)/$(arg camera_topic)/camera_info"/>
+    	      	      <param name="~rectified_input" type="bool" value="$(arg rectify)"/>
+		      <remap from="~lineseglist_in" to="line_detector_node/segment_list"/>
+  		</node>
+
+		<!-- run remote -->
+	  	<node unless="$(arg local)" machine="$(arg veh)" pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen">
+    		      <rosparam command="load" file="$(find duckietown)/config/$(arg config)/ground_projection/ground_projection/$(arg param_file_name).yaml"/>
+    		      <param name="~homography_file" value="package://duckietown/config/$(arg config)/calibration/camera_extrinsic/$(arg veh).yaml"/>
+    	      	      <param name="~camera_info_path" value="/$(arg veh)/$(arg camera_topic)/camera_info"/>
+    	      	      <param name="~rectified_input" type="bool" value="$(arg rectify)"/>
+		      <remap from="~lineseglist_in" to="line_detector_node/segment_list"/>
+  		</node>
+	</group>
 </launch>

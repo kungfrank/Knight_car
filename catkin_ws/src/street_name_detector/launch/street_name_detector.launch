@@ -1,0 +1,7 @@
+<launch>
+	<!-- <group ns="veh_name"> -->
+	<node pkg="street_name_detector" type="street_name_detector_node" name="street_name_detector" output="screen">
+		<remap from="~image_raw" to="/rosberrypi_cam/image_raw"/>
+		<remap from="~camera_info" to="/ferrari/camera_node/camera_info"/>
+	</node>
+</launch>

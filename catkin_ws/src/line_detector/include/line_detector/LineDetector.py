@@ -5,22 +5,27 @@ import time
 
 class LineDetector(object):
     def __init__(self):
-        self.bgr = []
-        self.hsv = []
+        # Images to be processed
+        self.bgr = np.empty(0)
+        self.hsv = np.empty(0)
+        self.edges = np.empty(0)
 
-        # self.hei = 200
-        # self.wid = 320
-        # self.top_cutoff = 80
-
-        # Color value range in HSV space
-        self.hsv_white1 = np.array([0, 0, 180])
-        self.hsv_white2 = np.array([255, 25, 255]) 
-        self.hsv_yellow1 = np.array([25, 100, 200])
+        # Color value range in HSV space: default
+        self.hsv_white1 = np.array([0, 0, 200])
+        self.hsv_white2 = np.array([255, 100, 255]) 
+        self.hsv_yellow1 = np.array([25, 150, 150])
         self.hsv_yellow2 = np.array([45, 255, 255]) 
         self.hsv_red1 = np.array([0, 100, 120])
         self.hsv_red2 = np.array([10, 255, 255]) 
         self.hsv_red3 = np.array([245, 100, 120])
         self.hsv_red4 = np.array([255, 255, 255]) 
+
+        # Parameters for dilation, Canny, and Hough transform: default
+        self.dilation_kernel_size = 3
+        self.canny_thresholds = [80,200]
+        self.hough_threshold  = 20
+        self.hough_min_line_length = 3
+        self.hough_max_line_gap = 1
 
     def __colorFilter(self, color):
         # tic = time.time()
@@ -38,20 +43,20 @@ class LineDetector(object):
         # print 'Color thresholding:' + str(time.time()-tic)
 
 		# binary dilation
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3, 3))
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(self.dilation_kernel_size, self.dilation_kernel_size))
         bw = cv2.dilate(bw, kernel)
         
-        # refine edge
+        # refine edge for certain color
         edge_color = cv2.bitwise_and(bw, self.edges)
 
         return bw, edge_color
 
     def __findEdge(self, gray):	
-        edges = cv2.Canny(gray, 80, 200, apertureSize = 3)
+        edges = cv2.Canny(gray, self.canny_thresholds[0], self.canny_thresholds[1], apertureSize = 3)
         return edges
 
     def __HoughLine(self, edge):
-        lines = cv2.HoughLinesP(edge, 1, np.pi/180, 20, np.empty(1), minLineLength=3, maxLineGap=1)
+        lines = cv2.HoughLinesP(edge, 1, np.pi/180, self.hough_threshold, np.empty(1), self.hough_min_line_length, self.hough_max_line_gap)
         if lines is not None:
             lines = lines[0]
         else:
@@ -97,7 +102,6 @@ class LineDetector(object):
 
     def detectLines(self, color):
         bw, edge_color = self.__colorFilter(color)
-        # edges = self.__findEdge(bw)
         lines = self.__HoughLine(edge_color)
         normals = self.__findNormal(bw, lines)
         return lines, normals
@@ -128,11 +132,12 @@ class LineDetector(object):
                 y3 = self.__checkBounds(y3, self.bgr.shape[0])
                 x4 = self.__checkBounds(x4, self.bgr.shape[1])
                 y4 = self.__checkBounds(y4, self.bgr.shape[0])
-                #cv2.circle(self.bgr, (x3,y3), 3, (0,255,0))
-                #cv2.circle(self.bgr, (x4,y4), 3, (0,0,255))
+                cv2.circle(self.bgr, (x3,y3), 3, (0,255,0))
+                cv2.circle(self.bgr, (x4,y4), 3, (0,0,255))
 
-    def getLane(self, color):
-        return self.__colorFilter(self.bgr, color)
+    def getColorPixels(self, color):
+        bw, edge_color = self.__colorFilter(color)
+        return bw
 
 def _main():
     detector = LineDetector()
@@ -181,7 +186,6 @@ def _main():
 
             # crop and resize frame
             bgr = cv2.resize(bgr, (200, 150))
-            #bgr = bgr[bgr.shape[0]/2:, :, :]
           
             # set the image to be detected 
             detector.setImage(bgr)
@@ -201,6 +205,7 @@ def _main():
             detector.drawNormals(lines_white, normals_white)
             detector.drawNormals(lines_red, normals_red)
 
+            # show frame
             cv2.imshow('Line Detector', detector.getImage())
             cv2.imshow('Edge', detector.edges)
             cv2.waitKey(30)

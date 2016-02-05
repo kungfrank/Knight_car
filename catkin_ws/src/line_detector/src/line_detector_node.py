@@ -96,6 +96,7 @@ class LineDetectorNode(object):
             lines_normalized_red = ((lines_red + arr_cutoff) * arr_ratio)
             segmentList.segments.extend(self.toSegmentMsg(lines_normalized_red, normals_red, Segment.RED))
        
+
         # Verbose
         if self.verbose:
             self.toc = rospy.get_time() 
@@ -105,13 +106,16 @@ class LineDetectorNode(object):
             rospy.loginfo("[LineDetectorNode] number of yellow segments = %d" %(len(lines_yellow)))
             rospy.loginfo("[LineDetectorNode] number of red segments = %d" %(len(lines_red)))
             self.toc_pre = self.toc
- 
+        
+        segmentList.header.stamp = image_msg.header.stamp
         # Publish segmentList
         self.pub_lines.publish(segmentList)
          
         # Publish the frame with lines
-        image_msg = self.bridge.cv2_to_imgmsg(self.detector.getImage(), "bgr8")
-        self.pub_image.publish(image_msg)
+
+        image_msg_out = self.bridge.cv2_to_imgmsg(self.detector.getImage(), "bgr8")
+        image_msg_out.header.stamp = image_msg.stamp
+        self.pub_image.publish(image_msg_out)
 
     def onShutdown(self):
             rospy.loginfo("[LineDetectorNode] Shutdown.")

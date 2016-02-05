@@ -1,0 +1,6 @@
+<launch>
+	<arg name="veh"/>
+	<arg name="bag_name" default="test"/>
+    <include file="$(find duckietown)/machines"/>
+	<node machine="$(arg veh)" pkg="rosbag" type="record" name="rosbag" args="-a -O /mnt/logs/$(arg bag_name).bag"/>
+</launch>

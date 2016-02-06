@@ -63,7 +63,8 @@ class LineDetectorNode(object):
         hei_original = image_cv.shape[0]
         wid_original = image_cv.shape[1]
         if self.image_size[0]!=hei_original or self.image_size[1]!=wid_original:
-            image_cv = cv2.resize(image_cv, (self.image_size[1], self.image_size[0]), interpolation=cv2.INTER_AREA)
+            # image_cv = cv2.GaussianBlur(image_cv, (5,5), 2)
+            image_cv = cv2.resize(image_cv, (self.image_size[1], self.image_size[0]), interpolation=cv2.INTER_NEAREST)
         image_cv = image_cv[self.top_cutoff:,:,:]
 
         # Set the image to be detected
@@ -112,7 +113,6 @@ class LineDetectorNode(object):
         self.pub_lines.publish(segmentList)
          
         # Publish the frame with lines
-
         image_msg_out = self.bridge.cv2_to_imgmsg(self.detector.getImage(), "bgr8")
         image_msg_out.header.stamp = image_msg.header.stamp
         self.pub_image.publish(image_msg_out)

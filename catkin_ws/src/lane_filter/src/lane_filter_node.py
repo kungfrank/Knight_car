@@ -87,8 +87,8 @@ class LaneFilterNode(object):
         belief_img.header.stamp = segment_list_msg.header.stamp
         self.pub_lane_pose.publish(self.lanePose)
         self.pub_belief_img.publish(belief_img)
-        print "time to process segments:"
-        print rospy.get_time() - t_start
+        # print "time to process segments:"
+        # print rospy.get_time() - t_start
 
 
     def initializeBelief(self):

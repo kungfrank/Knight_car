@@ -3,7 +3,7 @@ import rospy
 from pkg_name.util import HelloGoodbye #Imports module. Not limited to modules in this pkg. 
 from std_msgs.msg import String #Imports msg
 #from duckietown_msgs.msg import messages to command the wheels
-from duckietown_msgs.msg import WheelsCmd
+from duckietown_msgs.msg import WheelsCmdStamped
 class Talker(object):
     def __init__(self):
         # Save the name of the node
@@ -13,7 +13,7 @@ class Talker(object):
 
         # Setup publishers
         self.pub_topic_a = rospy.Publisher("~topic_a",String, queue_size=1)
-        self.pub_wheels_cmd = rospy.Publisher("/kitt/wheels_driver_node/wheels_cmd",WheelsCmd, queue_size=1)
+        self.pub_wheels_cmd = rospy.Publisher("/kitt/wheels_driver_node/wheels_cmd",WheelsCmdStamped, queue_size=1)
         # Setup subscriber
         self.sub_topic_b = rospy.Subscriber("~topic_b", String, self.cbTopic)
         # Read parameters
@@ -31,7 +31,8 @@ class Talker(object):
         
         starting_time = rospy.Time.now()
         while((rospy.Time.now() - starting_time) < rospy.Duration(forward_for_time_leave)):
-            wheels_cmd_msg = WheelsCmd()
+            wheels_cmd_msg = WheelsCmdStamped()
+            wheels_cmd_msg.header.stamp = rospy.Time.now()
             wheels_cmd_msg.vel_left = 0.4
             wheels_cmd_msg.vel_right = 0.4
             self.pub_wheels_cmd.publish(wheels_cmd_msg)    
@@ -40,7 +41,8 @@ class Talker(object):
         #turn right
         starting_time = rospy.Time.now()
         while((rospy.Time.now() - starting_time) < rospy.Duration(turn_for_time)):
-            wheels_cmd_msg = WheelsCmd()
+            wheels_cmd_msg = WheelsCmdStamped()
+            wheels_cmd_msg.header.stamp = rospy.Time.now()
             wheels_cmd_msg.vel_left = 0.25
             wheels_cmd_msg.vel_right = -0.25
             self.pub_wheels_cmd.publish(wheels_cmd_msg)    
@@ -50,7 +52,8 @@ class Talker(object):
         #move forward
         starting_time = rospy.Time.now()
         while((rospy.Time.now() - starting_time) < rospy.Duration(forward_for_time_enter)):
-            wheels_cmd_msg = WheelsCmd()
+            wheels_cmd_msg = WheelsCmdStamped()
+            wheels_cmd_msg.header.stamp = rospy.Time.now()
             wheels_cmd_msg.vel_left = 0.4
             wheels_cmd_msg.vel_right = 0.4
             self.pub_wheels_cmd.publish(wheels_cmd_msg)    
@@ -72,7 +75,7 @@ class Talker(object):
         msg = String()
         msg.data = singer.sing("duckietown")
         self.pub_topic_a.publish(msg)
-#        wheels_cmd_msg = WheelsCmd()
+#        wheels_cmd_msg = WheelsCmdStamped()
 #        wheels_cmd_msg.vel_left = 0.1
 #        wheels_cmd_msg.vel_right = 0.1
 #        self.pub_wheels_cmd.publish(wheels_cmd_msg)

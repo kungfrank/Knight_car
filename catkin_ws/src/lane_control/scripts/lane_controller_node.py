@@ -3,7 +3,7 @@ import rospy
 import numpy as np
 import math
 #from duckietown_msgs.msg import CarLanePose
-from duckietown_msgs.msg import CarControl, WheelsCmd
+from duckietown_msgs.msg import CarControl, WheelsCmdStamped
 # from duckietown_msgs.msg import CarLanePose
 from duckietown_msgs.msg import LanePose
 
@@ -19,7 +19,7 @@ class lane_controller(object):
 
         # Publicaiton
         # self.pub_lane_cmd = rospy.Publisher("~lane_control",CarControl,queue_size=1)
-        self.pub_wheels_cmd = rospy.Publisher("~wheels_control",WheelsCmd,queue_size=1)
+        self.pub_wheels_cmd = rospy.Publisher("~wheels_control",WheelsCmdStamped,queue_size=1)
 
         # Subscriptions
         self.sub_lane_reading = rospy.Subscriber("~lane_pose", LanePose, self.cbPose, queue_size=1)
@@ -83,14 +83,14 @@ class lane_controller(object):
 
 
     def publishCmd(self,stamp,speed,steering):
-        lane_cmd_msg = CarControl()
-        lane_cmd_msg.header.stamp = stamp
-        lane_cmd_msg.speed = speed
-        lane_cmd_msg.steering = steering
-        lane_cmd_msg.need_steering = True
+        # lane_cmd_msg = CarControl()
+        # lane_cmd_msg.header.stamp = stamp
+        # lane_cmd_msg.speed = speed
+        # lane_cmd_msg.steering = steering
+        # lane_cmd_msg.need_steering = True
 
-        wheels_cmd_msg = WheelsCmd()
-        # wheels_cmd_msg.header.stamp = stamp 
+        wheels_cmd_msg = WheelsCmdStamped()
+        wheels_cmd_msg.header.stamp = stamp
         ratio = 1.0
         gain = 0.5
         vel_left = gain*(speed - steering)*ratio
@@ -101,11 +101,11 @@ class lane_controller(object):
         # self.pub_lane_cmd.publish(lane_cmd_msg)
         self.pub_wheels_cmd.publish(wheels_cmd_msg)
 
-    def cbPose(self,msg):
-        self.lane_reading = msg 
+    def cbPose(self,lane_pose_msg):
+        self.lane_reading = lane_pose_msg 
 
-        cross_track_err = msg.d
-        heading_err = msg.phi
+        cross_track_err = lane_pose_msg.d
+        heading_err = lane_pose_msg.phi
 
         car_control_msg = CarControl()
         car_control_msg.need_steering = True
@@ -118,7 +118,7 @@ class lane_controller(object):
         # car_control_msg.steering = -car_control_msg.steering
         # print "controls: speed %f, steering %f" % (car_control_msg.speed, car_control_msg.steering)
         # self.pub_.publish(car_control_msg)
-        self.publishCmd(msg.header.stamp,self.v_bar,car_control_msg.steering)
+        self.publishCmd(lane_pose_msg.header.stamp,self.v_bar,car_control_msg.steering)
 
         # debuging
         # self.pub_counter += 1

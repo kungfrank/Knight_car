@@ -56,6 +56,7 @@ add_message_files(
   DuckieSensor.msg
   LanePose.msg
   WheelsCmd.msg
+  WheelsCmdStamped.msg
   TagDetection.msg
   AprilTags.msg
   Pixel.msg

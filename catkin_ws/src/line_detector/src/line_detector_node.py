@@ -22,9 +22,6 @@ class LineDetectorNode(object):
         self.image_size = rospy.get_param('~img_size')
         self.top_cutoff = rospy.get_param('~top_cutoff')
   
-        #self.image_size = [120, 160]
-        #self.top_cutoff = 40
-      
         self.detector.hsv_white1 = np.array(rospy.get_param('~hsv_white1'))
         self.detector.hsv_white2 = np.array(rospy.get_param('~hsv_white2'))
         self.detector.hsv_yellow1 = np.array(rospy.get_param('~hsv_yellow1'))
@@ -44,13 +41,14 @@ class LineDetectorNode(object):
         self.sub_image = rospy.Subscriber("~image", CompressedImage, self.cbImage, queue_size=1)
         self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
         self.pub_image = rospy.Publisher("~image_with_lines", Image, queue_size=1)
+       
+        # Thread lock 
+        self.thread_lock = threading.Lock()
 
         # Verbose option 
         self.verbose = rospy.get_param('~verbose')
         if self.verbose:
             self.toc_pre = rospy.get_time()   
-
-        self.thread_lock = threading.Lock()
 
         rospy.loginfo("[%s] Initialized." %(self.node_name))
 
@@ -76,7 +74,7 @@ class LineDetectorNode(object):
         # Convert from uncompressed image message
         # image_cv = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
         
-        # Timer
+        # Verbose
         if self.verbose:
             self.tic = rospy.get_time()   
         
@@ -104,8 +102,11 @@ class LineDetectorNode(object):
         #self.detector.drawNormals(lines_yellow, normals_yellow)
         #self.detector.drawNormals(lines_red, normals_red)
 
-        # Convert to normalized pixel coordinates, and add segments to segmentList
+        # SegmentList constructor
         segmentList = SegmentList()
+        segmentList.header.stamp = image_msg.header.stamp
+        
+        # Convert to normalized pixel coordinates, and add segments to segmentList
         arr_cutoff = np.array((0, self.top_cutoff, 0, self.top_cutoff))
         arr_ratio = np.array((1./self.image_size[1], 1./self.image_size[0], 1./self.image_size[1], 1./self.image_size[0]))
         if len(lines_white)>0:
@@ -117,18 +118,17 @@ class LineDetectorNode(object):
         if len(lines_red)>0:
             lines_normalized_red = ((lines_red + arr_cutoff) * arr_ratio)
             segmentList.segments.extend(self.toSegmentMsg(lines_normalized_red, normals_red, Segment.RED))
-
+        
         # Verbose
         if self.verbose:
             self.toc = rospy.get_time() 
-            rospy.loginfo("[LineDetectorNode] Total time: %.4f s" %(self.toc-self.toc_pre))
-            rospy.loginfo("[LineDetectorNode] Image processing time: %.4f s" %(self.toc-self.tic))
-            rospy.loginfo("[LineDetectorNode] Number of white segments = %d" %(len(lines_white)))
-            rospy.loginfo("[LineDetectorNode] number of yellow segments = %d" %(len(lines_yellow)))
-            rospy.loginfo("[LineDetectorNode] number of red segments = %d" %(len(lines_red)))
+            rospy.loginfo("[%s] Total time: %.4f s" %(self.node_name, self.toc-self.toc_pre))
+            rospy.loginfo("[%s] Image processing time: %.4f s" %(self.node_name, self.toc-self.tic))
+            rospy.loginfo("[%s] Number of white segments = %d" %(self.node_name, len(lines_white)))
+            rospy.loginfo("[%s] number of yellow segments = %d" %(self.node_name, len(lines_yellow)))
+            rospy.loginfo("[%s] number of red segments = %d" %(self.node_name, len(lines_red)))
             self.toc_pre = self.toc
         
-        segmentList.header.stamp = image_msg.header.stamp
         # Publish segmentList
         self.pub_lines.publish(segmentList)
         # time_spent = rospy.Time.now() - time_start

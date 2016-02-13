@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   std_msgs
   geometry_msgs
+  visualization_msgs
   sensor_msgs
   tf_conversions
   tf
@@ -123,7 +124,8 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES duckietown_msgs
-   CATKIN_DEPENDS geometry_msgs roscpp rospy sensor_msgs std_msgs message_runtime
+   CATKIN_DEPENDS geometry_msgs roscpp rospy sensor_msgs std_msgs message_runtime visualization_msgs
+
 #  DEPENDS system_lib
 )
 

@@ -13,6 +13,9 @@ import threading
 class LineDetectorNode(object):
     def __init__(self):
         self.node_name = "Line Detector"
+
+        # Thread lock 
+        self.thread_lock = threading.Lock()
        
         # Constructor of line detector 
         self.bridge = CvBridge()
@@ -37,19 +40,17 @@ class LineDetectorNode(object):
         self.detector.hough_max_line_gap    = rospy.get_param('~hough_max_line_gap')
         self.detector.hough_threshold = rospy.get_param('~hough_threshold')
 
-        # Subscriber and publishers
-        self.sub_image = rospy.Subscriber("~image", CompressedImage, self.cbImage, queue_size=1)
+        # Publishers
         self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
         self.pub_image = rospy.Publisher("~image_with_lines", Image, queue_size=1)
        
-        # Thread lock 
-        self.thread_lock = threading.Lock()
-
         # Verbose option 
         self.verbose = rospy.get_param('~verbose')
         if self.verbose:
             self.toc_pre = rospy.get_time()   
 
+        # Subscribers
+        self.sub_image = rospy.Subscriber("~image", CompressedImage, self.cbImage, queue_size=1)
         rospy.loginfo("[%s] Initialized." %(self.node_name))
 
     def cbImage(self,image_msg):

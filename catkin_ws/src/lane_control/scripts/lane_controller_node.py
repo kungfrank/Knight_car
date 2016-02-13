@@ -64,7 +64,12 @@ class lane_controller(object):
             rospy.loginfo("[%s] Gains changed." %(self.node_name))
             rospy.loginfo("old gains, v_var %f, k_d %f, k_theta %f, theta_thres %f, d_thres %f" %(params_old))
             rospy.loginfo("new gains, v_var %f, k_d %f, k_theta %f, theta_thres %f, d_thres %f" %(params_new))
-            params_old = params_new            
+            self.v_bar = v_bar
+            self.k_d = k_d
+            self.k_theta = k_theta
+            self.d_thres = d_thres
+            self.theta_thres = theta_thres
+
     
     def custom_shutdown(self):
         rospy.loginfo("[%s] Shutting down..." %self.node_name)
@@ -91,10 +96,10 @@ class lane_controller(object):
 
         wheels_cmd_msg = WheelsCmdStamped()
         wheels_cmd_msg.header.stamp = stamp
-        ratio = 1.0
-        gain = 0.5
-        vel_left = gain*(speed - steering)*ratio
-        vel_right = gain*(speed + steering)*(1.0/ratio)
+        speed_gain = 1.0
+        steer_gain = 0.5
+        vel_left = (speed_gain*speed - steer_gain*steering)
+        vel_right = (speed_gain*speed + steer_gain*steering)
         wheels_cmd_msg.vel_left = np.clip(vel_left,-1.0,1.0)
         wheels_cmd_msg.vel_right = np.clip(vel_right,-1.0,1.0)
 
@@ -110,6 +115,7 @@ class lane_controller(object):
         car_control_msg = CarControl()
         car_control_msg.need_steering = True
         car_control_msg.speed = self.v_bar #*self.speed_gain #Left stick V-axis. Up is positive
+        
         if math.fabs(cross_track_err) > self.d_thres:
             cross_track_err = cross_track_err / math.fabs(cross_track_err) * self.d_thres
         car_control_msg.steering =  self.k_d * cross_track_err + self.k_theta * heading_err #*self.steer_gain #Right stick H-axis. Right is negative

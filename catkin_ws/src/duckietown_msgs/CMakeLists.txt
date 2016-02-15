@@ -68,6 +68,11 @@ add_message_files(
   Rect.msg
   Rects.msg
   SceneSegments.msg
+  CoordinationClearance.msg
+  IntersectionDetection.msg
+  RoofLight.msg
+  TrafficLightDetection.msg
+  VehicleDetection.msg
 )
 
 ## Generate services in the 'srv' folder

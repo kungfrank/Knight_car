@@ -10,10 +10,7 @@
 	<machine name="megaman" address="megaman.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="julie" address="julie.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="kitt" address="kitt.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-<<<<<<< HEAD
-	<machine name="milo" address="milo.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-=======
 	<machine name="cookie" address="cookie.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="magitek" address="magitek.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
->>>>>>> 21ae0149b45937e99fae009e238dcd2de5928afd
+	<machine name="milo" address="milo.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 </launch>

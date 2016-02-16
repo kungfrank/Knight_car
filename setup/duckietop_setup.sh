@@ -23,6 +23,6 @@ sudo apt-get update
 sudo apt-get install git
 
 # Checkout duckietown/Software repo from github
-mkdir -p ~/duckietown
-cd ~/duckietown
-git clone https://github.com/duckietown/Software.git .
+# mkdir -p ~/duckietown
+# cd ~/duckietown
+# git clone https://github.com/duckietown/Software.git .

@@ -23,4 +23,11 @@
 	    <arg name="config" value="$(arg config)"/>
 	    <arg name="param_file_name" value="$(arg param_file_name)"/>
 	</include>
+
+	<!-- Visualize -->
+	<include file="$(find lane_filter)/launch/lane_pose_visualizer_node.launch">
+	    <arg name="veh" value="$(arg veh)"/>		
+	</include>
+
+
 </launch>	

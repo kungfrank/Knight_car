@@ -1,15 +1,11 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
+import Tkinter as tk
+
 import rospy
-from sensor_msgs.msg import LaserScan
-from rospy.numpy_msg import numpy_msg
 from duckietown_msgs.msg import ControlMode, IntersectionDetection, VehicleDetection, TrafficLightDetection, \
     CoordinationClearance, RoofLight
-import math
-import numpy as np
-import time
-import Tkinter as tk
 
 
 class FakeDuckiebot:
@@ -35,7 +31,6 @@ class FakeDuckiebot:
         self.intersection_veh = VehicleDetection.NA
 
         # subscribing
-
         self.clearance_to_go = CoordinationClearance.NA
         self.clearance_to_go_sub = rospy.Subscriber('clearance_to_go', CoordinationClearance,
                                                     self.clearance_to_go_callback)
@@ -127,6 +122,18 @@ class FakeDuckiebot:
         if self.intersection == IntersectionDetection.TRAFFIC_LIGHT:
             gui.intersection_var.set('Int: TRAFFIC LIGHT')
 
+        values = ['TL: NA', 'TL: NONE', 'TL: GREEN', 'TL: YELLOW', 'TL: RED']
+        gui.traffic_light_var.set(values[self.traffic_light+1])
+
+        values = ['RV: NA', 'RV: OFF', 'RV: GREEN', 'RV: YELLOW', 'RV: RED']
+        gui.right_veh_var.set(values[self.right_veh+1])
+
+        values = ['OV: NA', 'OV: OFF', 'OV: GREEN', 'OV: YELLOW', 'OV: RED']
+        gui.opposite_veh_var.set(values[self.opposite_veh+1])
+
+        values = ['IV: NA', 'IV: OFF', 'IV: GREEN', 'IV: YELLOW', 'IV: RED']
+        gui.intersection_veh_var.set(values[self.intersection_veh+1])
+
         if self.clearance_to_go == CoordinationClearance.NA:
             gui.clearance_to_go_var.set('Clearance: NA')
         if self.clearance_to_go == CoordinationClearance.GO:
@@ -197,6 +204,7 @@ class GUI:
                   command=lambda: self.duckiebot.set_traffic_light(TrafficLightDetection.RED))\
             .pack(side=tk.TOP)
 
+
         self.right_veh_var = tk.StringVar()
         tk.Label(self.root, textvariable=self.right_veh_var).pack(side=tk.TOP)
 
@@ -265,7 +273,6 @@ class GUI:
         tk.mainloop()
 
 if __name__ == '__main__':
-    #rospy.init_node('fake_duckiebot', anonymous=True)
     duckiebot = FakeDuckiebot()
     gui = GUI(duckiebot)
     duckiebot.set_gui(gui)

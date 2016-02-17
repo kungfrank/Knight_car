@@ -26,7 +26,12 @@ class JoyMapper(object):
         
         # timer
         # self.pub_timer = rospy.Timer(rospy.Duration.from_sec(self.pub_timestep),self.publishControl)
+        self.param_timer = rospy.Timer(rospy.Duration.from_sec(1.0),self.cbParamTimer)
         self.has_complained = False
+
+    def cbParamTimer(self,event):
+        self.speed_gain = rospy.get_param("~speed_gain", 1.0)
+        self.steer_gain = rospy.get_param("~steer_gain", 1.0)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

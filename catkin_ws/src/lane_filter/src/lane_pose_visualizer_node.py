@@ -26,7 +26,7 @@ class LanePoseVisualzer(object):
 
     def cbLanePose(self,lane_pose_msg):
         marker_array = MarkerArray()
-        rospy.loginfo("[%s] cbLanePose." %(self.node_name))
+        # rospy.loginfo("[%s] cbLanePose." %(self.node_name))
         marker_array.markers.append(self.lanePose2Marker(lane_pose_msg))
         self.pub_markers.publish(marker_array)
 

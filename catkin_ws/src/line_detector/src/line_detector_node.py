@@ -78,7 +78,8 @@ class LineDetectorNode(object):
         # Verbose
         if self.verbose:
             self.tic = rospy.get_time()   
-        
+            rospy.loginfo("[%s] Latency received = %.3f ms" %(self.node_name, (self.tic-image_msg.header.stamp.to_sec()) * 1000.0))
+      
         # Resize and crop image
         hei_original = image_cv.shape[0]
         wid_original = image_cv.shape[1]
@@ -122,14 +123,14 @@ class LineDetectorNode(object):
         
         # Verbose
         if self.verbose:
-            self.toc = rospy.get_time() 
-            rospy.loginfo("[%s] Total time: %.4f s" %(self.node_name, self.toc-self.toc_pre))
-            rospy.loginfo("[%s] Image processing time: %.4f s" %(self.node_name, self.toc-self.tic))
+            self.toc = rospy.get_time()
+            rospy.loginfo("[%s] Latency sent = %.3f ms" %(self.node_name, (self.toc-image_msg.header.stamp.to_sec()) * 1000.0))
+            rospy.loginfo("[%s] Image processing time: %.3f ms" %(self.node_name, (self.toc-self.tic)*1000.0))
             rospy.loginfo("[%s] Number of white segments = %d" %(self.node_name, len(lines_white)))
             rospy.loginfo("[%s] number of yellow segments = %d" %(self.node_name, len(lines_yellow)))
             rospy.loginfo("[%s] number of red segments = %d" %(self.node_name, len(lines_red)))
             self.toc_pre = self.toc
-        
+ 
         # Publish segmentList
         self.pub_lines.publish(segmentList)
         # time_spent = rospy.Time.now() - time_start

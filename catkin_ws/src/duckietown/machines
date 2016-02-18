@@ -16,4 +16,6 @@
 	<machine name="ada" address="ada.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="thing" address="thing.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="neptunus" address="neptunus.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+        <machine name="charles" address="charles.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+
 </launch>

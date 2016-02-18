@@ -1,0 +1,5 @@
+<launch>
+	<arg name="veh"/>
+	<node ns="$(arg veh)" pkg="lab03" type="publisher_node.py" name="publisher_node" output="screen">
+	</node>
+</launch>

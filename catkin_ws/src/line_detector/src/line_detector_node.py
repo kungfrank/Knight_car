@@ -65,7 +65,11 @@ class LineDetectorNode(object):
             # Return immediately if the thread is locked
             return
         
-        time_start = rospy.Time.now()
+        # Verbose
+        if self.verbose:
+            rospy.loginfo("[%s] Latency received = %.3f ms" %(self.node_name, (rospy.get_time()-image_msg.header.stamp.to_sec()) * 1000.0))
+        
+        # time_start = rospy.Time.now()
         # time_start = event.last_real
         # msg_age = time_start - image_msg.header.stamp
         # rospy.loginfo("[LineDetector] image age: %s" %msg_age.to_sec())
@@ -78,8 +82,8 @@ class LineDetectorNode(object):
         # Verbose
         if self.verbose:
             self.tic = rospy.get_time()   
-            rospy.loginfo("[%s] Latency received = %.3f ms" %(self.node_name, (self.tic-image_msg.header.stamp.to_sec()) * 1000.0))
-      
+            rospy.loginfo("[%s] Latency image decompressed = %.3f ms" %(self.node_name, (self.tic-image_msg.header.stamp.to_sec()) * 1000.0))
+         
         # Resize and crop image
         hei_original = image_cv.shape[0]
         wid_original = image_cv.shape[1]
@@ -124,7 +128,6 @@ class LineDetectorNode(object):
         # Verbose
         if self.verbose:
             self.toc = rospy.get_time()
-            rospy.loginfo("[%s] Latency sent = %.3f ms" %(self.node_name, (self.toc-image_msg.header.stamp.to_sec()) * 1000.0))
             rospy.loginfo("[%s] Image processing time: %.3f ms" %(self.node_name, (self.toc-self.tic)*1000.0))
             rospy.loginfo("[%s] Number of white segments = %d" %(self.node_name, len(lines_white)))
             rospy.loginfo("[%s] number of yellow segments = %d" %(self.node_name, len(lines_yellow)))
@@ -142,6 +145,10 @@ class LineDetectorNode(object):
         self.pub_image.publish(image_msg_out)
         # time_spent = rospy.Time.now() - time_start
         # rospy.loginfo("[LineDetectorNode] Spent on img: %s" %(time_spent.to_sec()))
+
+        # Verbose
+        if self.verbose:
+            rospy.loginfo("[%s] Latency sent = %.3f ms" %(self.node_name, (rospy.get_time()-image_msg.header.stamp.to_sec()) * 1000.0))
 
         # Release the thread lock
         self.thread_lock.release()

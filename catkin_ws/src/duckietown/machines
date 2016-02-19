@@ -18,4 +18,5 @@
 	<machine name="thing" address="thing.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="neptunus" address="neptunus.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
         <machine name="charles" address="charles.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+        <machine name="starducks" address="starducks.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 </launch>

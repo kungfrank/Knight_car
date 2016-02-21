@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from pkg_name.util import HelloGoodbye #Imports module. Not limited to modules in this pkg. 
+from intersection_control.util import HelloGoodbye #Imports module. Not limited to modules in this pkg. 
 from std_msgs.msg import String #Imports msg
 #from duckietown_msgs.msg import messages to command the wheels
 from duckietown_msgs.msg import WheelsCmdStamped

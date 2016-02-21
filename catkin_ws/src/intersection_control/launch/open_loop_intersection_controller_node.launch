@@ -9,7 +9,7 @@
     <node ns="$(arg veh)" if="$(arg local)" pkg="intersection_control" type="open_loop_intersection_control_node.py" name="open_loop_intersection_control_node" output="screen">
         <rosparam command="load" file="$(find duckietown)/config/$(arg config)/intersection_control/open_loop_intersection_node/$(arg param_file_name).yaml"/>
     </node>
-    <node ns="$(arg veh)" unless="$(arg local)" machine="$(arg veh)" pkg="intersection_control" type="open_loop_intersection_node.py" name="open_loop_intersection_control_node" output="screen">
+    <node ns="$(arg veh)" unless="$(arg local)" machine="$(arg veh)" pkg="intersection_control" type="open_loop_intersection_control_node.py" name="open_loop_intersection_control_node" output="screen">
         <rosparam command="load" file="$(find duckietown)/config/$(arg config)/intersection_control/open_loop_intersection_node/$(arg param_file_name).yaml"/>
     </node>
 

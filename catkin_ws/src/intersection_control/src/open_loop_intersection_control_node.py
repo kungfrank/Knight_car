@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from pkg_name.util import HelloGoodbye #Imports module. Not limited to modules in this pkg. 
+from intersection_control.util import HelloGoodbye #Imports module. Not limited to modules in this pkg. 
 from std_msgs.msg import String #Imports msg
 #from duckietown_msgs.msg import messages to command the wheels
 from duckietown_msgs.msg import WheelsCmdStamped
@@ -13,7 +13,7 @@ class Talker(object):
 
         # Setup publishers
         self.pub_topic_a = rospy.Publisher("~topic_a",String, queue_size=1)
-        self.pub_wheels_cmd = rospy.Publisher("/kitt/wheels_driver_node/wheels_cmd",WheelsCmdStamped, queue_size=1)
+        self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd",WheelsCmdStamped, queue_size=1)
         # Setup subscriber
         self.sub_topic_b = rospy.Subscriber("~topic_b", String, self.cbTopic)
         # Read parameters

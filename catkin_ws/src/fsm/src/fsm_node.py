@@ -48,7 +48,7 @@ class FSMNode(object):
     def updateState(self):
         if(self.actual.state == self.actual.LANE_FOLLOWING):
             if(self.at_stop_line == True):
-#update the state
+                #update the state
                 self.actual.state = self.actual.COORDINATION
         elif(self.actual.state == self.actual.COORDINATION):
             if(self.intersection_go == True):
@@ -59,7 +59,7 @@ class FSMNode(object):
                 self.actual.state = self.actual.LANE_FOLLOWING
                 self.intersection_done = False
 
-        self.pub_topic_mode.publish(self.actual.state)f
+        self.pub_topic_mode.publish(self.actual.state)
 
 
 

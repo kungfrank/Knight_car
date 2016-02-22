@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import rospy
 from intersection_control.util import HelloGoodbye #Imports module. Not limited to modules in this pkg. 
+from duckietown_msgs.msg import FSMState
+
 from std_msgs.msg import String #Imports msg
 from std_msgs.msg import Bool #Imports msg
 #from duckietown_msgs.msg import messages to command the wheels
@@ -19,7 +21,7 @@ class OpenLoopIntersectionNode(object):
         self.pub_wheels_done = rospy.Publisher("~intersection_done",Bool, queue_size=1, latch=True)
         # Setup subscribers
         self.sub_topic_b = rospy.Subscriber("~topic_b", String, self.cbTopic)
-        self.sub_topic_mode = rospy.Subscriber("~mode", String, self.cbMode, queue_size=1)
+        self.sub_topic_mode = rospy.Subscriber("~mode", FSMState, self.cbMode, queue_size=1)
         # Read parameters
         self.pub_timestep = self.setupParameter("~pub_timestep",1.0)
         # Create a timer that calls the cbTimer function every 1.0 second
@@ -31,7 +33,7 @@ class OpenLoopIntersectionNode(object):
 
     def cbMode(self, mode_msg):
         print mode_msg
-        if(mode_msg.data == "intersection_control"):
+        if(mode_msg.state == mode_msg.INTERSECTION_CONTROL):
             self.turnRight()
 
 

@@ -28,8 +28,8 @@ class WhiteBalance(object):
         # mean or max
         self.norm_bgr = np.array([50,80,80])/np.mean(region, axis=(0,1), keepdims=True)
         #self.norm_bgr = max(np.mean(region, axis=(0,1)))/np.mean(region, axis=(0,1), keepdims=True)
-        print np.mean(region)
-        print self.norm_bgr
+        #print np.mean(region)
+        #print self.norm_bgr
 
     def correctImg(self, bgr):
         bgr *= self.norm_bgr

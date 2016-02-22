@@ -9,6 +9,8 @@ from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Point
 import numpy as np
 import threading
+#from PIL import Image as pimg
+#import jpeg4py as jpeg
 
 class LineDetectorNode(object):
     def __init__(self):
@@ -75,7 +77,13 @@ class LineDetectorNode(object):
         # rospy.loginfo("[LineDetector] image age: %s" %msg_age.to_sec())
 
         # Decode from compressed image
+        # with OpenCV
         image_cv = cv2.imdecode(np.fromstring(image_msg.data, np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
+        
+        # with PIL Image
+        # image_cv = jpeg.JPEG(np.fromstring(image_msg.data, np.uint8)).decode()
+        
+        # with libjpeg-turbo
         # Convert from uncompressed image message
         # image_cv = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
         

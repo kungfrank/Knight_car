@@ -13,4 +13,4 @@ cov_v: 0.5
 linewidth_white: 0.05
 linewidth_yellow: 0.03
 lanewidth: 0.19
-max_entropy: 0.04
+min_max: 0.3

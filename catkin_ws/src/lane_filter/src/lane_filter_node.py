@@ -3,8 +3,9 @@ import rospy
 import numpy as np
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
+from std_msgs.msg import Bool, Float32
 from duckietown_msgs.msg import SegmentList, Segment, Pixel, LanePose
-from scipy.stats import multivariate_normal
+from scipy.stats import multivariate_normal, entropy
 from math import floor, atan2, pi, cos, sin
 import time
 
@@ -31,7 +32,7 @@ class LaneFilterNode(object):
         self.linewidth_white = self.setupParam("~linewidth_white",0.04)
         self.linewidth_yellow = self.setupParam("~linewidth_yellow",0.02)
         self.lanewidth        = self.setupParam("~lanewidth",0.4)
-        self.max_entropy = self.setupParam("~max_entropy", 0.04) # nats
+        self.min_max = self.setupParam("~min_max", 0.3) # nats
 
         self.d,self.phi = np.mgrid[self.d_min:self.d_max:self.delta_d,self.phi_min:self.phi_max:self.delta_phi]
         self.beliefRV=np.empty(self.d.shape)
@@ -43,6 +44,8 @@ class LaneFilterNode(object):
         # self.sub = rospy.Subscriber("~velocity",
         self.pub_lane_pose  = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
         self.pub_belief_img = rospy.Publisher("~belief_img", Image, queue_size=1)
+        self.pub_entropy    = rospy.Publisher("~entropy",Float32, queue_size=1)
+        self.pub_in_lane    = rospy.Publisher("~in_lane",Bool, queue_size=1)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -89,6 +92,19 @@ class LaneFilterNode(object):
         self.pub_belief_img.publish(belief_img)
         # print "time to process segments:"
         # print rospy.get_time() - t_start
+
+        max_val = self.beliefRV.max()
+        print max_val
+        if (max_val > self.min_max):
+            self.pub_in_lane.publish(True)
+        else:
+            self.pub_in_lane.publish(False)
+#        ent = entropy(self.beliefRV)
+#        print ent
+#        if (ent < self.max_entropy):
+#            self.pub_in_lane.publish(True)
+#        else:
+#            self.pub_in_lane.publish(False)
 
 
     def initializeBelief(self):

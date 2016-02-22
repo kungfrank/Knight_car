@@ -33,16 +33,16 @@
 
 
     <!-- Wheels Cmd Switch -->
-    <remap from="wheels_cmd_switch_node/mode" to="fsm/mode"/>
+    <remap from="wheels_cmd_switch_node/mode" to="fsm_node/mode"/>
     <remap from="wheels_cmd_switch_node/wheels_cmd_lane" to="lane_controller_node/wheels_control" />
-    <remap from="wheels_cmd_switch_node/wheels_cmd_intersection" to="open_loop_intersection_controller_node/wheels_cmd" />
+    <remap from="wheels_cmd_switch_node/wheels_cmd_intersection" to="open_loop_intersection_control_node/wheels_cmd" />
     <include file="$(find dagu_car)/launch/wheels_cmd_switch_node.launch">
       <arg name="veh" value="$(arg veh)"/>        
       <arg name="local" value="$(arg local)"/>        
     </include>
 
     <!-- Wheels Trimmer -->
-    <remap from="wheels_trimmer_node/wheels_cmd" to="wheels_cmd_swith_node/wheels_cmd"/>
+    <remap from="wheels_trimmer_node/wheels_cmd" to="wheels_cmd_switch_node/wheels_cmd"/>
     <include file="$(find dagu_car)/launch/wheels_trimmer_node.launch">
       <arg name="veh" value="$(arg veh)"/>
       <arg name="local" value="$(arg local)"/>
@@ -52,16 +52,16 @@
 
     <!-- Wheel Driver -->
     <remap from="wheels_driver_node/wheels_cmd" to="wheels_trimmer_node/trimmed_wheels_cmd"/>    
-    <include if="$(arg live)" file="$(find dagu_car)/launch/wheels_driver_node.launch">
+    <include  file="$(find dagu_car)/launch/wheels_driver_node.launch">
       <arg name="veh" value="$(arg veh)"/>
     </include>
 
     
     <!-- FSM -->
-    <remap from="fsm/in_lane" to="lane_filter_node/in_lane"/>
-    <remap from="fsm/at_stop_line" to="stop_line_filter_node/at_stop_line"/>
-    <remap from="fsm/intersection_go" to="veh_coordinator/intersection_go"/>
-    <remap from="fsm/intersection_done" to="open_loop_intersection_controller_node/intersection_done"/>
+    <remap from="fsm_node/in_lane" to="lane_filter_node/in_lane"/>
+    <remap from="fsm_node/at_stop_line" to="stop_line_filter_node/at_stop_line"/>
+    <remap from="fsm_node/intersection_go" to="veh_coordinator/intersection_go"/>
+    <remap from="fsm_node/intersection_done" to="open_loop_intersection_controller_node/intersection_done"/>
     <include file="$(find fsm)/launch/fsm_node.launch">
       <arg name="veh" value="$(arg veh)"/>        
       <arg name="local" value="$(arg local)"/>        
@@ -69,3 +69,4 @@
       <arg name="param_file_name" value="$(arg param_file_name)"/>        
     </include>
 
+</launch>

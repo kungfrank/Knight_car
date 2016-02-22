@@ -22,14 +22,14 @@ class FSMNode(object):
         rospy.loginfo("[%s] Initialzing." %(self.node_name))
 
         # Setup publishers
-        self.pub_topic_mode = rospy.Publisher("~mode",String, queue_size=1, latch=True)
+        self.pub_topic_mode = rospy.Publisher("~mode",FSMState, queue_size=1, latch=True)
         self.pub_topic_intersection_done = rospy.Publisher("~intersection_done",Bool, queue_size=1)
         self.pub_topic_intersection_go = rospy.Publisher("~intersection_go",Bool, queue_size=1)
         # Setup subscribers
         self.sub_topic_in_lane = rospy.Subscriber("~in_lane", Bool, self.cbInLane, queue_size=1)
-#        self.sub_topic_at_stop_line = rospy.Subscriber("~at_stop_line", Bool, self.cbAtStopLine, queue_size=1)
-#        self.sub_topic_intersection_go = rospy.Subscriber("~intersection_go", Bool, self.cbIntersectionGo, queue_size=1)
-#        self.sub_topic_intersection_done = rospy.Subscriber("~intersection_done", Bool, self.cbIntersectionDone, queue_size=1)
+        self.sub_topic_at_stop_line = rospy.Subscriber("~at_stop_line", Bool, self.cbAtStopLine, queue_size=1)
+        self.sub_topic_intersection_go = rospy.Subscriber("~intersection_go", Bool, self.cbIntersectionGo, queue_size=1)
+        self.sub_topic_intersection_done = rospy.Subscriber("~intersection_done", Bool, self.cbIntersectionDone, queue_size=1)
 
         # Read parameters
         self.pub_timestep = self.setupParameter("~pub_timestep",1.0)
@@ -40,10 +40,27 @@ class FSMNode(object):
 
         self.rate = rospy.Rate(30) # 10hz
 
+    def cbIntersectionDone(self, in_lane_msg):
+        print in_lane_msg
+        self.intersection_done = in_lane_msg.data
+        self.updateState()
+
+
     def cbInLane(self, in_lane_msg):
         print in_lane_msg
         self.in_lane = in_lane_msg.data
         self.updateState()
+
+    def cbAtStopLine(self, in_lane_msg):
+        print in_lane_msg
+        self.at_stop_line = in_lane_msg.data
+        self.updateState()
+
+    def cbIntersectionGo(self, in_lane_msg):
+        print in_lane_msg
+        self.intersection_go = in_lane_msg.data
+        self.updateState()
+
 
     def updateState(self):
         if(self.actual.state == self.actual.LANE_FOLLOWING):
@@ -54,12 +71,12 @@ class FSMNode(object):
             if(self.intersection_go == True):
                 self.actual.state = self.actual.INTERSECTION_CONTROL
                 self.intersection_go = False
-        else(self.actual.state == self.actual.INTERSECTION_CONTROL):
+        elif(self.actual.state == self.actual.INTERSECTION_CONTROL):
             if(self.in_lane == True and self.intersection_done == True):
                 self.actual.state = self.actual.LANE_FOLLOWING
                 self.intersection_done = False
 
-        self.pub_topic_mode.publish(self.actual.state)f
+        self.pub_topic_mode.publish(self.actual.state)
 
 
 

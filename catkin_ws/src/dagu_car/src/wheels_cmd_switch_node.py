@@ -10,9 +10,9 @@ class WheelsCmdSwitchNode(object):
         
 #        self.mode_msg = ControlMode()
         self.mode_msg = FSMState()
-        self.mode_msg.header.stamp = rospy.Time.now()
+        #self.mode_msg.header.stamp = rospy.Time.now()
 #        self.mode_msg.mode = ControlMode.LANE_FOLLOWING
-        self.mode_msg.mode = FSMState.LANE_FOLLOWING
+        self.mode_msg.state = FSMState.LANE_FOLLOWING
         self.cmd_dict = {}
 #        self.cmd_dict[ControlMode.LANE_FOLLOWING] = None
 #        self.cmd_dict[ControlMode.INTERSECTION_CONTROL] = None
@@ -36,16 +36,16 @@ class WheelsCmdSwitchNode(object):
         self.sub_mode = rospy.Subscriber("~mode", FSMState, self.cbMode, queue_size=1)
         self.sub_lane = rospy.Subscriber("~wheels_cmd_lane", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=FSMState.LANE_FOLLOWING)
         self.sub_interestion = rospy.Subscriber("~wheels_cmd_intersection", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=FSMState.INTERSECTION_CONTROL)
-        self.sub_coordination = rospy.Subscriber("~wheels_cmd_coordination", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=FSMState.COORDINATION_CONTROL)
+        self.sub_coordination = rospy.Subscriber("~wheels_cmd_coordination", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=FSMState.COORDINATION)
 
     def pubWheelsCmd(self):
-        cmd_msg = self.cmd_dict[mode]
+        cmd_msg = self.cmd_dict[self.mode_msg.state]
         if cmd_msg is not None:
             self.pub_wheels_cmd.publish(cmd_msg)
 
     def cbMode(self,mode_msg):
-        if not self.mode_msg.mode == mode_msg.mode:
-            ropsy.loginfo("[%s] Switching to %s" %(self.node_name,self.mode_name_dict[mode_msg.state]))
+        if not self.mode_msg.state == mode_msg.state:
+            rospy.loginfo("[%s] Switching to %s" %(self.node_name,self.mode_name_dict[mode_msg.state]))
         self.mode_msg = mode_msg
         # Always publish a cmd when changing mode.
         self.pubWheelsCmd()

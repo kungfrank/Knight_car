@@ -1,15 +1,16 @@
 import numpy as np
 import cv2
 import sys
-import time
-from matplotlib import pyplot as plt
+#import time
+#from matplotlib import pyplot as plt
 
 class WhiteBalance(object):
     def __init__(self):
         self.x = 0.5
-        self.y = 0.7
+        self.y = 0.85
         self.w = 0.1
         self.h = 0.1
+        self.color_ref = np.array([5,30,30])
         self.norm_bgr = np.ones((1,1,3))         
 
     def __calculateRegion(self, shape):
@@ -26,7 +27,8 @@ class WhiteBalance(object):
 
         # Gray world assumption algorithm
         # mean or max
-        self.norm_bgr = np.array([50,80,80])/np.mean(region, axis=(0,1), keepdims=True)
+        print np.mean(region, axis=(0,1), keepdims=True) 
+        self.norm_bgr = self.color_ref/np.mean(region, axis=(0,1), keepdims=True)
         #self.norm_bgr = max(np.mean(region, axis=(0,1)))/np.mean(region, axis=(0,1), keepdims=True)
         #print np.mean(region)
         #print self.norm_bgr

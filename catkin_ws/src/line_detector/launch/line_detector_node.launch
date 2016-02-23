@@ -6,12 +6,14 @@
     
     <arg name="pkg_name" value="line_detector"/>
     <arg name="node_name" default="line_detector_node"/>
+    <arg name="white_balance" default="false" />
     <arg name="verbose" default="false" />
 
     <group ns="$(arg veh)">        
         <!-- run local -->
         <node if="$(arg local)" name="line_detector_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
             <rosparam command="load" file="$(find duckietown)/config/$(arg config)/line_detector/$(arg node_name)/$(arg param_file_name).yaml"/>
+            <param name="white_balance" value="$(arg white_balance)"/>
             <param name="verbose" value="$(arg verbose)"/>
         </node>
 
@@ -19,7 +21,8 @@
         <include unless="$(arg local)" file="$(find duckietown)/machines"/>
         <node unless="$(arg local)" machine="$(arg veh)" name="line_detector_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
             <rosparam command="load" file="$(find duckietown)/config/$(arg config)/line_detector/$(arg node_name)/$(arg param_file_name).yaml"/>
-        <param name="verbose" value="$(arg verbose)"/>
+            <param name="white_balance" value="$(arg white_balance)"/>
+            <param name="verbose" value="$(arg verbose)"/>
         </node>
     </group>
 

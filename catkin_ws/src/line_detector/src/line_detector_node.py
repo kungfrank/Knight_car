@@ -5,6 +5,7 @@ from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import CompressedImage, Image
 from duckietown_msgs.msg import Segment, SegmentList, Vector2D
 from line_detector.LineDetector import *
+from line_detector.WhiteBalance import *
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Point
 import numpy as np
@@ -22,8 +23,12 @@ class LineDetectorNode(object):
         # Constructor of line detector 
         self.bridge = CvBridge()
         self.detector = LineDetector()
-        
+        self.wb = WhiteBalance()
+        self.flag_wb_ref = False
+       
         # Parameters
+        self.flag_wb = rospy.get_param('~white_balance')
+        
         self.image_size = rospy.get_param('~img_size')
         self.top_cutoff = rospy.get_param('~top_cutoff')
   
@@ -91,7 +96,15 @@ class LineDetectorNode(object):
         if self.verbose:
             self.tic = rospy.get_time()   
             rospy.loginfo("[%s] Latency image decompressed = %.3f ms" %(self.node_name, (self.tic-image_msg.header.stamp.to_sec()) * 1000.0))
-         
+        
+        # White balancing: set reference image to estimate parameters
+        if self.flag_wb and (not self.flag_wb_ref):
+            # set reference image to estimate parameters
+            self.wb.setRefImg(image_cv)
+            rospy.loginfo("[%s] White balance: parameters computed." %(self.node_name))
+            print self.wb.norm_bgr
+            self.flag_wb_ref = True
+
         # Resize and crop image
         hei_original = image_cv.shape[0]
         wid_original = image_cv.shape[1]
@@ -99,6 +112,10 @@ class LineDetectorNode(object):
             # image_cv = cv2.GaussianBlur(image_cv, (5,5), 2)
             image_cv = cv2.resize(image_cv, (self.image_size[1], self.image_size[0]), interpolation=cv2.INTER_NEAREST)
         image_cv = image_cv[self.top_cutoff:,:,:]
+
+        # White balancing
+        if self.flag_wb and self.flag_wb_ref:
+            self.wb.correctImg(image_cv)
 
         # Set the image to be detected
         self.detector.setImage(image_cv)

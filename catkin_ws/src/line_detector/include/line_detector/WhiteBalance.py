@@ -1,15 +1,16 @@
 import numpy as np
 import cv2
 import sys
-import time
-from matplotlib import pyplot as plt
+#import time
+#from matplotlib import pyplot as plt
 
 class WhiteBalance(object):
     def __init__(self):
         self.x = 0.5
-        self.y = 0.5
-        self.w = 0.08
-        self.h = 0.08
+        self.y = 0.85
+        self.w = 0.1
+        self.h = 0.1
+        self.color_ref = np.array([5,30,30])
         self.norm_bgr = np.ones((1,1,3))         
 
     def __calculateRegion(self, shape):
@@ -26,9 +27,11 @@ class WhiteBalance(object):
 
         # Gray world assumption algorithm
         # mean or max
-        self.norm_bgr = np.mean(region)/np.mean(region, axis=(0,1), keepdims=True)
+        print np.mean(region, axis=(0,1), keepdims=True) 
+        self.norm_bgr = self.color_ref/np.mean(region, axis=(0,1), keepdims=True)
         #self.norm_bgr = max(np.mean(region, axis=(0,1)))/np.mean(region, axis=(0,1), keepdims=True)
-        print self.norm_bgr
+        #print np.mean(region)
+        #print self.norm_bgr
 
     def correctImg(self, bgr):
         bgr *= self.norm_bgr
@@ -51,7 +54,8 @@ def main():
     if len(sys.argv)==2:
         bgr = cv2.imread(sys.argv[1])
         bgr = cv2.resize(bgr, (640, 480)) 
-        
+        cv2.imshow('original', bgr)
+ 
         # Set reference image to estimate the parameters
         wb.setRefImg(bgr)
 
@@ -63,7 +67,7 @@ def main():
         wb.plotHist(bgr)
 
         wb.drawRegion(bgr)
-        cv2.imshow('image', bgr)
+        cv2.imshow('white balanced', bgr)
         cv2.waitKey(0)
 
     else:

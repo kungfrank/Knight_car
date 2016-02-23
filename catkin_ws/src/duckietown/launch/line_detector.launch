@@ -6,6 +6,7 @@
 	<arg name="raw" default="false" doc="If set to true, also publish raw image using decoder."/> 
 	<arg name="live" default="true" doc="if set to true, run the camera and do live detection. "/>
 	<arg name="camera" default="true" doc="If set to false, won't launch the camera. This is for easier relaunching of the line_detector_node only "/>
+    <arg name="white_balance" default="false" />
     <arg name="verbose" default="false" />
 
 	<!-- Camera -->
@@ -26,6 +27,7 @@
 	    <arg name="local" value="$(arg local)"/>
 	    <arg name="config" value="$(arg config)"/>
 	    <arg name="param_file_name" value="$(arg param_file_name)"/>
+        <arg name="white_balance" value="$(arg white_balance)" />
         <arg name="verbose" value="$(arg verbose)" />
 	</include>	
 </launch>

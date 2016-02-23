@@ -1,0 +1,35 @@
+# Parameters for open_loop_intersection_node
+
+#Turn right through intersection
+#wheel vel and time
+#first straight leg
+tr_straight1_vel: 0.4
+tr_straight1_time: 2.0
+
+#rotate right
+tr_turn_vel: 0.25
+tr_turn_time: 0.7
+
+#second straight leg
+tr_straight2_vel: 0.4  
+tr_straight2_time: 2.0 
+
+#Turn left through intersection
+#wheel vel and time
+#first straight leg
+tl_straight1_vel: 0.4
+tl_straight1_time: 3.0
+
+#rotate left
+tl_turn_vel: -0.25
+tl_turn_time: 0.7
+
+#second straight leg
+tl_straight2_vel: 0.4 
+tl_straight2_time: 3.0
+
+#Go straight through intersection
+#wheel vel and time
+#straight leg
+st_straight1_vel: 0.4
+st_straight1_time: 4.0

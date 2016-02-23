@@ -43,10 +43,6 @@ class LineDetectorNode(object):
     def cbParamUpdate(self,event):
         print '====Parameters Updated====' 
         
-        # S of white
-        self.detector.hsv_white2 = (self.detector.hsv_white2)%256 + np.array([0, 5, 0])
-        print 'HSV_white1: ' + str(self.detector.hsv_white1)
-        print 'HSV_white2: ' + str(self.detector.hsv_white2)
  
         """ 
         # S of white
@@ -55,7 +51,7 @@ class LineDetectorNode(object):
         print 'HSV_white2: ' + str(self.detector.hsv_white2)
         
         # V of white
-        self.detector.hsv_white1 = (self.detector.hsv_white1)%256 + np.array([0, 0, 5])
+        self.detector.hsv_white1 = (self.detector.hsv_white1)%256 - np.array([0, 0, 10])
         print 'HSV_white1: ' + str(self.detector.hsv_white1)
         print 'HSV_white2: ' + str(self.detector.hsv_white2)
  
@@ -79,11 +75,11 @@ class LineDetectorNode(object):
         print 'HSV_yellow2: ' + str(self.detector.hsv_yellow2)
         
         # Lower threshold of Canny edge
-        self.detector.canny_thresholds = self.detector.canny_thresholds%256 + np.array([5, 0])
+        self.detector.canny_thresholds = np.array(self.detector.canny_thresholds)%256 + np.array([5, 0])
         print 'Canny_thresholds: ' + str(self.detector.canny_thresholds)
 
         # Higher threshold of Canny edge
-        self.detector.canny_thresholds = self.detector.canny_thresholds%256 + np.array([0, 5])
+        self.detector.canny_thresholds = np.array(self.detector.canny_thresholds)%256 + np.array([0, 5])
         print 'Canny_thresholds: ' + str(self.detector.canny_thresholds)
 
         # Minimum line length

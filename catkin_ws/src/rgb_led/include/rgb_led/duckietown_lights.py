@@ -9,8 +9,14 @@ FRONT_RIGHT = 4
 # Do not change the constants: add your own colors or sequence
 
 RED = [0.24, 0, 0]
-GREEN = [0, 0.15, 0]
+
+s = 0.5
+GREEN = [0, s, 0]
+WHITE = [s, s, s]
+BLUE = [0, 0, s]
+
 GREEN2 = [0, 0.3, 0]
+
 
 OFF = [0, 0, 0]
 

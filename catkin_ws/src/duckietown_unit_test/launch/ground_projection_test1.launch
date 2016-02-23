@@ -1,0 +1,21 @@
+<launch>
+  <arg name="veh"/>
+  <arg name="config" default="baseline" doc="Specify a config."/>
+  <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+  <arg name="rectify" default="false" doc="Set to enable image rectification."/>
+  
+  <!-- run image_proc for testing -->
+  <group if="$(arg rectify)" ns="$(arg veh)">
+    <include file="$(find duckietown)/machines"/>
+    <node ns="camera_node" machine="$(arg veh)" pkg="image_proc" type="image_proc" name="image_proc" output="screen">
+      <remap from="image_raw" to="image/raw"/>
+    </node>
+  </group>
+
+  <include file="$(find ground_projection)/launch/ground_projection.launch">
+    <arg name="veh" value="$(arg veh)"/>
+    <arg name="local" value="false"/>
+    <arg name="config" value="$(arg config)"/>
+    <arg name="param_file_name" value="$(arg param_file_name)"/>
+  </include>
+</launch>

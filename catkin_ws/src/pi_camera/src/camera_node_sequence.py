@@ -5,6 +5,7 @@ import io
 import numpy as np
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image, CompressedImage, CameraInfo
+from sensor_msgs.srv import SetCameraInfo, SetCameraInfoResponse
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 import time
@@ -30,7 +31,8 @@ class CameraNode(object):
         self.frame_id = rospy.get_namespace() + "camera_optical_frame"
 
         rospack = rospkg.RosPack()
-        self.cali_file = rospack.get_path('duckietown') + "/config/" + self.config + "/calibration/camera_intrinsic/" +  self.cali_file_name + ".yaml" 
+        self.cali_file_folder = rospack.get_path('duckietown') + "/config/" + self.config + "/calibration/camera_intrinsic/"
+        self.cali_file = self.cali_file_folder +  self.cali_file_name + ".yaml" 
         self.camera_info_msg = None
 
         if not os.path.isfile(self.cali_file):
@@ -54,6 +56,11 @@ class CameraNode(object):
             self.bridge = CvBridge()
         else:
             self.pub_img= rospy.Publisher("~image/compressed",CompressedImage,queue_size=1)
+
+
+
+        # Create service
+        self.srv_set_camera_info = rospy.Service("~set_camera_info",SetCameraInfo,self.cbSrvSetCameraInfo)
 
         # Setup PiCamera
         self.stream = io.BytesIO()
@@ -134,7 +141,39 @@ class CameraNode(object):
     def signal_handler(self, signal, frame):
         print "==== Ctrl-C Pressed ==== "
         self.is_shutdown = True
+
+    def cbSrvSetCameraInfo(self,req):
+        # TODO: save req.camera_info to yaml file
+        rospy.loginfo("[cbSrvSetCameraInfo] Callback!")
+        filename = self.cali_file_folder + rospy.get_namespace().strip("/") + ".yaml"
+        response = SetCameraInfoResponse()
+        response.success = self.saveCameraInfo(req.camera_info,filename)
+        response.status_message = "Write to %s" %filename #TODO file name
+        return response
+
+    def saveCameraInfo(self, camera_info_msg, filename):
+        rospy.loginfo("[saveCameraInfo] filename: %s" %(filename))
+        file = open(filename, 'w')
+
+        # Converted from camera_info_manager.py
+        calib = {'image_width': camera_info_msg.width,
+        'image_height': camera_info_msg.height,
+        'camera_name': rospy.get_name().strip("/"), #TODO check this
+        'distortion_model': camera_info_msg.distortion_model,
+        'distortion_coefficients': {'data': camera_info_msg.D, 'rows':1, 'cols':5},
+        'camera_matrix': {'data': camera_info_msg.K, 'rows':3, 'cols':3},
+        'rectification_matrix': {'data': camera_info_msg.R, 'rows':3, 'cols':3},
+        'projection_matrix': {'data': camera_info_msg.P,'rows':3, 'cols':4}}
         
+        rospy.loginfo("[saveCameraInfo] calib %s" %(calib))
+
+        try:
+            rc = yaml.safe_dump(calib, file)
+            return True
+        except IOError:
+            return False
+
+
     def loadCameraInfo(self, filename):
         stream = file(filename, 'r')
         calib_data = yaml.load(stream)

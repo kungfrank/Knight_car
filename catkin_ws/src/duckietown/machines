@@ -1,12 +1,12 @@
 <launch>
-        <machine name="ferrari" address="ferrari.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-        <machine name="2cv" address="2cv.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-        <machine name="sonata" address="sonata.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-        <machine name="shamrock" address="shamrock.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-        <machine name="leon" address="leon.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-        <machine name="duckmobile" address="duckmobile.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-	<machine name="megaman" address="megaman.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+	<arg name="env_script_path" default="~/duckietown/environment.sh"/>
 	<machine name="ferrari" address="ferrari.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+	<machine name="2cv" address="2cv.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+	<machine name="sonata" address="sonata.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+	<machine name="shamrock" address="shamrock.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+	<machine name="leon" address="leon.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+	<machine name="duckmobile" address="duckmobile.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+	<machine name="megaman" address="megaman.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="mercedes" address="mercedes.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="lambo" address="lambo.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="porsche911" address="porsche911.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
@@ -24,9 +24,9 @@
 	<machine name="thing" address="thing.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="duckula" address="duckula.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="neptunus" address="neptunus.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-        <machine name="charles" address="charles.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-        <machine name="starducks" address="starducks.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-        <machine name="ernie" address="ernie.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-        <machine name="ayrton" address="ayrton.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+	<machine name="charles" address="charles.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+	<machine name="starducks" address="starducks.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+	<machine name="pipquack" address="pipquack.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+  <machine name="ayrton" address="ayrton.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 </launch>
 

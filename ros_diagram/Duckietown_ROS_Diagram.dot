@@ -1,6 +1,6 @@
 digraph D {
 	fontname="sans";
-
+	//rankdir=LR;
 	edge [penwidth=1.5]
 	node [penwidth=1.5]
 
@@ -27,44 +27,44 @@ digraph D {
 	node [shape=ellipse,style=filled];
 	subgraph node_missing{
 		node [fillcolor=red];
-		global_localizer[label="global_localizer (LC)"];
+		global_localizer[label="global_localizer_node (LC)"];
 		intersection_filter[label="intersection_filter (LP)"];
-		stop_line_filter[label="stop_line_filter (LP)"];
-		led_detector[label="led_detector (CC)"];
-		obj_detector[label="obj_detector (CC)"];
-		beeper[label="beeper (LP)"];
-		veh_detector[label="veh_detector (CC)"];
-		traffic_light_detector[label="traffic_light_detector (??)"];
+		led_detector[label="led_detector_node (CC)"];
+		obj_detector[label="obj_detector_node (CC)"];
+		beeper[label="beeper_node (LP)"];
+		veh_detector[label="veh_detector_node (CC)"];
+		traffic_light_detector[label="traffic_light_detector_node (??)"];
 		//coordination_controller[label="coordination_controller (MN?)"];
 	}
 	subgraph node_designed{
 		node [fillcolor=pink];
-		intersection_controller[label="intersection_controller (MN)"];
-		mission_planner[label="mission_planner (MN)"];
-		street_name_detector[label="street_name_detector (NW)"];
-		safety_supervisor[label="safety_supervisor (HA)"];
-		map_reader[label="map_reader (RM)"];
-		veh_coordinator[label="veh_coordinator (DH)"]
+		mission_planner[label="mission_planner_node (MN)"];
+		street_name_detector[label="street_name_detector_node (NW)"];
+		safety_supervisor[label="safety_supervisor_node (HA)"];
+		map_reader[label="map_reader_node (RM)"];
+		veh_coordinator[label="veh_coordinator_node (DH)"]
 	}
 	subgraph node_development{
 		node [fillcolor=orange];
-		rgb_led[label="rgb_led (DY)"];
+		intersection_controller[label="open_loop_intersection_control_node (MN)"];
+		stop_line_filter[label="stop_line_filter_node (LP)"];
+		rgb_led[label="rgb_led_driver (DY)"];
 	}
 	subgraph node_compiled{
 		node [fillcolor=yellow];
-		wheels_driver[label="wheels_driver (DY,SY)"];
+		wheels_driver[label="wheels_driver_node (DY,SY)"];
 		wheels_cmd_switch[label="wheels_cmd_switch (SY)"]
 		camera_node[label="camera_node (SY,AC)"];
 		decoder_node[label="decoder_node (SY)"];
 		cam_info_reader_node[label="cam_info_reader_node (SY)"];
-		lane_controller[label="lane_controller (SY,SC)"];
-		line_detector[label="line_detector (LP,HZ)"];
+		lane_controller[label="lane_controller_node (SY,SC)"];
+		line_detector[label="line_detector_node (LP,HZ)"];
 		april_tag_detector[label="april_tag_detector (LP)"];
-		lane_supervisor[label="lane_supervisor (SY)"];
-		joy_mapper[label="joy_mapper (SY)"];
-		ground_projection[label="ground_projection (CC)"];
-		wheels_trimmer[label="wheels_trimmer (SY)"];
-		lane_filter[label="lane_filter (LP)"]; 
+		lane_supervisor[label="lane_supervisor_node (SY)"];
+		joy_mapper[label="joy_mapper_node (SY)"];
+		ground_projection[label="ground_projection_node (CC)"];
+		wheels_trimmer[label="wheels_trimmer_node (SY)"];
+		lane_filter[label="lane_filter_node (LP)"]; 
 	}
 	subgraph node_documented{
 		node [fillcolor=green];
@@ -96,33 +96,31 @@ digraph D {
 	// Topics
 	node [shape=box,style=filled,fillcolor=white];
 	//{rank=same; mission; joy; map_representation;}
-	map_representation;
-	//img_low;
-	//img_high;
-	segment_list;
-	segment_list_proj;
-	image_with_lines;
-	lane_pose; //LaneReading: y, phi, sigma_y, sigma_phi, status
-	lane_control;
-	lane_control_sup[label="lane_control"];
-	lane_control_safe[label="lane_control"];
-	april_tag_detection;
-	led_detection;
-	veh_detection;
-	traffic_light_detection;
-	intersection_reading;
-	obj_detection;
-	global_readings;
-	stop_line_reading;
-	mode;
-	mission;
-	joy_control;
-	intersection_control;
-	street_name_detection;
-	veh_coord_go;
-	wheels_command;
-	wheels_command_switch[label="wheels_command"];
-	//coordination_control;
+	map_representation[label="~map_representation"];
+	segment_list[label="~segment_list"];
+	segment_list_proj[label="~segment_list_proj"];
+	image_with_lines[label="~image_with_lines"];
+	lane_pose[label="~lane_pose"]; //LaneReading: y, phi, sigma_y, sigma_phi, status
+	lane_control[label="~lane_control"];
+	lane_control_sup[label="~lane_control_supervised"];
+	lane_control_safe[label="~lane_control_safe"];
+	april_tag_detection[label="~april_tag_detection"];
+	led_detection[label="~led_detection"];
+	veh_detection[label="~veh_detection"];
+	traffic_light_detection[label="~traffic_light_detection"];
+	intersection_reading[label="~intersection_reading"];
+	obj_detection[label="~obj_detection"];
+	global_readings[label="~global_readings"];
+	stop_line_reading[label="~stop_line_reading"];
+	mode[label="~mode"];
+	mission[label="mission"];
+	joy_control[label="~joy_control"];
+	intersection_control[label="~intersection_control"];
+	street_name_detection[label="~street_name_detection"];
+	veh_coord_go[label="~veh_coord_go"];
+	wheels_command[label="wheels_driver_node/wheels_cmd"];
+	wheels_command_switch[label="~wheels_command_switch"];
+	camera_info[label="camera_node/camera_info"];
 
 	subgraph cluster_perception{
 		label="perception"
@@ -148,11 +146,11 @@ digraph D {
 		extrinsic_calibration_file;
 
 		// Topics
-		segment_list;
-		segment_list_proj;
+		segment_list[label="~segment_list"];
+		segment_list_proj[label="~segment_list_proj"];
 		//img_low;
 		//img_high;
-		april_tag_detection;
+		april_tag_detection[label="~april_tag_detection"];
 		lane_pose;
 		image_with_lines;
 		obj_detection;
@@ -164,7 +162,7 @@ digraph D {
 		street_name_detection;
 		//img_low_rect;
 		//img_high_rect;
-		image_compressed[label="camera_node/image/compressed"];
+		image_compressed[label="~image/compressed"];
 		image_raw[label="camera_node/image/raw"];
 		camera_info;
 		//{rank=same; image_compressed;image_raw;camera_info}

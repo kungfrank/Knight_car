@@ -15,7 +15,7 @@
 
         <!-- run remote -->
         <include unless="$(arg local)" file="$(find duckietown)/machines"/>
-        <node unless="$(arg local)" machine="$(arg veh)" name="line_detector_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
+        <node unless="$(arg local)" machine="$(arg veh)" name="virtual_mirror_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
             <rosparam command="load" file="$(find duckietown)/config/baseline/line_detector/line_detector_node/$(arg param_file_name).yaml"/>
         </node>
     </group>

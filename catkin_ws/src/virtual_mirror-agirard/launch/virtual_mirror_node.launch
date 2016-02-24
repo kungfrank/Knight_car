@@ -1,0 +1,5 @@
+<launch>
+    <arg name="veh"/>
+    <node ns="$(arg veh)" pkg="virtual_mirror-agirard" type="mirror_node.py" name="mirror_node" output="screen">
+    </node>
+</launch>

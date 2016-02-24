@@ -10,13 +10,13 @@
     <group ns="$(arg veh)">        
         <!-- run local -->
         <node if="$(arg local)" name="virtual_mirror_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
-            <rosparam command="load" file="/home/atacchet/duckietown/catkin_ws/src/duckietown/config/baseline/line_detector/line_detector_node/$(arg param_file_name).yaml"/>
+            <rosparam command="load" file="$(find duckietown)/config/baseline/line_detector/line_detector_node/$(arg param_file_name).yaml"/>
         </node>
 
         <!-- run remote -->
         <include unless="$(arg local)" file="$(find duckietown)/machines"/>
         <node unless="$(arg local)" machine="$(arg veh)" name="line_detector_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
-            <rosparam command="load" file="$(find duckietown)/config/$(arg config)/line_detector/$(arg node_name)/$(arg param_file_name).yaml"/>
+            <rosparam command="load" file="$(find duckietown)/config/baseline/line_detector/line_detector_node/$(arg param_file_name).yaml"/>
         </node>
     </group>
 

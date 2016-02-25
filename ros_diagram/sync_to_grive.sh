@@ -2,7 +2,8 @@
 
 #Setup Google Drive Root 
 read -e -p "Please enter path to Google Drive root: " -i ~/grive GRIVE_ROOT
-export SUB_FOLDER=Duckietown/Duckietown-Public/Duckietown_design
+# export SUB_FOLDER=Duckietown/Duckietown-Public/Duckietown_design
+export SUB_FOLDER=duckietown-public/design
 
 echo "GRIVE_ROOT set to $GRIVE_ROOT"
 

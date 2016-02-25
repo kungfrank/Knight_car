@@ -108,7 +108,6 @@ digraph D {
 	obj_detection[label="~obj_detection"];
 	global_readings[label="~global_readings"];
 	mode[label="~mode\nduckietown_msgs/FSMState.msg"];
-	//mission[label="mission"];
 	joy_control[label="~joy_control\nduckietown_msgs/WheelsCmdStamped.msg"];
 	intersection_control[label="~intersection_control\nduckietown_msgs/WheelsCmdStamped.msg"];
 	street_name_detection[label="~street_name_detection\nduckietown_msgs/StreetNameDetection.msg"];
@@ -118,11 +117,12 @@ digraph D {
 	image_compressed[label="~image/compressed\nsensor_msgs/CompressedImage.msg"];
 	intersection_go[label="~intersection_go\nstd_msgs/Bool.msg"];
 	intersection_done[label="~intersection_done\nstd_msgs/Bool.msg"];
-	at_stop_line[label="~at_stop_line\nstd_msgs/Bool.msg"];
-	in_lane[label="~in_lane\nstd_msgs/Bool.msg"];
+	//stop_line_dist[label="~stop_line_dist\nstd_msgs/Float32.msg"];
+	//at_stop_line[label="~at_stop_line\nstd_msgs/Bool.msg"];
+	stop_line_reading[label="~stop_line_reading\nduckietown_msgs/StopLineReading.msg"]
+	//in_lane[label="~in_lane\nstd_msgs/Bool.msg"];
 	beep[label="beeper_driver_node/beep"];
 	led_cmd[label="rgb_led_driver/led_cmd\nduckietown_msgs/LEDControl.msg"];
-	stop_line_dist[label="~stop_line_dist\nstd_msgs/Float32.msg"];
 	joy[label="joy\nsensor_msgs/Joy.msg"];
 
 	{rank=max; wheels_driver_node;beeper_driver_node;rgb_led_driver_node}
@@ -133,15 +133,15 @@ digraph D {
 	veh_coordinator_node->intersection_go;
 	intersection_go->fsm_node;
 	intersection_done->fsm_node;
-	at_stop_line->fsm_node;
-	in_lane->fsm_node;
+	stop_line_reading->fsm_node;
+	lane_pose->fsm_node;
 	open_loop_intersection_control_node->intersection_done;
-	lane_filter_node->in_lane;
-	stop_line_filter_node->at_stop_line;
+	//lane_filter_node->in_lane;
+	//stop_line_filter_node->at_stop_line;
 	fsm_node->mode;
 
 	led_cmd->rgb_led_driver_node;
-	stop_line_filter_node->stop_line_dist;
+	stop_line_filter_node->stop_line_reading;
 
 	camera_node->image_compressed;
 	intrinsic_calibration_file->cam_info_reader_node[style="dotted"];

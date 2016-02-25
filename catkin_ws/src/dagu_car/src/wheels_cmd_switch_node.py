@@ -8,23 +8,14 @@ class WheelsCmdSwitchNode(object):
         self.node_name = rospy.get_name()
         rospy.loginfo("[%s] Initializing " %(self.node_name))
         
-#        self.mode_msg = ControlMode()
         self.mode_msg = FSMState()
-        #self.mode_msg.header.stamp = rospy.Time.now()
-#        self.mode_msg.mode = ControlMode.LANE_FOLLOWING
         self.mode_msg.state = FSMState.LANE_FOLLOWING
         self.cmd_dict = {}
-#        self.cmd_dict[ControlMode.LANE_FOLLOWING] = None
-#        self.cmd_dict[ControlMode.INTERSECTION_CONTROL] = None
-#        self.cmd_dict[ControlMode.COORDINATION_CONTROL] = None
         self.cmd_dict[FSMState.LANE_FOLLOWING] = None
         self.cmd_dict[FSMState.INTERSECTION_CONTROL] = None
         self.cmd_dict[FSMState.COORDINATION] = None
 
         self.mode_name_dict = {}
-#        self.mode_name_dict[ControlMode.LANE_FOLLOWING] = "LANE_FOLLOWING"
- #       self.mode_name_dict[ControlMode.INTERSECTION_CONTROL] = "INTERSECTION_CONTROL"
-  #      self.mode_name_dict[ControlMode.COORDINATION_CONTROL] = "COORDINATION_CONTROL"
         self.mode_name_dict[FSMState.LANE_FOLLOWING] = "LANE_FOLLOWING"
         self.mode_name_dict[FSMState.INTERSECTION_CONTROL] = "INTERSECTION_CONTROL"
         self.mode_name_dict[FSMState.COORDINATION] = "COORDINATION_CONTROL"

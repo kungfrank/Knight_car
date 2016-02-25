@@ -26,7 +26,6 @@ class AverageImage(object):
         """ """ 
         
         # Load message
-        #cv_img = self.bridge.imgmsg_to_cv2( msg.data )
         np_arr = np.fromstring(msg.data, np.uint8)
         cv_img = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)   
         
@@ -35,17 +34,19 @@ class AverageImage(object):
         
         # Average
         if self.average_exist:
+            
+            # Sum then divide
             self.sum = self.sum + cv_img
-            print self.sum[0:3,0:3,0]
-            print cv_img[0:3,0:3,0]
             average  =  self.sum * 1./self.n 
             self.cv_img_average = np.around(average).astype(np.uint8)
-            print self.cv_img_average[0:3,0:3,0]
+            
+            # Direct update
+            """ Direct average update only works for the first 15 secs, then 1/n * img is too small and gets rounded to zero"""  
             #self.cv_img_average   = cv2.addWeighted( cv_img , 1./self.n , self.cv_img_average , ( 1. - 1./self.n ) , 0 )
-            print "Frame:", self.n
+
         else:
             # Init  
-            print "Oups"
+            print "Init"
             self.cv_img_average = cv_img.copy()
             self.sum            = cv_img.copy().astype(float )
             self.average_exist  = True

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from duckietown_msgs.msg import WheelsCmd
+from duckietown_msgs.msg import WheelsCmdStamped
 import numpy as np
 
 class WheelsTrimmerNode(object):
@@ -11,9 +11,9 @@ class WheelsTrimmerNode(object):
         self.trim = self.setupParam("~trim",0.0)
 
         # Setup publishers
-        self.pub_topic = rospy.Publisher("~trimmed_wheels_cmd", WheelsCmd, queue_size=1)
+        self.pub_topic = rospy.Publisher("~trimmed_wheels_cmd", WheelsCmdStamped, queue_size=1)
         # Setup subscribers
-        self.sub_topic = rospy.Subscriber("~wheels_cmd", WheelsCmd, self.cbWheelsCmd, queue_size=1)
+        self.sub_topic = rospy.Subscriber("~wheels_cmd", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1)
         # Setup timer for parameter update
         rospy.loginfo("[%s] Trim: %s" %(self.node_name, self.trim))
         self.timer_trim = rospy.Timer(rospy.Duration.from_sec(1.0),self.cbTrim)
@@ -31,9 +31,10 @@ class WheelsTrimmerNode(object):
             rospy.loginfo("[%s] Trim updated to: %s"%(self.node_name,self.trim))
 
     def cbWheelsCmd(self,msg):
-        trimmed_cmd = WheelsCmd()
+        trimmed_cmd = WheelsCmdStamped()
         trimmed_cmd.vel_left = np.clip(msg.vel_left*(1.0-self.trim),-1.0,1.0)
         trimmed_cmd.vel_right = np.clip(msg.vel_right*(1.0+self.trim),-1.0,1.0)
+        trimmed_cmd.header.stamp = msg.header.stamp
         self.pub_topic.publish(trimmed_cmd)
 
     def on_shutdown(self):

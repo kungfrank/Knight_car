@@ -16,4 +16,12 @@
 	        <rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
 	    </node>
 	</group>
+
+	<!-- Publication -->
+	<!-- ~wheels_control: duckietown_msgs/WheelsCmd. Wheels command for duckiebot. -->
+	
+	<!-- Subscription -->
+	<!-- ~lane_pose: duckietown_msgs/LanePose. LanePose from the lane filter -->
+
+
 </launch>

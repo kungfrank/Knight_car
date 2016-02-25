@@ -12,4 +12,6 @@
     <machine name="shamrock" address="shamrock.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
     <machine name="leon" address="leon.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
     <machine name="ada" address="ada.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+	<machine name="maserati" address="maserati.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+	<machine name="megaman" address="duckietop2.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 </launch>

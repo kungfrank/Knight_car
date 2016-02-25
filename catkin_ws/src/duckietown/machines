@@ -15,4 +15,5 @@
 	<machine name="magitek" address="magitek.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="ada" address="ada.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="thing" address="thing.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+	<machine name="bill" address="bill.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 </launch>

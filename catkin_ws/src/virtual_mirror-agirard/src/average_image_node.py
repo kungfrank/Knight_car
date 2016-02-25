@@ -31,14 +31,23 @@ class AverageImage(object):
         cv_img = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)   
         
         self.n = self.n + 1
-        print self.n
+        #print self.n
         
         # Average
         if self.average_exist:
-            self.cv_img_average   = cv2.addWeighted( cv_img , 1./self.n , self.cv_img_average , ( 1. - 1./self.n ) , 0 )
+            self.sum = self.sum + cv_img
+            print self.sum[0:3,0:3,0]
+            print cv_img[0:3,0:3,0]
+            average  =  self.sum * 1./self.n 
+            self.cv_img_average = np.around(average).astype(np.uint8)
+            print self.cv_img_average[0:3,0:3,0]
+            #self.cv_img_average   = cv2.addWeighted( cv_img , 1./self.n , self.cv_img_average , ( 1. - 1./self.n ) , 0 )
+            print "Frame:", self.n
         else:
             # Init  
+            print "Oups"
             self.cv_img_average = cv_img.copy()
+            self.sum            = cv_img.copy().astype(float )
             self.average_exist  = True
         
         

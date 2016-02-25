@@ -57,7 +57,7 @@ class DuckieBotVisualizer(object):
             marker.colors.append(color)
             marker.colors.append(color)
 
-        rospy.loginfo("[%s] Number of points %s" %(self.node_name,len(marker.points)))
+        # rospy.loginfo("[%s] Number of points %s" %(self.node_name,len(marker.points)))
         return marker
 
     def setupParameter(self,param_name,default_value):

@@ -26,9 +26,9 @@ def callback(ros_data):
     #decode the image into a raw cv2 image (numpy.ndarray)
     rgb_in = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
     #extract Height in pixels
-    H = np_arr[0]
+    #H = np_arr[0]
     #extract width in pixels
-    W = np_arr[1]
+    #W = np_arr[1]
     rgb_out = rgb_in[:, ::-1, :]
     #for u in range(0,H):
     #    for v in range(0,W):

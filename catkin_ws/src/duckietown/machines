@@ -13,7 +13,6 @@
 	<machine name="tesla" address="tesla.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="lambo" address="lambo.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="pontiac" address="pontiac.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-	<machine name="megaman" address="megaman.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="julie" address="julie.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="kitt" address="kitt.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="milo" address="milo.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
@@ -28,5 +27,6 @@
 	<machine name="starducks" address="starducks.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="pipquack" address="pipquack.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="maserati" address="maserati.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+	<machine name="duckietop2" address="duckietop2.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 </launch>
 

@@ -43,13 +43,13 @@ class VirtualMirror(object):
 
 if __name__ == '__main__':
     # Initialize the node with rospy
-    rospy.init_node('virtual_mirror', anonymous=False)
+    rospy.init_node('virtual_mirror_joewl', anonymous=False)
 
     # Create the NodeName object
-    virtual_mirror_node = VirtualMirror()
+    virtual_mirror_joewl_node = VirtualMirror()
 
     # Setup proper shutdown behavior 
-    rospy.on_shutdown(virtual_mirror_node.on_shutdown)
+    rospy.on_shutdown(virtual_mirror_joewl_node.on_shutdown)
     
     # Keep it spinning to keep the node alive
     rospy.spin()

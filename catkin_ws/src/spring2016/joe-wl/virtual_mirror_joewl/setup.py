@@ -5,7 +5,7 @@ from catkin_pkg.python_setup import generate_distutils_setup
 
 # fetch values from package.xml
 setup_args = generate_distutils_setup(
-    packages=['virtual_mirror-joe-wl'],
+    packages=['virtual_mirror_joewl'],
     package_dir={'': 'include'},
 )
 

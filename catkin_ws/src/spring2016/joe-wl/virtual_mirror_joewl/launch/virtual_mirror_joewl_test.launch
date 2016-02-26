@@ -3,7 +3,7 @@
 	<arg name="log_in"/>
 	<arg name="log_out"/>
 	
-	<include file="$(find virtual_mirror-joe-wl)/launch/virtual_mirror_node.launch">
+	<include file="$(find virtual_mirror_joewl)/launch/virtual_mirror_joewl_node.launch">
 		<arg name="veh" value="$(arg veh)"/>
 	</include>
 

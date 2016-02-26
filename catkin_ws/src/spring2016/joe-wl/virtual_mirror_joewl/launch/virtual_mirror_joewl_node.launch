@@ -3,7 +3,7 @@
 	<include file="$(find duckietown)/machines"/>
 	
 	<group ns="$(arg veh)">
-		<node machine="$(arg veh)" name="virtual_mirror_node" pkg="virtual_mirror-joe-wl" type="virtual_mirror_node.py" output="screen">
+		<node machine="$(arg veh)" name="virtual_mirror_joewl_node" pkg="virtual_mirror_joewl" type="virtual_mirror_joewl_node.py" output="screen">
 
 			<!-- Remapping topics -->
 			<remap from="~image_in" to="camera_node/image/compressed"/>

@@ -3,7 +3,7 @@
 	<arg name="log_in"/>
 	<arg name="log_out"/>
 	
-	<include file="$(find image_average-joe-wl)/launch/image_average_joewl_node.launch">
+	<include file="$(find image_average_joewl)/launch/image_average_joewl_node.launch">
 		<arg name="veh" value="$(arg veh)"/>
 	</include>
 

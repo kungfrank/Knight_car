@@ -1,0 +1,5 @@
+<launch>
+    <arg name="veh"/>
+    <node ns="$(arg veh)" pkg="virtual_mirror-agirard" type="average_image_node.py" name="average_image" output="screen">
+    </node>
+</launch>

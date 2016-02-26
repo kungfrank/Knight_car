@@ -1,0 +1,7 @@
+<launch>
+    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
+    <node pkg="virtual_mirror_mrinal" name="virtual_mirror_node" type="virtual_mirror_node.py">
+        <remap from="image_sub" to="$(arg veh)/camera_node/image/compressed"/>
+    </node>
+
+</launch>

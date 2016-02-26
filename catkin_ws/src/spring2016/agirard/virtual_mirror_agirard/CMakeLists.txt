@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(virtual_mirror-agirard
+project(virtual_mirror_agirard
 )
 
 ## Find catkin macros and libraries

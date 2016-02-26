@@ -8,7 +8,7 @@ publisher = rospy.Publisher("~topic",String,queue_size=1)
 # Define Timer callback
 def callback(event):
     msg = String()
-    msg.data = "Hello Duckietown!"
+    msg.data = "Hello your_name!"
     publisher.publish(msg)
 # Create timer 
 rospy.Timer(rospy.Duration.from_sec(1.0),callback)

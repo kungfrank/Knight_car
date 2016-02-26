@@ -8,35 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   duckietown_msgs
   roscpp
   rospy
-  std_msgs
-  message_generation
-  image_transport
-#  opencv2
-#  cv_bridge
 )
-find_package( OpenCV REQUIRED )
-
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-  ${OpenCV_INCLUDE_DIRS}
-)
-
-catkin_package(
-#  INCLUDE_DIRS include
-  LIBRARIES virtual_mirror_node
-  CATKIN_DEPENDS message_runtime
-#  DEPENDS system_lib
-)
-
-target_link_libraries(
-  virtual_mirror_node
-  ${OpenCV_LIBRARIES}
-  ${catkin_LIBRARIES}
-)
- 
-add_executable(virtual_mirror_node src/virtual_mirror_node.cpp)
-
-catkin_python_setup()
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -45,6 +17,7 @@ catkin_python_setup()
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
+catkin_python_setup()
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -94,7 +67,7 @@ catkin_python_setup()
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
+#   duckietown_msgs
 # )
 
 ################################################
@@ -126,7 +99,12 @@ catkin_python_setup()
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-
+catkin_package(
+#  INCLUDE_DIRS include
+#  LIBRARIES virtual_mirror_amadoa
+#  CATKIN_DEPENDS duckietown_msgs roscpp rospy
+#  DEPENDS system_lib
+)
 
 ###########
 ## Build ##
@@ -135,6 +113,9 @@ catkin_python_setup()
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+)
 
 ## Declare a C++ library
 # add_library(virtual_mirror_amadoa
@@ -147,13 +128,16 @@ catkin_python_setup()
 # add_dependencies(virtual_mirror_amadoa ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
+# add_executable(virtual_mirror_amadoa_node src/virtual_mirror_amadoa_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(virtual_mirror_amadoa_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-
+# target_link_libraries(virtual_mirror_amadoa_node
+#   ${catkin_LIBRARIES}
+# )
 
 #############
 ## Install ##

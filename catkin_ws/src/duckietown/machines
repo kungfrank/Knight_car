@@ -27,6 +27,7 @@
 	<machine name="charles" address="charles.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="starducks" address="starducks.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="pipquack" address="pipquack.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+	<machine name="nikola" address="nikola.local" user="ubuntu" env-loader="$(arg env_script_path)"/
 	<machine name="quackmobile" address="quackmobile.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="ernie" address="ernie.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="lebeast" address="lebeast.local" user="ubuntu" env-loader="$(arg env_script_path)"/>

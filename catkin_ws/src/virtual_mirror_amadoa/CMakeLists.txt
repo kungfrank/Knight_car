@@ -1,10 +1,39 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(virtual_mirror-amadoa)
+project(virtual_mirror_amadoa)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  rospy
+  std_msgs
+  message_generation
+  image_transport
+#  opencv2
+#  cv_bridge
+)
+find_package( OpenCV REQUIRED )
+
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
+)
+
+catkin_package(
+#  INCLUDE_DIRS include
+  LIBRARIES virtual_mirror_node
+  CATKIN_DEPENDS message_runtime
+#  DEPENDS system_lib
+)
+
+target_link_libraries(
+  virtual_mirror_node
+  ${OpenCV_LIBRARIES}
+  ${catkin_LIBRARIES}
+)
+ 
+add_executable(virtual_mirror_node src/virtual_mirror_node.cpp)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -95,12 +124,7 @@ find_package(catkin REQUIRED)
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES virtual_mirror-amadoa
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
-)
+
 
 ###########
 ## Build ##
@@ -111,26 +135,23 @@ catkin_package(
 # include_directories(include)
 
 ## Declare a C++ library
-# add_library(virtual_mirror-amadoa
-#   src/${PROJECT_NAME}/virtual_mirror-amadoa.cpp
+# add_library(virtual_mirror_amadoa
+#   src/${PROJECT_NAME}/virtual_mirror_amadoa.cpp
 # )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(virtual_mirror-amadoa ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(virtual_mirror_amadoa ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(virtual_mirror-amadoa_node src/virtual_mirror-amadoa_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(virtual_mirror-amadoa_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(virtual_mirror_amadoa_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(virtual_mirror-amadoa_node
-#   ${catkin_LIBRARIES}
-# )
+
 
 #############
 ## Install ##
@@ -147,7 +168,7 @@ catkin_package(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS virtual_mirror-amadoa virtual_mirror-amadoa_node
+# install(TARGETS virtual_mirror_amadoa virtual_mirror_amadoa_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -172,7 +193,7 @@ catkin_package(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_virtual_mirror-amadoa.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_virtual_mirror_amadoa.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

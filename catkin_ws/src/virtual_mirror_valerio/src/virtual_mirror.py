@@ -10,6 +10,7 @@ import cv2
 # Define callback function
 def cam_callback(msg):
 	np_arr = np.fromstring(msg.data, np.uint8)
+	
 	# Decode 
 	image_rgb = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
 

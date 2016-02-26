@@ -30,8 +30,8 @@ class VirtualMirrorNpd22(object):
         self.pub_image.publish(image_mirrored)
 
 # Read parameter
-pub_period = rospy.get_param("~pub_period",1.0)
+#pub_period = rospy.get_param("~pub_period",1.0)
 # Create timer
-rospy.Timer(rospy.Duration.from_sec(pub_period),callback)
+#rospy.Timer(rospy.Duration.from_sec(pub_period),callback)
 # spin to keep the script for exiting
 rospy.spin()

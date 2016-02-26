@@ -41,7 +41,7 @@ class AverageImage(object):
             self.cv_img_average = np.around(average).astype(np.uint8)
             
             # Direct update
-            """ Direct average update only works for the first 15 secs, then 1/n * img is too small and gets rounded to zero"""  
+            """ Direct average update only works for the first 15 secs, then 1/n * img is too small and gets rounded to zero?"""  
             #self.cv_img_average   = cv2.addWeighted( cv_img , 1./self.n , self.cv_img_average , ( 1. - 1./self.n ) , 0 )
 
         else:

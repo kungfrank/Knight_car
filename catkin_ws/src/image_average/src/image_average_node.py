@@ -14,12 +14,13 @@ class ImageAverageNode(object):
 		self.node_name = "Image Average"
 		self.bridge = CvBridge()
 		self.pub_image = rospy.Publisher("~average_image", Image, queue_size=1)
-		self.sub_image = rospy.Subscriber("/ayrton/camera_node/image/compressed", CompressedImage, 
+		self.sub_image = rospy.Subscriber("/ferrari/camera_node/image/compressed", CompressedImage, 
 				self.cbImage, queue_size=1)
 		rospy.loginfo("Initialization of [%s] completed" % (self.node_name))
 		self.lock = mutex()
 		self.lock.unlock()
-		self.old_img = None
+		self.avg_img = None
+		self.count_images = 0
 
 	def cbImage(self,image_msg):
 		# Start a daemon thread to process the image
@@ -30,15 +31,20 @@ class ImageAverageNode(object):
 	def processImage(self, image_msg):
 		if self.lock.testandset():
 			image_cv = cv2.imdecode(np.fromstring(image_msg.data, np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
-			if self.old_img is not None:
-				avg_img = cv2.addWeighted(image_cv, 0.5, self.old_img, 0.5, 0.0)
-				self.old_img = deepcopy(image_cv)
-				rospy.loginfo("Image Shape: [%d x %d]." % (image_cv.shape[0], image_cv.shape[1]))
-				image_msg_out = self.bridge.cv2_to_imgmsg(avg_img, "bgr8")
+			if self.avg_img is not None:
+				img_float = cv2.normalize(image_cv.astype('float'), None, 0.0, 255.0, cv2.NORM_MINMAX)
+				alpha = 1 / float(self.count_images + 1)
+				beta  = float(self.count_images) / float(self.count_images + 1)
+				self.avg_img = cv2.addWeighted(img_float, alpha, self.avg_img, beta, 0.0)
+				img_out = np.uint8(deepcopy(self.avg_img))
+				rospy.loginfo("Image Shape: [%d x %d]. 1 / (n + 1) = %1.4f" % (img_out.shape[0], img_out.shape[1], alpha))
+				image_msg_out = self.bridge.cv2_to_imgmsg(img_out, "bgr8")
 				image_msg_out.header.stamp = image_msg.header.stamp
 				self.pub_image.publish(image_msg_out)
+				self.count_images += 1
 			else:
-				self.old_img = deepcopy(image_cv)
+				self.avg_img = cv2.normalize(image_cv.astype('float'), None, 0.0, 1.0, cv2.NORM_MINMAX)
+				self.count_images += 1
 			self.lock.unlock()
 
 if __name__ == '__main__': 

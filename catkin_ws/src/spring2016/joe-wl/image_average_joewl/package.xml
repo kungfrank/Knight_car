@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>image_average-joe-wl</name>
+  <name>image_average_joewl</name>
   <version>0.0.0</version>
-  <description>The pkg_name package</description>
+  <description>The image_average_joewl produces time average image of all incoming images.</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->

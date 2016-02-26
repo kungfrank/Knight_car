@@ -52,13 +52,13 @@ class ImageAverage(object):
 
 if __name__ == '__main__':
     # Initialize the node with rospy
-    rospy.init_node('image_average', anonymous=False)
+    rospy.init_node('image_average_joewl', anonymous=False)
 
     # Create the NodeName object
-    image_average_node = ImageAverage()
+    image_average_joewl_node = ImageAverage()
 
     # Setup proper shutdown behavior 
-    rospy.on_shutdown(image_average_node.on_shutdown)
+    rospy.on_shutdown(image_average_joewl_node.on_shutdown)
     
     # Keep it spinning to keep the node alive
     rospy.spin()

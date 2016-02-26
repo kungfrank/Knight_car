@@ -1,0 +1,7 @@
+<launch>
+    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
+    <node pkg="image_average_mrinal" name="image_average_node" type="image_average_node.py">
+        <remap from="rgb_in" to="$(arg veh)/camera_node/image/compressed"/>
+    </node>
+
+</launch>

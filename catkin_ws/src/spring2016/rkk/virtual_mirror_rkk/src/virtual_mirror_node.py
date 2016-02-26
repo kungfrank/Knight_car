@@ -29,7 +29,9 @@ def callback(ros_data):
     #H = np_arr[0]
     #extract width in pixels
     #W = np_arr[1]
-    rgb_out = rgb_in[:, ::-1, :]
+    param = 1
+    rgb_out = cv2.flip(rgb_in,param)
+    #rgb_out = rgb_in[:, ::-1, :]
     #for u in range(0,H):
     #    for v in range(0,W):
     #        for w in range(0,3):

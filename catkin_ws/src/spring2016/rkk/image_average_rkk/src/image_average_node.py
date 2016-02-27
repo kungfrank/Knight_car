@@ -38,40 +38,35 @@ class image_averager:
             np_arr = np.fromstring(ros_data.data, np.uint8)
             #decode the image into a raw cv2 image (numpy.ndarray)
             rgb_in_u8 = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
-            rgb_in = rgb_in_u8.astype('float32')
         except CvBridgeError as e:
             print(e)
 
-        ##rgb_in = cv2.convertTo(rgb_in_u8,cv2.CV_32FC3)
-        #extract Height in pixels
-        #H = np_arr[0]
-        #extract width in pixels
-        #W = np_arr[1]
-        alpha = (self.numImg/(self.numImg+1.))
-        beta = (1./(self.numImg+1.))
-        cv2.addWeighted(self.avgImg,alpha,rgb_in,beta,0,rgb_out_f32)
+        rgb_in = rgb_in_u8.astype('float')
+        
+        if self.avgImg is not None:
+            rgb_in_f = cv2.normalize(rgb_in, None, 0.0,255.0, cv2.NORM_MINMAX)
+            alpha = float(self.numImg)/float(self.numImg + 1)
+            beta = (1.0 / float(self.numImg + 1))
+            rgb_out_f32 = cv2.addWeighted(self.avgImg,alpha,rgb_in_f,beta,0.0)
+            rgb_out = rgb_out_f32.astype('uint8')
+            self.avgImg = rgb_out_f32
+            msg = self.bridge.cv2_to_imgmsg(rgb_out,"bgr8")
+            try:
+                self.publisher.publish(msg)
+            except CvBridgeError as e:
+                print(e)
+            ##### Create CompressedImage ####
+            #msg = CompressedImage()
+            #msg.header.stamp = rospy.Time.now()
+            #msg.format = "jpeg"
+            #msg.data = np.array(cv2.imencode('.jpg', rgb_out)[1]).tostring()
+            ## Publish new image
+            #publisher.publish(msg)	
+            #print 'send image of type: "%s"' % msg.format
+        else:
+            self.avgImg = cv2.normalize(rgb_in, None, 0.0,255.0, cv2.NORM_MINMAX)
+        
         self.numImg += 1
-        rgb_out = rgb_out_f32.astype('uint8')
-        self.avgImg = rgb_out
-        #rgb_out = cv2.flip(rgb_in,param)
-        #rgb_out = rgb_in[:, ::-1, :]
-        #for u in range(0,H):
-        #    for v in range(0,W):
-        #        for w in range(0,3):
-        #            rgb_out[u, v, w] = rgb_in[u, W - v, w]
-        msg = bridge.cv2_to_imgmsg(rgb_out,"bgr8")
-        try:
-            self.publisher.publish(msg)
-        except CvBridgeError as e:
-            print(e)
-        ##### Create CompressedImage ####
-        #msg = CompressedImage()
-        #msg.header.stamp = rospy.Time.now()
-        #msg.format = "jpeg"
-        #msg.data = np.array(cv2.imencode('.jpg', rgb_out)[1]).tostring()
-        ## Publish new image
-        #publisher.publish(msg)	
-        #print 'send image of type: "%s"' % msg.format
 
 def main(args):
     

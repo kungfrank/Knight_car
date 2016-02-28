@@ -7,7 +7,7 @@ from sensor_msgs.msg import CompressedImage, Image
 import numpy as np
 import threading
 
-class VirtualMirrorNode(object):
+class ImageAverageNode(object):
     def __init__(self):
         self.node_name = "Image Average"
 
@@ -84,6 +84,6 @@ class VirtualMirrorNode(object):
 
 if __name__ == '__main__': 
     rospy.init_node('image_average_tristan_node',anonymous=False)
-    virtual_mirror_node = VirtualMirrorNode()
+    virtual_mirror_node = ImageAverageNode()
     rospy.on_shutdown(virtual_mirror_node.onShutdown)
     rospy.spin()

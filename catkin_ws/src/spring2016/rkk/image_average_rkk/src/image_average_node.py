@@ -41,15 +41,15 @@ class image_averager:
         except CvBridgeError as e:
             print(e)
 
-        rgb_in = rgb_in_u8.astype('float')
+        rgb_in_f = rgb_in_u8.astype('float')
+        rgb_in_fn = cv2.normalize(rgb_in_f, None, 0.0,255.0, cv2.NORM_MINMAX)
         
         if self.avgImg is not None:
-            rgb_in_f = cv2.normalize(rgb_in, None, 0.0,255.0, cv2.NORM_MINMAX)
             alpha = float(self.numImg)/float(self.numImg + 1)
             beta = (1.0 / float(self.numImg + 1))
-            rgb_out_f32 = cv2.addWeighted(self.avgImg,alpha,rgb_in_f,beta,0.0)
-            rgb_out = rgb_out_f32.astype('uint8')
-            self.avgImg = rgb_out_f32
+            rgb_out_f = cv2.addWeighted(self.avgImg,alpha,rgb_in_fn,beta,0.0)
+            rgb_out = rgb_out_f.astype('uint8')
+            self.avgImg = rgb_out_f
             msg = self.bridge.cv2_to_imgmsg(rgb_out,"bgr8")
             try:
                 self.publisher.publish(msg)
@@ -64,7 +64,7 @@ class image_averager:
             #publisher.publish(msg)	
             #print 'send image of type: "%s"' % msg.format
         else:
-            self.avgImg = cv2.normalize(rgb_in, None, 0.0,255.0, cv2.NORM_MINMAX)
+            self.avgImg = rgb_in_fn
         
         self.numImg += 1
 

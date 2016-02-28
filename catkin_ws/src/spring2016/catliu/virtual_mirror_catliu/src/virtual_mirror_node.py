@@ -20,9 +20,7 @@ def callback(msg):
     img_msg = bridge.cv2_to_imgmsg(flipped, "bgr8")
     img_msg.header.stamp = msg.header.stamp
     img_msg.header.frame_id = msg.header.frame_id
-    # msg.data = np.array(cv2.imencode(flipped)[1]).tostring()
 
-    #TODO: convert back to compressed image
     publisher.publish(img_msg)
 
 # Create publisher

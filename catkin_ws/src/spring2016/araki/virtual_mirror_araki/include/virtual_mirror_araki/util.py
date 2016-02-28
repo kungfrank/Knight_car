@@ -1,5 +1,5 @@
 import random
 def getName():
-return "your_name"
+	return "duckling"
 def getStatus():
-return random.choice(["happy","awesome"])
+	return random.choice(["happy","awesome","ugly"])

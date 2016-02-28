@@ -84,6 +84,6 @@ class ImageAverageNode(object):
 
 if __name__ == '__main__': 
     rospy.init_node('image_average_tristan_node',anonymous=False)
-    virtual_mirror_node = ImageAverageNode()
-    rospy.on_shutdown(virtual_mirror_node.onShutdown)
+    image_average_node = ImageAverageNode()
+    rospy.on_shutdown(image_average_node.onShutdown)
     rospy.spin()

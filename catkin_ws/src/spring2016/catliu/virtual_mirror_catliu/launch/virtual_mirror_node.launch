@@ -10,19 +10,15 @@
     <group ns="$(arg veh)">        
         <!-- run local -->
         <node if="$(arg local)" name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
-	        <remap from="virtual_mirror_node/topic_in" to="camera_node/image/compressed"/>
-	        <remap from="virtual_mirror_node/topic_out" to="virtual_mirror_node/image/mirror"/>
         </node>
 
         <!-- run remote -->
         <node unless="$(arg local)" machine="$(arg veh)" name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
-			<remap from="virtual_mirror_node/topic_in" to="camera_node/image/compressed"/>
-	        <remap from="virtual_mirror_node/topic_out" to="virtual_mirror_node/image/mirror"/>
         </node>
     </group>
 
     <!-- Publications -->
-    <!-- virtual_mirror_node/image/mirror -->
+    <!-- virtual_mirror_node/topic_out -->
     <!-- Subscriptions -->
     <!-- camera_node/image/compressed-->
     

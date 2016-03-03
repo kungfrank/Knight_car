@@ -11,7 +11,7 @@
 		<arg name="local" value="$(arg local)"/>
 	</include>
 
-	<remap unless="$(arg local)" from="virtual_mirror_node/incoming_image" to="camera_node/compressed_image/image" />
+	<remap unless="$(arg local)" from="virtual_mirror_node/incoming_image" to="camera_node/image/compressed" />
     <group ns="$(arg veh)">        
         <node if="$(arg local)" name="virtual_mirror_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen" />
         <include unless="$(arg local)" file="$(find duckietown)/machines"/>

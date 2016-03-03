@@ -1,14 +1,16 @@
 <launch>
 	<arg name="veh" doc="Name of vehicle" />
 	<arg name="original_image_file" doc="full path to original image" />
-	
+	<remap from="virtual_mirror_node/incoming_image" to="virtual_mirror_test_node/original_image" />
+	<include file="$(find virtual_mirror_atacchet)/launch/virtual_mirror_atacchet.launch">
+		<arg name="veh" value="$(arg veh)"/>
+		<arg name="local" value="true" />
+		<arg name="camera" value="false" />
+	</include>
+
+	<remap from="virtual_mirror_test_node/processed_image" to="virtual_mirror_node/mirror_image" />
 	<group ns="$(arg veh)">
-		<remap from="virtual_mirror_test_node/processed_image" to="virtual_mirror_node/mirror_image" />
-		<remap from="virtual_mirror_test_node/processed_image" to="virtual_mirror_node/mirror_image" />
-		<include file="$(find virtual_mirror_atacchet)/launch/virtual_mirror_atacchet.launch">
-	    	<arg name="veh" value="$(arg veh)"/>
-			<arg name="local" value="true" />
-		</include>
-        <node  name="virtual_mirror_test_node" pkg="virtual_mirror_atacchet" type="virtual_mirror_node_test.py" output="screen" />
+		<param name="virtual_mirror_test_node/original_image_file" type="str" value="$(arg original_image_file)" />
+        <node name="virtual_mirror_test_node" pkg="virtual_mirror_atacchet" type="virtual_mirror_node_test.py" output="screen" />
 	</group>
 </launch>

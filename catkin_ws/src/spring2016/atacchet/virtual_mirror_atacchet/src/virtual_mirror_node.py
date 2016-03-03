@@ -12,7 +12,7 @@ class VirtualMirrorNode(object):
 		self.node_name = "Virtual Mirror"
 		self.bridge = CvBridge()
 		self.pub_image = rospy.Publisher("~mirror_image", Image, queue_size=1)
-		self.sub_image = rospy.Subscriber("/ayrton/camera_node/image/compressed", CompressedImage, 
+		self.sub_image = rospy.Subscriber("~incoming_image", CompressedImage, 
 				self.cbImage, queue_size=1)
 		rospy.loginfo("Initialization of [%s] completed" % (self.node_name))
 

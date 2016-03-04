@@ -1,0 +1,23 @@
+camera_matrix:
+  cols: 3
+  data: [319.0933435682072, 0.0, 312.20991535837317, 0.0, 323.3912776461959, 223.91073180445892,
+    0.0, 0.0, 1.0]
+  rows: 3
+camera_name: ayrton/camera_node
+distortion_coefficients:
+  cols: 5
+  data: [-0.2621713353561412, 0.04547028500823604, 0.0006076159792196159, -0.000335979082074155,
+    0.0]
+  rows: 1
+distortion_model: plumb_bob
+image_height: 480
+image_width: 640
+projection_matrix:
+  cols: 4
+  data: [216.01678466796875, 0.0, 314.62814939094824, 0.0, 0.0, 261.0675048828125,
+    214.6346863827057, 0.0, 0.0, 0.0, 1.0, 0.0]
+  rows: 3
+rectification_matrix:
+  cols: 3
+  data: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+  rows: 3

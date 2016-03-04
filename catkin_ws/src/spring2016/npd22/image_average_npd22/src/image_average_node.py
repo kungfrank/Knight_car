@@ -4,38 +4,48 @@ import cv2
 import sys
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import CompressedImage, Image
-#from virtual_mirror_npd22 import util
 import numpy as np
 import threading
-#from std_msgs.msg import String
 
-VERBOSE=False
 
-class mirror:
+class averaged_image:
 
 	def __init__(self):
-		self.node_name = "virtual_mirror_npd22"
+		self.node_name = "image_average_npd22"
 
 		#initialize bridge
 		self.bridge = CvBridge()
 
 		#'''Initialize ros publisher, ros subscriber'''
 	       	# topic where we publish
-	    	self.image_pub = rospy.Publisher("~image_mirrored", Image, queue_size=1)
+	    	self.image_pub = rospy.Publisher("~image_averaged", Image, queue_size=1)
 
 	      	# subscribed Topic
-	      	self.subscriber = rospy.Subscriber("/nikola/camera_node/image/compressed", CompressedImage, self.flip,  queue_size = 1)
+	      	self.subscriber = rospy.Subscriber("/ferrari/camera_node/image/compressed", CompressedImage, self.average,  queue_size = 1)
 		rospy.loginfo("[%s] Initialized." %(self.node_name))
 
-	def flip(self, image_msg):
+		#initialize image variable and 
+		self.image_out = np.zeros((640,480,3), np.float32)
+		self.image_count = 0
+
+	def average(self, image_msg):
 
 		#### direct conversion to CV2 ####
 	       	image_cv = cv2.imdecode(np.fromstring(image_msg.data, np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
 
-		mirroredImage = cv2.flip(image_cv, 1)
+
+		
+		self.image_count = self.image_count + 1
+		if self.image_count > 1:
+			self.image_out = cv2.addWeighted(self.image_out,((float(self.image_count)-1.0)/float(self.image_count)),image_cv.astype('float32'),(1.0/float(self.image_count)),0)
+
+		else:
+			self.image_out = image_cv.astype('float32')
+
+		image_uint8 = self.image_out.astype('uint8')
 
 		# Publish the image message
-        	image_msg_out = self.bridge.cv2_to_imgmsg(mirroredImage, "bgr8")
+        	image_msg_out = self.bridge.cv2_to_imgmsg(image_uint8, "bgr8")
         	image_msg_out.header.stamp = image_msg.header.stamp	
 
 		self.image_pub.publish(image_msg_out)
@@ -62,9 +72,9 @@ class mirror:
 
 
 if __name__ == '__main__':
-    rospy.init_node('virtual_mirror_npd22',anonymous=False)
-    virtual_mirror_node = mirror()
-    rospy.on_shutdown(mirror.onShutdown)
+    rospy.init_node('image_average_npd22',anonymous=False)
+    image_average_node = averaged_image()
+    rospy.on_shutdown(averaged_image.onShutdown)
     rospy.spin()
 
 #class VirtualMirrorNpd22(object):

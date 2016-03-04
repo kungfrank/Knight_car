@@ -1,0 +1,5 @@
+<launch>
+	<arg name="veh"/>
+	<node ns="$(arg veh)" pkg="virtual_mirror_npd22" type="publisher_node.py" name="virtual_mirror_npd22" output="screen">
+	</node>
+</launch>

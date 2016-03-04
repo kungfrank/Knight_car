@@ -1,0 +1,23 @@
+camera_matrix:
+  cols: 3
+  data: [320.78793652935246, 0.0, 334.49230907549565, 0.0, 324.6354601295788, 232.26818220392536,
+    0.0, 0.0, 1.0]
+  rows: 3
+camera_name: nikola/camera_node
+distortion_coefficients:
+  cols: 5
+  data: [-0.26528921433774827, 0.048820236786828806, 0.0008715005124332555, 0.0010974979946762233,
+    0.0]
+  rows: 1
+distortion_model: plumb_bob
+image_height: 480
+image_width: 640
+projection_matrix:
+  cols: 4
+  data: [217.83973693847656, 0.0, 330.63171952908306, 0.0, 0.0, 263.6231689453125,
+    228.3822631088915, 0.0, 0.0, 0.0, 1.0, 0.0]
+  rows: 3
+rectification_matrix:
+  cols: 3
+  data: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+  rows: 3

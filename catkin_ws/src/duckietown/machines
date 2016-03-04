@@ -14,9 +14,7 @@
 	<machine name="pontiac" address="pontiac.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="julie" address="julie.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="kitt" address="kitt.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-<<<<<<< HEAD
 	<machine name="nikola" address="nikola.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-=======
 	<machine name="milo" address="milo.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="cookie" address="cookie.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="magitek" address="magitek.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
@@ -34,6 +32,5 @@
 	<machine name="forrest" address="forrest.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="ducksolo" address="ducksolo.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="miata" address="miata.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
->>>>>>> fec241ebfcb9f1b3e2b833ac1b72f4c7819b0d14
 </launch>
 

@@ -35,7 +35,7 @@ class FakeDuckiebot:
         self.clearance_to_go_sub = rospy.Subscriber('clearance_to_go', CoordinationClearance,
                                                     self.clearance_to_go_callback)
 
-        self.roof_light =  RoofLight.NA
+        self.roof_light = RoofLight.NA
         self.clearance_to_go_sub = rospy.Subscriber('roof_light',
                                                     RoofLight, self.roof_light_callback)
 
@@ -45,9 +45,13 @@ class FakeDuckiebot:
 
     def clearance_to_go_callback(self, msg):
         self.clearance_to_go = msg.status
+        if self.gui:
+            self.update_gui(self.gui)
 
     def roof_light_callback(self, msg):
         self.roof_light = msg.color
+        if self.gui:
+            self.update_gui(self.gui)
 
     def set_gui(self, gui):
         self.gui = gui
@@ -107,7 +111,6 @@ class FakeDuckiebot:
         self.publish()
 
     def update_gui(self, gui):
-        print("updating gui")
         if self.mode == ControlMode.LANE_FOLLOWING:
             gui.mode_var.set('Mode: LANE_FOLLOWING')
         if self.mode == ControlMode.COORDINATION_CONTROL:
@@ -134,21 +137,11 @@ class FakeDuckiebot:
         values = ['IV: NA', 'IV: OFF', 'IV: GREEN', 'IV: YELLOW', 'IV: RED']
         gui.intersection_veh_var.set(values[self.intersection_veh+1])
 
-        if self.clearance_to_go == CoordinationClearance.NA:
-            gui.clearance_to_go_var.set('Clearance: NA')
-        if self.clearance_to_go == CoordinationClearance.GO:
-            gui.clearance_to_go_var.set('Clearance: GO')
-        if self.clearance_to_go == CoordinationClearance.WAIT:
-            gui.clearance_to_go_var.set('Clearance: WAIT')
+        values = ['Clearance: NA', 'Clearance: WAIT', 'Clearance: GO']
+        gui.clearance_to_go_var.set(values[self.clearance_to_go+1])
 
-        if self.roof_light == RoofLight.NA:
-            gui.roof_light_var.set('Roof: NA')
-        if self.roof_light == RoofLight.GREEN:
-            gui.roof_light_var.set('Roof: GREEN')
-        if self.roof_light == RoofLight.RED:
-            gui.roof_light_var.set('Roof: RED')
-        if self.roof_light == RoofLight.YELLOW:
-            gui.roof_light_var.set('Roof: YELLOW')
+        values = ['Roof: NA', 'Roof: OFF', 'Roof: GREEN', 'Roof: YELLOW', 'Roof: RED']
+        gui.roof_light_var.set(values[self.roof_light+1])
 
 class GUI:
     def __init__(self, duckiebot):
@@ -166,7 +159,7 @@ class GUI:
         tk.Button(self.root, text='Coordination',
                   command=lambda: self.duckiebot.set_mode(ControlMode.COORDINATION_CONTROL)).pack(side=tk.TOP)
 
-        tk.Button(self.root, text='Intersection',
+        tk.Button(self.root, text='Intersection Nav.',
                   command=lambda: self.duckiebot.set_mode(ControlMode.INTERSECTION_CONTROL)).pack(side=tk.TOP)
 
         self.intersection_var = tk.StringVar()

@@ -11,14 +11,14 @@ class LineDetector(object):
         self.edges = np.empty(0)
 
         # Color value range in HSV space: default
-        self.hsv_white1 = np.array([0, 0, 200])
-        self.hsv_white2 = np.array([255, 100, 255]) 
-        self.hsv_yellow1 = np.array([25, 150, 150])
+        self.hsv_white1 = np.array([0, 0, 150])
+        self.hsv_white2 = np.array([180, 60, 255]) 
+        self.hsv_yellow1 = np.array([25, 140, 100])
         self.hsv_yellow2 = np.array([45, 255, 255]) 
-        self.hsv_red1 = np.array([0, 100, 120])
-        self.hsv_red2 = np.array([10, 255, 255]) 
-        self.hsv_red3 = np.array([245, 100, 120])
-        self.hsv_red4 = np.array([255, 255, 255]) 
+        self.hsv_red1 = np.array([0, 140, 100])
+        self.hsv_red2 = np.array([15, 255, 255]) 
+        self.hsv_red3 = np.array([165, 140, 100])
+        self.hsv_red4 = np.array([180, 255, 255]) 
 
         # Parameters for dilation, Canny, and Hough transform: default
         self.dilation_kernel_size = 3

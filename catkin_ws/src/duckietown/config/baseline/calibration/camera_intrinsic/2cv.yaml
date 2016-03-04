@@ -1,0 +1,20 @@
+image_width: 640
+image_height: 480
+camera_name: /2cv/rosberrypi_cam
+camera_matrix:
+  rows: 3
+  cols: 3
+  data: [322.6496639413031, 0, 325.0101586448544, 0, 326.2864399392353, 216.3020404148921, 0, 0, 1]
+distortion_model: plumb_bob
+distortion_coefficients:
+  rows: 1
+  cols: 5
+  data: [-0.2803429521993022, 0.05548006783272285, -0.0003657000192623774, -0.001037682616914076, 0]
+rectification_matrix:
+  rows: 3
+  cols: 3
+  data: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+projection_matrix:
+  rows: 3
+  cols: 4
+  data: [221.9539642333984, 0, 324.4815110096624, 0, 0, 258.1536865234375, 200.9855293035798, 0, 0, 0, 1, 0]

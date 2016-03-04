@@ -1,65 +1,67 @@
 digraph D {
 	fontname="sans";
+	//rankdir=LR;
+	edge [penwidth=1.5]
+	node [penwidth=1.5]
 
 	subgraph cluster_legend{
 		label="legend"
 		// ROS Topics
 		//topic_name;
 		// ROS Nodes
-		node [shape=box,fillcolor=white,style=filled];
+		node [shape=ellipse,fillcolor=white,style=filled];
 		missing [label="missing", fillcolor=red];
 		designed [label="designed", fillcolor=pink];
 		development [label="development", fillcolor=orange];
 		compiled [label="compiled", fillcolor=yellow];
 		documented [label="documented", fillcolor=green];
 		tested [label="tested", fillcolor=white];
-		// Connection
 		missing->designed->development->compiled->documented->tested;
-		//node_name -> topic_name [label="publish"];
-		//topic_name -> node_name [label="subscribe"];
 	}
 
-
 	// ==== Nodes Definition ==== //
-	node [shape=box,style=filled];
+	node [shape=ellipse,style=filled];
 	subgraph node_missing{
 		node [fillcolor=red];
-		global_localizer[label="global_localizer (LC)"];
-		intersection_filter[label="intersection_filter (LP)"];
-		intersection_controller[label="intersection_controller (MN)"];
-		stop_line_filter[label="stop_line_filter (LP)"];
-		led_detector[label="led_detector (CC)"];
-		obj_detector[label="obj_detector (CC)"];
-		beeper[label="beeper (LP)"];
-		veh_detector[label="veh_detector (CC)"];
+		global_localizer[label="global_localizer_node (LC)"];
+		intersection_filter_node[label="intersection_filter_node (LP)"];
+		led_detector_node[label="led_detector_node (CC)"];
+		obj_detector_node[label="obj_detector_node (CC)"];
+		beeper_driver_node[label="beeper_driver_node (LP)"];
+		veh_detector_node[label="veh_detector_node (CC)"];
+		traffic_light_detector_node[label="traffic_light_detector_node (??)"];
+		//coordination_controller[label="coordination_controller (MN?)"];
 	}
 	subgraph node_designed{
 		node [fillcolor=pink];
-		mission_planner[label="mission_planner (MN)"];
-		street_name_detector[label="street_name_detector (NW)"];
-		safety_supervisor[label="safety_supervisor (HA)"];
-		map_reader[label="map_reader (RM)"];
-		veh_coordinator[label="veh_coordinator (DH)"]
+		//mission_planner[label="mission_planner_node (MN)"];
+		street_name_detector_node[label="street_name_detector_node (NW)"];
+		safety_supervisor_node[label="safety_supervisor_node (HA)"];
+		map_reader_node[label="map_reader_node (RM)"];
+		veh_coordinator_node[label="veh_coordinator_node (DH)"]
 	}
 	subgraph node_development{
 		node [fillcolor=orange];
-		wheels_driver[label="wheels_driver (DY,SY)"];
-		rgb_led[label="rgb_led (DY)"];
-		lane_filter[label="lane_filter (LP)"]; 
+		open_loop_intersection_control_node[label="intersection_control\nopen_loop_intersection_control_node (MN)"];
+		stop_line_filter_node[label="stop_line_filter\nstop_line_filter_node (LP)"];
+		rgb_led_driver_node[label="rgb_led_driver\nrgb_led_driver_node (DY)"];
+		fsm_node[label="fsm\nfsm_node (MN)"];
 	}
 	subgraph node_compiled{
 		node [fillcolor=yellow];
-		wheels_cmd_switch[label="wheels_cmd_switch (SY)"]
-		camera_node[label="camera_node (SY,AC)"];
-		decoder_node[label="decoder_node (SY)"];
-		cam_info_reader_node[label="cam_info_reader_node (SY)"];
-		lane_controller[label="lane_controller (SY,SC)"];
-		line_detector[label="line_detector (LP,HZ)"];
-		april_tag_detector[label="april_tag_detector (LP)"];
-		lane_supervisor[label="lane_supervisor (SY)"];
-		joy_mapper[label="joy_mapper (SY)"];
-		ground_projection[label="ground_projection (CC)"];
-		wheels_trimmer[label="wheels_trimmer (SY)"];
+		wheels_driver_node[label="dagu_car\nwheels_driver_node (DY,SY)"];
+		wheels_cmd_switch_node[label="dagu_car\nwheels_cmd_switch (SY)"]
+		camera_node[label="pi_camera\ncamera_node (SY,AC)"];
+		decoder_node[label="pi_camera\ndecoder_node (SY)"];
+		cam_info_reader_node[label="pi_camera\ncam_info_reader_node (SY)"];
+		lane_controller_node[label="lane_control\nlane_controller_node (SY,SC)"];
+		line_detector_node[label="line_detector\nline_detector_node (LP,HZ)"];
+		april_tag_detector[label="aprialtags\napril_tag_detector (LP)"];
+		lane_supervisor[label="lane_control\nlane_supervisor_node (SY)"];
+		joy_mapper_node[label="joy_mapper\njoy_mapper_node (SY)"];
+		ground_projection_node[label="ground_projection\nground_projection_node (CC)"];
+		wheels_trimmer[label="dagu_car\nwheels_trimmer_node (SY)"];
+		lane_filter_node[label="lane_filter\nlane_filter_node (LP)"]; 
 	}
 	subgraph node_documented{
 		node [fillcolor=green];
@@ -70,250 +72,149 @@ digraph D {
 		//image_proc;
 	}
 
-	// Nodes Definition
+	// === Files Definition ===
+	node [shape=note,style=filled];
+	subgraph files{
+		motion_calibration_file[label="calibration/wheels_trim"];
+		extrinsic_calibration_file[label="calibration/camera_extrinsic"];
+		intrinsic_calibration_file[label="calibration/camera_intrinsic"];
+	}
 
-	//{rank=max; wheels_driver;beeper;rgb_led}
-	//{rank=min; map_reader;joy_node;camera_node}
+
 
 	//subgraph node_test {
 		//node[shape=box,fillcolor=red];
-		//street_name_detector;
+		//street_name_detector_node;
 		//joy_node;
-		//joy_mapper;
+		//joy_mapper_node;
 	//}
 
-	// Topics
-	node [shape=ellipse,style=""];
+	// ==== Topics ====
+	node [shape=box,style=filled,fillcolor=white];
 	//{rank=same; mission; joy; map_representation;}
-	map_representation;
-	//img_low;
-	//img_high;
-	segment_list;
-	segment_list_proj;
-	image_with_lines;
-	lane_reading; //LaneReading: y, phi, sigma_y, sigma_phi, status
-	lane_control;
-	lane_control_sup[label="lane_control"];
-	lane_control_safe[label="lane_control"];
-	april_tag_detection;
-	led_detection;
-	veh_detection;
-	traffic_light_detection;
-	intersection_reading;
-	obj_detection;
-	global_readings;
-	stop_line_reading;
-	mode;
-	mission;
-	joy_control;
-	intersection_control;
-	street_name_detection;
-	veh_coord_go;
-	wheels_command;
-	wheels_command_switch[label="wheels_command"];
+	map_representation[label="~map_representation"];
+	segment_list[label="~segment_list\nduckietown_msgs/SegmentList.msg"];
+	segment_list_proj[label="~segment_list_proj\nduckietown_msgs/SegmentList.msg"];
+	image_with_lines[label="~image_with_lines\nsensor_msgs/Image.msg"];
+	lane_pose[label="~lane_pose\nduckietown_msgs/LanePose.msg"]; //LaneReading: y, phi, sigma_y, sigma_phi, status
+	lane_control[label="~lane_control\nduckietown_msgs/WheelsCmdStamped.msg"];
+	lane_control_sup[label="~lane_control_supervised\nduckietown_msgs/WheelsCmdStamped.msg"];
+	lane_control_safe[label="~lane_control_safe\nduckietown_msgs/WheelsCmdStamped.msg"];
+	april_tag_detection[label="~april_tag_detection\nduckietown_msgs/AprilTags.msg"];
+	led_detection[label="~led_detection"];
+	veh_detection[label="~veh_detection"];
+	traffic_light_detection[label="~traffic_light_detection"];
+	intersection_reading[label="~intersection_reading"];
+	obj_detection[label="~obj_detection"];
+	global_readings[label="~global_readings"];
+	mode[label="~mode\nduckietown_msgs/FSMState.msg"];
+	//mission[label="mission"];
+	joy_control[label="~joy_control\nduckietown_msgs/WheelsCmdStamped.msg"];
+	intersection_control[label="~intersection_control\nduckietown_msgs/WheelsCmdStamped.msg"];
+	street_name_detection[label="~street_name_detection\nduckietown_msgs/StreetNameDetection.msg"];
+	wheels_command[label="wheels_driver_node/wheels_cmd\nduckietown_msgs/WheelsCmdStamped.msg"];
+	wheels_command_switch[label="~wheels_command_switch\nduckietown_msgs/WheelsCmdStamped.msg"];
+	camera_info[label="camera_node/camera_info\nsensor_msgs/CameraInfo.msg"];
+	image_compressed[label="~image/compressed\nsensor_msgs/CompressedImage.msg"];
+	intersection_go[label="~intersection_go\nstd_msgs/Bool.msg"];
+	intersection_done[label="~intersection_done\nstd_msgs/Bool.msg"];
+	at_stop_line[label="~at_stop_line\nstd_msgs/Bool.msg"];
+	in_lane[label="~in_lane\nstd_msgs/Bool.msg"];
+	beep[label="beeper_driver_node/beep"];
+	led_cmd[label="rgb_led_driver/led_cmd\nduckietown_msgs/LEDControl.msg"];
+	stop_line_dist[label="~stop_line_dist\nstd_msgs/Float32.msg"];
+	joy[label="joy\nsensor_msgs/Joy.msg"];
 
-	subgraph cluster_perception{
-		label="perception"
-		// Nodes
-		camera_node;
-		decoder_node;
-		cam_info_reader_node;
-		obj_detector;
-		line_detector;
-		lane_filter;
-		april_tag_detector;
-		april_tag_detection;
-		led_detector;
-		veh_detector;
-		stop_line_filter;
-		traffic_light_detector;
-		intersection_filter;
-		street_name_detector;
-		//image_proc;
-		ground_projection;
-		//img_downsampler;
-		// Topics
-		segment_list;
-		segment_list_proj;
-		//img_low;
-		//img_high;
-		april_tag_detection;
-		lane_reading;
-		image_with_lines;
-		obj_detection;
-		led_detection;
-		veh_detection;
-		stop_line_reading;
-		traffic_light_detection;
-		intersection_reading;
-		street_name_detection;
-		//img_low_rect;
-		//img_high_rect;
-		image_compressed[label="camera_node/image/compressed"];
-		image_raw[label="camera_node/image/raw"];
-		camera_info;
-		{rank=same; image_compressed;image_raw;camera_info}
-		{rank=same; decoder_node;camera_node}
-	}
+	{rank=max; wheels_driver_node;beeper_driver_node;rgb_led_driver_node}
+	{rank=min; camera_node;joy_node}
+	{rank=same;beep;wheels_command;led_cmd}
 
-	subgraph cluster_control{
-		label="control"
-		// Nodes
-		joy_node;
-		joy_mapper;
-		lane_controller;
-		intersection_controller;
-		lane_supervisor;
-		safety_supervisor;
-		wheels_cmd_switch;
-		// Topics
-		joy_control;
-		joy;
-		lane_control;
-		lane_control_sup;
-		lane_control_safe;
-		intersection_control;
-		wheels_command_switch;
-		{rank=same; intersection_controller;lane_controller;}
-	}
+	// ==== Connections ====
+	veh_coordinator_node->intersection_go;
+	intersection_go->fsm_node;
+	intersection_done->fsm_node;
+	at_stop_line->fsm_node;
+	in_lane->fsm_node;
+	open_loop_intersection_control_node->intersection_done;
+	lane_filter_node->in_lane;
+	stop_line_filter_node->at_stop_line;
+	fsm_node->mode;
 
-	subgraph cluster_localization{
-		label="localization"
-		// Nodes
-		map_reader;
-		global_localizer;
+	led_cmd->rgb_led_driver_node;
+	stop_line_filter_node->stop_line_dist;
 
-		// Topics
-		map_representation;
-		global_readings;
-	}
-
-	subgraph cluster_planning{
-		label="planning & coordination"
-		// Nodes
-		mission_planner;
-		veh_coordinator;
-		// Topics
-		veh_coord_go;
-		mission;
-		mode;
-	}
-
-	subgraph cluster_driver{
-		label="driver"
-		// Nodes
-		wheels_trimmer;
-		wheels_driver;
-		beeper;
-		rgb_led;
-		{rank=same; wheels_driver, beeper,rgb_led}
-		// Topics
-		wheels_command;
-	}
-
-
-	// Connections
-	//img_low->image_proc;
-	//img_high->image_proc;
-	//image_proc->img_low_rect;
-	//image_proc->img_high_rect;
-
-	//camera_node->camera_info;
 	camera_node->image_compressed;
-	cam_info_reader_node->image_compressed[dir=back];
+	intrinsic_calibration_file->cam_info_reader_node[style="dotted"];
+	image_compressed->cam_info_reader_node;
 	cam_info_reader_node->camera_info;
-	//image_compressed->img_downsampler;
-	//img_downsampler->img_high;
-	//img_downsampler->img_low;
-
-
-	image_compressed->line_detector;
-	image_compressed->led_detector;
-	decoder_node->image_compressed [dir=back];
+	image_compressed->line_detector_node;
+	image_compressed->led_detector_node;
+	image_compressed->decoder_node;
 	decoder_node->image_raw;
-
-
 	image_compressed->april_tag_detector;
-	image_compressed->obj_detector;
-	image_compressed->street_name_detector;
-	street_name_detector->street_name_detection;
-
-	led_detector->led_detection;
-	led_detection->veh_detector;
-	led_detection->traffic_light_detector;
-	
-	veh_detector->veh_detection;
-	traffic_light_detector->traffic_light_detection;
-	
-	intersection_filter->intersection_reading;
-	
-	line_detector->segment_list #[label="SegmentList.msg"];
-	line_detector->image_with_lines #[label="sensor_msgs/Image.msg"]
-	
-	segment_list_proj->stop_line_filter;
-	segment_list_proj->lane_filter;
-
-	lane_filter->lane_reading #[label="LaneReading.msg"];
-	lane_reading->lane_controller #[label="LaneReading.msg"];
-	lane_reading->mission_planner;
-
-	stop_line_filter->stop_line_reading;
-	stop_line_reading->lane_controller;
-	stop_line_reading->mission_planner;
-	
-	obj_detector->obj_detection;
+	image_compressed->obj_detector_node;
+	image_compressed->street_name_detector_node;
+	street_name_detector_node->street_name_detection;
+	led_detector_node->led_detection;
+	led_detection->traffic_light_detector_node;
+	segment_list->veh_detector_node;
+	veh_detector_node->veh_detection;
+	traffic_light_detector_node->traffic_light_detection;
+	intersection_filter_node->intersection_reading;
+	line_detector_node->segment_list 
+	line_detector_node->image_with_lines 
+	segment_list_proj->stop_line_filter_node;
+	segment_list_proj->lane_filter_node;
+	lane_filter_node->lane_pose;
+	lane_pose->lane_controller_node;
+	//lane_pose->mission_planner;
+	//stop_line_filter_node->stop_line_reading;
+	//stop_line_reading->lane_controller_node;
+	////stop_line_reading->mission_planner;
+	obj_detector_node->obj_detection;
 	obj_detection->global_localizer;
 	street_name_detection->global_localizer;
 	april_tag_detector->april_tag_detection;
-	april_tag_detection->intersection_filter;
+	april_tag_detection->intersection_filter_node;
 	april_tag_detection->global_localizer;
 	global_localizer->global_readings;
-	
-	map_reader -> map_representation;
+	map_reader_node -> map_representation;
 	map_representation->global_localizer;
-	map_representation->mission_planner;
-	
-	joy_node->joy->joy_mapper->joy_control;
-	joy_control-> lane_supervisor #[label="CarControl.msg"];
-	lane_controller->lane_control;
-	lane_control-> lane_supervisor #[label="CarControl.msg"];
+	//map_representation->mission_planner;
+	joy_node->joy->joy_mapper_node->joy_control;
+	joy_control-> lane_supervisor;
+	lane_controller_node->lane_control;
+	lane_control-> lane_supervisor;
 	lane_supervisor-> lane_control_sup;
-	lane_control_sup->safety_supervisor;
-	safety_supervisor->lane_control_safe;
-	safety_supervisor->beeper;
-	
-	intersection_reading->intersection_controller;
-	intersection_reading->mission_planner;
-	traffic_light_detection->intersection_controller;
-
-	veh_detection->safety_supervisor;
-	intersection_controller->intersection_control;
-	global_readings->mission_planner;
-	mission_planner->mode;
-	mission->mission_planner;
-
-	camera_info->ground_projection;
-	segment_list->ground_projection;
-	ground_projection->segment_list_proj;
-
-	obj_detection->veh_coordinator;
-	veh_detection->veh_coordinator;
-	traffic_light_detection->veh_coordinator;
-	//veh_coord_go->mission_planner;
-	veh_coord_go->veh_coordinator [dir=back];
-	mission_planner->veh_coord_go [dir=back];
-
-	mode->veh_coordinator;
-	mode->lane_controller;
-	mode->intersection_controller;
-
-	mode->wheels_cmd_switch;
-	wheels_cmd_switch->wheels_command_switch;
+	lane_control_sup->safety_supervisor_node;
+	safety_supervisor_node->lane_control_safe;
+	safety_supervisor_node->beeper_driver_node;
+	//intersection_reading->mission_planner;
+	veh_detection->safety_supervisor_node;
+	open_loop_intersection_control_node->intersection_control;
+	//global_readings->mission_planner;
+	//mission_planner->mode;
+	//mission->mission_planner;
+	extrinsic_calibration_file->ground_projection_node[style="dotted"];
+	camera_info->ground_projection_node;
+	segment_list->ground_projection_node;
+	ground_projection_node->segment_list_proj;
+	veh_detection->veh_coordinator_node;
+	traffic_light_detection->veh_coordinator_node;
+	//veh_coordinator_node->veh_coord_go;
+	////veh_coord_go->mission_planner;
+	mode->veh_coordinator_node;
+	//mode->lane_controller_node;
+	mode->open_loop_intersection_control_node;
+	mode->wheels_cmd_switch_node;
+	wheels_cmd_switch_node->wheels_command_switch;
 	wheels_command_switch->wheels_trimmer;
+	motion_calibration_file->wheels_trimmer[style="dotted"]
 	wheels_trimmer->wheels_command;
-	lane_control_safe->wheels_cmd_switch;
-	intersection_control->wheels_cmd_switch;
-	wheels_command->wheels_driver;
+	lane_control_safe->wheels_cmd_switch_node;
+	intersection_control->wheels_cmd_switch_node;
+	wheels_command->wheels_driver_node;
+	safety_supervisor_node->beep;
+	beep->beeper_driver_node;
 
-	//TODO annotate msg type.
 }

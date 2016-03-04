@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from duckietown_msgs.msg import WheelsCmd
+from duckietown_msgs.msg import WheelsCmdStamped
 from dagu_car.dagu_wheels_driver import DaguWheelsDriver
 
 class WheelsDriverNode(object):
@@ -12,7 +12,7 @@ class WheelsDriverNode(object):
         self.driver = DaguWheelsDriver()
 
         # Setup subscribers
-        self.sub_topic = rospy.Subscriber("~wheels_cmd", WheelsCmd, self.cbWheelsCmd, queue_size=1)
+        self.sub_topic = rospy.Subscriber("~wheels_cmd", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

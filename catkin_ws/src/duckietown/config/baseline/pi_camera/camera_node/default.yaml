@@ -2,5 +2,5 @@
 framerate: 30
 res_w: 640
 res_h: 480
-decompress: false
-publish_info: false
+#decompress: false
+#publish_info: false

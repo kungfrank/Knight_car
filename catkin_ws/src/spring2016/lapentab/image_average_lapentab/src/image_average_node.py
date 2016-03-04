@@ -35,11 +35,11 @@ class ImageAverage(object):
         if self.prior_img == None:
             self.prior_img = cv_image
         else:
+            firstDiv = 1.0/self.n
            # rospy.loginfo(str(1.0-(1.0/self.n))+ "is first " + str(1.0/self.n) + " is second" )
-            self.prior_img = self.prior_img.astype('float32') * (1.0-(1.0/self.n)) + cv_image.astype('float32') * (1.0/self.n)
-            self.prior_img = self.prior_img.astype('uint8')
+            self.prior_img = self.prior_img.astype('float32') * (1-firstDiv) + cv_image.astype('float32') * (firstDiv)
         # time_2 = time.time()
-        toreturn = self.bridge.cv2_to_imgmsg(self.prior_img, "bgr8") 
+        toreturn = self.bridge.cv2_to_imgmsg(self.prior_img.astype('uint8'), "bgr8") 
         self.pub_img.publish(toreturn)
 
 

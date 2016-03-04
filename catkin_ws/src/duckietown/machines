@@ -32,5 +32,6 @@
 	<machine name="penguin" address="penguin.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="light11" address="light11.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="forrest" address="forrest.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+	<machine name="ducksolo" address="ducksolo.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 </launch>
 

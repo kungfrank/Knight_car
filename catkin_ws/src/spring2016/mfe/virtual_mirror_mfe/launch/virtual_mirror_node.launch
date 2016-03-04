@@ -1,0 +1,3 @@
+<launch>
+  <node name="virtual_mirror_mfe_node" pkg="virtual_mirror_mfe" type="virtual_mirror_mfe_node.py" output="screen" />
+</launch>

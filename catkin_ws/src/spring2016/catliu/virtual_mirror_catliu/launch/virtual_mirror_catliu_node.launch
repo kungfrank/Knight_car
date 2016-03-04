@@ -5,21 +5,21 @@
     <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
     
     <arg name="pkg_name" value="virtual_mirror_catliu"/>
-    <arg name="node_name" default="virtual_mirror_node"/>
+    <arg name="node_name" default="virtual_mirror_catliu_node"/>
 
     <group ns="$(arg veh)">        
         <!-- run local -->
         <node if="$(arg local)" name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
+            <rosparam command="load" file="$(find duckietown_catliu)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
         </node>
 
         <!-- run remote -->
         <node unless="$(arg local)" machine="$(arg veh)" name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
+            <rosparam command="load" file="$(find duckietown_catliu)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
         </node>
     </group>
 
     <!-- Publications -->
-    <!-- virtual_mirror_node/topic_out -->
     <!-- Subscriptions -->
-    <!-- camera_node/image/compressed-->
     
 </launch>

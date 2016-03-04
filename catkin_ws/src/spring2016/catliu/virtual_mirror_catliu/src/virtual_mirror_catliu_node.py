@@ -10,7 +10,7 @@ import time
 bridge = CvBridge()
 
 # Initialize the node with rospy
-rospy.init_node('virtual_mirror_node')
+rospy.init_node('virtual_mirror_catliu_node')
 
 # Define Timer callback
 def callback(msg):
@@ -24,9 +24,9 @@ def callback(msg):
     publisher.publish(img_msg)
 
 # Create publisher
-publisher = rospy.Publisher("~topic_out",Image,queue_size=1)
+publisher = rospy.Publisher("~image_mirrored",Image,queue_size=1)
 # Create subscriber
-subscriber = rospy.Subscriber("~topic_in", CompressedImage, callback)
+subscriber = rospy.Subscriber("~image_compressed", CompressedImage, callback)
 
 # Read parameter
 pub_period = rospy.get_param("~pub_period",1.0)

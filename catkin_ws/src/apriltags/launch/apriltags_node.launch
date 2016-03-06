@@ -1,7 +1,13 @@
 <launch>
-	<!-- <group ns="veh_name"> -->
-	<node pkg="apriltags" type="april_tag_detector" name="apriltags" output="screen">
-		<remap from="~image_raw" to="/rosberrypi_cam/image_raw"/>
-		<remap from="~camera_info" to="/rosberrypi_cam/camera_info"/>
-	</node>
+	<arg name="veh"/>
+	<arg name="config" default="baseline"/>
+    	<arg name="local" default="false" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman"/>
+
+
+	<group ns="$(arg veh)">
+		<node pkg="apriltags" type="april_tag_detector" name="apriltags" output="screen">
+		<!-- should load a param file in here. It should contain tag family and size -->
+		</node>
+	</group>
 </launch>

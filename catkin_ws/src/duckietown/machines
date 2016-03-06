@@ -31,5 +31,6 @@
 	<machine name="forrest" address="forrest.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="ducksolo" address="ducksolo.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="miata" address="miata.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+        <machine name="argo" address="argo.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 </launch>
 

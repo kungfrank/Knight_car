@@ -1,25 +1,25 @@
 <?xml version="1.0"?>
 <package>
-  <name>virtual_mirror_amadoa</name>
+  <name>virtual_mirror_araki</name>
   <version>0.0.0</version>
-  <description>This package flips the image along the horizontal axis (virtual mirror).</description>
+  <description>The virtual_mirror_araki package mirrors the duckiebot's image</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="amadoa@mit.edu">Amado Antonini</maintainer>
+  <maintainer email="araki@mit.edu">Brandon Araki</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
   <!-- Commonly used license strings: -->
   <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>MIT</license>
+  <license>TODO</license>
 
 
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/virtual_mirror_amadoa</url> -->
+  <!-- <url type="website">http://wiki.ros.org/virtual_mirror_araki</url> -->
 
 
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
@@ -32,29 +32,22 @@
   <!-- Dependencies can be catkin packages or system dependencies -->
   <!-- Examples: -->
   <!-- Use build_depend for packages you need at compile time: -->
-  <!--  <build_depend>message_generation</build_depend> -->
+  <!--   <build_depend>message_generation</build_depend> -->
   <!-- Use buildtool_depend for build tool packages: -->
   <!--   <buildtool_depend>catkin</buildtool_depend> -->
   <!-- Use run_depend for packages you need at runtime: -->
-  <!--  <run_depend>message_runtime</run_depend> -->
+  <!--   <run_depend>message_runtime</run_depend> -->
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>duckietown_msgs</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>message_generation</build_depend>
-  <build_depend>image_transport</build_depend>
-  <!-- <build_depend>opencv2</build_depend> -->
-  <!-- <build_depend>cv_bridge</build_depend> -->  
-
+  <build_depend>cv_bridge</build_depend>
+  <run_depend>duckietown_msgs</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>
-  <run_depend>std_msgs</run_depend>
-  <run_depend>message_runtime</run_depend>
-  <run_depend>image_transport</run_depend>
-  <!-- <run_depend>opencv2</run_depend> -->
-  <!-- <run_depend>cv_bridge</run_depend> -->
+  <run_depend>cv_bridge</run_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

@@ -5,10 +5,11 @@
 	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
 	<arg name="live" default="true" doc="if set to true, run the camera and do live detection. "/>
  	<arg name="camera_topic" default="camera_node"/>
-  	<arg name="rectify" default="false" doc="If set to true, rectify image before process."/>
+  	<!-- <arg name="rectify" default="false" doc="If set to true, rectify image before process."/> -->
 	<arg name="view_markers" default="true" doc="should we output markers for rviz?"/>
+	<arg name="only" default="false" doc="Only run the ground_projection part when set to true."/>
 
-	<include  file="$(find duckietown)/launch/line_detector.launch">
+	<include unless="$(arg only)" file="$(find duckietown)/launch/line_detector.launch">
 		 <arg name="veh" value="$(arg veh)"/>
 		 <arg name="local" value="$(arg local)"/>
 		 <arg name="config" value="$(arg config)"/>
@@ -22,9 +23,7 @@
 		 <arg name="config" value="$(arg config)"/>
 		 <arg name="param_file_name" value="$(arg param_file_name)"/>
 		 <arg name="camera_topic" value="$(arg camera_topic)"/>
-		 <arg name="rectify" value="$(arg rectify)"/>
 	</include>
-
 
 	<!-- Duckiebot visualizer (always local) -->
 	<node  ns="$(arg veh)" if="$(arg view_markers)" name="duckiebot_visualizer" pkg="duckiebot_visualizer" type="duckiebot_visualizer.py" output="screen">

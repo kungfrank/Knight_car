@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   duckietown_msgs # Every duckietown packages should use this.
   cv_bridge
+  tf
 )
 
 ## System dependencies are found with CMake's conventions

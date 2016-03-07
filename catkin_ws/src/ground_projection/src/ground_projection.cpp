@@ -259,12 +259,22 @@ private:
     nh_.param<float>("y_offset", y_offset, -0.093f);
     cv::Point2f offset = cv::Point2f(x_offset, y_offset);
 
+    cv::Point2f corner_first = corners_[0]; // first row point
+    cv::Point2f corner_last  = corners_[(board_h-1)*(board_w)]; // last row point
+
+    bool flipped = false;
+    if(corner_first.y < corner_last.y)
+    {
+      // rows are horizontally flipped
+      flipped = true;
+    }
+
     for(int r=0; r<board_h; r++)
     {
       for(int c=0; c<board_w; c++)
       {
         pts_gnd_[r*(board_w)+c] = cv::Point2f(float(r)*square_size, float(c)*square_size) + offset;
-        pts_img_[r*(board_w)+c] = corners_[r*(board_w)+c];
+        pts_img_[r*(board_w)+c] = corners_[(flipped ? board_h - 1 - r : r)*(board_w)+c];
       }
     }
 

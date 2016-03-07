@@ -17,6 +17,7 @@
 <remap from="virtual_mirror_node/rgb_out" to="virtual_mirror_node/topic"/>
 
 <node ns="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen">
+            <rosparam command="load" file="$(find virtual_mirror_qlai)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
 </node>
 
 

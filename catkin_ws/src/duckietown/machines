@@ -1,20 +1,11 @@
 <launch>
 	<arg name="env_script_path" default="~/duckietown/environment.sh"/>
-<<<<<<< HEAD
-	<machine name="ferrari" address="ferrari.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-	<machine name="2cv" address="2cv.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-	<machine name="sonata" address="sonata.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-	<machine name="shamrock" address="shamrock.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-	<machine name="leon" address="leon.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-	<machine name="duckmobile" address="duckmobile.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-=======
         <machine name="ferrari" address="ferrari.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
         <machine name="2cv" address="2cv.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
         <machine name="sonata" address="sonata.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
         <machine name="shamrock" address="shamrock.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
         <machine name="leon" address="leon.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
         <machine name="duckmobile" address="duckmobile.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
->>>>>>> f09421afcd464862471a8d5a2dfa2ce0ca2e35c6
 	<machine name="megaman" address="megaman.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="mercedes" address="mercedes.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="lambo" address="lambo.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
@@ -35,19 +26,13 @@
 	<machine name="neptunus" address="neptunus.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="charles" address="charles.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="starducks" address="starducks.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-<<<<<<< HEAD
 	<machine name="pipquack" address="pipquack.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-=======
         <machine name="light11" address="light11.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
         <machine name="ernie" address="ernie.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="penguin" address="penguin.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="forrest" address="forrest.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="chewbacca" address="chewbacca.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="miata" address="miata.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
-<<<<<<< HEAD
->>>>>>> f09421afcd464862471a8d5a2dfa2ce0ca2e35c6
-=======
         <machine name="argo" address="argo.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
->>>>>>> 48ac965c1db6a34fb0d49fb559a7bb8785961684
 </launch>
 

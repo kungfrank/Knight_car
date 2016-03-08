@@ -20,11 +20,13 @@ class VirtualMirrorTester(object):
         self.sent_image_count = 1
         self.received_horz_image = False
         self.received_vert_image = False
+        self.tests_complete = False
 
         # Setup parameters
         #self.flip_direction = self.setupParam("~flip_direction", "horz")
         self.pub_timestep = self.setupParam("~pub_timestep", 1.0)
         self.test_image_path = self.setupParam("~test_image_path", "")
+        self.test_image_format = self.setupParam("~test_image_format", "")
         self.test_image_count = self.setupParam("~test_image_count", 0)
 
         # Setup publishers
@@ -46,34 +48,37 @@ class VirtualMirrorTester(object):
         return value
 
     def cbFlipDirection(self,direction_msg):
-        self.flip_direction = direction_msg.direction
+        if not self.tests_complete:
+            self.flip_direction = direction_msg.direction
 
-        if self.received_horz_image and self.received_vert_image:
-            self.received_horz_image = False
-            self.received_vert_image = False
-            if self.sent_image_count < self.test_image_count:
-                self.sent_image_count += 1
-            else:
-                self.sent_image_count = 1
-        
-        if not self.received_horz_image:
-            if self.flip_direction != "horz":
-                rospy.set_param("virtual_mirror_joewl_node/flip_direction","horz")
-            else:
-                self.sendTestImage()
-        elif not self.received_vert_image:
-            if self.flip_direction != "vert":
-                rospy.set_param("virtual_mirror_joewl_node/flip_direction","vert")
-            else:
-                self.sendTestImage()
+            if self.received_horz_image and self.received_vert_image:
+                if self.sent_image_count < self.test_image_count:
+                    self.sent_image_count += 1
+                    self.received_horz_image = False
+                    self.received_vert_image = False
+                else:
+                    #self.sent_image_count = 1
+                    rospy.loginfo("[%s] Tests complete." %(self.node_name))
+                    self.tests_complete = True
+       
+            if not self.received_horz_image:
+                if self.flip_direction != "horz":
+                    rospy.set_param("virtual_mirror_joewl_node/flip_direction","horz")
+                else:
+                    self.sendTestImage()
+            elif not self.received_vert_image:
+                if self.flip_direction != "vert":
+                    rospy.set_param("virtual_mirror_joewl_node/flip_direction","vert")
+                else:
+                    self.sendTestImage()
 
     def sendTestImage(self):
-        img_name = '0'+str(self.sent_image_count)+'_orig.jpg'
+        img_name = '0'+str(self.sent_image_count)+'_orig.'+self.test_image_format
         test_img = cv2.imread(self.test_image_path+img_name)
         msg = CompressedImage()
         msg.header.stamp = rospy.Time.now()
-        msg.format = "jpeg"
-        msg.data = np.array(cv2.imencode('.jpg', test_img)[1]).tostring()
+        msg.format = self.test_image_format
+        msg.data = np.array(cv2.imencode('.'+self.test_image_format, test_img)[1]).tostring()
         self.pub_test_image.publish(msg)
 
 
@@ -83,17 +88,17 @@ class VirtualMirrorTester(object):
 
 	    # F
         if self.flip_direction == "horz":
-            img_name = '0'+str(self.sent_image_count)+'_horz.jpg'
+            img_name = '0'+str(self.sent_image_count)+'_horz.'+self.test_image_format
             self.received_horz_image = True
         elif self.flip_direction == "vert":
-            img_name = '0'+str(self.sent_image_count)+'_vert.jpg'
+            img_name = '0'+str(self.sent_image_count)+'_vert.'+self.test_image_format
             self.received_vert_image = True
 
         image_flipped = cv2.imread(self.test_image_path+img_name)
-        if (image_cv - image_flipped).any():
-            rospy.loginfo("Image %s %s failed" %(self.sent_image_count,self.flip_direction))
+        if np.array_equal(image_cv,image_flipped):
+            rospy.loginfo("[%s] Image %s %s passed" %(self.node_name,self.sent_image_count,self.flip_direction))
         else:
-            rospy.loginfo("Image %s %s passed" %(self.sent_image_count,self.flip_direction))
+            rospy.loginfo("[%s] Image %s %s failed" %(self.node_name,self.sent_image_count,self.flip_direction))
 
     def on_shutdown(self):
         rospy.loginfo("[%s] Shutting down." %(self.node_name))

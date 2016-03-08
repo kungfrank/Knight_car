@@ -1,0 +1,23 @@
+camera_matrix:
+  cols: 3
+  data: [315.6639613551987, 0.0, 330.98370830261007, 0.0, 313.9960491445569, 233.9616377904697,
+    0.0, 0.0, 1.0]
+  rows: 3
+camera_name: feiying/camera_node
+distortion_coefficients:
+  cols: 5
+  data: [-0.2816023997206707, 0.058255113273703404, 0.0005905698353770797, 0.001003965881421622,
+    0.0]
+  rows: 1
+distortion_model: plumb_bob
+image_height: 480
+image_width: 640
+projection_matrix:
+  cols: 4
+  data: [219.54141235351562, 0.0, 333.3393960087742, 0.0, 0.0, 246.3697509765625,
+    230.26028135557135, 0.0, 0.0, 0.0, 1.0, 0.0]
+  rows: 3
+rectification_matrix:
+  cols: 3
+  data: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+  rows: 3

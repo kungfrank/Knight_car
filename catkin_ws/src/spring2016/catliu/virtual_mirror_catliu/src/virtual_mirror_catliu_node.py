@@ -47,6 +47,7 @@ class VirtualMirrorCatliuNode(object):
 if __name__ == '__main__':
 	# Initialize the node with rospy
 	rospy.init_node('virtual_mirror_catliu_node')
-
+	virtual_mirror_catliu_node = VirtualMirrorCatliuNode()
+	
 	# spin to keep the script for exiting
 	rospy.spin()

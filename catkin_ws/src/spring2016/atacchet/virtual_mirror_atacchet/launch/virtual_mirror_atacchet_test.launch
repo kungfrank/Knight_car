@@ -1,6 +1,6 @@
 <launch>
 	<arg name="veh" doc="Name of vehicle" />
-    <arg name="flip_direction" doc="0: horizontal 1 : vertical"/>
+    <arg name="flip_direction" doc="1: horizontal 0 : vertical"/>
 	<arg name="original_image_file" doc="full path to original image" />
 	<arg name="horizontal_image_file" doc="full path to horizontal image" />
 	<arg name="vertical_image_file" doc="full path to vertical image" />

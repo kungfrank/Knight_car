@@ -1,6 +1,6 @@
 <launch>
     <arg name="veh" doc="Name of vehicle. ex: megaman"/>
-    <arg name="flip_direction" doc="0: horizontal 1 : vertical"/>
+    <arg name="flip_direction" doc="1: horizontal 0 : vertical"/>
     <arg name="local" default="false" doc="true: laptop. false: vehicle."/>
     <arg name="pkg_name" value="virtual_mirror_atacchet"/>
     <arg name="node_name" default="virtual_mirror_node"/>

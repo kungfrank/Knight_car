@@ -1,0 +1,12 @@
+<launch>
+	<arg name="veh" default="redrover" doc="Name of vehicle. ex: megaman"/>
+	<group ns="$(arg veh)">
+		<node name="virtual_mirror_mfe_tester_node" pkg="virtual_mirror_mfe" type="virtual_mirror_mfe_tester_node.py" output="screen">
+		      <param name="~x1" value="0"/>
+			<remap from="~raw_image" to="/pi_camera/decoder_node/image/raw"/>
+		 </node>
+		<node name="decoder_node" pkg="pi_camera" type="decoder_node.py">
+			<remap from="~compressed_image" to="/virtual_mirror_mfe/virtual_mirror_mfe_tester_node/compressed"/>
+		</node>
+	</group>
+</launch>

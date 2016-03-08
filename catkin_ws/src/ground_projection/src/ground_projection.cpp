@@ -259,14 +259,25 @@ private:
     nh_.param<float>("y_offset", y_offset, -0.093f);
     cv::Point2f offset = cv::Point2f(x_offset, y_offset);
 
-    cv::Point2f corner_first = corners_[0]; // first row point
-    cv::Point2f corner_last  = corners_[(board_h-1)*(board_w)]; // last row point
+    cv::Point2f corner_lr = corners_[0]; // lower-right point
+    cv::Point2f corner_ur  = corners_[(board_h-1)*(board_w)]; // upper-right point
+    cv::Point2f corner_ul  = corners_[(board_h)*(board_w)-1]; // upper-left point
 
-    bool flipped = false;
-    if(corner_first.y < corner_last.y)
+    // std::cout << "corner_lr: " << corner_lr.x << ", " << corner_lr.y << std::endl;
+    // std::cout << "corner_ur: " << corner_ur.x << ", " << corner_ur.y << std::endl;
+    // std::cout << "corner_ul: " << corner_ul.x << ", " << corner_ul.y << std::endl;
+
+    bool h_flipped = false, v_flipped = false;
+    if(corner_ul.x > corner_ur.x)
     {
       // rows are horizontally flipped
-      flipped = true;
+      h_flipped = true;
+    }
+
+    if(corner_lr.y < corner_ur.y)
+    {
+      // cols are vertically flipped
+      v_flipped = true;
     }
 
     for(int r=0; r<board_h; r++)
@@ -274,7 +285,7 @@ private:
       for(int c=0; c<board_w; c++)
       {
         pts_gnd_[r*(board_w)+c] = cv::Point2f(float(r)*square_size, float(c)*square_size) + offset;
-        pts_img_[r*(board_w)+c] = corners_[(flipped ? board_h - 1 - r : r)*(board_w)+c];
+        pts_img_[r*(board_w)+c] = corners_[(v_flipped ? board_h - 1 - r : r)*(board_w)+(h_flipped ? board_w - 1 - c : c)];
       }
     }
 

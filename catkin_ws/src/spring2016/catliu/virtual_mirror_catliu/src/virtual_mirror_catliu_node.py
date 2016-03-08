@@ -28,6 +28,7 @@ class VirtualMirrorCatliuNode(object):
 		#Create publisher for orientation
 		self.orientation_pub = rospy.Publisher("~orientation",MirrorOrientation, queue_size=1)
 		# timer
+		self.pub_timestep = self.setupParam("~pub_timestep", 1.0)
 		self.pub_timer = rospy.Timer(rospy.Duration.from_sec(self.pub_timestep),self.publishOrientation)
 
 	def publishOrientation(self):

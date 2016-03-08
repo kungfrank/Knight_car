@@ -27,10 +27,11 @@ class DecoderNode(object):
         return value
 
     def cbImg(self,msg):
-        if msg.header.stamp - self.last_stamp < self.publish_duration:
+        now = rospy.Time.now()
+        if now - self.last_stamp < self.publish_duration:
             return
         else:
-            self.last_stamp = msg.header.stamp
+            self.last_stamp = now
         # time_start = time.time()
         np_arr = np.fromstring(msg.data, np.uint8)
         cv_image = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)

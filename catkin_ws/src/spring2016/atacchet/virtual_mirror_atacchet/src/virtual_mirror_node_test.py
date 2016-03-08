@@ -16,16 +16,17 @@ class VirtualMirrorTestNode(object):
 				self.cbImage, queue_size=1)
 		self.original_filename = rospy.get_param('~original_image_file')
 		self.original_image = cv2.imread(self.original_filename)
-		
-		self.flipped_h_img = cv2.flip(self.original_image, 1)
-		self.flipped_v_img = cv2.flip(self.original_image, 0)
+		self.horizontal_filename = rospy.get_param('~horizontal_image_file')
+		self.vertical_filename = rospy.get_param('~vertical_image_file')
+	
+		self.flipped_h_img = cv2.imread(self.horizontal_filename)
+		self.flipped_v_img = cv2.imread(self.vertical_filename)
 		self.flipped_data_h = np.asarray(self.flipped_h_img, dtype=np.uint8)
 		self.flipped_data_v = np.asarray(self.flipped_v_img, dtype=np.uint8)
 
 		rospy.loginfo("Initialization of [%s] completed" % (self.node_name))
 		pub_period = rospy.get_param("~pub_period", 1.0)
 		rospy.Timer(rospy.Duration.from_sec(pub_period), self.pubOrig)
-		
 
 	def cbImage(self,image_msg):
 		# Start a daemon thread to process the image

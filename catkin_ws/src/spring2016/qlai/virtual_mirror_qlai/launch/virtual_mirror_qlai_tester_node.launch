@@ -8,8 +8,8 @@
 	<arg name="test_img" doc="test img"/>
 
 
-	<remap from="virtual_mirror_qlai_tester_node/img_in" to="virtual_mirror_qlai_node/topic"/>
-	<remap from="virtual_mirror_qlai_tester_node/img_out" to="virtual_mirror_qlai_tester_node/topic"/>
+	<remap from="virtual_mirror_qlai_tester_node/img_in" to="virtual_mirror_qlai_node/rgb_out"/>
+	<remap from="virtual_mirror_qlai_node/rbg_in" to="virtual_mirror_qlai_tester_node/img_out"/>
 
 
 	<group ns="$(arg veh)">

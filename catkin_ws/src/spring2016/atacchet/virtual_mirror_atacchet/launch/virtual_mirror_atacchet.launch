@@ -3,15 +3,7 @@
     <arg name="local" default="false" doc="true: laptop. false: vehicle."/>
     <arg name="pkg_name" value="virtual_mirror_atacchet"/>
     <arg name="node_name" default="virtual_mirror_node"/>
-	<arg name="camera" default="true" doc="If set to false won't relaunch camera -- for relaunching"/>
 
-	<!-- Camera -->
-	<include if="$(arg camera)" file="$(find duckietown)/launch/camera.launch">
-		<arg name="veh" value="$(arg veh)"/>
-		<arg name="local" value="$(arg local)"/>
-	</include>
-
-	<remap unless="$(arg local)" from="virtual_mirror_node/incoming_image" to="camera_node/image/compressed" />
     <group ns="$(arg veh)">        
         <node if="$(arg local)" name="virtual_mirror_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen" />
         <include unless="$(arg local)" file="$(find duckietown)/machines"/>

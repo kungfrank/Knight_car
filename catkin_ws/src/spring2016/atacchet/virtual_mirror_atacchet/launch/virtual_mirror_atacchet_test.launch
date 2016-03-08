@@ -5,7 +5,6 @@
 	<include file="$(find virtual_mirror_atacchet)/launch/virtual_mirror_atacchet.launch">
 		<arg name="veh" value="$(arg veh)"/>
 		<arg name="local" value="true" />
-		<arg name="camera" value="false" />
 	</include>
 
 	<remap from="virtual_mirror_test_node/processed_image" to="virtual_mirror_node/mirror_image" />

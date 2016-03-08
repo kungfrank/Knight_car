@@ -6,6 +6,7 @@ project(duckietown_msgs_atacchet)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   duckietown_msgs
+  message_generation
   roscpp
   rospy
 )
@@ -64,10 +65,10 @@ add_message_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   duckietown_msgs
-# )
+generate_messages(
+   DEPENDENCIES
+   duckietown_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##

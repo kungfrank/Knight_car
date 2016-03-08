@@ -1,0 +1,9 @@
+<launch>
+	<arg name="veh" default="pontiac" doc="Name of vehicle. ex: megaman"/>
+	<group ns="$(arg veh)">
+		<node name="virtual_mirror_qlai_tester" pkg="virtual_mirror_qlai" type="virtual_mirror_qlai_tester_node.py" output="screen">
+		      <param name="~fliphorz" value="1"/>
+		      <param name="~flipvert" value="0"/>
+		 </node>
+	</group>
+</launch>

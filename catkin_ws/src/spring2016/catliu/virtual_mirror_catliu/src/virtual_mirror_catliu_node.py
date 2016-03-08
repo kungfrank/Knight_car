@@ -28,22 +28,21 @@ class VirtualMirrorCatliuNode(object):
         #Create publisher for orientation
         self.orientation_pub = rospy.Publisher("~orientation",MirrorOrientation, queue_size=1)
         # timer
-        self.pub_timestep = self.setupParam("~pub_timestep", 1.0)
-        self.pub_timer = rospy.Timer(rospy.Duration.from_sec(self.pub_timestep),self.publishOrientation)
+        sself.pub_timer = rospy.Timer(rospy.Duration.from_sec(1.0),self.publishOrientation)
 
     def publishOrientation(self):
-        self.orientation_pub.publish(self.flip_direction)
+        pub_msg = MirrorOrientation()
+        pub_msg.orientation = self.flip_direction.orientation
+        self.orientation_pub.publish(pub_msg)
 
     def setupParam(self, param_name, default_value):
         value = rospy.get_param(param_name,default_value)
-        print "Flip value:", value
         rospy.set_param(param_name,value) #Write to parameter server for transparancy
         rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
         return value
     
     def cbOrientation(self,event):
         orientation = rospy.get_param("~flip_direction",'horz')
-        print orientation
         if orientation == 'vert':
             orientation = MirrorOrientation.VERT
         else:

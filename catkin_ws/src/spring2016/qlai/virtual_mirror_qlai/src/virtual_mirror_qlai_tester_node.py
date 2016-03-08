@@ -13,48 +13,20 @@ class VirtualMirrorTesterNode(object):
 		self.node_name = "Virtual Mirror Tester"
 		
 
-		self.horzp = rospy.get_param("~fliphorz")
-		self.vertp = rospy.get_param("~flipvert")
+		self.flip = rospy.get_param("~flip_direction")
+		self.img = rospy.get_param("~test_img")
 
 		self.runTest()
 
 
-
 	def getTestImg(self):
-		self.originals = [] 
-		self.originals.append(cv2.imread("test_images/01_orig.png"))
-		self.originals.append(cv2.imread("test_images/02_orig.png"))
-		self.originals.append(cv2.imread("test_images/03_orig.png"))
-		self.originals.append(cv2.imread("test_images/04_orig.png"))
-
-
-		self.horz = []
-		self.horz.append(cv2.imread("test_images/01_horz.png"))
-		self.horz.append(cv2.imread("test_images/02_horz.png"))
-		self.horz.append(cv2.imread("test_images/03_horz.png"))
-		self.horz.append(cv2.imread("test_images/04_horz.png"))
-
-
-		self.vert = []
-		self.vert.append(cv2.imread("test_images/01_vert.png"))
-		self.vert.append(cv2.imread("test_images/02_vert.png"))
-		self.vert.append(cv2.imread("test_images/03_vert.png"))
-		self.vert.append(cv2.imread("test_images/04_vert.png"))
-
+		self.original = cv2.imread("test_images/"+self.img+"_orig.png")
+		self.flipped = cv2.imread("test_images/"+self.img+"_"+self.flip".png")
 		rospy.loginfo("imgs loaded successfully")
 
 	def runTest(self):
 		self.getTestImg()
-		for i in range(4):
-			if self.horz[i] == cv2.flip(self.originals[i], self.horzp):
-				rospy.loginfo("image has been horizontally flipped correctly")
-			else:
-				rospy.loginfo("ERROR in image horizontal flip")
 
-			if self.vert[i] == cv2.flip(self.originals[i], self.vertp):
-				rospy.loginfo("image has been vertically flipped correctly")
-			else:
-				rospy.loginfo("ERROR in image vertical flip")
 
 	def onShutdown(self):
 		    rospy.loginfo("[VirtualMirrorTesterNode] Shutdown.")

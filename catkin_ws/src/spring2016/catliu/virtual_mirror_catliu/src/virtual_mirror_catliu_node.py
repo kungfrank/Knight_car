@@ -12,26 +12,45 @@ class VirtualMirrorCatliuNode(object):
 	def __init__(self):
 		self.node_name = rospy.get_name()
 		self.flip_direction = self.setupParam("~flip_direction",'horz')
-		if self.flip_direction == 'horz':
-			self.flip_direction = MirrorOrientation()
-			self.flip_direction.orientation = MirrorOrientation.HORZ
-		else:
+		if self.flip_direction == 'vert':
 			self.flip_direction = MirrorOrientation()
 			self.flip_direction.orientation = MirrorOrientation.VERT
+		else:
+			self.flip_direction = MirrorOrientation()
+			self.flip_direction.orientation = MirrorOrientation.HORZ
 
 		# Create publisher
 		self.im_publisher = rospy.Publisher("~image_mirrored",Image,queue_size=1)
 		# Create subscriber
 		self.im_subscriber = rospy.Subscriber("~image_compressed", CompressedImage, self.callback)
+		#Listen for changes to orientation
+		self.timer_trim = rospy.Timer(rospy.Duration.from_sec(1.0),self.cbOrientation)
+		#Create publisher for orientation
+		self.orientation_pub = rospy.Publisher("~orientation",MirrorOrientation, queue_size=1)
+		# timer
+		self.pub_timer = rospy.Timer(rospy.Duration.from_sec(self.pub_timestep),self.publishOrientation)
 
-		# Read parameter
-		self.pub_period = rospy.get_param("~pub_period",1.0)
+	def publishOrientation(self):
+		self.orientation_pub.publish(self.flip_direction)
+
 	def setupParam(self, param_name, default_value):
 		value = rospy.get_param(param_name,default_value)
+		print "Flip value:", value
 		rospy.set_param(param_name,value) #Write to parameter server for transparancy
 		rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
 		return value
-
+	
+	def cbOrientation(self,event):
+		orientation = rospy.get_param("~flip_direction",'horz')
+		print orientation
+		if orientation == 'vert':
+			orientation = MirrorOrientation.VERT
+		else:
+			orientation = MirrorOrientation.HORZ
+		if self.flip_direction.orientation != orientation:
+		self.flip_direction.orientation = orientation
+		    rospy.loginfo("[%s] Orientation updated to: %s"%(self.node_name,orientation))
+	
 	# Define Timer callback
 	def callback(self, msg):
 		bridge = CvBridge()
@@ -48,6 +67,6 @@ if __name__ == '__main__':
 	# Initialize the node with rospy
 	rospy.init_node('virtual_mirror_catliu_node')
 	virtual_mirror_catliu_node = VirtualMirrorCatliuNode()
-	
+
 	# spin to keep the script for exiting
 	rospy.spin()

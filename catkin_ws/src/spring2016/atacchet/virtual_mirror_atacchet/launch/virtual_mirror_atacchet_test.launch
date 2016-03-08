@@ -1,10 +1,12 @@
 <launch>
 	<arg name="veh" doc="Name of vehicle" />
+    <arg name="flip_direction" doc="0: horizontal 1 : vertical"/>
 	<arg name="original_image_file" doc="full path to original image" />
 	<remap from="virtual_mirror_node/incoming_image" to="virtual_mirror_test_node/original_image" />
 	<include file="$(find virtual_mirror_atacchet)/launch/virtual_mirror_atacchet.launch">
 		<arg name="veh" value="$(arg veh)"/>
 		<arg name="local" value="true" />
+    	<arg name="flip_direction" value="$(arg flip_direction)"/>
 	</include>
 
 	<remap from="virtual_mirror_test_node/processed_image" to="virtual_mirror_node/mirror_image" />

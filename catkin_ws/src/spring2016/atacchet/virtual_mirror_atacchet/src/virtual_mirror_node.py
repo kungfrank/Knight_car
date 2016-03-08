@@ -31,9 +31,10 @@ class VirtualMirrorNode(object):
 	def cbParamTimer(self, event):
 		self.flip_dir = rospy.get_param("~flip_direction")
 
-	def cbPubConfig(self):
+	def cbPubConfig(self, event):
 		flip_param_msg = HorzVert()
 		flip_param_msg.flip_dir = self.flip_dir
+		self.pub_config.publish(flip_param_msg)
 
 	def cbImage(self,image_msg):
 		# Start a daemon thread to process the image

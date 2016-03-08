@@ -16,8 +16,12 @@ class VirtualMirrorTestNode(object):
 				self.cbImage, queue_size=1)
 		self.original_filename = rospy.get_param('~original_image_file')
 		self.original_image = cv2.imread(self.original_filename)
-		self.flipped_image = cv2.flip(self.original_image, 1)
-		self.flipped_data = np.asarray(self.flipped_image, dtype=np.uint8)
+		
+		self.flipped_h_img = cv2.flip(self.original_image, 1)
+		self.flipped_v_img = cv2.flip(self.original_image, 0)
+		self.flipped_data_h = np.asarray(self.flipped_h_img, dtype=np.uint8)
+		self.flipped_data_v = np.asarray(self.flipped_v_img, dtype=np.uint8)
+
 		rospy.loginfo("Initialization of [%s] completed" % (self.node_name))
 		pub_period = rospy.get_param("~pub_period", 1.0)
 		rospy.Timer(rospy.Duration.from_sec(pub_period), self.pubOrig)
@@ -33,8 +37,8 @@ class VirtualMirrorTestNode(object):
 	def pubOrig(self, args=None):
 		image_msg_out = CompressedImage()
 		image_msg_out.header.stamp = rospy.Time.now()
-		image_msg_out.format = "jpeg"
-		image_msg_out.data = np.array(cv2.imencode('.jpg',
+		image_msg_out.format = "png"
+		image_msg_out.data = np.array(cv2.imencode('.png',
 				self.original_image)[1]).tostring()
 
 		self.pub_image.publish(image_msg_out)
@@ -46,8 +50,17 @@ class VirtualMirrorTestNode(object):
 		rospy.loginfo("test image size = [%d x %d]." % (image_cv.shape[0],
 				image_cv.shape[1]))
 		image_data = np.asarray(image_cv, dtype=np.uint8)
-		data_check = self.flipped_data - image_data
-		rospy.loginfo("Received flipped image :: sum is %d" % np.sum(data_check))
+		data_check_h = self.flipped_data_h - image_data
+		data_check_v = self.flipped_data_v - image_data
+
+		if np.sum(data_check_h) < 1:
+			rospy.loginfo("Pass H:: sum is %d" % np.sum(data_check_h))
+			return
+		if np.sum(data_check_v) < 1:
+			rospy.loginfo("Pass V:: sum is %d" % np.sum(data_check_v))
+			return
+		rospy.loginfo("Fail :: sum_h is %d and sum_v is %d" % 
+				(np.sum(data_check_h), np.sum(data_check_v)))
 
 
 if __name__ == '__main__': 

@@ -1,0 +1,11 @@
+<launch>
+    <arg name="pkg_name" value="virtual_mirror_agirard"/>
+    <arg name="node_name" value="virtual_mirror"/>
+    <arg name="veh"  default="quackmobile"/>
+    <arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+    <arg name="config" default="baseline" doc="Specify a config."/>
+    <arg name="param_file_name" default="default" doc="Specify a param file." />
+    <node ns="$(arg veh)" pkg="$(arg pkg_name)" type="virtual_mirror_node.py" name="$(arg node_name)" output="screen">
+	<rosparam command="load" file="~/duckietown/catkin_ws/src/spring2016/agirard/duckietown_agirard/launch/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
+    </node>
+</launch>

@@ -14,7 +14,7 @@ VERBOSE=False
 class mirror:
 
 	def __init__(self):
-		self.node_name = "virtual_mirror_npd22"
+		self.node_name = "virtual_mirror_npd22_node"
 
 		#initialize bridge
 		self.bridge = CvBridge()
@@ -62,7 +62,7 @@ class mirror:
 
 
 if __name__ == '__main__':
-    rospy.init_node('virtual_mirror_npd22',anonymous=False)
+    rospy.init_node('virtual_mirror_npd22_node',anonymous=False)
     virtual_mirror_node = mirror()
     rospy.on_shutdown(mirror.onShutdown)
     rospy.spin()

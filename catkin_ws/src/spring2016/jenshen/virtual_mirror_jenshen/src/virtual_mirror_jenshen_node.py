@@ -11,58 +11,52 @@ class VirtualMirror(object):
         rospy.loginfo("[%s] Initializing " %(self.node_name))
         
         self.virt_mirror = None
-        self.image_sub = rospy.Subscriber("image_sub",CompressedImage,self.callback)
-        self.image_pub = rospy.Publisher("image_pub/compressed",CompressedImage, queue_size=1)
-        
-        self.last_pub_msg = None
-        self.last_pub_time = rospy.Time.now()
-        
-        self.flip = Flip()
+        self.publisher = rospy.Publisher("~topic_out", Image, queue_size=1)
+        self.subscriber = rospy.Subscriber("~topic_in", CompressedImage, self.callback)
+        self.config_pub = rospy.Publisher("~flip_direction", Flip, queue_size=1)
 
         # Setup Parameters
-        self.speed_gain = self.setupParam("~speed_gain", 1.0)
-        self.steer_gain = self.setupParam("~steer_gain", 1.0)
-
-        # Publications
-        self.pub_wheels = rospy.Publisher("~wheels_cmd", WheelsCmdStamped, queue_size=1)
-
-        # Subscriptions
-        self.sub_joy_ = rospy.Subscriber("joy", Joy, self.cbJoy, queue_size=1)
+        self.flip = Flip()
+        self.flip_direction = self.setupParam("~flip_direction", "horz")
+        self.update_flip_direction(self.flip_direction)
         
-        # timer
-        # self.pub_timer = rospy.Timer(rospy.Duration.from_sec(self.pub_timestep),self.publishControl)
-        self.param_timer = rospy.Timer(rospy.Duration.from_sec(1.0),self.cbParamTimer)
-        self.has_complained = False
+        # Timer
+        self.param_timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.cbParamTimer)
+        self.pub_timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.cbPubTimer)
 
-    def cbParamTimer(self,event):
-        self.speed_gain = rospy.get_param("~speed_gain", 1.0)
-        self.steer_gain = rospy.get_param("~steer_gain", 1.0)
+    def cbParamTimer(self, event):
+        self.flip_string = rospy.get_param("~flip_direction", 1.0)
+        self.update_flip_style(self.flip_string)
 
+    def update_flip_direction(self, flip_string):
+        self.flip.direction = Flip.HORZ # default = horizontal
+        self.flip_code = 1
+
+        if flip_string == 'vert':
+            self.flip_code = 0
+            rospy.loginfo('flip = vertical')
+            self.flip.direction = Flip.VERT
+        else:
+            rospy.loginfo('flip = horizontal')
+
+    def cbPubTimer(self, event):
+        self.config_pub.publish(self.flip)
+        
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
-        rospy.set_param(param_name,value) #Write to parameter server for transparancy
+        rospy.set_param(param_name,value) # Write to parameter server for transparancy
         rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
         return value
 
-    def cbJoy(self, joy_msg):
-        self.joy = joy_msg
-        self.publishControl()
+    def callback(self, data):
+        np_arr = np.fromstring(data.data, np.uint8)
+        image_np = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
+        image_np = cv2.flip(image_np, self.flip_code)
 
-    def publishControl(self):
-        speed = self.joy.axes[1] * self.speed_gain #Left stick V-axis. Up is positive
-        steering = self.joy.axes[3] * self.steer_gain
-        wheels_cmd_msg = WheelsCmdStamped()
-
-        # Car Steering Mode
-        vel_left = (speed - steering)
-        vel_right = (speed + steering)
-        wheels_cmd_msg.header.stamp = self.joy.header.stamp
-        wheels_cmd_msg.vel_left = np.clip(vel_left,-1.0,1.0)
-        wheels_cmd_msg.vel_right = np.clip(vel_right,-1.0,1.0)
-        rospy.loginfo("[%s] left %f, right %f" % (self.node_name,wheels_cmd_msg.vel_left,wheels_cmd_msg.vel_right))
-        self.pub_wheels.publish(wheels_cmd_msg)
+        msg = bridge.cv2_to_imgmsg(image_np, encoding="passthrough")
+        self.publisher.publish(msg)    
 
 if __name__ == "__main__":
-    rospy.init_node("joy_mapper",anonymous=False)
-    joy_mapper = JoyMapper()
+    rospy.init_node("virtual_mirror_jenshen_node",anonymous=True)
+    virtual_mirror = VirtualMirror()
     rospy.spin()

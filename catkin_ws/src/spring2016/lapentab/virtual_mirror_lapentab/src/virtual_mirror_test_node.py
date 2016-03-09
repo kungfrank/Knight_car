@@ -17,7 +17,7 @@ class VirtualMirrorTest(object):
         self.node_name = rospy.get_name()
         self.bridge = CvBridge()
         self.flip_direction  = self.setupParam("/magitek/virtual_mirror_node/flip_direction","horz") # default horz
-        self.pub_img = rospy.Publisher("~image/original",CompressedImage,queue_size=1)
+        self.pub_img = rospy.Publisher("~image_orig",CompressedImage,queue_size=1)
         self.last_stamp = rospy.Time.now()
         self.sub_img = rospy.Subscriber("~img_in", Image, self.compareImage)
         self.param_timer = rospy.Timer(rospy.Duration.from_sec(1.0),self.cbParamTimer)

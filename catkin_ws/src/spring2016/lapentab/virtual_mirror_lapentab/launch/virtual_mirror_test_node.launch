@@ -7,7 +7,7 @@
 	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
 	<group ns="$(arg veh)">
 		<node machine="$(arg veh)" name="virtual_mirror_node" pkg="virtual_mirror_lapentab" type="virtual_mirror_node.py" output="screen">
-			<remap from="~img_in" to="virtual_mirror_test_node/image/original"/>
+			<remap from="~img_in" to="virtual_mirror_test_node/image_orig"/>
 		</node>
 		<node machine="$(arg veh)" name="virtual_mirror_test_node" pkg="virtual_mirror_lapentab" type="virtual_mirror_test_node.py" output="screen">
 			<remap from="~img_in" to="virtual_mirror_node/image/flipped"/>

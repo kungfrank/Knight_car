@@ -36,6 +36,5 @@
 	<machine name="setlist" address="setlist.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="redrover" address="redrover.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
         <machine name="argo" address="argo.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
->>>>>>> M04_PAI
 </launch>
 

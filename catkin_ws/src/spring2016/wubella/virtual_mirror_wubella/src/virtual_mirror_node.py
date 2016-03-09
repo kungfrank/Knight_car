@@ -17,9 +17,9 @@ class VirtualMirror(object):
         
         #self.publish_freq = self.setupParam("~publish_freq",1.0)
         #self.publish_duration = rospy.Duration.from_sec(1.0/self.publish_freq)
-        self.pub_raw = rospy.Publisher("~topic", Image,queue_size=1)
+        self.pub_raw = rospy.Publisher("~image/compressed", CompressedImage,queue_size=1)
         #self.last_stamp = rospy.Time.now()        
-        self.sub_compressed_img = rospy.Subscriber("~topic_in",CompressedImage,self.cbImg,queue_size=1)
+        self.sub_compressed_img = rospy.Subscriber("~image_in",CompressedImage,self.cbImg, queue_size=1)
         
         self.flip_direction = FlipDirection()
         self.flip_direction.direction = self.flip_direction.horz#default horizontal mirror
@@ -31,7 +31,7 @@ class VirtualMirror(object):
         self.param_pub.publish(self.flip_direction)
 
     def cbSubTimer(self,event):
-        direction_string = rospy.get_param("~flip_direction", 1.0)
+        direction_string = rospy.get_param("~flip_direction", 'horz')
         if direction_string == self.flip_direction.vert or direction_string == self.flip_direction.horz:
             self.flip_direction.direction = direction_string
         rospy.loginfo(self.flip_direction.direction)
@@ -48,40 +48,20 @@ class VirtualMirror(object):
         np_arr = np.fromstring(msg.data, np.uint8)
          
         cv_image = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
-        # time_1 = time.time()
-        img_msg = self.bridge.cv2_to_imgmsg(cv_image, "bgr8")
-        rgb_in = np.fromstring(img_msg.data, np.uint8)
-        W = img_msg.width
-        H = img_msg.height
-        
-        #rgb_in = np.reshape(rgb_in, (H, W, 3))
-        #print rgb_in.shape
-        rgb_out = rgb_in.copy()
+        #cv_image = cv2.flip(cv_image, 1)
+
         if self.flip_direction.direction == self.flip_direction.horz:
-            for i in range (0, H-1):
-                for j in range (0, W-1):
-                    rgb_out[3*(i*W+j)] = rgb_in[3*(i*W+W-j-1)]
-                    rgb_out[3*(i*W+j)+1] = rgb_in[3*(i*W+W-j-1)+1]
-                    rgb_out[3*(i*W+j)+2] = rgb_in[3*(i*W+W-j-1)+2]
+            cv_image = cv2.flip(cv_image, 1)
         if self.flip_direction.direction == self.flip_direction.vert:
-            for i in range (0, H-1):
-                for j in range (0, W-1):
-                    rgb_out[3*(i*W+j)] = rgb_in[3*((H-i-1)*W+j)]
-                    rgb_out[3*(i*W+j)+1] = rgb_in[3*((H-i-1)*W+j)+1]
-                    rgb_out[3*(i*W+j)+2] = rgb_in[3*((H-i-1)*W+j)+2]
+            cv_image = cv2.flip(cv_image, 0)
         
+        compressed_img_msg = CompressedImage()
+        compressed_img_msg.format = "png"
+       	compressed_img_msg.data = np.array(cv2.imencode('.png', cv_image)[1]).tostring()
 
-       	img_msg.data = rgb_out.tostring()
-
-        # time_2 = time.time()
-        img_msg.header.stamp = msg.header.stamp
-        img_msg.header.frame_id = msg.header.frame_id
-        self.pub_raw.publish(img_msg)
-
-        # time_3 = time.time()
-        # rospy.loginfo("[%s] Took %f sec to decompress."%(self.node_name,time_1 - time_start))
-        # rospy.loginfo("[%s] Took %f sec to conver to Image."%(self.node_name,time_2 - time_1))
-        # rospy.loginfo("[%s] Took %f sec to publish."%(self.node_name,time_3 - time_2))
+        compressed_img_msg.header.stamp = msg.header.stamp
+        compressed_img_msg.header.frame_id = msg.header.frame_id
+        self.pub_raw.publish(compressed_img_msg)
 
 if __name__ == '__main__': 
     rospy.init_node('virtual_mirror_wubella',anonymous=False)

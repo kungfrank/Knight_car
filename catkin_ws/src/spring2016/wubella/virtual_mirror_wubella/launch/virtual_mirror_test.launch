@@ -3,7 +3,7 @@
 	<arg name="log_in" doc="the full path to the input log" />
 	<arg name="log_out" doc="the full path to the output log" />
 	
-	<remap from="virtual_mirror_node/topic_in" to="/charles/camera_node/image/compressed"/> 
+	<remap from="virtual_mirror_node/image_in" to="/charles/camera_node/image/compressed"/> 
 	<node ns="$(arg veh)" pkg="virtual_mirror_wubella" type="virtual_mirror_node.py" name="virtual_mirror_node" output="screen">
 	</node>
 

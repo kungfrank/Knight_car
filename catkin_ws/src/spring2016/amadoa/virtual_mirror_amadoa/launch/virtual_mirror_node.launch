@@ -6,7 +6,7 @@
   <arg name="config" default="baseline" doc="Specify a config."/>
   <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
   
-	<arg name="flip_direction" doc="horz or vert"/>
+  <arg name="flip_direction" doc="horz or vert"/>
 	
   <group ns="$(arg veh)">
     <node name="$(arg node_name)"
@@ -19,11 +19,11 @@
       <param name="~flip_direction" value="$(arg flip_direction)"/>
 
 	    <!-- Subscribe Topics -->
-	    <remap from="duckiebot_image" to="camera_node/image/compressed"/>
+	    <!-- <remap from="duckiebot_image" to="camera_node/image/compressed"/> -->
 
 	    <!-- Publish Topics -->
-	    <remap from="mirrored_image" to="virtual_mirror_amadoa_node/image/compressed"/>
-	    <remap from="flip" to="virtual_mirror_amadoa_node/flip"/>
+	    <!-- <remap from="mirrored_image" to="virtual_mirror_amadoa_node/image/compressed"/> -->
+	    <!-- <remap from="flip" to="virtual_mirror_amadoa_node/flip"/> -->
 	  
 	  </node>
 	</group>

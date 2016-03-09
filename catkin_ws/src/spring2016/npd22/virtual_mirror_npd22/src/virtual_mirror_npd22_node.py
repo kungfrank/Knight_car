@@ -14,6 +14,15 @@ VERBOSE=False
 class mirror:
 
 	def __init__(self):
+
+		self.flip_direction     = self.setupParam("~flip_direction","vert") # either vert for vertical flip or horz for horizontal flip
+		if self.flip_direction == "vert":
+			flip_number = 2
+		elif self.flip_direction == "horz":
+			flip_number = 1
+		else:
+			flip_number = 1
+			print("flip_direction does not match 'vert' or 'horz'")
 		self.node_name = "virtual_mirror_npd22_node"
 
 		#initialize bridge
@@ -32,7 +41,7 @@ class mirror:
 		#### direct conversion to CV2 ####
 	       	image_cv = cv2.imdecode(np.fromstring(image_msg.data, np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
 
-		mirroredImage = cv2.flip(image_cv, 1)
+		mirroredImage = cv2.flip(image_cv, flip_number)
 
 		# Publish the image message
         	image_msg_out = self.bridge.cv2_to_imgmsg(mirroredImage, "bgr8")

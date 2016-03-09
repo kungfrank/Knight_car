@@ -1,0 +1,9 @@
+<launch>
+	<arg name="veh" default="pontiac" doc="Name of vehicle. ex: megaman"/>
+	<group ns="$(arg veh)">
+		<node name="virtual_mirror_catliu_tester_node" pkg="virtual_mirror_catliu" type="virtual_mirror_catliu_tester_node.py" output="screen">
+		      <param name="~im_dir" value="$(arg im_dir)"/>
+	      	  <param name="~num_im" value="$(arg num_im)"/>
+		 </node>
+	</group>
+</launch>

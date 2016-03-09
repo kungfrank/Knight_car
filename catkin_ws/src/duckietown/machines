@@ -34,5 +34,6 @@
 	<machine name="chewbacca" address="chewbacca.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 	<machine name="miata" address="miata.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
         <machine name="argo" address="argo.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
+        <machine name="feiying" address="feiying.local" user="ubuntu" env-loader="$(arg env_script_path)"/>
 </launch>
 

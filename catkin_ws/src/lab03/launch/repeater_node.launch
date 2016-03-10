@@ -1,7 +1,0 @@
-<launch>
-	<arg name="veh"/>
-	<remap from="repeater_node/topic_in" to="/megaman/publisher_node/topic"/>
-	<remap from="repeater_node/topic_out" to="/maserati/repeater_node/topic"/>
-	<node ns="$(arg veh)" pkg="lab03" type="repeater_node.py" name="repeater_node" output="screen">
-	</node>
-</launch>

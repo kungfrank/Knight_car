@@ -9,6 +9,10 @@ from numpy import array
 class MirrorTesterNode(object):
     def __init__(self):
         self.node_name = "virtual_mirror_amadoa_tester_node"
+        self.original_image_file = self.setupParam("~original_image_file","")
+        self.flipped_image_horz = self.setupParam("~flipped_image_horz","")
+        self.flipped_image_vert = self.setupParam("~flipped_image_vert","")
+        self.testType = 'horz'
         # self.flip_direction = self.setupParam("~flip_direction", "horz") # horz or vert
         # Set up publisher to publish test image
         self.pub_mirror = rospy.Publisher("~test_image",CompressedImage,queue_size=1, latch=True)
@@ -24,8 +28,7 @@ class MirrorTesterNode(object):
         return value
 
     def publishTestImage(self):
-        original_image_file = self.setupParam("~original_image_file","")
-        original_img = cv2.imread(original_image_file, cv2.CV_LOAD_IMAGE_COLOR)
+        original_img = cv2.imread(self.original_image_file, cv2.CV_LOAD_IMAGE_COLOR)
 
         #### Create CompressedIamge ####
         out = CompressedImage()
@@ -35,12 +38,16 @@ class MirrorTesterNode(object):
         out.data = np.array(np_arr_out).tostring()
 
         # Publish new image
+        rospy.sleep(1)
         self.pub_mirror.publish(out)
-        print "published image"
+        rospy.loginfo("[%s] published image"%self.node_name)
 
     def imageCallback(self, msg):
         # Load reference image
-        flipped_image_file = self.setupParam("~flipped_image_file","")
+        if self.testType == 'horz':
+            flipped_image_file = self.flipped_image_horz
+        else:
+            flipped_image_file = self.flipped_image_vert
         flipped_img = cv2.imread(flipped_image_file, cv2.CV_LOAD_IMAGE_COLOR)
 
         # Decode returned image
@@ -50,13 +57,14 @@ class MirrorTesterNode(object):
         # print (returned_image - flipped_img)
 
         # print "in: ",flipped_img.shape, "out: ", returned_image.shape
-        cv2.imwrite("/home/amado/pics_duckietown/Test_images/01_diff.jpg",cv2.subtract(flipped_img, returned_image))
+        # cv2.imwrite("/home/amado/pics_duckietown/Test_images/01_diff.jpg",cv2.subtract(flipped_img, returned_image))
 
 
         if np.array_equal(returned_image, flipped_img):
-            rospy.loginfo("Test passed successfully!")
+            rospy.loginfo("Test %s passed successfully!"%self.testType)
+            self.testType = 'vert'
         else:
-            rospy.logwarn("Test failed :(")
+            rospy.logwarn("Test %s failed :("%self.testType)
 
     def onShutdown(self):
         rospy.loginfo("[virtual_mirror_amadoa_node] Shutdown.")
@@ -65,5 +73,8 @@ if __name__ == '__main__':
     rospy.init_node("virtual_mirror_amadoa_tester_node",anonymous=False)
     mirror_tester_node = MirrorTesterNode()
     mirror_tester_node.publishTestImage()
+    rospy.set_param("/amadobot/virtual_mirror_amadoa_node/flip_direction", "vert")
+    mirror_tester_node.publishTestImage()
+
     rospy.on_shutdown(mirror_tester_node.onShutdown)
     rospy.spin()

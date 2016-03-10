@@ -14,11 +14,11 @@ class MirrorNode(object):
         self.node_name = "virtual_mirror_amadoa_node"
         self.flip_direction = self.setupParam("~flip_direction", "horz") # horz or vert
 
-        self.subscriber = rospy.Subscriber("duckiebot_image", CompressedImage, self.imageCallback)
+        self.subscriber = rospy.Subscriber("~duckiebot_image", CompressedImage, self.imageCallback)
 
-        self.pub_mirror = rospy.Publisher("mirrored_image",CompressedImage,queue_size=1)
+        self.pub_mirror = rospy.Publisher("~mirrored_image",CompressedImage,queue_size=1)
 
-        self.pub_flip = rospy.Publisher("flip", Flip, queue_size=1)
+        self.pub_flip = rospy.Publisher("~flip", Flip, queue_size=1)
 
         self.param_timer = rospy.Timer(rospy.Duration.from_sec(1.0),self.cbParamTimer)
 

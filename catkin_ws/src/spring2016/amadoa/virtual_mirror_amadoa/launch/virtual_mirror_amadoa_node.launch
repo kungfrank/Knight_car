@@ -22,7 +22,7 @@
 	    <!-- <remap from="mirrored_image" to="virtual_mirror_amadoa_node/image/compressed"/> -->
 	    <!-- <remap from="flip" to="virtual_mirror_amadoa_node/flip"/> -->
 	  
-	  </node>
-	</group>
+	</node>
+  </group>
 	
 </launch>

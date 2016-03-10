@@ -21,7 +21,7 @@ class WheelsDriverNode(object):
         return value
 
     def cbWheelsCmd(self,msg):
-        self.driver.setWheelsSpeed(left=msg.vel_left,right=msg.vel_right)
+        self.driver.setWheelsSpeed(left=-msg.vel_right,right=msg.vel_left)
 
     def on_shutdown(self):
         self.driver.setWheelsSpeed(left=0.0,right=0.0)

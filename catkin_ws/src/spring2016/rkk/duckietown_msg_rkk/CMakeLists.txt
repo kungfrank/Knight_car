@@ -6,6 +6,11 @@ project(duckietown_msg_rkk)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   duckietown_msgs
+  roscpp 
+  rospy 
+  std_msgs 
+  message_generation
+
 )
 
 ## System dependencies are found with CMake's conventions
@@ -41,12 +46,11 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * uncomment the generate_messages entry below
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
-## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+# Generate messages in the 'msg' folder
+add_message_files(
+  FILES
+  FlipDirection.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -62,11 +66,12 @@ find_package(catkin REQUIRED COMPONENTS
 #   Action2.action
 # )
 
-## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   duckietown_msgs
-# )
+# Generate added messages and services with any dependencies listed here
+generate_messages(
+  DEPENDENCIES
+  duckietown_msgs
+  std_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -100,7 +105,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES duckietown_msg_rkk
-#  CATKIN_DEPENDS duckietown_msgs
+  CATKIN_DEPENDS message_runtime duckietown_msgs std_msgs
 #  DEPENDS system_lib
 )
 

@@ -9,7 +9,7 @@
 
     <!-- run virtual_mirror_rkk_node -->
     <remap from="$(arg node_name)/rgb_in" to="/$(arg veh)/camera_node/image/compressed"/>-
-    <include file="$(find $(arg pkg_name))/launch/$(arg node_name).launch">
+    <include file="$(find virtual_mirror_rkk)/launch/$(arg node_name).launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>
         <arg name="config" value="$(arg config)"/>

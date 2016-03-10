@@ -15,7 +15,7 @@ class VirtualMirrorTesterNode(object):
         self.horz_path = self.setupParam("~horz_path", '../test_images/lenna_horz.png')
         self.vert_path = self.setupParam("~vert_path", '../test_images/lenna_vert.png')
 
-        self.sub_raw = rospy.Subscriber("~rgb_in", Image, self.checkImage)
+        self.sub_raw = rospy.Subscriber("~rgb_in", Image, self.cbCheckImage)
         self.sub_comp = rospy.Publisher("~rgb_out", CompressedImage, queue_size=1, latch=True)
         self.bridge = CvBridge()
         self.result_vert = None
@@ -43,7 +43,7 @@ class VirtualMirrorTesterNode(object):
             rospy.sleep(2.) #Must wait longer than the polling rate of the virutal_mirror_node
             self.sub_comp.publish(self.image_orig_msg)
 
-    def checkImage(self, image_msg):
+    def cbCheckImage(self, image_msg):
         rospy.loginfo("[%s] %s image received from virtual mirror" %(self.node_name,self.code2Word(self.flip_direction)))
         image_flip = self.bridge.imgmsg_to_cv2(image_msg)
         if self.flip_direction == 'horz':

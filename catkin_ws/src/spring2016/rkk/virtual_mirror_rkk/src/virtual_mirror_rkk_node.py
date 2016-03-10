@@ -47,7 +47,7 @@ class VirtualMirrorNode(object):
     def cbParamTimer(self,event):
         self.flip_direction = rospy.get_param("~flip_direction", "horz")
         #self.param_msg = FlipDirection.HORZ if self.flip_direction == 'horz' else FlipDirection.VERT
-        #self.param_pub.publish(self.param_msg)
+        self.param_pub.publish(self.param_msg)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

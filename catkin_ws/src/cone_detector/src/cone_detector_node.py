@@ -13,6 +13,7 @@ import threading
 class TemplateMatcher:
     def __init__(self):
         template_loc = rospy.get_param("/image")
+        rospy.loginfo("Template location: "+template_loc)
         template = cv2.imread(template_loc)
         if template == None:
             print "\n\nno image template found at %s, \
@@ -62,7 +63,7 @@ class TemplateMatcher:
 
 class ConeDetector:
     def __init__(self, target_img="cone.png"):
-        self.node_name = "Cone Detector"
+        self.node_name = "cone_detector_node"
         self.tm = TemplateMatcher()
         self.thread_lock = threading.Lock()
         self.sub_image = rospy.Subscriber("~image_raw", Image, self.cbImage, queue_size=1)
@@ -95,7 +96,7 @@ class ConeDetector:
 
 
 if __name__=="__main__":
-    rospy.init_node('cone_detector')
+    rospy.init_node('cone_detector_node')
     c = ConeDetector()
     rospy.spin()
 

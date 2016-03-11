@@ -60,27 +60,33 @@ class TemplateMatcher:
         return img, pose
 
     def contour_match(self, img):
-
+        height,width = img.shape[:2]
         hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         COLOR_MIN = np.array([0, 80, 80],np.uint8)
         COLOR_MAX = np.array([22, 255, 255],np.uint8)
         frame_threshed = cv2.inRange(hsv_img, COLOR_MIN, COLOR_MAX)
         imgray = frame_threshed
         ret,thresh = cv2.threshold(frame_threshed,22,255,0)
-        im2, contours, hierarchy = cv2.findContours(\
-                thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+        try:
+            contours, hierarchy = cv2.findContours(\
+                    thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
-        # Find the index of the largest contour
-        areas = [cv2.contourArea(c) for c in contours]
-        max_index = np.argmax(areas)
-        cnt = contours[max_index]
-        contour_area = [ (cv2.contourArea(c), (c) ) for c in contours]
-        #contour_area.sort()
-        contour_area = sorted(contour_area,reverse=True, key=lambda x: x[0])
-        for (area,(cnt)) in contour_area[:10]:
-        # plot box around contour
-            x,y,w,h = cv2.boundingRect(cnt)
-            cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
+            # Find the index of the largest contour
+            areas = [cv2.contourArea(c) for c in contours]
+            max_index = np.argmax(areas)
+            cnt = contours[max_index]
+            contour_area = [ (cv2.contourArea(c), (c) ) for c in contours]
+            #contour_area.sort()
+            contour_area = sorted(contour_area,reverse=True, key=lambda x: x[0])
+            for (area,(cnt)) in contour_area[:10]:
+            # plot box around contour
+                x,y,w,h = cv2.boundingRect(cnt)
+                #rospy.loginfo("w = %f h=%f",w,h)
+                d =  0.5*(x-width/2)**2 + (y-height)**2 
+                if h>15 and w >15 and d  < 120000:
+                    cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
+        except:
+            print "contr err"
         return img, 0.0
 
 class ConeDetector:

@@ -11,7 +11,7 @@ class VirtualMirrorCatliuTesterNode(object):
         self.node_name = rospy.get_name()
         
 
-        self.pub_fake_images = rospy.Publisher("~image_compressed", CompressedImage, queue_size=1)
+        self.pub_fake_images = rospy.Publisher("virtual_mirror_catliu/image_compressed", CompressedImage, queue_size=1)
         rospy.sleep(1)
 
         #take in directory of images as input, use 01_orig.png, 02, 03, 04
@@ -23,8 +23,8 @@ class VirtualMirrorCatliuTesterNode(object):
         self.checkedVert = False
 
         self.bridge = CvBridge()
-        self.sub_mirrored = rospy.Subscriber("~image_mirrored", Image, self.checkIm)
-        self.sub_mirrored = rospy.Subscriber("~orientation", MirrorOrientation, self.checkOrientation)
+        self.sub_mirrored = rospy.Subscriber("virtual_mirror_catliu/image_mirrored", Image, self.checkIm)
+        self.sub_mirrored = rospy.Subscriber("virtual_mirror_catliu/orientation", MirrorOrientation, self.checkOrientation)
 
     def setupParam(self, param_name, default_value):
         value = rospy.get_param(param_name,default_value)
@@ -81,5 +81,5 @@ class VirtualMirrorCatliuTesterNode(object):
 
 if __name__ == '__main__':
     rospy.init_node('virtual_mirror_catliu_tester',anonymous=False)
-    lane_filter_tester_node = LaneFilterTesterNode()
-    rospy.on_shutdown(lane_filter_tester_node.onShutdown)
+    virtual_mirror_catliu_tester = VirtualMirrorCatliuTesterNode()
+    rospy.on_shutdown(virtual_mirror_catliu_tester.onShutdown)

@@ -19,7 +19,7 @@ class TemplateMatcher:
             enter complete path for template image\n\n" % template_loc
             sys.exit(1)
         self.h, self.w, _= template.shape
-        pyramid_len = 0  # enter number higher than zero for pyramid matching
+        pyramid_len =5  # enter number higher than zero for pyramid matching
         self.templates = [(1, template)]
         # Use pyramid for matching template.  Create resized copies
         # of template image:
@@ -47,7 +47,7 @@ class TemplateMatcher:
         # it is normalized from 0 to 1.  The smaller the better.
         min_val, template, top_left = results[0]
         
-        if min_val < 1: 
+        if min_val < .5: 
             # draw a box around the best match
             t_h, t_w, _ =  template.shape
             bottom_right = (top_left[0] + t_w, top_left[1] + t_h)
@@ -59,6 +59,29 @@ class TemplateMatcher:
             pose = float('nan')
         return img, pose
 
+    def contour_match(self, img):
+
+        hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        COLOR_MIN = np.array([0, 80, 80],np.uint8)
+        COLOR_MAX = np.array([22, 255, 255],np.uint8)
+        frame_threshed = cv2.inRange(hsv_img, COLOR_MIN, COLOR_MAX)
+        imgray = frame_threshed
+        ret,thresh = cv2.threshold(frame_threshed,22,255,0)
+        im2, contours, hierarchy = cv2.findContours(\
+                thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+
+        # Find the index of the largest contour
+        areas = [cv2.contourArea(c) for c in contours]
+        max_index = np.argmax(areas)
+        cnt = contours[max_index]
+        contour_area = [ (cv2.contourArea(c), (c) ) for c in contours]
+        #contour_area.sort()
+        contour_area = sorted(contour_area,reverse=True, key=lambda x: x[0])
+        for (area,(cnt)) in contour_area[:10]:
+        # plot box around contour
+            x,y,w,h = cv2.boundingRect(cnt)
+            cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
+        return img, 0.0
 
 class ConeDetector:
     def __init__(self, target_img="cone.png"):
@@ -86,8 +109,9 @@ class ConeDetector:
 
         np_arr = np.fromstring(image_msg.data, np.uint8)
         
-        image_cv = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
-        img,pose = self.tm.match(image_cv)
+        image_cv = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+        img,pose = self.tm.contour_match(image_cv)
+        #img,pose = self.tm.match(image_cv)
         
         try:
             self.pub_image.publish(self.bridge.cv2_to_imgmsg(img, "bgr8"))

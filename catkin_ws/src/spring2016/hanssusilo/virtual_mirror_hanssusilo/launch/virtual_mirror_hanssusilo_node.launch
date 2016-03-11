@@ -1,0 +1,9 @@
+<launch>
+	<arg name="node_name" default="virtual_mirror_hanssusilo_node"/>
+	<arg name="pkg_name" value="virtual_mirror_hanssusilo"/>
+	<arg name="veh" default="penguin" doc="Name of vehicle. ex: megaman"/>
+	<arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+	<arg name="config" default="baseline" doc="Specify a config."/>
+	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+	<rosparam command="load" file="$(find <duckietown_package_name>)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
+</launch>

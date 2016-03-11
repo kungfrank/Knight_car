@@ -11,7 +11,7 @@ import threading
 
 class TemplateMatcher:
     def __init__(self):
-        template_loc = rospy.get_param("/image", "/home/ubuntu/duckietown/catkin_ws/src/duckietown/config/baseline/cone_detector/cone_detector_node/blob.png")
+        template_loc = rospy.get_param("~image")
         rospy.loginfo("Template location: "+template_loc)
         template = cv2.imread(template_loc)
         if template == None:

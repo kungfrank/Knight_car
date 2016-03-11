@@ -100,6 +100,7 @@ class ConeDetector:
         self.pub_image = rospy.Publisher("~cone_detection", Image, queue_size=1)
         self.pub_pose = rospy.Publisher("~cone_ibvs", Float32, queue_size=1)
         self.bridge = CvBridge()
+        self.ground_proj_service = rospy.ServiceProxy('get_ground_coordinate',GetGroundCoordinate)
 
         rospy.loginfo("[%s] Initialized." %(self.node_name))
 

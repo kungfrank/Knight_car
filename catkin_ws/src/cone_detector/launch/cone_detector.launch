@@ -1,0 +1,6 @@
+<launch>
+    <param name="image" value="$(arg image)" />
+	<node pkg="cone_detector" type="image_matching.py" name="cone_detector" output="screen" >
+        <remap from="~image_raw" to="/camera/rgb/image_rect_color"/>
+	</node>
+</launch>

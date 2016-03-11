@@ -7,10 +7,15 @@ from std_msgs.msg import Float32
 from cv_bridge import CvBridge, CvBridgeError
 import sys
 import threading
+from ground_projection.srv import *
+from duckietown_msgs.msg import Vector2D
 
 
 class TemplateMatcher:
     def __init__(self):
+        #Uncomment for ground projection
+        #rospy.wait_for_service('/pipquack/ground_projection/get_ground_coordinate')
+        #self.ground_proj = rospy.ServiceProxy('/pipquack/ground_projection/get_ground_coordinate',GetGroundCoord)
         template_loc = rospy.get_param("~image")
         rospy.loginfo("Template location: "+template_loc)
         template = cv2.imread(template_loc)
@@ -60,6 +65,7 @@ class TemplateMatcher:
         return img, pose
 
     def contour_match(self, img):
+        p = Vector2D() #Use this for groud projection
         height,width = img.shape[:2]
         hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         COLOR_MIN = np.array([0, 80, 80],np.uint8)
@@ -81,7 +87,10 @@ class TemplateMatcher:
             for (area,(cnt)) in contour_area[:10]:
             # plot box around contour
                 x,y,w,h = cv2.boundingRect(cnt)
-                #rospy.loginfo("w = %f h=%f",w,h)
+                #For ground projection uncomment the next lines
+                #p.x = x
+                #p.y = y
+                #print self.ground_proj(p)
                 d =  0.5*(x-width/2)**2 + (y-height)**2 
                 if h>15 and w >15 and d  < 120000:
                     cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
@@ -100,7 +109,12 @@ class ConeDetector:
         self.pub_image = rospy.Publisher("~cone_detection", Image, queue_size=1)
         self.pub_pose = rospy.Publisher("~cone_ibvs", Float32, queue_size=1)
         self.bridge = CvBridge()
-        self.ground_proj_service = rospy.ServiceProxy('get_ground_coordinate',GetGroundCoordinate)
+        
+
+        #p = Vector2D()
+        #p.x = 1
+        #p.y= 1
+        #print self.ground_proj(p)
 
         rospy.loginfo("[%s] Initialized." %(self.node_name))
 

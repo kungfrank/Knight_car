@@ -2,7 +2,7 @@
 import cv2
 import numpy as np
 import rospy
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import CompressedImage, Image
 from std_msgs.msg import Float32
 from cv_bridge import CvBridge, CvBridgeError
 import sys
@@ -65,7 +65,7 @@ class ConeDetector:
         self.node_name = "cone_detector_node"
         self.tm = TemplateMatcher()
         self.thread_lock = threading.Lock()
-        self.sub_image = rospy.Subscriber("~image_raw", Image, self.cbImage, queue_size=1)
+        self.sub_image = rospy.Subscriber("~image_compressed", CompressedImage, self.cbImage, queue_size=1)
         self.pub_image = rospy.Publisher("~cone_detection", Image, queue_size=1)
         self.pub_pose = rospy.Publisher("~cone_ibvs", Float32, queue_size=1)
         self.bridge = CvBridge()
@@ -81,7 +81,11 @@ class ConeDetector:
     def processImage(self, image_msg):
         if not self.thread_lock.acquire(False):
             return
-        image_cv = self.bridge.imgmsg_to_cv2(image_msg)
+
+        np_arr = np.fromstring(msg.data, np.uint8)
+        cv_image = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
+        
+        image_cv = self.bridge.imgmsg_to_cv2(cv_image)
         img,pose = self.tm.match(image_cv)
         
         try:

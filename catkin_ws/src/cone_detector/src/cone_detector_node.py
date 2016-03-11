@@ -83,9 +83,8 @@ class ConeDetector:
             return
 
         np_arr = np.fromstring(image_msg.data, np.uint8)
-        cv_image = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
         
-        image_cv = self.bridge.imgmsg_to_cv2(cv_image)
+        image_cv = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
         img,pose = self.tm.match(image_cv)
         
         try:

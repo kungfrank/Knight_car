@@ -13,4 +13,11 @@
 	      	  <param name="~num_im" value="$(arg num_im)"/>
 		 </node>
 	</group>
+	
+	<include file="$(find virtual_mirror_catliu)/launch/virtual_mirror_catliu_node.launch">
+         <arg name="veh" value="$(arg veh)"/>
+         <arg name="local" value="true" />
+         <arg name="config" value="$(arg config)"/>
+         <arg name="param_file_name" value="$(arg param_file_name)"/>
+    </include>
 </launch>

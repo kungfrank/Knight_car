@@ -1,7 +1,0 @@
-<launch>
-	<arg name="veh"/>
-	<!--<remap from="virtual_mirror_node/topic_in" to="camera_node/image/compressed"/> -->
-	<!-- <remap from="virtual_mirror_node/topi_out" to="repeater_node/topic"/> -->
-	<node ns="$(arg veh)" pkg="virtual_mirror_nbuckman" type="virtual_mirror_node.py" name="virtual_mirror_node" output="screen">
-	</node>
-</launch>

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
 import rospy
 from sensor_msgs.msg import Image
 from std_msgs.msg import Float32

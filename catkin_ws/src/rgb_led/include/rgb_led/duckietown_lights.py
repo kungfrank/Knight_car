@@ -1,4 +1,4 @@
-import time
+import random
 __all__ = [
 	'DuckietownLights',
 	'cycle_LEDs_named',
@@ -24,6 +24,7 @@ class DuckietownLights():
 		FRONT_RIGHT: 4,
 	}
 
+	# name -> sequence
 	sequences = {}
 
 	car_all_lights = [TOP, BACK_LEFT, BACK_RIGHT, FRONT_LEFT, FRONT_RIGHT]
@@ -36,8 +37,6 @@ def create_patterns():
 	s = 1.0
 	RED = [s, 0, 0]
 	GREEN = [0, s, 0]
-	WHITE = [s, s, s]
-	BLUE = [0, 0, s]
 	YELLOW = [0, s, s]
 	WHITE = [s, s, s]
 	GREEN2 = [0, 0.3, 0]
@@ -49,8 +48,7 @@ def create_patterns():
 	s = 0.8
 	WHITE2 = [s, s, s]
 
-	add_pattern('blinking1', 
-		[
+	add_pattern('blinking1', [
 		(0.5, {TOP: GREEN2, BACK_LEFT:RED, BACK_RIGHT:RED, FRONT_LEFT:WHITE2,FRONT_RIGHT:WHITE2}),	
 		(0.5, {TOP: OFF, BACK_LEFT:OFF, BACK_RIGHT:OFF, FRONT_LEFT:WHITE2,FRONT_RIGHT:WHITE2}),
 	])
@@ -64,6 +62,15 @@ def create_patterns():
 		(0.25, {TOP: GREEN, BACK_LEFT:GREEN2, BACK_RIGHT:[0,1,1], FRONT_LEFT:YELLOW,FRONT_RIGHT:WHITE}),	
 		(0.25, {TOP: RED, BACK_LEFT:GREEN2, BACK_RIGHT:RED, FRONT_LEFT:RED,FRONT_RIGHT:RED}),
 	])
+
+	add_pattern('trafficlight4way',
+		[
+			{TOP: GREEN, BACK_LEFT:RED, BACK_RIGHT:RED, FRONT_LEFT:RED, FRONT_RIGHT:RED},
+			{TOP: RED, BACK_LEFT:RED, BACK_RIGHT:GREEN, FRONT_LEFT:RED, FRONT_RIGHT:RED},
+			{TOP: RED, BACK_LEFT:RED, BACK_RIGHT:RED, FRONT_LEFT:GREEN, FRONT_RIGHT:RED},
+			{TOP: RED, BACK_LEFT:RED, BACK_RIGHT:RED, FRONT_LEFT: RED, FRONT_RIGHT:GREEN},
+		]
+	)
 
 	conf_all_off = {
 		TOP: OFF, 
@@ -97,22 +104,21 @@ def create_patterns():
 		]
 	
 	colors = {
-	'white': [1, 1, 1],
+		'white': [1, 1, 1],
 		'red': [1, 0, 0],
 		'green': [0, 1, 0],
 		'blue': [0,0,1],
 		'yellow': [1,1,0],
-		# 'orange': [1,0.4,0],
 	}
 		
-	frequencies = [1,1.5,2,2.5,3,3.5,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+	frequencies = [1, 1.5, 2, 2.5, 3, 3.5, 4, 5, 6, 7, 8, 9,
+					10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 	
 	for name in DuckietownLights.car_all_lights:
 		for color, rgb in colors.items():
 			for freq in frequencies:
 				comb = '%s-%s-%1.1f' % (name, color, freq)
 				add_pattern(comb, blink_one(name, rgb, 1.0/freq))
-
 
 	for color, rgb in colors.items():
 		for freq in frequencies:
@@ -124,10 +130,15 @@ create_patterns()
 
 def cycle_LEDs_named(sequence_name):
 	if not sequence_name in DuckietownLights.sequences:
-		msg = 'Could not find sequence %r.' % sequence_name
-		msg += '\n\nI know:'
-		for s in DuckietownLights.sequences:
-			msg += '\n - %s' % s
+		msg = 'Could not find the sequence %r.' % sequence_name
+		msg += '\n\nThese are some I know:'
+		avail = list(DuckietownLights.sequences)
+		random.shuffle(avail)
+		N = 20
+		if len(avail) > N:
+			avail = avail[:N]
+			
+		msg += ' ' + ", ".join(avail) + '.'
 		raise ValueError(msg)
 	sequence = DuckietownLights.sequences[sequence_name]
 	cycle_LEDs(sequence)
@@ -149,9 +160,8 @@ def get_current_step(t, t0, sequence):
 
 	return i, sequence[i]
 
-
-
 def cycle_LEDs(sequence):
+	import time
 	from time import sleep
 	from .rgb_led import RGB_LED
 	led = RGB_LED()
@@ -167,7 +177,7 @@ def cycle_LEDs(sequence):
 	}
 	while True:
 		t = time.time()
-		i, (wait, config) = get_current_step(t, t0, sequence)
+		_, (_, config) = get_current_step(t, t0, sequence)
 
 		for name, col in config.items():
 			k = DuckietownLights.name2port[name]
@@ -182,16 +192,17 @@ def cycle_LEDs(sequence):
 
 def cycle_LEDs_fancy1(speed=10):
 	from time import sleep
+	import time
+
 	from .rgb_led import RGB_LED
 	led = RGB_LED()
 
 	from math import sin, cos
 
-	t0 = time.time()
 	def get_config(t):
 		t = t * speed
-		a = 0.5 + 0.5*cos(t)
-		b = 0.5 + 0.5*sin(t)
+		a = 0.5 + 0.5 * cos(t * 1.0023234)
+		b = 0.5 + 0.5 * sin(t * 1.1231)
 		c = 0.5 + 0.5*cos(2*t)
 
 		return {

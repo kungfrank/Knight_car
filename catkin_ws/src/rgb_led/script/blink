@@ -3,9 +3,12 @@ from rgb_led import *
 import sys
 
 if len(sys.argv) <= 1:
-	pattern = 'default'
+	pattern = 'blinking1'
 else:
 	pattern = sys.argv[1]
 
-
-cycle_LEDs_named(pattern)
+try:
+	cycle_LEDs_named(pattern)
+except ValueError as e:
+	print(e)
+	sys.exit(1)

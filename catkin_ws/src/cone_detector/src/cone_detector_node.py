@@ -63,9 +63,11 @@ class TemplateMatcher:
 class ConeDetector:
     def __init__(self, target_img="cone.png"):
         self.node_name = "cone_detector_node"
+        self.input_topic = rospy.get_param("~input")
+        rospy.loginfo(self.input_topic)
         self.tm = TemplateMatcher()
         self.thread_lock = threading.Lock()
-        self.sub_image = rospy.Subscriber("~image_compressed", CompressedImage, self.cbImage, queue_size=1)
+        self.sub_image = rospy.Subscriber(self.input_topic, CompressedImage, self.cbImage, queue_size=1)
         self.pub_image = rospy.Publisher("~cone_detection", Image, queue_size=1)
         self.pub_pose = rospy.Publisher("~cone_ibvs", Float32, queue_size=1)
         self.bridge = CvBridge()

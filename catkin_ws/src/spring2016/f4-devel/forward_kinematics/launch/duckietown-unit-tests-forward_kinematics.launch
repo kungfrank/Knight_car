@@ -1,0 +1,12 @@
+<launch>
+	<arg name="veh"/>
+	<arg name="bagin" doc="the full path to the input bag" />
+	<arg name="bagout" doc="the full path to the output bag" /> 
+
+	<include file="$(find forward_kinematics)/launch/duckietown-forward_kinematics.launch">
+		 <arg name="veh" value="$(arg veh)"/>
+	</include>
+
+	<node  pkg="rosbag" type="play" name="rosbag_play" args="$(arg bagin)"/>
+
+</launch>

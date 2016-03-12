@@ -44,8 +44,8 @@ private:
   double previousTimestamp_;
   geometry_msgs::Pose2D odomPose_;
 
-  // visualization_msgs::Marker odomTrajectory_;
-  int odomSubsampleStep_;
+  visualization_msgs::Marker odomTrajectory_;
+  int odomSubsampleStep_; // we subsample odometric trajectory to visualize it in rviz
   int odomSubsampleCount_;
 
 	// callback function declarations
@@ -77,18 +77,19 @@ K_l_(0.1), K_r_(0.1), radius_l_(0.02), radius_r_(0.02), baseline_lr_(0.1) {
 
   sub_twistToOdometry_ = nh_.subscribe("/starducks/wheels_driver_node/twist", 1, &forward_kinematics_node::twistToOdometryCallback, this); 
   pub_twistToOdometry_ = nh_.advertise<duckietown_msgs::Pose2DStamped>("/starducks/wheels_driver_node/odometricPose", 1); 
-  // pub_odomTrajectory_ = nh_.advertise<duckietown_msgs::Pose2DStamped>("/starducks/wheels_driver_node/odometricPose", 1); 
 
- //  odomTrajectory_.header.frame_id = "/odom";
- //  odomTrajectory_.ns = "odometricTrajectory";
- //  odomTrajectory_.action = visualization_msgs::Marker::ADD;
- //  odomTrajectory_.pose.orientation.w = 1.0;
- //  odomTrajectory_.id = 1;
- //  odomTrajectory_.type = visualization_msgs::Marker::LINE_STRIP;
- //  odomTrajectory_.scale.x = 0.1;
- //  odomTrajectory_.color.r = 1.0;
- //  odomTrajectory_.color.a = 1.0;
- // odomSubsampleCount_ = odomSubsampleStep_;
+  // the following is only to visualize the odometric trajectory
+  pub_odomTrajectory_ = nh_.advertise<visualization_msgs::Marker>("/starducks/odometricTrajectory", 1); 
+  odomTrajectory_.header.frame_id = "/odom";
+  odomTrajectory_.ns = "odometricTrajectory";
+  odomTrajectory_.action = visualization_msgs::Marker::ADD;
+  odomTrajectory_.pose.orientation.w = 1.0;
+  odomTrajectory_.id = 1;
+  odomTrajectory_.type = visualization_msgs::Marker::LINE_STRIP;
+  odomTrajectory_.scale.x = 0.1;
+  odomTrajectory_.color.r = 1.0;
+  odomTrajectory_.color.a = 1.0;
+  odomSubsampleCount_ = odomSubsampleStep_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -128,7 +129,6 @@ void forward_kinematics_node::wheelOmegaToTwistCallback(duckietown_msgs::WheelsC
 ///////////////////////////////////////////////////////////////////////////////////////////
 void forward_kinematics_node::twistToOdometryCallback(duckietown_msgs::Twist2DStamped::ConstPtr const& msg){
 
-
   if(msg->header.seq <= 1){
    // first odometry message, we only record time stamp
   }else{    
@@ -153,19 +153,23 @@ void forward_kinematics_node::twistToOdometryCallback(duckietown_msgs::Twist2DSt
     odomPose_.theta = theta_t;
 
     // put in msg and publish
-    geometry_msgs::Pose2D odomPose_msg;   
+    duckietown_msgs::Pose2DStamped odomPose_msg;  
+    odomPose_msg.header = msg->header; 
     odomPose_msg.x = odomPose_.x; 
     odomPose_msg.y = odomPose_.y; 
     odomPose_msg.theta = odomPose_.theta; 
     pub_twistToOdometry_.publish(odomPose_msg);   
 
-    // geometry_msgs::Point p;
-    // p.x = odomPose_.x;
-    // p.y = odomPose_.y;
-    // p.z = 0.0;
-    // odomTrajectory_.points.push_back(p);
-    // pub_odomTrajectory.publish(odomTrajectory_);
+    odomSubsampleCount_ -= 1;
+    if(odomSubsampleCount_ <= 0){
+      geometry_msgs::Point p;
+      p.x = odomPose_.x;
+      p.y = odomPose_.y;
+      p.z = 0.0;
+      odomTrajectory_.points.push_back(p);
+      pub_odomTrajectory_.publish(odomTrajectory_);
+      odomSubsampleCount_ = odomSubsampleStep_; // reset counter
     }
-  
+  } 
   previousTimestamp_ = msg->header.stamp.sec; // update time for next integration
 }

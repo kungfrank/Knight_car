@@ -150,22 +150,22 @@ void forward_kinematics_node::twistToOdometryCallback(duckietown_msgs::Twist2DSt
       odomPose_.x = odomPose_.x - v_w_ratio * sin(theta_tm1) + v_w_ratio * sin(theta_t);
       odomPose_.y = odomPose_.y + v_w_ratio * cos(theta_tm1) - v_w_ratio * sin(theta_t);
     }
-  }
-  odomPose_.theta = theta_t;
-  previousTimestamp_ = msg->header.stamp.sec; // update time for next integration
+    odomPose_.theta = theta_t;
+
+    // put in msg and publish
+    geometry_msgs::Pose2D odomPose_msg;   
+    odomPose_msg.x = odomPose_.x; 
+    odomPose_msg.y = odomPose_.y; 
+    odomPose_msg.theta = odomPose_.theta; 
+    pub_twistToOdometry_.publish(odomPose_msg);   
+
+    // geometry_msgs::Point p;
+    // p.x = odomPose_.x;
+    // p.y = odomPose_.y;
+    // p.z = 0.0;
+    // odomTrajectory_.points.push_back(p);
+    // pub_odomTrajectory.publish(odomTrajectory_);
+    }
   
-  // put in msg and publish
-  geometry_msgs::Pose2D odomPose_msg;   
-  odomPose_msg.x = odomPose_.x; 
-  odomPose_msg.y = odomPose_.y; 
-  odomPose_msg.theta = odomPose_.theta; 
-  pub_twistToOdometry_.publish(odomPose_msg);   
-
-  // geometry_msgs::Point p;
-  // p.x = odomPose_.x;
-  // p.y = odomPose_.y;
-  // p.z = 0.0;
-  // odomTrajectory_.points.push_back(p);
-  // pub_odomTrajectory.publish(odomTrajectory_);
-
+  previousTimestamp_ = msg->header.stamp.sec; // update time for next integration
 }

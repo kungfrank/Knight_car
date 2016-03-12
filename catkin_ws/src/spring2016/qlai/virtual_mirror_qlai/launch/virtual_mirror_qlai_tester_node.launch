@@ -4,17 +4,13 @@
 	<arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
 	<arg name="config" default="baseline" doc="Specify a config."/>
 	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
-	<arg name="flip_direction" doc="Flip direction"/>
-	<arg name="test_img" doc="test img"/>
+	<arg name="flip_direction" default="horz" doc="Flip direction, horz or vert"/>
+	<arg name="test_img" default="01" doc="test img: 01, 02, 03, 04"/>
 
-
-	<remap from="virtual_mirror_qlai_tester_node/img_in" to="virtual_mirror_qlai_node/rgb_out"/>
-	<remap from="virtual_mirror_qlai_node/rbg_in" to="virtual_mirror_qlai_tester_node/img_out"/>
 
 
 	<group ns="$(arg veh)">
 		<node name="virtual_mirror_qlai_tester_node" pkg="virtual_mirror_qlai" type="virtual_mirror_qlai_tester_node.py" output="screen">
-            <param name="~flip_direction" value="$(arg flip_direction)"/>
             <param name="~test_img" value="$(arg test_img)"/>
 
 		 </node>

@@ -1,0 +1,8 @@
+<launch>
+	<arg name="veh"/>
+	<arg name="src"/>
+	<remap from="virtual_mirror_node/rgb_in" to="/$(arg veh)/camera_node/image/compressed"/>
+	<remap from="virtual_mirror_node/rgb_out" to="virtual_mirror_node/topic"/>
+	<node ns="$(arg veh)" pkg="virtual_mirror_rkk" type="virtual_mirror_node.py" name="virtual_mirror_node" output="screen">
+	</node>
+</launch>

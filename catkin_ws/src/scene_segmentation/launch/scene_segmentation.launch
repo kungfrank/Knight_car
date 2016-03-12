@@ -1,16 +1,19 @@
 <launch>
   <arg name="veh"/>
+  <arg name="rectify" default="false"/>
   <arg name="camera" default="/$(arg veh)/camera_node"/>
-  <node if="$(arg rectify)" ns="$(arg camera)" pkg="image_proc" type="image_proc" name="image_proc" output="screen">
+    <node if="$(arg rectify)" ns="$(arg camera)" pkg="image_proc" type="image_proc" name="image_proc" output="screen">
     <remap from="$(arg camera)/image_raw" to="$(arg camera)/image/raw"/>
   </node>
+
   <node ns="$(arg veh)" pkg="scene_segmentation" type="scene_segmentation" name="scene_segmentation" output="screen">
     <remap if="$(arg rectify)" from="~image_in" to="$(arg camera)/image_rect_color"/>
     <remap unless="$(arg rectify)" from="~image_in" to="$(arg camera)/image/raw"/> -->
     <remap from="~camera_info" to="$(arg camera)/camera_info"/>
     <param name="~sigma" value="0.5"/>
-    <param name="~k" value="500."/>
+    <param name="~k" value="200."/>
     <param name="~min" value="250"/>
     <param name="~half" value="true"/>
+    <param name="~draw_rect" value="false"/>
   </node>
 </launch>

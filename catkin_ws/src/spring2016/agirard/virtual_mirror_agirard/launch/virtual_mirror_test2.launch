@@ -1,0 +1,7 @@
+<launch>
+    <arg name="veh"/>
+    <node  pkg="rosbag" type="play" name="rosbag_play" args="log_in.bag"/>
+    <node  pkg="rosbag" type="record" name="rosbag_record" args="-a"/> 
+    <node ns="$(arg veh)" pkg="virtual_mirror-agirard" type="mirror_node.py" name="mirror_node" output="screen">
+    </node>
+</launch>

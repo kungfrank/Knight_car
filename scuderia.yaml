@@ -1,9 +1,7 @@
-mercedes:
+emma: # (Noether)
         name: Andrea Censi
         mac: 00:0f:60:06:0a:4d
-bmwm3:
-	name: Andrea Censi
-	mac: 00:0f:60:05:ff:e8
+# bmwm3: R.I.P.
 porsche911:
 	name: Changhyun Choi
 	mac: 00:0f:60:06:0a:6a  

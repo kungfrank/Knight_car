@@ -58,6 +58,8 @@ add_message_files(
   LanePose.msg
   WheelsCmd.msg
   WheelsCmdStamped.msg
+  Pose2DStamped.msg
+  Twist2DStamped.msg
   TagDetection.msg
   AprilTags.msg
   Pixel.msg

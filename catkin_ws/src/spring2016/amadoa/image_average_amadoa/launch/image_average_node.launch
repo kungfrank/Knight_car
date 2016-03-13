@@ -1,0 +1,9 @@
+<launch>
+    <arg name="log_in"/>
+    <arg name="log_out"/>
+
+    <node name="image_average_amadoa_node" pkg="image_average_amadoa" type="image_average_amadoa_node.py" />
+
+    <node  pkg="rosbag" type="play" name="rosbag_play" args="-s 15 $(arg log_in)" required="true"/>
+    <node  pkg="rosbag" type="record" name="rosbag_record" args="-a  -O $(arg log_out)"/> 
+</launch>

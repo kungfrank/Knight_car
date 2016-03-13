@@ -1,0 +1,13 @@
+<launch>
+    <arg name="veh"  doc="Name of vehicle. ex: megaman"/>
+    <arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+    <arg name="config" default="baseline" doc="Specify a config."/>
+    <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+    <arg name="pkg_name" value="image_average_mrinal" />
+    <arg name="node_name" default="image_average_node" />
+    <node pkg="$(arg pkg_name)" name="$(arg node_name)" type="image_average_node.py">
+        <remap from="rgb_in" to="$(arg veh)/camera_node/image/compressed"/>
+        <rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
+    </node>
+
+</launch>

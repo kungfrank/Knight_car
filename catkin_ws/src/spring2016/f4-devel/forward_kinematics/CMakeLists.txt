@@ -12,13 +12,20 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(Boost REQUIRED COMPONENTS system)
 
-include_directories(
-  ${catkin_INCLUDE_DIRS}
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+  visualization_msgs
+  duckietown_msgs
 )
 
 catkin_package(
 #   INCLUDE_DIRS include
    CATKIN_DEPENDS duckietown_msgs roscpp rospy
+)
+
+include_directories(
+  ${catkin_INCLUDE_DIRS}
 )
 
 add_executable(forward_kinematics_node src/forward_kinematics_node.cpp)

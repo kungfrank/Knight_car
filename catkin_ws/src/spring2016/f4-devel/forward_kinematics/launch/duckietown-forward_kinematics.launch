@@ -1,7 +1,0 @@
-<launch>
-	<arg name="veh" doc="Name of vehicle. ex: megaman"/>
-
-	<!-- launch forward_kinematics_node -->
-	<include file="$(find forward_kinematics)/launch/forward_kinematics.launch">
-	</include>	
-</launch>

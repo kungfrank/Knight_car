@@ -1,0 +1,6 @@
+  # default parameters for forward_kinematics/forward_kinematics_node node
+  K_l:          0.1
+  K_r:          0.1
+  radius_l:     0.02
+  radius_r:     0.02
+  baseline_lr:  0.1

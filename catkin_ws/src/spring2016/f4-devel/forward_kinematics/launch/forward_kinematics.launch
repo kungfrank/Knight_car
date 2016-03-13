@@ -1,4 +1,0 @@
-<launch>
-	<node pkg="forward_kinematics" type="forward_kinematics_node" name="forward_kinematics_node">
-	</node>
-</launch>

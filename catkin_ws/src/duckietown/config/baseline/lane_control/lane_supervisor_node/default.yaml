@@ -1,0 +1,3 @@
+#lane_control/lane_supervisor_node
+max_cross_track_error: 0.1 
+max_heading_error: 0.785

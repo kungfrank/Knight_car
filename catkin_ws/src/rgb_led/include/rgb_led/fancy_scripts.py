@@ -45,10 +45,9 @@ def cycle_LEDs_fancy2(speed=1):
 
 	def get_config(t):
 		slow = 0.00005*t
-
 		a = []
 		for i in range(15):
-			period = speed * (sin(i) + 0.1 * cos(slow+i))
+			period = speed * (sin(i) + 0.00001 * cos(slow+i))
 			x = 0.5 + 0.5 * cos(t * period)
 			a.append(x)
 
@@ -72,3 +71,5 @@ def cycle_LEDs_fancy2(speed=1):
 			led.setRGB(k, col)		
 		sleep(0.01)
 	del led
+
+

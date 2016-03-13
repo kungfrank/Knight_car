@@ -6,7 +6,7 @@ all: $(machines)
 
 
 $(machines): $(scuderia)
-	python create-config.py $(scuderia) > $(machines)
+	python setup/create-machines-file.py $(scuderia) > $(machines)
  
 
 

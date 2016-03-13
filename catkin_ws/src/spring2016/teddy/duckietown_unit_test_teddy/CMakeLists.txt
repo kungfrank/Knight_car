@@ -1,11 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(virtual_mirror_teddy)
+project(duckietown_unit_test_teddy)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  duckietown_msgs
   roscpp
   rospy
 )
@@ -17,7 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-catkin_python_setup()
+# catkin_python_setup()
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -67,7 +66,7 @@ catkin_python_setup()
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   duckietown_msgs
+#   std_msgs  # Or other packages containing msgs
 # )
 
 ################################################
@@ -101,8 +100,8 @@ catkin_python_setup()
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES virtual_mirror_teddy
-#  CATKIN_DEPENDS duckietown_msgs roscpp rospy
+#  LIBRARIES duckietown_unit_test_teddy
+#  CATKIN_DEPENDS roscpp rospy
 #  DEPENDS system_lib
 )
 
@@ -118,24 +117,24 @@ include_directories(
 )
 
 ## Declare a C++ library
-# add_library(virtual_mirror_teddy
-#   src/${PROJECT_NAME}/virtual_mirror_teddy.cpp
+# add_library(duckietown_unit_test_teddy
+#   src/${PROJECT_NAME}/duckietown_unit_test_teddy.cpp
 # )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(virtual_mirror_teddy ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(duckietown_unit_test_teddy ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(virtual_mirror_teddy_node src/virtual_mirror_teddy_node.cpp)
+# add_executable(duckietown_unit_test_teddy_node src/duckietown_unit_test_teddy_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(virtual_mirror_teddy_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(duckietown_unit_test_teddy_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(virtual_mirror_teddy_node
+# target_link_libraries(duckietown_unit_test_teddy_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -154,7 +153,7 @@ include_directories(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS virtual_mirror_teddy virtual_mirror_teddy_node
+# install(TARGETS duckietown_unit_test_teddy duckietown_unit_test_teddy_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -179,7 +178,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_virtual_mirror_teddy.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_duckietown_unit_test_teddy.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

@@ -37,7 +37,7 @@ def create_patterns():
 	s = 1.0
 	RED = [s, 0, 0]
 	GREEN = [0, s, 0]
-	GREEN = [0, 0, 1]
+	BLUE = [0, 0, 1]
 	YELLOW = [0, s, s]
 	WHITE = [s, s, s]
 	GREEN2 = [0, 0.3, 0]

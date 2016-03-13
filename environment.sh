@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+echo "Building machines file"
+make
 echo "Activating ROS"
 source /opt/ros/indigo/setup.bash
 echo "Setting up PYTHONPATH"

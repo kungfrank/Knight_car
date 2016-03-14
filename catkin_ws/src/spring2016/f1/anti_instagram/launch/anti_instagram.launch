@@ -1,0 +1,12 @@
+<launch>
+	<node name="anti_instagram" pkg="anti_instagram" type="anti_instagram.py" output="screen">
+		<param name="~xyz" value="10" type="int"/>
+	</node>
+	<!-- 	
+	Publishes
+		~health : how good of a transformation was made
+		~corrected_image : image with same color temperature as duckietown reference
+	Subscribes
+		~uncorrected_image : image from pi camera with any illumination conditions
+	-->
+</launch>

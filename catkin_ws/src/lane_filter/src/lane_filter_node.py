@@ -40,12 +40,12 @@ class LaneFilterNode(object):
         self.lanePose = LanePose()
         self.lanePose.d=self.mean_0[0]
         self.lanePose.phi=self.mean_0[1]
-        self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments)
         # self.sub = rospy.Subscriber("~velocity",
         self.pub_lane_pose  = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
         self.pub_belief_img = rospy.Publisher("~belief_img", Image, queue_size=1)
         self.pub_entropy    = rospy.Publisher("~entropy",Float32, queue_size=1)
         # self.pub_in_lane    = rospy.Publisher("~in_lane",BoolStamped, queue_size=1)
+        self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -93,7 +93,7 @@ class LaneFilterNode(object):
 
         max_val = self.beliefRV.max()
         print max_val
-        self.lane_pose.in_lane = max_val > self.min_max
+        self.lanePose.in_lane = max_val > self.min_max
         self.pub_lane_pose.publish(self.lanePose)
         self.pub_belief_img.publish(belief_img)
         # print "time to process segments:"

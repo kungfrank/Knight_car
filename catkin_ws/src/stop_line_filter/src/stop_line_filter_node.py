@@ -65,7 +65,7 @@ class StopLineFilterNode(object):
         stop_line_reading_msg.header.stamp = segment_list_msg.header.stamp
         stop_line_reading_msg.stop_line_detected = True
         stop_line_reading_msg.stop_line_dist = stop_line_distance_accumulator/good_seg_count
-        if stop_line_dist < self.stop_distance:
+        if stop_line_reading_msg.stop_line_dist < self.stop_distance:
             stop_line_reading_msg.at_stop_line = True
         else:
             stop_line_reading_msg.at_stop_line = False

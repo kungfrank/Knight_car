@@ -47,10 +47,9 @@ class OpenLoopIntersectionNode(object):
         print turn_msg
         self.turn_type = turn_msg.data
 
-
     def setIntersectionDone(self,state):
         boolstamped = BoolStamped()
-        boolstamped.header = rospy.Time.now()
+        boolstamped.header.stamp = rospy.Time.now()
         boolstamped.data = state
         self.pub_wheels_done.publish(boolstamped)
 

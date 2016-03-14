@@ -36,7 +36,7 @@ class FSMNode(object):
         self.updateState(done_msg.header.stamp)
 
     def cbInLane(self, lane_pose_msg):
-        print in_lane_msg
+        print lane_pose_msg
         self.in_lane = lane_pose_msg.in_lane
         self.updateState(lane_pose_msg.header.stamp)
 
@@ -65,7 +65,7 @@ class FSMNode(object):
                 self.intersection_done = False
 
         self.actual.header.stamp = stamp
-        self.pub_topic_mode.publish(self.actual.state)
+        self.pub_topic_mode.publish(self.actual)
    
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

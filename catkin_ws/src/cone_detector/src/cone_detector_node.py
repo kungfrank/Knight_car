@@ -9,13 +9,12 @@ import sys
 import threading
 from ground_projection.srv import *
 from duckietown_msgs.msg import Vector2D
+from visualization_msgs.msg import MarkerArray
+from visualization_msgs.msg import Marker
 
 
 class TemplateMatcher:
     def __init__(self):
-        #Uncomment for ground projection
-        #rospy.wait_for_service('/pipquack/ground_projection/get_ground_coordinate')
-        #self.ground_proj = rospy.ServiceProxy('/pipquack/ground_projection/get_ground_coordinate',GetGroundCoord)
         template_loc = rospy.get_param("~image")
         rospy.loginfo("Template location: "+template_loc)
         template = cv2.imread(template_loc)
@@ -65,7 +64,11 @@ class TemplateMatcher:
         return img, pose
 
     def contour_match(self, img):
-        p = Vector2D() #Use this for groud projection
+
+
+        object_list = list()
+        
+
         height,width = img.shape[:2]
         hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         COLOR_MIN = np.array([0, 80, 80],np.uint8)
@@ -87,22 +90,24 @@ class TemplateMatcher:
             for (area,(cnt)) in contour_area[:10]:
             # plot box around contour
                 x,y,w,h = cv2.boundingRect(cnt)
-                #For ground projection uncomment the next lines
-                #p.x = x
-                #p.y = y
-                #print self.ground_proj(p)
                 d =  0.5*(x-width/2)**2 + (y-height)**2 
                 if h>15 and w >15 and d  < 120000:
+                    object_list.append((x,y,w,h));
                     cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
         except:
             print "contr err"
-        return img, 0.0
-
+        return img, object_list
+    
 class ConeDetector:
     def __init__(self, target_img="cone.png"):
         self.node_name = "cone_detector_node"
         self.input_topic = rospy.get_param("~input")
         rospy.loginfo(self.input_topic)
+
+        #Uncomment for ground projection
+        rospy.wait_for_service('/pipquack/ground_projection/get_ground_coordinate')
+        self.ground_proj = rospy.ServiceProxy('/pipquack/ground_projection/get_ground_coordinate',GetGroundCoord)
+
         self.tm = TemplateMatcher()
         self.thread_lock = threading.Lock()
         self.sub_image = rospy.Subscriber(self.input_topic, CompressedImage, self.cbImage, queue_size=1)
@@ -111,10 +116,13 @@ class ConeDetector:
         self.bridge = CvBridge()
         
 
+        self.pub_markers = rospy.Publisher("~obstacles_markers", MarkerArray, queue_size=1)
+        self.maxMarkers = 0
         #p = Vector2D()
         #p.x = 1
         #p.y= 1
         #print self.ground_proj(p)
+
 
         rospy.loginfo("[%s] Initialized." %(self.node_name))
 
@@ -132,12 +140,54 @@ class ConeDetector:
         
         image_cv = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
         img,pose = self.tm.contour_match(image_cv)
-        #img,pose = self.tm.match(image_cv)
-        
+
+        height,width = img.shape[:2]
+        marker_array = MarkerArray()
+
+        #For ground projection uncomment the next lines
+        p = Vector2D()
+        count = 0;
+        for obstacle in pose: 
+            marker = Marker()
+            p.x = float(obstacle[0])/float(width)
+            p.y = float(obstacle[1])/float(height)
+            projected_point = self.ground_proj(p)
+            #print projected_point.gp
+            marker.header.frame_id = "/pipquack"
+            marker.type = marker.ARROW
+            marker.action = marker.ADD
+            marker.scale.x = 0.01
+            marker.scale.y = 0.01
+            marker.scale.z = 0.1
+            marker.color.a = 1.0
+            marker.color.r = 1.0
+            marker.color.g = 0.5
+            marker.color.b = 0.0
+            marker.pose.orientation.w = 1.0
+            marker.pose.position.x = projected_point.gp.x
+            marker.pose.position.y = projected_point.gp.y
+            marker.pose.position.z = projected_point.gp.z 
+            marker.id = count
+            count = count +1
+
+            marker_array.markers.append(marker)
+       
+        if count > self.maxMarkers:
+            self.maxMarkers = count
+            
+        while count <= self.maxMarkers:
+            marker = Marker()
+            marker.action = 2
+            marker.id = count
+            marker_array.markers.append(marker)
+            count = count+1
+
+
         try:
             self.pub_image.publish(self.bridge.cv2_to_imgmsg(img, "bgr8"))
         except CvBridgeError as e:
             print(e)
+        self.pub_markers.publish(marker_array)
         pub_pose = Float32()
         pub_pose.data = pose
         self.pub_pose.publish(pub_pose)

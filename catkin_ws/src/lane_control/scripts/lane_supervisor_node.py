@@ -4,7 +4,7 @@ import numpy as np
 import math
 from duckietown_msgs.msg import CarControl, WheelsCmdStamped, LanePose
 
-class lane_controller(object):
+class lane_supervisor(object):
     def __init__(self):
         self.node_name = rospy.get_name()
         self.lane_reading = LanePose()
@@ -25,8 +25,6 @@ class lane_controller(object):
         self.sub_lane_control = rospy.Subscriber("~wheels_control_lane",WheelsCmdStamped,self.cbLaneControl, queue_size=1)
         self.sub_joy_control  = rospy.Subscriber("~wheels_control_joy",WheelsCmdStamped,self.cbJoyControl, queue_size=1)
 
-        # safe shutdown
-        rospy.on_shutdown(self.custom_shutdown)
 
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -77,6 +75,6 @@ class lane_controller(object):
         return wheels_cmd
 
 if __name__ == "__main__":
-    rospy.init_node("lane_controller",anonymous=False)
-    lane_control_node = lane_controller()
+    rospy.init_node("lane_supervisor",anonymous=False)
+    lane_supervisor_node = lane_supervisor()
     rospy.spin()

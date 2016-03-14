@@ -48,7 +48,7 @@
     </node>
 
     <!-- joy_mapper -->
-    <remap unless="$(arg trim)" from="joy_mapper_node/wheels_cmd" to="wheels_driver_node/wheels_cmd"/>
+<!--    <remap unless="$(arg trim)" from="joy_mapper_node/wheels_cmd" to="wheels_driver_node/wheels_cmd"/> -->
     <include file="$(find joy_mapper)/launch/joy_mapper_node.launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>
@@ -60,7 +60,7 @@
     <remap from="lane_supervisor_node/lane_pose" to="lane_filter_node/lane_pose"/>
     <remap from="lane_supervisor_node/wheels_control_joy" to="joy_mapper_node/wheels_cmd"/>
     <remap from="lane_supervisor_node/wheels_control_lane" to="lane_controller_node/wheels_control"/>
-    <include file="$(find lane_control)/launch/lane_controller_node.launch">
+    <include file="$(find lane_control)/launch/lane_supervisor_node.launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>
         <arg name="config" value="$(arg config)"/>

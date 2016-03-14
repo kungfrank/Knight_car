@@ -74,6 +74,7 @@ add_message_files(
   TrafficLightDetection.msg
   VehicleDetection.msg
   FSMState.msg
+  Trajectory.msg
 )
 
 ## Generate services in the 'srv' folder

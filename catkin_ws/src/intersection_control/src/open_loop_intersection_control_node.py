@@ -30,9 +30,9 @@ class OpenLoopIntersectionNode(object):
         print mode_msg
         if(mode_msg.state == mode_msg.INTERSECTION_CONTROL):
             self.turnRight()
-        # else:
+        else:
             # If not in intersection control mode anymore, pubisher intersection_done False.
-            # self.setIntersectionDone(False)
+            self.setIntersectionDone(False)
 
     def setIntersectionDone(self,state):
         boolstamped = BoolStamped()

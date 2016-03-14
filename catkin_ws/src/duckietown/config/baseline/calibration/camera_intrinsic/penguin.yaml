@@ -1,0 +1,23 @@
+camera_matrix:
+  cols: 3
+  data: [313.2608896178744, 0.0, 308.0461386776387, 0.0, 314.8234500870255, 222.47472102546433,
+    0.0, 0.0, 1.0]
+  rows: 3
+camera_name: penguin/camera_node
+distortion_coefficients:
+  cols: 5
+  data: [-0.2565086442547147, 0.04421409481628142, 0.0019241909337473556, 0.003498689671407762,
+    0.0]
+  rows: 1
+distortion_model: plumb_bob
+image_height: 480
+image_width: 640
+projection_matrix:
+  cols: 4
+  data: [213.188232421875, 0.0, 313.341318323859, 0.0, 0.0, 252.2662811279297, 213.72699431806632,
+    0.0, 0.0, 0.0, 1.0, 0.0]
+  rows: 3
+rectification_matrix:
+  cols: 3
+  data: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+  rows: 3

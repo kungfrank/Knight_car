@@ -2,6 +2,18 @@ import numpy as np
 
 
 def d8n_read_all_images(filename):
+    """ 
+    
+        Raises a ValueError if not data could be read.
+    
+        Returns a numpy array. 
+        
+        data = d8n_read_all_images(bag)
+                
+        print data.shape # (928,)
+        print data.dtype # [('timestamp', '<f8'), ('rgb', 'u1', (480, 640, 3))]
+
+    """
     import rosbag  # @UnresolvedImport
     bag = rosbag.Bag(filename)
     that_topic = get_image_topic(bag)

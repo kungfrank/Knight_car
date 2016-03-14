@@ -1,0 +1,23 @@
+camera_matrix:
+  cols: 3
+  data: [317.27878739287326, 0.0, 329.8636525053986, 0.0, 315.78104032544877, 217.34657278548542,
+    0.0, 0.0, 1.0]
+  rows: 3
+camera_name: magitek/camera_node
+distortion_coefficients:
+  cols: 5
+  data: [-0.27570289371808077, 0.05421867178404543, 0.004081816256999558, -0.001414449532899176,
+    0.0]
+  rows: 1
+distortion_model: plumb_bob
+image_height: 480
+image_width: 640
+projection_matrix:
+  cols: 4
+  data: [219.51611328125, 0.0, 328.3893129999051, 0.0, 0.0, 248.99993896484375, 207.93713181428757,
+    0.0, 0.0, 0.0, 1.0, 0.0]
+  rows: 3
+rectification_matrix:
+  cols: 3
+  data: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+  rows: 3

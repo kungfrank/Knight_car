@@ -1,0 +1,36 @@
+<launch>
+
+<arg name="pkg_name" value="virtual_mirror_qlai"/>
+<arg name="veh"  doc="Name of vehicle. ex: megaman"/>
+<arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+<arg name="config" default="baseline" doc="Specify a config."/>
+<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+<arg name="bagin" doc="the full path to the input bag" />
+<arg name="bagout" doc="the full path to the output bag" /> 
+<arg name="flip_direction" default="horz" doc="enter flip direction"/>
+<!-- <arg name="testing" default="false" doc="using for test purposes." /> -->
+
+<arg name="node_name" default="virtual_mirror_qlai_node"/>
+
+
+<remap from="virtual_mirror_qlai_node/rgb_in" to="/$(arg veh)/camera_node/image/compressed"/>
+<remap from="virtual_mirror_qlai_node/rgb_out" to="virtual_mirror_qlai_node/topic"/>
+
+<node ns="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen">
+            <rosparam command="load" file="$(find virtual_mirror_qlai)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
+            <param name="~flip_direction" value="$(arg flip_direction)"/>
+</node>
+
+
+
+<!-- Publication -->
+<!-- "~image/raw": sensor_msgs/Image. Raw image by decoding a compressed image in jpeg format.-->
+    
+<!-- Subscription -->
+<!-- "~compressed_image": sensor_msgs/CompressedImage. Input compressed image in jpeg format.-->
+
+
+<node  pkg="rosbag" type="play" name="rosbag_play" args="$(arg bagin)"/>
+<node  pkg="rosbag" type="record" name="rosbag_record" args="-a  -O $(arg bagout)"/> 
+
+</launch>

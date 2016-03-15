@@ -1,0 +1,22 @@
+<launch>
+    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
+    <arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+    <arg name="config" default="baseline" doc="Specify a config."/>
+    <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+
+    <arg name="pkg_name" value="virtual_mirror_wubella" />
+    <arg name="node_name" default="virtual_mirror" />
+
+    <arg name="bagin" doc="the full path to the input bag" />
+    <arg name="bagout" doc="the full path to the output bag" /> 
+
+    <include file="$(find virtual_mirror_wubella)/launch/$(arg node_name).launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="local" value="$(arg local)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+    </include>
+    
+    <node  pkg="rosbag" type="play" name="rosbag_play" args="$(arg bagin)"/>
+    <node  pkg="rosbag" type="record" name="rosbag_record" args="-a  -O $(bagout)"/> 
+</launch>

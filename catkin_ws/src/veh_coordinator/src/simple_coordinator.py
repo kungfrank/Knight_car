@@ -45,7 +45,7 @@ class VehicleCoordinator():
 
         # Subscriptions
         self.mode = FSMState.LANE_FOLLOWING
-        rospy.Subscriber('~state', FSMState,
+        rospy.Subscriber('~mode', FSMState,
                          lambda msg: self.set('mode', msg.state))
 
         self.intersection = IntersectionDetection.NONE

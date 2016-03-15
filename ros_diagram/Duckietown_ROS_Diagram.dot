@@ -59,6 +59,10 @@ digraph D {
 		simple_stop_controller_node[label="mdoap\nsimple_stop_controller_node (F9)"];
 		mdoap_controller_node[label="mdoap\nmdoap_controller_node (F9)"];
 
+		//F5
+		ref_traj_gen_node[label="lane_filter\nref_traj_gen_node (F5)"];
+
+
 
 	}
 	subgraph node_compiled{
@@ -157,54 +161,66 @@ digraph D {
 	object_projected_detection_list[label="~detection_list_proj\nduckietown_msgs/ObjectProjectedDetectionList.msg"];
 	object_detection_markers[label="~object_detection_markers\nvisualization_msgs/MarkerArray.msg"];
 
+	//F5
+	ref_traj[label="~ref_traj\nduckietown_msgs/Trajectory.msg"];
+
 
 	{rank=max; wheels_driver_node;rgb_led_driver_node}
 	{rank=min; camera_node;joy_node}
 	{rank=same;wheels_command;led_cmd}
 
 	// ==== Connections ====
-	veh_coordinator_node->intersection_go;
-	intersection_go->fsm_node;
-	intersection_done->fsm_node;
-	at_stop_line->fsm_node;
-	in_lane->fsm_node;
-	open_loop_intersection_control_node->intersection_done;
-	lane_filter_node->in_lane;
-	stop_line_filter_node->at_stop_line;
+
+
+	// fsm_node
+	{intersection_go,intersection_done,at_stop_line,in_lane} -> fsm_node;
 	fsm_node->mode;
+	
+	// == open_loop_intersection_control_node == //
+	open_loop_intersection_control_node->{intersection_control, intersection_done};
+	mode->open_loop_intersection_control_node;	
+
+
+	// == lane_filter_node == //
+	segment_list_proj -> lane_filter_node;
+	lane_filter_node -> {lane_pose, in_lane};
+
+	// == stop_line_filter_node == //
+	stop_line_filter_node -> {at_stop_line, stop_line_dist};
+	segment_list_proj->stop_line_filter_node;
 
 	led_cmd->rgb_led_driver_node;
-	stop_line_filter_node->stop_line_dist;
 
+	// == camera_node == //
 	camera_node->image_compressed;
+
 	intrinsic_calibration_file->cam_info_reader_node[style="dotted"];
 	image_compressed->cam_info_reader_node;
 	cam_info_reader_node->camera_info;
-	image_compressed->line_detector_node;
+	decoder_node->image_raw;
+
+	// == obj_detector_node == //
+	image_compressed -> obj_detector_node;
+	obj_detector_node -> obj_detection;
+	
+
 	image_compressed->led_detector_node;
 	image_compressed->decoder_node;
-	decoder_node->image_raw;
 	image_compressed->april_tag_detector;
-	image_compressed->obj_detector_node;
 	image_compressed->street_name_detector_node;
+	
 	street_name_detector_node->street_name_detection;
+	
 	led_detector_node->led_detection;
 	led_detection->traffic_light_detector_node;
 	segment_list->veh_detector_node;
 	veh_detector_node->veh_detection;
 	traffic_light_detector_node->traffic_light_detection;
-	//intersection_filter_node->intersection_reading;
-	line_detector_node->segment_list 
-	line_detector_node->image_with_lines 
-	segment_list_proj->stop_line_filter_node;
-	segment_list_proj->lane_filter_node;
-	lane_filter_node->lane_pose;
-	lane_pose->lane_controller_node;
-	//lane_pose->mission_planner;
-	//stop_line_filter_node->stop_line_reading;
-	//stop_line_reading->lane_controller_node;
-	////stop_line_reading->mission_planner;
-	obj_detector_node->obj_detection;
+	
+	// == line_detector_node == //
+	line_detector_node -> {segment_list, image_with_lines};
+	image_compressed -> line_detector_node;
+	
 	obj_detection->global_localizer;
 	street_name_detection->global_localizer;
 	april_tag_detector->april_tag_detection;
@@ -216,40 +232,35 @@ digraph D {
 	//map_representation->mission_planner;
 	joy_node->joy->joy_mapper_node->joy_control;
 	joy_control-> lane_supervisor_node;
+	
+	// == lane_controller_node == //
+	lane_pose->lane_controller_node;
 	lane_controller_node->lane_control;
+	
 	lane_control-> lane_supervisor_node;
 	lane_supervisor_node-> lane_control_sup;
 	lane_control_sup->safety_supervisor_node;
 	safety_supervisor_node->lane_control_safe;
-	//safety_supervisor_node->beeper_driver_node;
-	//intersection_reading->mission_planner;
 	veh_detection->safety_supervisor_node;
-	open_loop_intersection_control_node->intersection_control;
-	//global_readings->mission_planner;
-	//mission_planner->mode;
-	//mission->mission_planner;
 	extrinsic_calibration_file->ground_projection_node[style="dotted"];
 	camera_info->ground_projection_node;
 	segment_list->ground_projection_node;
 	ground_projection_node->segment_list_proj;
-	veh_detection->veh_coordinator_node;
-	traffic_light_detection->veh_coordinator_node;
-	//veh_coordinator_node->veh_coord_go;
-	////veh_coord_go->mission_planner;
-	mode->veh_coordinator_node;
-	//mode->lane_controller_node;
-	mode->open_loop_intersection_control_node;
-	mode->wheels_cmd_switch_node;
+	
+	// == veh_coordinator_node == //
+	{veh_detection,traffic_light_detection,mode} -> veh_coordinator_node;
+	veh_coordinator_node->intersection_go;
+
+	// == wheels_cmd_switch_node == //
+	{mode, lane_control, intersection_control}->wheels_cmd_switch_node;	
 	wheels_cmd_switch_node->wheels_command_switch;
+	
+	// == wheels_trimmer == //	
 	wheels_command_switch->wheels_trimmer;
 	motion_calibration_file->wheels_trimmer[style="dotted"]
 	wheels_trimmer->wheels_command;
-	lane_control_safe->wheels_cmd_switch_node;
-	intersection_control->wheels_cmd_switch_node;
-	wheels_command->wheels_driver_node;
-	//safety_supervisor_node->beep;
-	//beep->beeper_driver_node;
 
+	wheels_command->wheels_driver_node;
 	navigation_graph_file->graph_planner_node[style="dotted"];
 	slam_node->feature_map_file[style="dotted"];
 
@@ -284,6 +295,10 @@ digraph D {
 
 	mdoap_controller_node -> wheels_command;
 	{object_projected_detection_list, object_too_close} -> mdoap_controller_node;
+
+	//F5
+	segment_list_proj -> ref_traj_gen_node;
+	ref_traj_gen_node -> ref_traj;
 
 
 }

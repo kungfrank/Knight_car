@@ -49,9 +49,12 @@ def get_image_topic_name(veh):
 if __name__ == "__main__":
   if len(sys.argv) != 2:
     print "usage: " + sys.argv[0] + " vehicle name"
-    sys.exit()
-
-  veh = "/" + sys.argv[1]
+    sys.exit(1)
+  
+  param = sys.argv[1]
+  param = param.replace('veh:=','')
+  print('Using vehicle name %r.' % param)
+  veh = "/" + param
 
   bridge = CvBridge()
 

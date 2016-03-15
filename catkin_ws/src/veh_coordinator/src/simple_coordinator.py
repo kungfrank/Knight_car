@@ -2,8 +2,8 @@
 from __future__ import print_function
 from random import random
 import rospy
-from duckietown_msgs.msg import ControlMode, IntersectionDetection, VehicleDetection, TrafficLightDetection, \
-    CoordinationClearance, CoordinationSignal
+from duckietown_msgs.msg import IntersectionDetection, VehicleDetection, TrafficLightDetection, \
+    CoordinationClearance, CoordinationSignal, FSMState
 from time import time
 
 
@@ -44,9 +44,9 @@ class VehicleCoordinator():
         self.node = rospy.init_node('veh_coordinator', anonymous=True)
 
         # Subscriptions
-        self.mode = ControlMode.LANE_FOLLOWING
-        rospy.Subscriber('mode', ControlMode,
-                         lambda msg: self.set('mode', msg.mode))
+        self.mode = FSMState.LANE_FOLLOWING
+        rospy.Subscriber('state', FSMState,
+                         lambda msg: self.set('mode', msg.state))
 
         self.intersection = IntersectionDetection.NONE
         rospy.Subscriber('intersection_detection', IntersectionDetection,
@@ -111,7 +111,7 @@ class VehicleCoordinator():
     def reconsider(self):
 
         if self.state == State.LANE_FOLLOWING:
-            if self.mode == ControlMode.COORDINATION_CONTROL:
+            if self.mode == FSMState.COORDINATION:
                 if self.intersection == IntersectionDetection.STOP:
                     self.set_state(State.AT_STOP)
                 elif self.intersection == IntersectionDetection.TRAFFIC_LIGHT:
@@ -147,7 +147,7 @@ class VehicleCoordinator():
                     self.set_state(State.GO)
 
         elif self.state == State.GO:
-            if self.mode == ControlMode.LANE_FOLLOWING:
+            if self.mode == FSMState.LANE_FOLLOWING:
                 self.set_state(State.LANE_FOLLOWING)
 
         elif self.state == State.CONFLICT:

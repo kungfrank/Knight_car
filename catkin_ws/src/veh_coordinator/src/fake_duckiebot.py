@@ -4,7 +4,7 @@ from __future__ import print_function
 import Tkinter as tk
 
 import rospy
-from duckietown_msgs.msg import ControlMode, IntersectionDetection, VehicleDetection, TrafficLightDetection, \
+from duckietown_msgs.msg import FSMState, IntersectionDetection, VehicleDetection, TrafficLightDetection, \
     CoordinationClearance, CoordinationSignal
 
 
@@ -12,8 +12,8 @@ class FakeDuckiebot:
     def __init__(self):
 
         # publishing
-        self.mode_pub = rospy.Publisher('mode', ControlMode, queue_size=10)
-        self.mode = ControlMode.LANE_FOLLOWING
+        self.mode_pub = rospy.Publisher('state', FSMState, queue_size=10)
+        self.mode = FSMState.LANE_FOLLOWING
 
         self.intersection_pub = rospy.Publisher('intersection_detection', IntersectionDetection, queue_size=10)
         self.intersection = IntersectionDetection.NONE
@@ -58,7 +58,7 @@ class FakeDuckiebot:
         self.publish()
 
     def publish(self):
-        self.mode_pub.publish(ControlMode(mode=self.mode))
+        self.mode_pub.publish(FSMState(state=self.mode))
         self.intersection_pub.publish(IntersectionDetection(type=self.intersection))
         self.traffic_light_pub.publish(TrafficLightDetection(color=self.traffic_light))
 
@@ -103,11 +103,11 @@ class FakeDuckiebot:
         self.publish()
 
     def update_gui(self, gui):
-        if self.mode == ControlMode.LANE_FOLLOWING:
+        if self.mode == FSMState.LANE_FOLLOWING:
             gui.mode_var.set('Mode: LANE_FOLLOWING')
-        if self.mode == ControlMode.COORDINATION_CONTROL:
+        if self.mode == FSMState.COORDINATION:
             gui.mode_var.set('Mode: COORDINATION_CONTROL')
-        if self.mode == ControlMode.INTERSECTION_CONTROL:
+        if self.mode == FSMState.INTERSECTION_CONTROL:
             gui.mode_var.set('Mode: INTERSECTION_CONTROL')
 
         if self.intersection == IntersectionDetection.NONE:
@@ -149,13 +149,13 @@ class GUI:
         self.mode_label.pack(side=tk.TOP)
 
         tk.Button(self.root, text='Lane Navigation',
-                  command=lambda: self.duckiebot.set_mode(ControlMode.LANE_FOLLOWING)).pack(side=tk.TOP)
+                  command=lambda: self.duckiebot.set_mode(FSMState.LANE_FOLLOWING)).pack(side=tk.TOP)
 
         tk.Button(self.root, text='Coordination',
-                  command=lambda: self.duckiebot.set_mode(ControlMode.COORDINATION_CONTROL)).pack(side=tk.TOP)
+                  command=lambda: self.duckiebot.set_mode(FSMState.COORDINATION)).pack(side=tk.TOP)
 
         tk.Button(self.root, text='Intersection Nav.',
-                  command=lambda: self.duckiebot.set_mode(ControlMode.INTERSECTION_CONTROL)).pack(side=tk.TOP)
+                  command=lambda: self.duckiebot.set_mode(FSMState.INTERSECTION_CONTROL)).pack(side=tk.TOP)
 
         self.intersection_var = tk.StringVar()
         tk.Label(self.root, textvariable=self.intersection_var).pack(side=tk.TOP)

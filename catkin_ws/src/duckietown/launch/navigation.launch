@@ -70,7 +70,7 @@
     </include>
 
     <!-- Vehicle Coordinator -->
-    <remap from="fsm_node/mode" to="veh_coordinator_node/mode"/>
+    <remap from="veh_coordinator_node/mode" to="fsm_node/mode" />
     <include file="$(find veh_coordinator)/launch/veh_coordinator_node.launch">
       <arg name="veh" value="$(arg veh)"/>        
       <arg name="local" value="$(arg local)"/>        

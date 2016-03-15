@@ -27,7 +27,6 @@ digraph D {
 		global_localizer[label="global_localizer_node (LC)"];
 		led_detector_node[label="led_detector_node (CC)"];
 		obj_detector_node[label="obj_detector_node (CC)"];
-		veh_detector_node[label="veh_detector_node (CC)"];
 		traffic_light_detector_node[label="traffic_light_detector_node (??)"];
 		lane_supervisor_node[label="lane_control\nlane_supervisor_node (LP)"];
 	}
@@ -56,9 +55,18 @@ digraph D {
 		obstacle_safety_node[label="mdoap\nobstacle_safety_node (F9)"];
 		simple_stop_controller_node[label="mdoap\nsimple_stop_controller_node (F9)"];
 		mdoap_controller_node[label="mdoap\nmdoap_controller_node (F9)"];
+		
 
 		//F5
 		ref_traj_gen_node[label="lane_filter\nref_traj_gen_node (F5)"];
+
+		//F6
+		vehicle_detector_node[label="veh_detector\nvehicle_detector_node (F6)"];
+		vehicle_filter_node[label="veh_detector\nvehicle_filter_node (F6)"];
+		vehicle_avoidance_control_node[label="veh_detector\nvehicle_avoidance_control_node (F6)"];
+		
+		//F8
+		apriltag_info_node[label="aprialtags\napriltag_info_node (F8)"];
 	}
 
 	subgraph node_compiled{
@@ -95,6 +103,7 @@ digraph D {
 		feature_map_file[label="??/feature_map_file"];
 		inverse_kinematics_file[label="calibration/inverse_kinematics"];
 		kinematics_file[label="calibration/kinematics_param"];
+		tags_map_file[label="map/tags_map.yaml"];
 	}
 
 	// ==== Topics ====
@@ -108,9 +117,8 @@ digraph D {
 	lane_control[label="~lane_control\nduckietown_msgs/WheelsCmdStamped.msg"];
 	lane_control_sup[label="~lane_control_supervised\nduckietown_msgs/WheelsCmdStamped.msg"];
 	lane_control_safe[label="~lane_control_safe\nduckietown_msgs/WheelsCmdStamped.msg"];
-	april_tag_detection[label="~april_tag_detection\nduckietown_msgs/AprilTags.msg"];
+	apriltag_detection[label="~apriltag_detection\nduckietown_msgs/AprilTags.msg"];
 	led_detection[label="~led_detection"];
-	veh_detection[label="~veh_detection"];
 	traffic_light_detection[label="~traffic_light_detection"];
 	obj_detection[label="~obj_detection"];
 	global_readings[label="~global_readings"];
@@ -145,21 +153,31 @@ digraph D {
 	ref_traj[label="~ref_traj\nduckietown_msgs/Trajectory.msg"];
 
 
+	// = F6 = //
+	veh_key_points[label="~key_points\nduckietown_msgs/???.msg"];
+	veh_detection[label="~veh_detection\nduckietown_msgs/???.msg"];
+	veh_avoidance_control[label="~control\nduckietown_msgs/WheelsCmdStamped.msg"];
+	veh_avoidance_flag[label="~flag\nduckietown_msgs/BoolStamped.msg"];
+
+	// = F8 = //
+	apriltag_detection_with_info[label="~apriltag_detection_with_info\nduckietown_msgs/AprilTags.msg"];
+
+
 	{rank=max; wheels_driver_node;rgb_led_driver_node}
 	{rank=min; camera_node;joy_node}
 	{rank=same;wheels_command;led_cmd}
 
+	
+
 	// ==== Connections ====
-
-
+	
 	// fsm_node
-	{intersection_go,intersection_done,at_stop_line,in_lane} -> fsm_node;
+	{intersection_go,intersection_done,at_stop_line,in_lane, veh_avoidance_flag} -> fsm_node;
 	fsm_node->mode;
 	
 	// == open_loop_intersection_control_node == //
 	open_loop_intersection_control_node->{intersection_control, intersection_done};
 	mode->open_loop_intersection_control_node;	
-
 
 	// == lane_filter_node == //
 	segment_list_proj -> lane_filter_node;
@@ -173,8 +191,6 @@ digraph D {
 
 	// == camera_node == //
 	camera_node->image_compressed;
-
-
 
 	// == cam_info_reader_node == //
 	intrinsic_calibration_file->cam_info_reader_node[style="dotted"];
@@ -195,7 +211,7 @@ digraph D {
 	
 	// == april_tag_detector_node == //
 	image_compressed->april_tag_detector_node;
-	april_tag_detector_node->april_tag_detection;
+	april_tag_detector_node->apriltag_detection;
 	
 	// == street_name_detector_node == //
 	image_compressed->street_name_detector_node;
@@ -204,17 +220,13 @@ digraph D {
 	// == traffic_light_detector_node == //
 	led_detection->traffic_light_detector_node;
 	traffic_light_detector_node->traffic_light_detection;
-	
-	// == veh_detector_node == //
-	segment_list->veh_detector_node;
-	veh_detector_node->veh_detection;
-	
+		
 	// == line_detector_node == //
 	line_detector_node -> {segment_list, image_with_lines};
 	image_compressed -> line_detector_node;
 
 	// == global_localizer == //
-	{obj_detection, street_name_detection, april_tag_detection, map_representation} -> global_localizer;
+	{obj_detection, street_name_detection, apriltag_detection, map_representation} -> global_localizer;
 	global_localizer->global_readings;
 
 	// == joy_mapper_node == //
@@ -270,7 +282,7 @@ digraph D {
 
 	// = F4 = //
 	// == kinematics_learning_node == //
-	{image_compressed,april_tag_detection,segment_list_proj, car_cmd} -> kinematics_learning_node;
+	{image_compressed,apriltag_detection,segment_list_proj, car_cmd} -> kinematics_learning_node;
 	kinematics_learning_node -> {inverse_kinematics_file, kinematics_file}[style=dotted];
 
 	// == inverse_kinematics_node == //
@@ -283,8 +295,23 @@ digraph D {
 	wheels_command -> forward_kinematics_node;
 	forward_kinematics_node -> {forward_kinematics_pose,forward_kinematics_velocity};
 
+	// F6 //
+	// == vehicle_detector_node == //
+	image_compressed -> vehicle_detector_node;
+	vehicle_detector_node -> veh_key_points;
+	// == vehicle_filter_node == //
+	veh_key_points -> vehicle_filter_node;
+	vehicle_filter_node -> veh_detection;
+	// == vehicle_avoidance_control_node == //
+	veh_detection -> vehicle_avoidance_control_node;
+	vehicle_avoidance_control_node -> {veh_avoidance_control, veh_avoidance_flag};
 
-	// F9
+	// F8 //
+	tags_map_file -> apriltag_info_node[style="dotted"];
+	apriltag_detection -> apriltag_info_node;
+	apriltag_info_node -> apriltag_detection_with_info;
+
+	// F9 //
 	image_compressed->static_object_detector_node;
 	static_object_detector_node->object_image_detection_list;
 

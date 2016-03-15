@@ -5,9 +5,9 @@ project(anti_instagram)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-	roscpp
-	rospy
-	duckietown_msgs
+  duckietown_msgs
+  roscpp
+  rospy
 )
 
 ## System dependencies are found with CMake's conventions
@@ -67,7 +67,7 @@ catkin_python_setup()
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
+#   duckietown_msgs
 # )
 
 ################################################
@@ -102,7 +102,7 @@ catkin_python_setup()
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES anti_instagram
-#  CATKIN_DEPENDS roscpp rospy
+#  CATKIN_DEPENDS duckietown_msgs roscpp rospy
 #  DEPENDS system_lib
 )
 
@@ -112,8 +112,9 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
+# include_directories(include)
 include_directories(
-	${catkin_INCLUDE_DIRS}
+  ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -131,12 +132,12 @@ include_directories(
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-#add_dependencies(anti_instagram ${catkin_EXPORTED_TARGETS})
+# add_dependencies(anti_instagram_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-#target_link_libraries(anti_instagram
+# target_link_libraries(anti_instagram_node
 #   ${catkin_LIBRARIES}
-#)
+# )
 
 #############
 ## Install ##

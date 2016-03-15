@@ -21,7 +21,7 @@ class AntiInstagramNode():
 		# Initialize health message
 		self.health = AntiInstagramHealth()
 
-		rospy.loginfo("%s is %s!" %(util.getName(),util.getStatus()))
+		rospy.loginfo("%s is %s!" %(getName(),getStatus()))
 
 	def cbNewImage(self,msg):
 		'''

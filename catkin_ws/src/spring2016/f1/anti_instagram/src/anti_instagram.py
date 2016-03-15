@@ -3,7 +3,8 @@ import rospy
 from copy import deepcopy
 from sensor_msgs.msg import CompressedImage
 from duckietown_msgs.msg import AntiInstagramHealth
-#import anti_instagram
+# import anti_instagram
+from anti_instagram.util import *
 
 class AntiInstagramNode():
 	def __init__(self):
@@ -19,6 +20,8 @@ class AntiInstagramNode():
 
 		# Initialize health message
 		self.health = AntiInstagramHealth()
+
+		rospy.loginfo("%s is %s!" %(util.getName(),util.getStatus()))
 
 	def cbNewImage(self,msg):
 		'''

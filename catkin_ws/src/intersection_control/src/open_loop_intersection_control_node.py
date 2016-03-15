@@ -39,6 +39,8 @@ class OpenLoopIntersectionNode(object):
                 self.turnStraight()
             elif(self.turn_type==2):
                 self.turnLeft()
+
+            rospy.loginfo("Turn type now: %i" %(self.turn_type))
         else:
             # If not in intersection control mode anymore, pubisher intersection_done False.
             self.setIntersectionDone(False)
@@ -46,6 +48,7 @@ class OpenLoopIntersectionNode(object):
     def cbTurnType(self, turn_msg):
         print turn_msg
         self.turn_type = turn_msg.data
+        rospy.loginfo("Turn type now: %i" %(self.turn_type))
 
     def setIntersectionDone(self,state):
         boolstamped = BoolStamped()

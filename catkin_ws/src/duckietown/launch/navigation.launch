@@ -60,7 +60,7 @@
     <!-- FSM -->
     <remap from="fsm_node/lane_pose" to="lane_filter_node/lane_pose"/>
     <remap from="fsm_node/stop_line_reading" to="stop_line_filter_node/stop_line_reading"/>
-    <remap from="fsm_node/clearance_to_go" to="veh_coordinator/clearance_to_go"/>
+    <remap from="fsm_node/clearance_to_go" to="veh_coordinator_node/clearance_to_go"/>
     <remap from="fsm_node/intersection_done" to="open_loop_intersection_control_node/intersection_done"/>
     <include file="$(find fsm)/launch/fsm_node.launch">
       <arg name="veh" value="$(arg veh)"/>        

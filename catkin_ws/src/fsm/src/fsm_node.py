@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from duckietown_msgs.msg import FSMState, BoolStamped, StopLineReading, LanePose
+from duckietown_msgs.msg import FSMState, BoolStamped, StopLineReading, LanePose, CoordinationClearance
 from std_msgs.msg import String #Imports msg
 
 class FSMNode(object):
@@ -24,7 +24,7 @@ class FSMNode(object):
         # Setup subscribers
         self.sub_topic_in_lane = rospy.Subscriber("~lane_pose", LanePose, self.cbInLane, queue_size=1)
         self.sub_topic_at_stop_line = rospy.Subscriber("~stop_line_reading", StopLineReading, self.cbAtStopLine, queue_size=1)
-        self.sub_topic_intersection_go = rospy.Subscriber("~intersection_go", BoolStamped, self.cbIntersectionGo, queue_size=1)
+        self.sub_topic_intersection_go = rospy.Subscriber("~clearance_to_go", CoordinationClearance, self.cbIntersectionGo, queue_size=1)
         self.sub_topic_intersection_done = rospy.Subscriber("~intersection_done", BoolStamped, self.cbIntersectionDone, queue_size=1)
 
         # Read parameters
@@ -47,7 +47,7 @@ class FSMNode(object):
 
     def cbIntersectionGo(self, go_msg):
         print go_msg
-        self.intersection_go = go_msg.data
+        self.intersection_go = (go_msg.status == CoordinationClearance.GO)
         self.updateState(go_msg.header.stamp)
 
     def updateState(self,stamp):

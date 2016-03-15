@@ -78,5 +78,11 @@
       <arg name="param_file_name" value="$(arg param_file_name)"/>        
     </include>
 
-
+    <!-- Fake inputs for Vehicle Coordinator -->
+    <include file="$(find veh_coordinator)/launch/fake_intersection_detection.launch">
+      <arg name="veh" value="$(arg veh)"/>        
+      <arg name="local" value="$(arg local)"/>        
+      <arg name="config" value="$(arg config)"/>        
+      <arg name="param_file_name" value="$(arg param_file_name)"/>        
+    </include>
 </launch>

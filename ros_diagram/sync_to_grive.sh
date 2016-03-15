@@ -11,7 +11,7 @@ echo "Generating pdf file..."
 make Duckietown_ROS_Diagram.pdf
 
 echo "Copying Duckietown_ROS_Diagram.dot.pdf to $GRIVE_ROOT/$SUB_FOLDER"
-cp Duckietown_ROS_Diagram.pdf $GRIVE_ROOT/$SUB_FOLDER/
+cp Duckietown_ROS_Diagram.pdf $GRIVE_ROOT/$SUB_FOLDER/Duckietown_ROS_Diagram.pdf\ \:bird\:
 
 echo "Removing Duckietown_ROS_Diagram.dot.pdf..."
 rm Duckietown_ROS_Diagram.pdf

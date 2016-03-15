@@ -70,7 +70,7 @@ add_message_files(
   SceneSegments.msg
   CoordinationClearance.msg
   IntersectionDetection.msg
-  RoofLight.msg
+  CoordinationSignal.msg
   TrafficLightDetection.msg
   VehicleDetection.msg
   FSMState.msg

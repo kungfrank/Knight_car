@@ -31,22 +31,22 @@ class FSMNode(object):
         rospy.loginfo("[%s] Initialzed." %(self.node_name))
 
     def cbIntersectionDone(self, done_msg):
-        print done_msg
+        #print done_msg
         self.intersection_done = done_msg.data
         self.updateState(done_msg.header.stamp)
 
     def cbInLane(self, lane_pose_msg):
-        print lane_pose_msg
+        #print lane_pose_msg
         self.in_lane = lane_pose_msg.in_lane
         self.updateState(lane_pose_msg.header.stamp)
 
     def cbAtStopLine(self, stop_line_reading_msg):
-        print stop_line_reading_msg
+        #print stop_line_reading_msg
         self.at_stop_line = stop_line_reading_msg.at_stop_line
         self.updateState(stop_line_reading_msg.header.stamp)
 
     def cbIntersectionGo(self, go_msg):
-        print go_msg
+        #print go_msg
         self.intersection_go = (go_msg.status == CoordinationClearance.GO)
         self.updateState(go_msg.header.stamp)
 

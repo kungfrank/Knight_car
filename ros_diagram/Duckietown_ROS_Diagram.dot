@@ -49,6 +49,17 @@ digraph D {
 		fsm_node[label="fsm\nfsm_node (MN)"];
 		graph_planner_node[label="graph_planner\ngraph_planner_node (??)"];
 		mission_planner_node[label="mission_planner\nmission_planner_node (MN)"];
+		anti_instagram_node[label="anit_instagram\nanti_instagram_node (F1)"];
+		kinematics_learning_node[label="visual_odometry\nkinematics_learning_node (F4)"];
+		inverse_kinematics_node[label="forward_kinematics\ninverse_kinematics_node (F4)"];
+		forward_kinematics_node[label="forward_kinematics\nforward_kinematics_node (F4)"];
+
+		static_object_detector_node[label="mdoap\nstatic_object_detector_node (F9)"];
+		obstacle_safety_node[label="mdoap\nobstacle_safety_node (F9)"];
+		simple_stop_controller_node[label="mdoap\nsimple_stop_controller_node (F9)"];
+		mdoap_controller_node[label="mdoap\nmdoap_controller_node (F9)"];
+
+
 	}
 	subgraph node_compiled{
 		node [fillcolor=yellow];
@@ -82,6 +93,8 @@ digraph D {
 		intrinsic_calibration_file[label="calibration/camera_intrinsic"];
 		navigation_graph_file[label="??/navigation_graph_file"];
 		feature_map_file[label="??/feature_map_file"];
+		inverse_kinematics_file[label="calibration/inverse_kinematics"];
+		kinematics_file[label="calibration/kinematics_param"];
 	}
 
 
@@ -128,6 +141,22 @@ digraph D {
 	led_cmd[label="rgb_led_driver/led_cmd\nduckietown_msgs/LEDControl.msg"];
 	stop_line_dist[label="~stop_line_dist\nstd_msgs/Float32.msg"];
 	joy[label="joy\nsensor_msgs/Joy.msg"];
+
+	corrected_image[label="~corrected_image/compressed\nsensor_msgs/CompressedImage.msg"];
+	image_health[label="~image_health\nduckietown_msgs/AntiInstagramHealth.msg"];
+
+
+	forward_kinematics_pose[label="~pose\nduckietown_msgs/Pose2DStamped.msg"];
+	forward_kinematics_velocity[label="~velocity\nduckietown_msgs/Twist2DStamped.msg"];
+	car_cmd[label="~car_cmd\nduckietown_msgs/Twist2DStamped.msg"]; //No publisher yet
+
+
+	//F9
+	object_image_detection_list[label="~detection_list\nduckietown_msgs/ObjectImageDetectionList.msg"];
+	object_too_close[label="~object_too_close\nduckietown_msgs/BoolStamped.msg"];
+	object_projected_detection_list[label="~detection_list_proj\nduckietown_msgs/ObjectProjectedDetectionList.msg"];
+	object_detection_markers[label="~object_detection_markers\nvisualization_msgs/MarkerArray.msg"];
+
 
 	{rank=max; wheels_driver_node;rgb_led_driver_node}
 	{rank=min; camera_node;joy_node}
@@ -223,5 +252,38 @@ digraph D {
 
 	navigation_graph_file->graph_planner_node[style="dotted"];
 	slam_node->feature_map_file[style="dotted"];
+
+
+	// F1
+	anti_instagram_node->{corrected_image,image_health};
+	image_compressed->anti_instagram_node;
+
+	// F4
+	kinematics_learning_node -> {inverse_kinematics_file, kinematics_file}[style=dotted];
+	{image_compressed,april_tag_detection,segment_list_proj, car_cmd} -> kinematics_learning_node;
+
+	inverse_kinematics_node -> wheels_command;
+	car_cmd -> inverse_kinematics_node;
+	inverse_kinematics_file -> inverse_kinematics_node[style="dotted"];
+
+	forward_kinematics_node -> {forward_kinematics_pose,forward_kinematics_velocity};
+	kinematics_file -> forward_kinematics_node[style="dotted"];
+	wheels_command -> forward_kinematics_node;
+
+
+	// F9
+	image_compressed->static_object_detector_node;
+	static_object_detector_node->object_image_detection_list;
+
+	object_image_detection_list -> obstacle_safety_node;
+	obstacle_safety_node -> {object_too_close,object_projected_detection_list,object_detection_markers};
+
+	simple_stop_controller_node -> wheels_command;
+	{object_projected_detection_list, object_too_close} -> simple_stop_controller_node;
+	//TODO: publish to the wheels cmd swtich
+
+	mdoap_controller_node -> wheels_command;
+	{object_projected_detection_list, object_too_close} -> mdoap_controller_node;
+
 
 }

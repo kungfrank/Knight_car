@@ -1,3 +1,5 @@
 *~
+*.bag
 *.pyc
 .DS_Store
+catkin_ws/src/duckietown/machines

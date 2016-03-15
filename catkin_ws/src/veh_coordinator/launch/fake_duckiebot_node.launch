@@ -14,8 +14,8 @@
         <remap from="fake_duckiebot_node/intersection_detection" to="veh_coordinator_node/intersection_detection" />        
         <remap from="fake_duckiebot_node/traffic_light_detection" to="veh_coordinator_node/traffic_light_detection" /> 
 
-        <remap from="veh_coordinator_node/clearance_to_go" to="fake_duckiebot_node/clearance_to_go" />
-        <remap from="veh_coordinator_node/coordination_signal" to="fake_duckiebot_node/coordination_signal" />
+        <remap from="fake_duckiebot_node/clearance_to_go" to="veh_coordinator_node/clearance_to_go"  />
+        <remap from="fake_duckiebot_node/coordination_signal" to="veh_coordinator_node/coordination_signal" />
     
         <!-- run local -->
         <node if="$(arg local)" name="fake_duckiebot_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">

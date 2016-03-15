@@ -14,7 +14,7 @@ class FakeDuckiebot:
 
         # publishing
         self.mode = FSMState.LANE_FOLLOWING
-        self.mode_pub = rospy.Publisher('~state', FSMState, queue_size=10)
+        self.mode_pub = rospy.Publisher('~mode', FSMState, queue_size=10)
 
         self.intersection_pub = rospy.Publisher('~intersection_detection', IntersectionDetection, queue_size=10)
         self.intersection = IntersectionDetection.NONE

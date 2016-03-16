@@ -1,4 +1,7 @@
 import pickle
+from graph import Graph
+import matplotlib.pyplot as plt
+
 # Create edges for the map.
 # Edges is a list of lists, in which each edge is in the format: [source, target, weight, action]
 edges = [["I11", "I12", 1.0, 'r'],
@@ -70,3 +73,13 @@ node_locations = dict(I11=(4,0.75),I12=(3.75,1),I13=(3.25,1),I14=(3,0.75),I15=(3
 afile = open(r'maps/duckietown_map.pkl', 'w+')
 pickle.dump([edges, node_locations], afile)
 afile.close()
+
+# Create graph
+duckietown_graph = Graph()
+for edge in edges:
+	duckietown_graph.add_edge(edge[0], edge[1], edge[2], edge[3])
+	
+duckietown_graph.set_node_positions(node_locations)
+
+duckietown_graph.draw(save_draw=True)
+

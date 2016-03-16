@@ -73,7 +73,7 @@ class Graph(object):
             raise NodeNotInGraph(node)
         return self._edges.get(node, set())
 
-    def draw(self, highlight_edges=None):
+    def draw(self, highlight_edges=None, show_weights=False, save_draw=False):
         nxg = nx.DiGraph()
         edges = [(e.source, e.target, {'weight':e.weight, 'inv_weight':1.0/e.weight, 'action':e.action}) for node_set in self._edges.values() for e in node_set]
         nxg.add_edges_from(edges)
@@ -88,16 +88,18 @@ class Graph(object):
         nx.draw_networkx_nodes(nxg, pos, node_color='w')
         nx.draw_networkx_edges(nxg, pos, edges)
         nx.draw_networkx_labels(nxg, pos)
-        #edge_labels=dict([((u,v,),"%s" % (d['weight']))
-        #         for u,v,d in nxg.edges(data=True)])
-        #nx.draw_networkx_edge_labels(nxg, pos, edge_labels=edge_labels)
-
+        if show_weights:
+            edge_labels=dict([((u,v,),"%s" % (d['weight'])) for u,v,d in nxg.edges(data=True)])
+            nx.draw_networkx_edge_labels(nxg, pos, edge_labels=edge_labels)
 
         if highlight_edges:
             nx.draw_networkx_edges(nxg, pos, highlight_edges, edge_color='r')
         plt.axis('off')
-        plt.show()
-
+        if not save_draw:
+            plt.show()
+        else:
+            plt.savefig('maps/duckietown_map.png')
+        
     def draw_edges(self, edges):
         # print edges
         nx.draw_networkx_edges(nxg, pos, edges, edge_color='r')

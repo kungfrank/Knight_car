@@ -19,6 +19,8 @@ def imageCallback(msg):
 	np_arr = np.fromstring(msg.data, np.uint8)
 	image_np = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
 
+	rospy.loginfo("Image size: %s"%image_np.shape)
+
 	flipCode = 1 if flip_direction == "horz" else 0
 	image_np_out = cv2.flip(image_np, flipCode)
 
@@ -42,7 +44,7 @@ def mirror():
 
 	rospy.loginfo("virtual_mirror_amadoa_node initialized")
 	# Create subscriber
-	subscriber = rospy.Subscriber("/amadobot/camera_node/image/compressed", CompressedImage, imageCallback)
+	subscriber = rospy.Subscriber("/megaman/rosberrypi_cam/image_raw", CompressedImage, imageCallback)
 
 	# Create publisher
 	publisher = rospy.Publisher("/amadobot/virtual_mirror_amadoa_node/image/compressed",CompressedImage,queue_size=1)

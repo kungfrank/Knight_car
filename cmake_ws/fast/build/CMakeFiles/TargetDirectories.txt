@@ -1,0 +1,2 @@
+/home/amado/duckietown/cmake_ws/fast/build/CMakeFiles/fast.dir
+/home/amado/duckietown/cmake_ws/fast/build/CMakeFiles/fast_test.dir

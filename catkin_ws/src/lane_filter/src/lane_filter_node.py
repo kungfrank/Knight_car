@@ -6,7 +6,7 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import Bool, Float32
 from duckietown_msgs.msg import SegmentList, Segment, Pixel, LanePose
 from scipy.stats import multivariate_normal, entropy
-from math import floor, atan2, pi, cos, sin
+from math import floor, atan2, pi, cos, sin, sqrt
 import time
 
 # Lane Filter Node
@@ -33,6 +33,7 @@ class LaneFilterNode(object):
         self.linewidth_yellow = self.setupParam("~linewidth_yellow",0.02)
         self.lanewidth        = self.setupParam("~lanewidth",0.4)
         self.min_max = self.setupParam("~min_max", 0.3) # nats
+        self.max_segment_dist = self.setupParam("~max_segment_dist",1.0)
 
         self.d,self.phi = np.mgrid[self.d_min:self.d_max:self.delta_d,self.phi_min:self.phi_max:self.delta_phi]
         self.beliefRV=np.empty(self.d.shape)
@@ -63,16 +64,7 @@ class LaneFilterNode(object):
                 continue
             if segment.points[0].x < 0 or segment.points[1].x < 0:
                 continue
-
-            x_1 = segment.points[0].x
-            y_1 = segment.points[0].y
-            x_2 = segment.points[1].x
-            x_2 = segment.points[1].y
-
-            x_c = (x_1 + x_2)/2
-            y_c = (y_1 + y_2)/2
-
-            if (x_c**2 + y_c**2) > 45:
+            if self.getSegmentDistance(segment) > self.max_segment_dist:
                 continue
 
             # todo eliminate the white segments that are on the other side of the road
@@ -168,8 +160,15 @@ class LaneFilterNode(object):
             d_i =  self.lanewidth/2 - d_i
         return d_i, phi_i, l_i
     
+    def getSegmentDistance(self, segment):
+        x_c = (segment.points[0].x + segment.points[1].x)/2
+        y_c = (segment.points[0].y + segment.points[1].y)/2
+        
+        return sqrt(x_c**2 + y_c**2)
+
     def onShutdown(self):
         rospy.loginfo("[LaneFilterNode] Shutdown.")
+
 
 if __name__ == '__main__': 
     rospy.init_node('lane_filter',anonymous=False)

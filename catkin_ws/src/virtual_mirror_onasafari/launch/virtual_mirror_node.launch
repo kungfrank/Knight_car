@@ -1,5 +1,0 @@
-<launch>
-	<node pkg="virtual_mirror_onasafari" type="virtual_mirror.py" name="virtual_mirror_onasafari" output="screen" >
-<remap from="~image_raw" to="/oreo/camera_node/image/compressed"/>
-        </node>
-</launch>

@@ -1,4 +1,0 @@
-<launch>
-    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
-    <node pkg="virtual_mirror_sangukbo" name="mirror_node" type="mirror_node.py"/>
-</launch>

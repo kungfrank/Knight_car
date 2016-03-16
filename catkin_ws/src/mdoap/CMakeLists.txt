@@ -1,19 +1,13 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(duckietown_msgs)
+project(mdoap)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
-  message_generation
-  std_msgs
-  geometry_msgs
-  visualization_msgs
-  sensor_msgs
-  tf_conversions
-  tf
+ duckietown_msgs
+ roscpp
+ rospy
 )
 
 ## System dependencies are found with CMake's conventions
@@ -23,7 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
+catkin_python_setup()
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -50,35 +44,11 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-  FILES
-  CarControl.msg
-  LEDControl.msg
-  DuckieSensor.msg
-  LanePose.msg
-  WheelsCmd.msg
-  WheelsCmdStamped.msg
-  TagDetection.msg
-  AprilTags.msg
-  Pixel.msg
-  Vector2D.msg
-  Segment.msg
-  SegmentList.msg
-  Rect.msg
-  Rects.msg
-  SceneSegments.msg
-  CoordinationClearance.msg
-  IntersectionDetection.msg
-  CoordinationSignal.msg
-  TrafficLightDetection.msg
-  VehicleDetection.msg
-  FSMState.msg
-  BoolStamped.msg
-  StopLineReading.msg
-  ObstacleType.msg
-  ObstacleImageDetection.msg
-  ObstacleImageDetectionList.msg
-)
+# add_message_files(
+#   FILES
+#   Message1.msg
+#   Message2.msg
+# )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -95,12 +65,10 @@ add_message_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-  std_msgs
-  geometry_msgs
-  sensor_msgs
-)
+# generate_messages(
+#   DEPENDENCIES
+#   std_msgs  # Or other packages containing msgs
+# )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -133,9 +101,8 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES duckietown_msgs
-   CATKIN_DEPENDS geometry_msgs roscpp rospy sensor_msgs std_msgs message_runtime visualization_msgs
-
+#  LIBRARIES mdoap
+#  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
 )
 
@@ -146,29 +113,26 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-)
 
 ## Declare a C++ library
-# add_library(duckietown_msgs
-#   src/${PROJECT_NAME}/duckietown_msgs.cpp
+# add_library(mdoap
+#   src/${PROJECT_NAME}/mdoap.cpp
 # )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(duckietown_msgs ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(mdoap ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(duckietown_msgs_node src/duckietown_msgs_node.cpp)
+# add_executable(mdoap_node src/mdoap_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(duckietown_msgs_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(mdoap_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(duckietown_msgs_node
+# target_link_libraries(mdoap_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -187,7 +151,7 @@ include_directories(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS duckietown_msgs duckietown_msgs_node
+# install(TARGETS mdoap mdoap_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -212,7 +176,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_duckietown_msgs.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_mdoap.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

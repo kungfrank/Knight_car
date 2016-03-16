@@ -5,9 +5,6 @@ import sys
 import time
 from std_msgs.msg import String
 
-# bridge = CvBridge()
-# publisher = None
-
 class LEDEmitter(object):
     def __init__(self):
         self.node_name = rospy.get_name()

@@ -9,22 +9,23 @@
 #          Dmitry Yershov <dmitry.s.yershov@gmail.com>
 #
 
-from Adafruit_PWM_Servo_Driver import PWM
-from math import fabs, floor
 
-class RGB_LED:
+# from math import fabs, floor
 
-    LED_REAR_LEFT   = 0
-    LED_REAR_RIGH   = 3
-    LED_TOP         = 6
-    LED_FRONT_LEFT  = 9
-    LED_FRONT_RIGHT = 12
+class RGB_LED():
+#
+#     LED_REAR_LEFT   = 0
+#     LED_REAR_RIGH   = 3
+#     LED_TOP         = 6
+#     LED_FRONT_LEFT  = 9
+#     LED_FRONT_RIGHT = 12
 
     OFFSET_RED   = 0
     OFFSET_GREEN = 1
     OFFSET_BLUE  = 2
 
     def __init__(self, debug=False):
+        from Adafruit_PWM_Servo_Driver import PWM  # @UnresolvedImport
         self.pwm = PWM(address=0x40, debug=debug)
         for i in range(15):
             self.pwm.setPWM(i, 0, 4095)
@@ -50,41 +51,3 @@ class RGB_LED:
         for i in range(15):
             self.pwm.setPWM(i, 0, 4095)
         del self.pwm
-
-# Simple example to test motors
-if __name__ == '__main__':
-
-    from time import sleep
-    from random import uniform
-
-    led = RGB_LED()
-
-    colors = [0.0] * 15
-
-    while True:
-        for i in range(5):
-            led.setRGB(i, [0.1, 0.1, 0.1])
-        sleep(1)
-        for i in range(5):
-            led.setRGB(i, [1.0, 0.0, 0.0])
-        sleep(1)
-        for i in range(5):
-            led.setRGB(i, [0.0, 1.0, 0.0])
-        sleep(1)
-        for i in range(5):
-            led.setRGB(i, [0.0, 0.0, 1.0])
-        sleep(1)
-        for i in range(5):
-            led.setRGB(i, [1.0, 1.0, 1.0])
-        sleep(1)
-        for i in range(5):
-            led.setRGB(i, [0.0, 1.0, 1.0])
-        sleep(1)
-        for i in range(5):
-            led.setRGB(i, [1.0, 0.0, 1.0])
-        sleep(1)
-        for i in range(5):
-            led.setRGB(i, [1.0, 1.0, 0.0])
-        sleep(1)
-
-    del led

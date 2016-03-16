@@ -1,0 +1,5 @@
+<launch>
+	<arg name="veh"/>
+	<node ns="$(arg veh)" pkg="image_average_npd22" type="image_average_node.py" name="image_average_npd22" output="screen">
+	</node>
+</launch>

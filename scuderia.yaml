@@ -1,69 +1,100 @@
-mercedes:
-        name: Andrea Censi
-        mac: 00:0f:60:06:0a:4d
-bmwm3:
-	name: Andrea Censi
-	mac: 00:0f:60:05:ff:e8
+emma: # (Noether)
+  name: Andrea Censi
+  mac: 00:0f:60:06:0a:4d
+
+# bmwm3: R.I.P.
 porsche911:
-	name: Changhyun Choi
-	mac: 00:0f:60:06:0a:6a  
+  name: Changhyun Choi
+  mac: 00:0f:60:06:0a:6a  
+
 megaman:
-	name: Shih-Yuan Liu
-	mac: 00:0f:60:06:92:d5
+  name: Shih-Yuan Liu
+  mac: 00:0f:60:06:92:d5
+
+pontiac:
+  name: Liam Paull
+
 lada:
-	name: Dmitry Yershov
-	mac: 00:0f:60:06:23:b1
+  name: Dmitry Yershov
+  mac: 00:0f:60:06:23:b1
+
 ayrton:
-        name: Takke
+  name: Takke
+
 thing:
-	name: Catherine
+  name: Catherine
+
 ada:
-	name: Robert
+  name: Robert
+
 magitek:
-	name: lapentab
+  name: lapentab
+
 morty:
-	name: Tristan
+  name: Tristan
+
 quackmobile:
-	name: alex
+  name: alex
+
 lily:
-	name: Veronica
+  name: Veronica
+
 milo:
-	name: Joe
-Julie:
-	name: Jenny
+  name: Joe
+
+julie:
+  name: Jenny
+
 neptunus:
-	name: Erlend
+  name: Erlend
+
 lebeast:
-	name: Mrinal
+  name: Mrinal
+
 amadobot:
-	name: Amado
+  name: Amado
+
 duckmobile:
-	name: Guy
-starducks
-	name: Teddy
+  name: Guy
+
+starducks:
+  name: Teddy
+
 redrover:
-	name: Michael
+  name: Michael
+
 penguin:
-	name: Hans
+  name: Hans
+
 bill:
-	name: Brandon
+  name: Brandon
+
 duckula:
-	name: Giulia
+  name: Giulia
+
 nikola:
-	name: Nick
+  name: Nick
+
 charles:
-        name: Wyatt
+  name: Wyatt
+
 pipquack:
-	name: Sam
+  name: Sam
+
 setlist:
-        name: Sang
+  name: Sang
+
 argo:
-        name: Jacopo
+  name: Jacopo
+
 chewbacca:
-	name: Jason Pazis
+  name: "Jason Pazis"
+
 forrest:
-	name: Igor
+  name: Igor
+
 miata:
-	name: Michal
+  name: Michal
+
 feiying:
-        name: Yajun
+  name: Yajun

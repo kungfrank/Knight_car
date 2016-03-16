@@ -63,6 +63,18 @@ class LaneFilterNode(object):
                 continue
             if segment.points[0].x < 0 or segment.points[1].x < 0:
                 continue
+
+            x_1 = segment.points[0].x
+            y_1 = segment.points[0].y
+            x_2 = segment.points[1].x
+            x_2 = segment.points[1].y
+
+            x_c = (x_1 + x_2)/2
+            y_c = (y_1 + y_2)/2
+
+            if (x_c**2 + y_c**2) > 45:
+                continue
+
             # todo eliminate the white segments that are on the other side of the road
             d_i,phi_i,l_i = self.generateVote(segment)
             if d_i > self.d_max or d_i < self.d_min or phi_i < self.phi_min or phi_i>self.phi_max:

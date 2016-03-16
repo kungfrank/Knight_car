@@ -32,7 +32,7 @@ Config::Config() :
     grid_size(vk::getParam<int>("svo/grid_size", 30)),
     init_min_disparity(vk::getParam<double>("svo/init_min_disparity", 50.0)),
     init_min_tracked(vk::getParam<int>("svo/init_min_tracked", 50)),
-    init_min_inliers(vk::getParam<int>("svo/init_min_inliers", 40)),
+    init_min_inliers(vk::getParam<int>("svo/init_min_inliers", 20)), // default 40
     klt_max_level(vk::getParam<int>("svo/klt_max_level", 4)),
     klt_min_level(vk::getParam<int>("svo/klt_min_level", 2)),
     reproj_thresh(vk::getParam<double>("svo/reproj_thresh", 2.0)),

@@ -3,7 +3,7 @@ import numpy as np
 import argparse, sys
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-
+from collections import Counter
 from sklearn.cluster import KMeans
 from sklearn import linear_model
 
@@ -16,7 +16,7 @@ np.random.seed(5)
 
 IMG_PATH = '''IMG PATH'''
 
-cv_img = cv2.imread("test3.jpg")
+cv_img = cv2.imread("test2.jpg")
 # print cv_img.shape
 
 # class GetKMeansModel(object):
@@ -43,7 +43,12 @@ def runKMeans():
 	trained_centers = kmc.cluster_centers_
 	print trained_centers
 	print CENTERS
-	return trained_centers
+	labels = kmc.labels_
+	labelcount = Counter()
+	for pixel in labels:
+		labelcount[pixel] += 1
+	print labelcount
+	return trained_centers, labelcount
 
 
 def identifyColors(trained, true):
@@ -60,7 +65,8 @@ def identifyColors(trained, true):
 	colormap= {}
 	for i, color in enumerate(matching):
 		colormap[i] = np.argmin(color)
-		# print colormap
+		colormap[2] = 1
+		print colormap
 	return colormap
 
 def getparameters(mapping, trained, true):
@@ -71,6 +77,7 @@ def getparameters(mapping, trained, true):
 	blueX = np.zeros((3, 1))
 	blueY = np.zeros((3, 1))
 	# print type(redY), redX
+	print trained, true
 	for i, color in enumerate(true):
 		mapped = mapping[i]
 		# print i, color
@@ -83,14 +90,17 @@ def getparameters(mapping, trained, true):
 			if j == 2:
 				blueY[i] = index
 		for j2, index2 in enumerate(trained[mapped]):
-			# print j2, index2
+
 			if j2 == 0:
+				# print redX
 				redX[i] = index2
+				# print redX
 			if j2 == 1:
 				greenX[i] = index2
 			if j2 == 2:
 				blueX[i] = index2
 	# print redX
+	print redX, redY
 	RED = linear_model.LinearRegression()
 	BLUE = linear_model.LinearRegression()
 	GREEN = linear_model.LinearRegression()

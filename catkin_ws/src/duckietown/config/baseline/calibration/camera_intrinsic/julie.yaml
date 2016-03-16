@@ -1,0 +1,23 @@
+camera_matrix:
+  cols: 3
+  data: [309.94943403229087, 0.0, 294.6665634398217, 0.0, 322.94171592609763, 251.17243367082244,
+    0.0, 0.0, 1.0]
+  rows: 3
+camera_name: julie/camera_node
+distortion_coefficients:
+  cols: 5
+  data: [-0.2792347631575591, 0.062186708933729684, -0.011050958994749687, 0.001526187320476704,
+    0.0]
+  rows: 1
+distortion_model: plumb_bob
+image_height: 480
+image_width: 640
+projection_matrix:
+  cols: 4
+  data: [225.0354461669922, 0.0, 296.5516674358478, 0.0, 0.0, 260.6260986328125, 243.0127734005655,
+    0.0, 0.0, 0.0, 1.0, 0.0]
+  rows: 3
+rectification_matrix:
+  cols: 3
+  data: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+  rows: 3

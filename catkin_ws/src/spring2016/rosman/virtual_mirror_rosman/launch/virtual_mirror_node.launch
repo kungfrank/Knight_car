@@ -1,0 +1,13 @@
+<launch>
+	<arg name="veh" default="duckmobile" doc="Name of vehicle. ex: megaman"/>
+	<!--<remap from="virtual_mirror_node/topic_in" to="/duckmobile/camera_node/image/raw"/>-->
+	<!--<remap from="virtual_mirror_node/topic_out" to="/duckmobile/inverted_image"/>-->
+	<arg name=”pkg_name” value=”<package_name>”/>
+	<arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+	<arg name="config" default="baseline" doc="Specify a config."/>
+	<arg name="param_file_name" default="duckmobile" doc="Specify a param file. ex:megaman." />
+	<rosparam command="load" file="$(find duckietown_rosman)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
+
+	<node ns="$(arg veh)" pkg="virtual_mirror_rosman" type="virtual_mirror_node.py" name="virtual_mirror_node" output="screen">
+	</node>
+</launch>

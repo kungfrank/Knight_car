@@ -1,0 +1,19 @@
+<launch>
+    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
+    <arg name="local" default="false" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+    <arg name="config" default="baseline" doc="Specify a config."/>
+    <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+
+    <include file="$(find duckietown)/machines"/>
+
+    <!-- image_average_joewl_node -->
+    <remap from="image_average_joewl_node/image_in" to="camera_node/image/compressed"/>
+    <include  file="$(find image_average_joewl)/launch/image_average_joewl_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="local" value="$(arg local)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+    </include>
+
+</launch>
+

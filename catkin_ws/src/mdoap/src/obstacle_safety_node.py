@@ -16,6 +16,9 @@ class ObstacleSafetyNode:
         rospy.wait_for_service('ground_projection/get_ground_coordinate')
         self.ground_proj = rospy.ServiceProxy('ground_projection/get_ground_coordinate',GetGroundCoord)
 
+        #TODO(CL): Publish boolean once BooleanStamped from dev branch makes it in
+        #self.pub_too_close = rospy.Publisher("~obstacle_markers", MarkerArray, queue_size=1)
+        
         self.pub_markers = rospy.Publisher("~obstacle_markers", MarkerArray, queue_size=1)
         self.maxMarkers = 0
     def cbDetectionsList(self, detections_msg):
@@ -25,13 +28,14 @@ class ObstacleSafetyNode:
 
         p = Vector2D()
         count = 0;
-        for obstacle in pose: 
+        for obstacle in detections_msg.list: 
             marker = Marker()
-            p.x = float(obstacle[0])/float(width)
-            p.y = float(obstacle[1])/float(height)
+            rect = obstacle.bounding_box
+            p.x = float(rect.x)/float(rect.w)
+            p.y = float(rect.y)/float(rect.h)
             projected_point = self.ground_proj(p)
             #print projected_point.gp
-            marker.header.frame_id = "/pipquack"
+            marker.header = detections_msg.header
             marker.type = marker.ARROW
             marker.action = marker.ADD
             marker.scale.x = 0.01

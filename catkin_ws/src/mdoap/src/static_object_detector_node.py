@@ -68,7 +68,7 @@ class Matcher:
 
         object_list = ObstacleImageDetectionList()
         object_list.list = []
-        
+
         height,width = img.shape[:2]
         hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         COLOR_MIN = np.array([0, 80, 80],np.uint8)
@@ -98,6 +98,7 @@ class Matcher:
                     r.w = w
                     r.h = h
                     t = ObstacleType()
+                    #TODO(??): Assign type based on color
                     t.type = ObstacleType.CONE
                     d = ObstacleImageDetection()
                     d.bounding_box = r
@@ -117,7 +118,7 @@ class StaticObjectDetectorNode:
         self.tm = Matcher()
         self.thread_lock = threading.Lock()
         self.sub_image = rospy.Subscriber("~image_compressed", CompressedImage, self.cbImage, queue_size=1)
-        self.pub_image = rospy.Publisher("~cone_detection", Image, queue_size=1)
+        self.pub_image = rospy.Publisher("~cone_detection_image", Image, queue_size=1)
         self.pub_detections_list = rospy.Publisher("~object_image_detection_list", ObstacleImageDetectionList, queue_size=1)
         self.bridge = CvBridge()
 

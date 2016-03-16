@@ -1,0 +1,11 @@
+<launch>
+	<arg name="veh"/>
+	<arg name="log_in" doc="the full path to the input bag" />
+	<arg name="log_out" doc="the full path to the output bag" /> 
+
+	<node ns="$(arg veh)" pkg="image_average_nbuckman" type="image_average_node.py" name="image_average_node" output="screen">
+	</node>
+
+	<node  pkg="rosbag" type="play" name="rosbag_play" args="$(arg log_in)"/>
+	<node  pkg="rosbag" type="record" name="rosbag_record" args="-a  -O $(arg log_out)"/> 
+</launch>

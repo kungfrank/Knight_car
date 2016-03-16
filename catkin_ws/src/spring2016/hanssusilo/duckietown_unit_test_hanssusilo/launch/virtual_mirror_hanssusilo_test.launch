@@ -1,0 +1,7 @@
+<launch>
+	<arg name="veh"/>
+	<arg name="log_in" doc="the full path to the original image without the _orig.png" />
+	<include file="$(find virtual_mirror_hanssusilo)/launch/virtual_mirror_node.launch">
+        	<arg name="veh" value="$(arg veh)"/>
+	</include>
+</launch>

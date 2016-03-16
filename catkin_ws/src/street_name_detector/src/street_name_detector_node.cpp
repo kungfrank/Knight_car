@@ -9,6 +9,8 @@
 #include <tf_conversions/tf_eigen.h>
 #include <tf/transform_datatypes.h>
 
+// #include "AprilTags/TagDetector.h"
+// #include "AprilTags/Tag36h11.h"
 #include "AprilTags/TagDetector.h"
 #include "AprilTags/Tag36h11.h"
 

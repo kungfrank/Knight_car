@@ -14,7 +14,7 @@
         </include>
     </group>
 
-	<remap from="cone_detector_node/image_compressed" to="camera_node/image/compressed"/>
+	<remap from="cone_detector_node/input" to="camera_node/image/compressed"/>
 	<include file="$(find cone_detector)/launch/cone_detector_node.launch">
 	    <arg name="veh" value="$(arg veh)"/>
 	    <arg name="local" value="$(arg local)"/>

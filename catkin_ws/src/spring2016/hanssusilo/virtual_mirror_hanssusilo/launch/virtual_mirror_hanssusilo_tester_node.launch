@@ -1,0 +1,14 @@
+<launch>
+	<arg name="veh" default="penguin" doc="Name of vehicle. ex: megaman"/>
+
+	<arg name="node_name" value="virtual_mirror_hanssusilo_tester_node"/>
+	<arg name="pkg_name" value="virtual_mirror_hanssusilo"/>
+	<arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+	<arg name="config" default="baseline" doc="Specify a config."/>
+	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+        
+        <rosparam command="load" file="$(find duckietown_hanssusilo)/config/baseline/virtual_mirror_hanssusilo/virtual_mirror_hanssusilo_tester_node/$(arg param_file_name).yaml"/>
+	<!-- <rosparam command="load" file="$(find duckietown_hanssusilo)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/> -->
+
+	<node ns="$(arg veh)" pkg="virtual_mirror_hanssusilo" type="virtual_mirror_hanssusilo_tester_node.py" name="virtual_mirror_hanssusilo_tester_node" output="screen"/>
+</launch>

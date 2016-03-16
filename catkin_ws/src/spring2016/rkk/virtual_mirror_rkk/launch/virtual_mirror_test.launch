@@ -1,0 +1,12 @@
+<launch>
+	<arg name="veh"/>
+	<arg name="log_in"/>
+	<arg name="log_out"/>
+	<remap from="virtual_mirror_node/rgb_in" to="/$(arg veh)/camera_node/image/compressed"/>
+	<remap from="virtual_mirror_node/rgb_out" to="virtual_mirror_node/topic"/>
+	<node ns="$(arg veh)" pkg="virtual_mirror_rkk" type="virtual_mirror_node.py" name="virtual_mirror_node" output="screen">
+	</node>
+	<remap from="/$(arg veh)/wheels_driver_node/wheels_cmd" to="/nonesense_cmd"/>
+	<node  pkg="rosbag" type="play" name="rosbag_play" args="$(arg log_in)"/>
+	<node  pkg="rosbag" type="record" name="rosbag_record" args="-a  -O $(arg log_out)"/> 
+</launch>

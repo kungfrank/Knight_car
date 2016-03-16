@@ -1,43 +1,21 @@
-# First log: 
-# 20160311-allblinking_test1-<robot>.bag   robot in [maserati, argo]
-# External video: Andrea’s cellphone
-# (from Argo’s POV)
-# 1Hz white on left (Magitek)
-# 2Hz white on right (Maserati)
-# Red traffic light, 1.5hz
+allblinking_test1-argo-magitek_front:
+  # how to create the test data
+  data:
+    bag: "~/duckietown-data/logs/Phase_2/F23/Meeting_1_Logs/allblinking_test1/20160312-allblinking_test1-argo.bag"
+    interval: [0, 2]
+  # what to query for
+  query:
+    frequencies_to_detect: [1.0, 3.0]
+    min_distance_between_LEDs_pixels: 5         
+  # what we expect to see
+  expected: 
+  - timestamp1: 0
+    timestamp2: 2
+    image_coordinates: [10, 10]
+    image_coordinates_margin: 5 # pixels
+    frequency: 1.0
+    color: [1,1,1]
+    color_tolerance: 0.1
+    confidence_min: 0.9
 
-# 2Hz white on Argo 
-
-
-allblinking_test1-argo:
-    bag: 20160311-allblinking_test1-argo.bag
-    query:
-      interval:
-        [0, 2]
-      frequencies_to_detect:
-        [1.0, 3.0]
-    ground_truth:
-    # 1Hz white on left (Magitek)
-    - timestamp1: 0
-      timestamp2: 2
-      image_coordinates: [?, ?]
-      image_coordinates_margin: 5 # pixels
-      frequency: 1.0
-      color: [1,1,1]
-      color_tolerance: 0.1
-      confidence_min: 0.9
-
-      
-# # 2Hz white on right (Maserati)
-# # Red traffic light, 1.5hz
-
-# # 2Hz white on Argo 
-
-# _Detection = namedtuple("LED_Detection",
-#                            "timestamp1 "  # first timestamp
-#                            "timestamp2 "  # second timestamp
-#                            "image_coordinates "  # in (y, x) = [0,1]x[0,1]
-#                            "frequency "  # > 0
-#                            "color "  # [r, g, b]
-#                            "confidence "  # float
-#                            )
+    

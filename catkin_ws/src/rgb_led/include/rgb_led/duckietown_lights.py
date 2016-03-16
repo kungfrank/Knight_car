@@ -94,12 +94,6 @@ def create_patterns():
 		FRONT_RIGHT:WHITE,
 	}
 	
-	
-	def conf_single_on(which, color):
-		x = dict(**others)
-		x[which] =color
-		return x
-	
 	def conf_all_on(color):
 		x = dict(**conf_all_off)
 		for k in x:

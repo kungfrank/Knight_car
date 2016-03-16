@@ -1,1 +1,5 @@
-from .topic_utils import *
+
+import logging
+logging.basicConfig()
+logger = logging.getLogger('duckietown_utils')
+logger.setLevel(logging.DEBUG)

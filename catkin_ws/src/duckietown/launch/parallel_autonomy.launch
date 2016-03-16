@@ -60,6 +60,8 @@
     <remap from="lane_supervisor_node/lane_pose" to="lane_filter_node/lane_pose"/>
     <remap from="lane_supervisor_node/wheels_control_joy" to="joy_mapper_node/wheels_cmd"/>
     <remap from="lane_supervisor_node/wheels_control_lane" to="lane_controller_node/wheels_control"/>
+    <remap from="lane_supervisor_node/joy" to="joy"/>
+    <remap from="lane_supervisor_node/in_lane" to="lane_filter/in_lane"/>
     <include file="$(find lane_control)/launch/lane_supervisor_node.launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>

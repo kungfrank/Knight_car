@@ -31,7 +31,6 @@ class StopLineFilterNode(object):
         return value
 
     def processSegments(self,segment_list_msg):
-        print "segments_received"
         good_seg_count=0
         stop_line_distance_accumulator=0.0
         for segment in segment_list_msg.segments:
@@ -40,7 +39,6 @@ class StopLineFilterNode(object):
             if segment.points[0].x < 0 or segment.points[1].x < 0: # the point is behind us 
                 continue
 
-            print "got red segment"
             p1 = np.array([segment.points[0].x, segment.points[0].y])
             p2 = np.array([segment.points[1].x, segment.points[1].y])
             dist1 = np.linalg.norm(p1)
@@ -50,13 +48,11 @@ class StopLineFilterNode(object):
             good_seg_count += 1.0
 
         if (good_seg_count < self.min_segs):
-            print "not enough good segs"
             self.pub_stop_line_detect.publish(False)
             self.pub_at_stop_line.publish(False)
             self.pub_stop_line_dist.publish(-1.0)
             return
         
-        print "have enough good segs"
         self.pub_stop_line_detect.publish(True)
         
         stop_line_dist = stop_line_distance_accumulator/good_seg_count

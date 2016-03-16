@@ -33,6 +33,7 @@ class LaneFilterNode(object):
         self.linewidth_yellow = self.setupParam("~linewidth_yellow",0.02)
         self.lanewidth        = self.setupParam("~lanewidth",0.4)
         self.min_max = self.setupParam("~min_max", 0.3) # nats
+        self.min_segs = self.setupParam("~min_segs", 10)
 
         self.d,self.phi = np.mgrid[self.d_min:self.d_max:self.delta_d,self.phi_min:self.phi_max:self.delta_phi]
         self.beliefRV=np.empty(self.d.shape)
@@ -69,7 +70,7 @@ class LaneFilterNode(object):
                 continue
             i = floor((d_i - self.d_min)/self.delta_d)
             j = floor((phi_i - self.phi_min)/self.delta_phi)
-            measurement_likelihood[i,j] = measurement_likelihood[i,j] +  1/l_i
+            measurement_likelihood[i,j] = measurement_likelihood[i,j] +  1/(l_i)
         if np.linalg.norm(measurement_likelihood) == 0:
             return
         measurement_likelihood = measurement_likelihood/np.linalg.norm(measurement_likelihood)
@@ -94,17 +95,12 @@ class LaneFilterNode(object):
         # print rospy.get_time() - t_start
 
         max_val = self.beliefRV.max()
-        print max_val
-        if (max_val > self.min_max):
+#        print max_val
+#        print len(segment_list_msg.segments)
+        if (max_val > self.min_max and len(segment_list_msg.segments) > self.min_segs):
             self.pub_in_lane.publish(True)
         else:
             self.pub_in_lane.publish(False)
-#        ent = entropy(self.beliefRV)
-#        print ent
-#        if (ent < self.max_entropy):
-#            self.pub_in_lane.publish(True)
-#        else:
-#            self.pub_in_lane.publish(False)
 
 
     def initializeBelief(self):

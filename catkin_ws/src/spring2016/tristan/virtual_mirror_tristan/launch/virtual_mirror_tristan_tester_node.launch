@@ -1,0 +1,8 @@
+<launch>
+	<arg name="veh" default="morty" doc="Name of vehicle. ex: megaman"/>
+	<group ns="$(arg veh)">
+		<node name="virtual_mirror_tristan_tester" pkg="virtual_mirror_tristan" type="virtual_mirror_tristan_tester_node.py" output="screen">
+		      <param name="~flip_direction" value="horz"/>
+		 </node>
+	</group>
+</launch>

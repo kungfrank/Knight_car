@@ -1,0 +1,20 @@
+<launch>
+	<arg name="veh" doc="Name of vehicle" />
+    <arg name="flip_direction" doc="1: horizontal 0 : vertical"/>
+	<arg name="local" default="false" />
+
+	<!-- Camera -->
+	<include unless="$(arg local)" file="$(find duckietown)/launch/camera.launch">
+		<arg name="veh" value="$(arg veh)"/>
+	</include>
+
+	<remap from="virtual_mirror_node/incoming_image" to="camera_node/image/compressed" />
+
+	<!-- Virtual Mirror -->
+	<include file="$(find virtual_mirror_atacchet)/launch/virtual_mirror_atacchet.launch">
+		<arg name="veh" value="$(arg veh)"/>
+    	<arg name="flip_direction" value="$(arg flip_direction)"/>
+		<arg name="local" value="$(arg local)" />
+	</include>
+</launch>
+

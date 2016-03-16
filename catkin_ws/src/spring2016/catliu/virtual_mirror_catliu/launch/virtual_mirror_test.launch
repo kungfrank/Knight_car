@@ -1,0 +1,18 @@
+<launch>
+    <arg name="veh"/>
+    <arg name="log_in" doc="the full path to the input bag" />
+    <arg name="log_out" doc="the full path to the output bag" /> 
+    <arg name="config" default="baseline" doc="Specify a config."/>
+    <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+    
+
+    <include file="$(find virtual_mirror_catliu)/launch/virtual_mirror_catliu_node.launch">
+         <arg name="veh" value="$(arg veh)"/>
+         <arg name="local" value="true" />
+         <arg name="config" value="$(arg config)"/>
+         <arg name="param_file_name" value="$(arg param_file_name)"/>
+    </include>
+
+    <node  pkg="rosbag" type="play" name="rosbag_play" args="$(arg log_in)"/>
+    <node  pkg="rosbag" type="record" name="rosbag_record" args="-a  -O $(arg log_out)"/> 
+</launch>

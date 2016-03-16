@@ -1,0 +1,4 @@
+<launch>
+    <arg name="veh" /> 
+	<node ns="$(arg veh)" pkg="virtual_mirror_valerio" type="virtual_mirror.py" name="virtual_mirror_valerio" output="screen"/>
+</launch>

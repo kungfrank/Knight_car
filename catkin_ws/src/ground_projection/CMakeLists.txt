@@ -17,7 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   image_geometry
 )
 
-find_package(OpenCV 2.4.8 EXACT REQUIRED)
+find_package(OpenCV 2.4.8 REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(PkgConfig)
 

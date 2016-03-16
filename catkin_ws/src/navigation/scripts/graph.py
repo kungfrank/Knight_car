@@ -95,7 +95,6 @@ class Graph(object):
 
         if highlight_edges:
             nx.draw_networkx_edges(nxg, pos, highlight_edges, edge_color='r')
-        
         plt.axis('off')
         plt.show()
 

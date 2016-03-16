@@ -2,28 +2,34 @@
 
 from navigation.srv import *
 import rospy
+import sys
+import os
 
 import pickle
 from graph import Graph
 from graph_search import GraphSearchProblem
 
 duckietown_graph = 0
+draw_solution = False
 
 def handle_graph_search(req):
-	# Running A*
+	global duckietown_graph	
+	global draw_solution
 	
-	global duckietown_graph
-	
+	# Checking is nodes exists
+	if (req.source_node not in duckietown_graph) or (req.target_node not in duckietown_graph):
+		print "Source or target node do not exist."
+		return GraphSearchResponse(["Source or target node do not exist."])
+
+	# Running A*	
 	duckietown_problem = GraphSearchProblem(duckietown_graph, req.source_node, req.target_node)
 	path = duckietown_problem.astar_search()
 
-	# Return path
-	#print "A* solution:\n%s" %(path)
-
 	# Draw solution
-	#if path and draw_solution:
-	#	duckietown_graph.draw(highlight_edges=path.edges())
-	print path
+	# TODO: drawing does not work for more than 1 client request
+	if path and draw_solution:
+		duckietown_graph.draw(highlight_edges=path.edges())
+
 	return GraphSearchResponse(path.actions)
 
 def graph_search_server():
@@ -31,19 +37,22 @@ def graph_search_server():
     s = rospy.Service('graph_search', GraphSearch, handle_graph_search)
     rospy.spin()
 
-if __name__ == "__main__":
-	global duckietown_graph
-	
+if __name__ == "__main__":	
 	print 'Graph Search Service Started'
 	
 	# Inputs
-	map_path = 'maps/duckietown_map.pkl'
-	start_state = 'I15'
-	goal_state = 'I26'
-	draw_solution = True
+	map_name = rospy.get_param('map_name', 'duckietown_map.pkl')
+	draw_solution = rospy.get_param('draw_solution', False)
 
 	# Loading map
-	file2 = open(map_path, 'r')
+	script_dir = os.path.dirname(__file__)
+	map_path = script_dir + '/maps/' + map_name
+	try:
+		file2 = open(map_path, 'r')
+	except IOError:
+		print "Couldn't find your map:", map_path, ". Closing program..."
+		sys.exit(0)
+		
 	map_data = pickle.load(file2)
 	file2.close()
 
@@ -55,5 +64,7 @@ if __name__ == "__main__":
 		duckietown_graph.add_edge(edge[0], edge[1], edge[2], edge[3])
 		
 	duckietown_graph.set_node_positions(node_locations)
+
+	print "Map loaded successfully! Starting server...\n"
 
 	graph_search_server()

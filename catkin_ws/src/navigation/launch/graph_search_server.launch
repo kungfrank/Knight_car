@@ -1,0 +1,11 @@
+<launch>
+	<param name="map_name" value="duckietown_map.pkl" />
+	<param name="draw_solution" value="False" />
+	<node
+		name="graph_search_server"
+		pkg="navigation"
+		type="graph_search_server.py"
+		output="screen"
+	/>
+
+</launch>

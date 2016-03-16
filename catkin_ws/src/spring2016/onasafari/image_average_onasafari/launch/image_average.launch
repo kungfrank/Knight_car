@@ -1,0 +1,10 @@
+<launch>
+    <arg name="veh"/>
+    <node pkg="image_average_onasafari" type="virtual_mirror.py" name="image_average_node" output="screen" >
+    <remap from="~image_raw" to="$(arg veh)/camera_node/image/compressed"/>
+    </node>
+     <node  pkg="rosbag" type="play" name="rosbag_play" args="$(arg bagin)"/>
+    <node  pkg="rosbag" type="record" name="rosbag_record" args="-a  -O $(arg bagout)"/> 
+
+
+</launch>

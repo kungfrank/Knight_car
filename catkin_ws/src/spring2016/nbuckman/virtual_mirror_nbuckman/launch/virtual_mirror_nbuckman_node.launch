@@ -1,0 +1,30 @@
+
+<launch>
+    <arg name="pkg_name" value="virtual_mirror_nbuckman"/>
+    <arg name="node_name" default="virtual_mirror_nbuckman_node"/>
+    <arg name="veh" default="ernie" doc="Name of vehicle. ex: megaman"/>
+    <arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+    <arg name="config" default="baseline" doc="Specify a config."/>
+    <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+
+
+
+    <group ns="$(arg veh)">        
+        <!-- run local -->
+        <node if="$(arg local)" name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
+            <rosparam command="load" file="$(find duckietown_nbuckman)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
+            <rosparam name="~img_file" value="/home/noambuckman/test_images/01_horz.jpg"
+        </node>
+
+        <!-- run remote -->
+        <node unless="$(arg local)" machine="$(arg veh)" name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
+            <rosparam command="load" file="$(find duckietown_nbuckman)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
+        </node>
+    </group>
+
+    <!-- Publications -->
+
+    <!-- Subscriptions -->
+
+    
+</launch>

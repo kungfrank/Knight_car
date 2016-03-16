@@ -1,0 +1,9 @@
+<launch>
+	<arg name="veh"/>
+ 	<remap from="virtual_mirror_node/image_in" to="virtual_mirror_tester_node/original/compressed"/> 
+ 	<remap from="virtual_mirror_tester_node/image_in" to="virtual_mirror_node/image/compressed"/> 
+	<node ns="$(arg veh)" pkg="virtual_mirror_wubella" type="virtual_mirror_tester_node.py" name="virtual_mirror_tester_node" output="screen">
+	</node>
+	<node ns="$(arg veh)" pkg="virtual_mirror_wubella" type="virtual_mirror_node.py" name="virtual_mirror_node" output="screen">
+	</node>
+</launch>

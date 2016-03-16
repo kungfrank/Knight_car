@@ -1,0 +1,4 @@
+<launch>
+    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
+    <node pkg="image_average_sangukbo" name="average_node" type="average_node.py"/>
+</launch>

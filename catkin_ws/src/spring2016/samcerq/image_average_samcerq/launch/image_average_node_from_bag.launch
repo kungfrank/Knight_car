@@ -1,0 +1,12 @@
+<launch>
+        <arg name ="veh"/>	
+        <arg name ="bagin"/>	
+        <arg name ="bagout"/>	
+	<remap from="input"  to="/ferrari/camera_node/image/compressed"/>
+	<remap from="output" to="/ferrari/image_average_node/raw"/>
+        <node ns="$(arg veh)" name="image_average_node" pkg="image_average_samcerq" type="image_average_node.py" />
+	<node pkg="rosbag" type="play" name="rosbag_play" args="$(arg bagin)"/>
+	<node pkg="rosbag" type="record" name="rosbag_record" args="-a -O $(arg bagout)"/>
+</launch>
+
+

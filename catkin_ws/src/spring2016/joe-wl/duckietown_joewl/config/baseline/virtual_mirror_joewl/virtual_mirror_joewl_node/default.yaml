@@ -1,0 +1,3 @@
+# Parameters for virtual_mirror_joewl/virtual_mirror_joewl_node
+flip_direction: horz
+pub_timestep: 1.0

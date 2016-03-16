@@ -3,12 +3,17 @@ import rospy
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import CompressedImage, Image
+from duckietown_msgs_tristan.msg import FlipDirection
 import numpy as np
 import threading
 
 class VirtualMirrorNode(object):
     def __init__(self):
         self.node_name = "Virtual Mirror"
+        
+        self.flip_direction = self.setupParam("~flip_direction","vert")
+
+        self.param_timer = rospy.Timer(rospy.Duration.from_sec(1.0),self.cbParamTimer)
 
         # Thread lock 
         self.thread_lock = threading.Lock()
@@ -17,6 +22,7 @@ class VirtualMirrorNode(object):
       
         # Publishers
         self.pub_image = rospy.Publisher("~mirror_image", Image, queue_size=1)
+        self.pub_flip_direction = rospy.Publisher("~flip_direction", FlipDirection, queue_size=1)
        
         # Verbose option 
         #self.verbose = rospy.get_param('~verbose')
@@ -27,6 +33,19 @@ class VirtualMirrorNode(object):
         # Subscribers
         self.sub_image = rospy.Subscriber("~image", CompressedImage, self.cbImage, queue_size=1)
         rospy.loginfo("[%s] Initialized." %(self.node_name))
+
+    def cbParamTimer(self,event):
+        self.flip_direction = rospy.get_param("~flip_direction", "vert")
+        flip_out = FlipDirection()
+        flip_out.flip_direction = self.flip_direction
+        self.pub_flip_direction.publish(flip_out)
+
+
+    def setupParam(self,param_name,default_value):
+        value = rospy.get_param(param_name,default_value)
+        rospy.set_param(param_name,value) #Write to parameter server for transparancy
+        rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
+        return value
 
     def cbImage(self,image_msg):
         # Start a daemon thread to process the image
@@ -55,7 +74,10 @@ class VirtualMirrorNode(object):
         
  
         # Process image here
-        mirrorImage = image_cv[:,::-1,:]
+        if self.flip_direction == "horz":
+            mirrorImage = image_cv[:,::-1,:]
+        else:
+            mirrorImage = image_cv[::-1,:,:]
          
         # Publish the frame with lines
         image_msg_out = self.bridge.cv2_to_imgmsg(mirrorImage, "bgr8")

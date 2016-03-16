@@ -1,0 +1,7 @@
+<launch>
+    <arg name="veh"/>
+    <remap from="virtual_mirror_node/topic_in" to="camera_node/image/compressed"/>
+    <remap from="virtual_mirror_node/topic_out" to="virtual_mirror_node/topic"/>
+    <node ns="$(arg veh)" pkg="virtual_mirror_jenshen" type="virtual_mirror_node.py" name="virtual_mirror_node" output="screen">
+    </node>
+</launch>

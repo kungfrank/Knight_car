@@ -26,7 +26,7 @@ digraph D {
 	subgraph node_missing{
 		node [fillcolor=red];
 		global_localizer[label="global_localizer_node (LC)"];
-		obj_detector_node[label="obj_detector_node (CC)"];
+		//obj_detector_node[label="obj_detector_node (CC)"];
 		lane_supervisor_node[label="lane_control\nlane_supervisor_node (LP)"];
 	}
 	subgraph node_designed{
@@ -56,9 +56,10 @@ digraph D {
 		trafficlight_signal_detector_node[label="led_detection\ntrafficlight_signal_detector_node (F2-3)"];
 
 		//F4
-		kinematics_learning_node[label="visual_odometry\nkinematics_learning_node (F4)"];
-		inverse_kinematics_node[label="forward_kinematics\ninverse_kinematics_node (F4)"];
-		forward_kinematics_node[label="forward_kinematics\nforward_kinematics_node (F4)"];
+		odometry_training_pairs_node[label="visual_odometry\nodometry_training_pairs_node (F4)"];
+		kinematics_learning_node[label="kinematics\nkinematics_learning_node (F4)"];
+		inverse_kinematics_node[label="kinematics\ninverse_kinematics_node (F4)"];
+		forward_kinematics_node[label="kinematics\nforward_kinematics_node (F4)"];
 
 		//F9
 		static_object_detector_node[label="mdoap\nstatic_object_detector_node (F9)"];
@@ -113,8 +114,9 @@ digraph D {
 		navigation_graph_file[label="??/navigation_graph_file"];
 		feature_map_file[label="??/feature_map_file"];
 		inverse_kinematics_file[label="calibration/inverse_kinematics"];
-		kinematics_file[label="calibration/kinematics_param"];
+		kinematics_file[label="calibration/forward_kinematics"];
 		tags_map_file[label="map/tags_map.yaml"];
+		odometry_training_pairs_file[label="???/odometry_training_pairs"];
 	}
 
 	// ==== Topics ====
@@ -153,7 +155,7 @@ digraph D {
 	image_health[label="~image_health\nduckietown_msgs/AntiInstagramHealth.msg"];
 	forward_kinematics_pose[label="~pose\nduckietown_msgs/Pose2DStamped.msg"];
 	forward_kinematics_velocity[label="~velocity\nduckietown_msgs/Twist2DStamped.msg"];
-	car_cmd[label="~car_cmd\nduckietown_msgs/Twist2DStamped.msg"]; //No publisher yet
+	//car_cmd[label="~car_cmd\nduckietown_msgs/Twist2DStamped.msg"]; //No publisher yet
 
 
 	// = F2-3 = //
@@ -183,15 +185,15 @@ digraph D {
 	apriltag_detection_with_info[label="~apriltag_detection_with_info\nduckietown_msgs/AprilTags.msg"];
 
 
-	{rank=max; wheels_driver_node}
+	//{rank=max; wheels_driver_node}
 	{rank=min; camera_node}
-	{rank=same;wheels_command}
+	//{rank=same;wheels_command}
 
 
 	// ==== Connections ====
 	
 	// fsm_node
-	{intersection_go,intersection_done,at_stop_line,in_lane, veh_avoidance_flag} -> fsm_node;
+	{intersection_go,intersection_done,at_stop_line,in_lane, veh_avoidance_flag, object_too_close} -> fsm_node;
 	fsm_node->mode;
 	
 	// == open_loop_intersection_control_node == //
@@ -297,11 +299,21 @@ digraph D {
 		forward_kinematics_velocity;
 		forward_kinematics_pose;
 		inverse_kinematics_node;
+		odometry_training_pairs_file;
+		odometry_training_pairs_node;
+		//wheels_command_switch;
+		wheels_command;
+		wheels_driver_node;
 	}
 
+
+	// == odometry_training_pairs_node == //
+	{image_compressed,apriltag_detection,segment_list_proj, wheels_command_switch} -> odometry_training_pairs_node;
+	odometry_training_pairs_node -> odometry_training_pairs_file[style="dotted"];
+
 	// == kinematics_learning_node == //
-	{image_compressed,apriltag_detection,segment_list_proj, wheels_command_switch} -> kinematics_learning_node;
-	kinematics_learning_node -> {inverse_kinematics_file, kinematics_file}[style=dotted];
+	odometry_training_pairs_file -> kinematics_learning_node[style="dotted"]
+	kinematics_learning_node -> {inverse_kinematics_file, kinematics_file}[style="dotted"];
 
 	// == inverse_kinematics_node == //
 	inverse_kinematics_file -> inverse_kinematics_node[style="dotted"];

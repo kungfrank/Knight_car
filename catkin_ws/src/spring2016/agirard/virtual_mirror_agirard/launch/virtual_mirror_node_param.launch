@@ -1,0 +1,6 @@
+<launch>
+    <arg name="veh"/>
+    <node ns="$(arg veh)" pkg="virtual_mirror-agirard" type="mirror_node.py" name="mirror_node" output="screen">
+    </node>
+    <rosparam command="load" file="$(find <duckietown_package_name>)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
+</launch>

@@ -1,0 +1,35 @@
+<launch>
+  <arg name="pkg_name" value="virtual_mirror_amadoa"/>
+  <arg name="node_name" default="virtual_mirror_amadoa_tester_node"/>
+  <arg name="veh" doc="Name of vehicle. ex: megaman"/>
+  <arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+  <arg name="config" default="baseline" doc="Specify a config."/>
+  <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+
+  <arg name="original_image_file" value="/home/amado/pics_duckietown/Test_images/01_orig.png"/>
+  <arg name="flipped_image_horz" value="/home/amado/pics_duckietown/Test_images/01_horz.png"/>
+  <arg name="flipped_image_vert" value="/home/amado/pics_duckietown/Test_images/01_vert.png"/>
+
+  <group ns="$(arg veh)">
+    <node name="virtual_mirror_amadoa_node" pkg="virtual_mirror_amadoa" type="virtual_mirror_amadoa_node.py" output="screen">
+      <param name="~flip_direction" value="horz"/>
+      <!-- Subscribe Topics -->
+	   <remap from="~duckiebot_image" to="camera_node/image/compressed"/>
+	  <!-- Publish Topics -->
+	   <remap from="~mirrored_image" to="virtual_mirror_amadoa_node/image/compressed"/>
+	  <!-- <remap from="flip" to="virtual_mirror_amadoa_node/flip"/> -->
+	</node>
+
+    <node name="$(arg node_name)" pkg="virtual_mirror_amadoa" type="virtual_mirror_amadoa_tester_node.py" output="screen">
+      <param name="original_image_file" value="$(arg original_image_file)"/>
+      <param name="flipped_image_horz" value="$(arg flipped_image_horz)"/>
+      <param name="flipped_image_vert" value="$(arg flipped_image_vert)"/>
+      <!--&lt;!&ndash; Subscribe Topics &ndash;&gt;-->
+      <!--<remap from="~mirrored_image" to="virtual_mirror_amadoa_node/image/compressed"/>-->
+      <!--&lt;!&ndash; Publish Topics &ndash;&gt;-->
+      <!--<remap from="~test_image" to="camera_node/image/compressed"/>-->
+	</node>
+
+  </group>
+	
+</launch>

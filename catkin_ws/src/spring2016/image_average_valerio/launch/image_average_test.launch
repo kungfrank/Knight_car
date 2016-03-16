@@ -1,0 +1,10 @@
+<launch>
+	<!--arg name="veh" default="duckietop2"/-->
+
+	<include file="$(find image_average_valerio)/launch/image_average_node.launch">
+		 <arg name="veh" value="$(arg veh)"/>
+	</include>
+
+	<node  pkg="rosbag" type="play" name="rosbag_play" args="$(arg log_in)"/>
+	<node  pkg="rosbag" type="record" name="rosbag_record" args="-a  -O $(arg log_out)"/> 
+</launch>

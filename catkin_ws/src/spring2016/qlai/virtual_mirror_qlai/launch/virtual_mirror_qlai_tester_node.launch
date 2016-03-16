@@ -1,0 +1,24 @@
+<launch>
+	<arg name="veh" default="pontiac" doc="Name of vehicle. ex: megaman"/>
+	<arg name="pkg_name" value="virtual_mirror_qlai"/>
+	<arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+	<arg name="config" default="baseline" doc="Specify a config."/>
+	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+	<arg name="flip_direction" default="horz" doc="Flip direction, horz or vert"/>
+	<arg name="test_img" default="01" doc="test img: 01, 02, 03, 04"/>
+
+
+
+	<group ns="$(arg veh)">
+		<node name="virtual_mirror_qlai_tester_node" pkg="virtual_mirror_qlai" type="virtual_mirror_qlai_tester_node.py" output="screen">
+            <param name="~test_img" value="$(arg test_img)"/>
+
+		 </node>
+
+
+		<node name="virtual_mirror_qlai_node" pkg="virtual_mirror_qlai" type="virtual_mirror_qlai_node.py" output="screen">
+			<param name="~flip_direction" value="$(arg flip_direction)"/>
+		</node>
+
+	</group>
+</launch>

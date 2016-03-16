@@ -1,7 +1,0 @@
-<launch>
-	<arg name="veh"/>
-	<remap from="repeater_node/topic_in" to=""/>
-	<remap from="repeater_node/topic_out" to=""/>
-	<node ns="$(arg veh)" pkg="lab03" type="repeater_node.py" name="repeater_node" output="screen">
-	</node>
-</launch>

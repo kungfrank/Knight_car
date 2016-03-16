@@ -97,7 +97,7 @@ class LaneFilterNode(object):
         max_val = self.beliefRV.max()
 #        print max_val
 #        print len(segment_list_msg.segments)
-        if (max_val > self.min_max and len(segment_list_msg.segments) > self.min_segs):
+        if max_val > self.min_max and len(segment_list_msg.segments) > self.min_segs:
             self.pub_in_lane.publish(True)
         else:
             self.pub_in_lane.publish(False)

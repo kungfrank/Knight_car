@@ -28,13 +28,15 @@ class Segmentor
   cv::Mat segimage_;
   cv::Mat segimage_gray_;
   std::vector<rect> region_rects_;
+  bool draw_rect_;
 public:
-  Segmentor(int width, int height)
+  Segmentor(int width, int height, bool draw_rect)
   : width_(width), height_(height)
   {
     image_ = new image<rgb>(width_, height_);
     segimage_ = cv::Mat(cv::Size(width_, height_), CV_8UC3);
     segimage_gray_ = cv::Mat(cv::Size(width_, height_), CV_8UC1);
+    draw_rect_ = draw_rect;
   }
 
   ~Segmentor()
@@ -64,10 +66,13 @@ public:
       ROS_DEBUG_STREAM("[" << i << "]" << region_rects_[i].x << " " << region_rects_[i].y << " " << region_rects_[i].w << " " << region_rects_[i].h);
 
       // draw green rectangles
-      cv::rectangle(segimage_, 
-        cv::Point(region_rects_[i].x, region_rects_[i].y), 
-        cv::Point(region_rects_[i].x + region_rects_[i].w, region_rects_[i].y + region_rects_[i].h), 
-        cv::Scalar(0, 255, 0), 1, 8);
+      if(draw_rect_)
+      {
+        cv::rectangle(segimage_, 
+          cv::Point(region_rects_[i].x, region_rects_[i].y), 
+          cv::Point(region_rects_[i].x + region_rects_[i].w, region_rects_[i].y + region_rects_[i].h), 
+          cv::Scalar(0, 255, 0), 1, 8);
+      }
       rects[i].x = int32_t(region_rects_[i].x);
       rects[i].y = int32_t(region_rects_[i].y);
       rects[i].w = int32_t(region_rects_[i].w);
@@ -133,15 +138,17 @@ public:
     nh_.param<int>("min", min_, 20);
 
     nh_.param<bool>("half", half_, true);
+    bool draw_rect;
+    nh_.param<bool>("draw_rect", draw_rect, true);
 
     ROS_INFO("Waiting for message on camera info topic.");
     camera_info_ = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("camera_info", nh_);
 
     // segmentor_ = Segmentor::Ptr(new Segmentor(camera_info_->width, camera_info_->height, half_));
     if(half_)
-      segmentor_ = Segmentor::Ptr(new Segmentor(camera_info_->width/2, camera_info_->height/2));
+      segmentor_ = Segmentor::Ptr(new Segmentor(camera_info_->width/2, camera_info_->height/2, draw_rect));
     else
-      segmentor_ = Segmentor::Ptr(new Segmentor(camera_info_->width, camera_info_->height));
+      segmentor_ = Segmentor::Ptr(new Segmentor(camera_info_->width, camera_info_->height, draw_rect));
 
     srv_segment_ = nh_.advertiseService("segment_image", &SceneSegmentation::segment_image_cb, this);
     ROS_INFO("segment_image is ready.");

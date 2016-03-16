@@ -1,0 +1,7 @@
+<launch>
+	<arg name="veh"/>
+	<remap from="~img_topic_in" to="/$(arg veh)/camera_node/image/compressed"/>
+	<remap from="~img_topic_out" to="/$(arg veh)/camera_node/image/averaged"/>
+	<node ns="$(arg veh)" pkg="image_average_hanssusilo" type="image_average_node.py" name="image_average_node" output="screen">
+	</node>
+</launch>

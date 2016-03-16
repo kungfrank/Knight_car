@@ -1,0 +1,4 @@
+# default parameters for virtual_mirror_agirard/virtual_mirror_node
+vert: 1
+horz: 0
+flip_direction: 0

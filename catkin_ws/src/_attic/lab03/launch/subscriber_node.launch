@@ -1,0 +1,6 @@
+<launch>
+	<arg name="veh"/>
+	<remap from="subscriber_node/topic" to="publisher_node/topic"/> 
+	<node ns="$(arg veh)" pkg="lab03" type="subscriber_node.py" name="subscriber_node" output="screen">
+	</node>
+</launch>

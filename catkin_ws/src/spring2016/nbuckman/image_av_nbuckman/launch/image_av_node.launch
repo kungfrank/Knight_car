@@ -1,0 +1,6 @@
+<launch>
+	<arg name="veh"/>
+
+	<node ns="$(arg veh)" pkg="image_av_nbuckman" type="image_av_node.py" name="image_av_node" output="screen">
+	</node>
+</launch>

@@ -1,9 +1,10 @@
 <launch>
+  <arg name="veh" doc="Name of vehicle. ex: megaman"/>
 
   <node pkg="svo_ros" type="vo" name="svo" clear_params="true" output="screen">
 
     <!-- Camera topic to subscribe to -->
-    <param name="cam_topic" value="/amadobot/camera_node/image" type="str" />
+    <param name="cam_topic" value="$(arg veh)/camera_node/raw_for_svo" type="str" />
     
     <!-- Camera calibration file -->
     <rosparam file="$(find svo_ros)/param/amadobot_camera.yaml" />

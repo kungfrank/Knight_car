@@ -42,8 +42,8 @@ def graph_search(data):
 
 if __name__ == "__main__":
     rospy.init_node('action_dispatcher')
-    rospy.Subscriber("fsm/mode", FSMState, dispatcher)
-    rospy.Subscriber("nav/plan_request", SourceTargetNodes, graph_search)
-    pub = rospy.Publisher("/turn_type", Int16, queue_size=1)
+    rospy.Subscriber("~mode", FSMState, dispatcher)
+    rospy.Subscriber("~path_plan", SourceTargetNodes, graph_search)
+    pub = rospy.Publisher("~turn_type", Int16, queue_size=1)
     
     rospy.spin()

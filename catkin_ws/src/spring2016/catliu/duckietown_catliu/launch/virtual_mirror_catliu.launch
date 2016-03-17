@@ -1,0 +1,29 @@
+<launch>
+    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
+    <arg name="local" default="false" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+    <arg name="config" default="baseline" doc="Specify a config."/>
+    <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+    <arg name="live" default="true" doc="if set to true, run the camera and do live detection. "/>
+    
+    <include file="$(find duckietown)/machines"/>
+
+    <!-- Virtual Mirror Catliu -->
+    <remap from="virtual_mirror_catliu_node/image_compressed" to="camera_node/image/compressed"/>
+    <include file="$(find virtual_mirror_catliu)/launch/virtual_mirror_catliu_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="local" value="$(arg local)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+    </include>
+
+    <!-- camera -->
+    <group if="$(arg live)">
+        <include file="$(find duckietown)/launch/camera.launch">
+            <arg name="veh" value="$(arg veh)"/>
+            <arg name="local" value="$(arg local)"/>
+            <arg name="config" value="$(arg config)"/>
+            <arg name="param_file_name" value="$(arg param_file_name)"/>
+        </include>
+    </group>
+
+</launch>

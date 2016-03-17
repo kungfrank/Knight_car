@@ -1,0 +1,15 @@
+<launch>
+    <arg name="veh"  default="bill"/>
+    <arg name="local" default="true"/>
+    <arg name="config" default="launch/config/baseline"/>
+    <arg name="param_file_name" default="default"/>
+
+    <remap from="virtual_mirror_araki_node/img_in" to="camera_node/image/compressed" />
+    <include file="$(find virtual_mirror_araki)/launch/virtual_mirror_araki_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="local" value="$(arg local)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+    </include>
+
+</launch>

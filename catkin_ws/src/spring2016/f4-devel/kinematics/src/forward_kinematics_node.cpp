@@ -51,8 +51,8 @@ forward_kinematics_node::forward_kinematics_node() : nh_("~"), node_name_("forwa
 {
 
   //Get parameters
-  nh_.param("K_l", K_l_, 0.1);
-  nh_.param("K_r", K_r_, 0.1);
+  nh_.param("K_l", K_l_, 25.0);
+  nh_.param("K_r", K_r_, 25.0);
   nh_.param("radius_l", radius_l_, 0.02);
   nh_.param("radius_r", radius_r_, 0.02);
   nh_.param("baseline_lr", baseline_lr_, 0.1);

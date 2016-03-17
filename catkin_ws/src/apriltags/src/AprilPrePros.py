@@ -37,8 +37,8 @@ class AprilPrePros(object):
         # Downsample
         h,w = crop_img.shape[:2]
         print h,w
-        #processed_img = cv2.pyrDown(crop_img,dstsize = (w/2,h/2))
-        processed_img = crop_img
+        processed_img = cv2.pyrDown(crop_img,dstsize = (w/2,h/2))
+        #processed_img = crop_img
 
         # Publish Message
         img_msg = self.bridge.cv2_to_imgmsg( processed_img , "bgr8")

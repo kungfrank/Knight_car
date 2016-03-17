@@ -1,21 +1,9 @@
 #include "ros/ros.h" // main ROS include
-#include "std_msgs/Float32.h" // number message datatype
 #include <ros/console.h>
-#include <yaml-cpp/yaml.h>
-#include <boost/filesystem.hpp>
-#include "geometry_msgs/Point.h"
-#include "duckietown_msgs/WheelsCmd.h"
 #include "duckietown_msgs/WheelsCmdStamped.h"
-#include "geometry_msgs/Pose2D.h"
 #include "duckietown_msgs/Pose2DStamped.h"
 #include "duckietown_msgs/Twist2DStamped.h"
-#include "duckietown_msgs/Vector2D.h"
-#include <visualization_msgs/Marker.h>
-#include <std_srvs/Empty.h>
-#include <cmath> // needed for nan
-#include <stdint.h>
 #include <string>
-#include <fstream>
 using namespace std;
 
 class forward_kinematics_node

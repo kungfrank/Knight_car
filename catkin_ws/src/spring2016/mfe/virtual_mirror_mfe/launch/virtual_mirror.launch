@@ -1,0 +1,7 @@
+<launch>
+	<remap from="camera_raw" to="pi_camera/image/raw"/>
+	<include file="$(find virtual_mirror_mfe)/launch/virtual_mirror_node.launch/>
+
+	<include file="$(find pi_camera)/launch/camera.launch/>
+	<include file="$(find pi_camera)/launch/decoder_node.launch/>
+</launch>

@@ -1,0 +1,30 @@
+<launch>
+    <arg name="pkg_name" value="virtual_mirror_rkk"/>
+    <arg name="node_name" default="virtual_mirror_rkk_tester_node"/>
+
+    <arg name="veh"  default="ada" doc="Name of vehicle. ex: megaman"/>
+    <arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+
+    <arg name="orig_path" value="$(find virtual_mirror_rkk)/test_images/lenna.png" />
+    <arg name="horz_path" value="$(find virtual_mirror_rkk)/test_images/lenna_horz.png" />
+    <arg name="vert_path" value="$(find virtual_mirror_rkk)/test_images/lenna_vert.png" />
+
+
+    <group ns="$(arg veh)">
+        <!--<remap from="$(arg node_name)/rgb_in" to="/$(arg veh)/camera_node/image/compressed"/>-->
+        <!-- run local -->
+        <node if="$(arg local)" name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen" >
+            <param name="orig_path" value="$(arg orig_path)"/>
+            <param name="horz_path" value="$(arg horz_path)"/>
+            <param name="vert_path" value="$(arg vert_path)"/>
+        </node>
+
+        <!-- run remote -->
+        <node unless="$(arg local)" machine="$(arg veh)" name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen" >
+            <param name="orig_path" value="$(arg orig_path)"/>
+            <param name="horz_path" value="$(arg horz_path)"/>
+            <param name="vert_path" value="$(arg vert_path)"/>
+        </node>
+
+    </group>
+</launch>

@@ -1,10 +1,10 @@
 Header header
 int8 detection
 
-int8 NONE=0
-int8 A=1
-int8 B=2
-int8 C=3
+int8 NO_CAR=0
+int8 SIGNAL_A=11
+int8 SIGNAL_B=12
+int8 SIGNAL_C=13
 
 
 

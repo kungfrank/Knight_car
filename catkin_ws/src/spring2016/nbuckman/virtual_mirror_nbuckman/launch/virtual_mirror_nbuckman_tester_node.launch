@@ -1,0 +1,7 @@
+<launch>
+	<arg name="veh" default="pontiac" doc="Name of vehicle. ex: megaman"/>
+	<group ns="$(arg veh)">
+		<node name="virtual_mirror_nbuckman_tester" pkg="virtual_mirror_nbuckman" type="virtual_mirror_nbuckman_tester_node.py" output="screen">
+		 </node>
+	</group>
+</launch>

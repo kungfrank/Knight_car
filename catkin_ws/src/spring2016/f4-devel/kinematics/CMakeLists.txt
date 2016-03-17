@@ -12,13 +12,6 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(Boost REQUIRED COMPONENTS system)
 
-generate_messages(
-  DEPENDENCIES
-  std_msgs
-  visualization_msgs
-  duckietown_msgs
-)
-
 catkin_package(
 #   INCLUDE_DIRS include
    CATKIN_DEPENDS duckietown_msgs roscpp rospy
@@ -29,5 +22,10 @@ include_directories(
 )
 
 add_executable(forward_kinematics_node src/forward_kinematics_node.cpp)
-target_link_libraries(forward_kinematics_node 
-  ${catkin_LIBRARIES})
+target_link_libraries(forward_kinematics_node ${catkin_LIBRARIES})
+add_dependencies(forward_kinematics_node duckietown_msgs)
+
+
+add_executable(path_visualizer_node src/path_visualizer_node.cpp)
+target_link_libraries(path_visualizer_node ${catkin_LIBRARIES})
+add_dependencies(path_visualizer_node duckietown_msgs)

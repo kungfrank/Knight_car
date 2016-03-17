@@ -13,24 +13,23 @@ duckietown_graph = 0
 draw_solution = False
 
 def handle_graph_search(req):
-	global duckietown_graph	
-	global draw_solution
+    global duckietown_graph	
+    global draw_solution
 	
 	# Checking is nodes exists
-	if (req.source_node not in duckietown_graph) or (req.target_node not in duckietown_graph):
-		print "Source or target node do not exist."
-		return GraphSearchResponse(["Source or target node do not exist."])
+    if (req.source_node not in duckietown_graph) or (req.target_node not in duckietown_graph):
+        print "Source or target node do not exist."
+        return GraphSearchResponse(["Source or target node do not exist."])
 
-	# Running A*	
-	duckietown_problem = GraphSearchProblem(duckietown_graph, req.source_node, req.target_node)
-	path = duckietown_problem.astar_search()
+    # Running A*
+    duckietown_problem = GraphSearchProblem(duckietown_graph, req.source_node, req.target_node)
+    path = duckietown_problem.astar_search()
 
-	# Draw solution
-	# TODO: drawing does not work for more than 1 client request
-	if path and draw_solution:
-		duckietown_graph.draw(highlight_edges=path.edges())
-
-	return GraphSearchResponse(path.actions)
+    # Draw solution
+    # TODO: drawing does not work for more than 1 client request
+    if path and draw_solution:
+        duckietown_graph.draw(highlight_edges=path.edges(), save_draw=True, map_name='solution')
+    return GraphSearchResponse(path.actions)
 
 def graph_search_server():
     rospy.init_node('graph_search_server')

@@ -1,6 +1,7 @@
 import pydot_ng as pydot
 import networkx as nx
 import matplotlib.pyplot as plt
+import os
 
 class NodeNotInGraph(Exception):
     def __init__(self, node):
@@ -73,7 +74,8 @@ class Graph(object):
             raise NodeNotInGraph(node)
         return self._edges.get(node, set())
 
-    def draw(self, highlight_edges=None, show_weights=False, save_draw=False):
+    def draw(self, highlight_edges=None, show_weights=False, save_draw=False, map_name = 'duckietown_map'):
+        plt.close('all')
         nxg = nx.DiGraph()
         edges = [(e.source, e.target, {'weight':e.weight, 'inv_weight':1.0/e.weight, 'action':e.action}) for node_set in self._edges.values() for e in node_set]
         nxg.add_edges_from(edges)
@@ -82,7 +84,7 @@ class Graph(object):
             pos = nx.spring_layout(nxg, weight='inv_weight', pos=self.node_positions, fixed=self.node_positions.keys() if self.node_positions else None)
         else:
             pos = self.node_positions
-
+        
         f = plt.figure(figsize=(12,20))
         plt.gca().set_aspect('auto')
         nx.draw_networkx_nodes(nxg, pos, node_color='w')
@@ -98,7 +100,9 @@ class Graph(object):
         if not save_draw:
             plt.show()
         else:
-            plt.savefig('maps/duckietown_map.png')
+            script_dir = os.path.dirname(__file__)
+            map_path = script_dir + '/maps/' + map_name + '.png'
+            plt.savefig(map_path)
         
     def draw_edges(self, edges):
         # print edges

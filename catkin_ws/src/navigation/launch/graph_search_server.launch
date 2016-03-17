@@ -1,6 +1,8 @@
 <launch>
-	<param name="map_name" value="duckietown_map.pkl" />
-	<param name="draw_solution" value="False" />
+    <arg name="map_name" default="duckietown_map.pkl" />
+    <arg name="draw_solution" default="False" />
+	<param name="map_name" value="$(arg map_name)" />
+	<param name="draw_solution" value="$(arg draw_solution)" />
 	<node
 		name="graph_search_server"
 		pkg="navigation"

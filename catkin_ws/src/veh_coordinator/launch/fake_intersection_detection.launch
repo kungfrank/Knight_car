@@ -5,17 +5,11 @@
     <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
     
     <arg name="pkg_name" value="veh_coordinator"/>
-    <arg name="node_name" default="fake_duckiebot"/>
+    <arg name="node_name" default="fake_intersection_detection"/>
     <arg name="verbose" default="false" />
 
     <group ns="$(arg veh)">     
-        <remap from="fake_duckiebot_node/right_vehicle_detection" to="veh_coordinator_node/right_vehicle_detection" />
-        <remap from="fake_duckiebot_node/opposite_vehicle_detection" to="veh_coordinator_node/opposite_vehicle_detection" />
         <remap from="fake_duckiebot_node/intersection_detection" to="veh_coordinator_node/intersection_detection" />        
-        <remap from="fake_duckiebot_node/traffic_light_detection" to="veh_coordinator_node/traffic_light_detection" /> 
-
-        <remap from="fake_duckiebot_node/clearance_to_go" to="veh_coordinator_node/clearance_to_go"  />
-        <remap from="fake_duckiebot_node/coordination_signal" to="veh_coordinator_node/coordination_signal" />
     
         <!-- run local -->
         <node if="$(arg local)" name="fake_duckiebot_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">

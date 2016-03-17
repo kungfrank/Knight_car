@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import rospy
 import numpy as np
-from duckietown_msgs.msg import SegmentList, Segment
-from std_msgs.msg import Bool, Float32
+from duckietown_msgs.msg import SegmentList, Segment, BoolStamped, StopLineReading
+from std_msgs.msg import Float32
 import time
 
 # Lane Filter Node
@@ -19,10 +19,11 @@ class StopLineFilterNode(object):
         self.stop_distance = self.setupParam("~stop_distance", 0.02) # distance from the stop line that we should stop 
         self.min_segs      = self.setupParam("~min_segs", 2) # minimum number of red segments that we should detect to estimate a stop
         self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments)
-        # self.sub = rospy.Subscriber("~velocity",
-        self.pub_stop_line_detect  = rospy.Publisher("~stop_line_detected", Bool, queue_size=1)
-        self.pub_at_stop_line      = rospy.Publisher("~at_stop_line", Bool, queue_size=1)
-        self.pub_stop_line_dist    = rospy.Publisher("~stop_line_dist", Float32, queue_size=1)
+        # self.pub_stop_line_detect  = rospy.Publisher("~stop_line_detected", BoolStamped, queue_size=1)
+        # self.pub_at_stop_line      = rospy.Publisher("~at_stop_line", BoolStamped, queue_size=1)
+        # self.pub_stop_line_dist    = rospy.Publisher("~stop_line_dist", Float32, queue_size=1)
+        self.pub_stop_line_reading = rospy.Publisher("~stop_line_reading", StopLineReading, queue_size=1)
+
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -51,22 +52,24 @@ class StopLineFilterNode(object):
 
         if (good_seg_count < self.min_segs):
             print "not enough good segs"
-            self.pub_stop_line_detect.publish(False)
-            self.pub_at_stop_line.publish(False)
-            self.pub_stop_line_dist.publish(-1.0)
+            stop_line_reading_msg = StopLineReading()
+            stop_line_reading_msg.header.stamp = segment_list_msg.header.stamp
+            stop_line_reading_msg.stop_line_detected = False
+            stop_line_reading_msg.at_stop_line = False
+            stop_line_reading_msg.stop_line_dist = -1.0
+            self.pub_stop_line_reading.publish(stop_line_reading_msg)
             return
         
         print "have enough good segs"
-        self.pub_stop_line_detect.publish(True)
-        
-        stop_line_dist = stop_line_distance_accumulator/good_seg_count
-
-        self.pub_stop_line_dist.publish(stop_line_dist)
-
-        if stop_line_dist < self.stop_distance:
-            self.pub_at_stop_line.publish(True)
+        stop_line_reading_msg = StopLineReading()
+        stop_line_reading_msg.header.stamp = segment_list_msg.header.stamp
+        stop_line_reading_msg.stop_line_detected = True
+        stop_line_reading_msg.stop_line_dist = stop_line_distance_accumulator/good_seg_count
+        if stop_line_reading_msg.stop_line_dist < self.stop_distance:
+            stop_line_reading_msg.at_stop_line = True
         else:
-            self.pub_at_stop_line.publish(False)
+            stop_line_reading_msg.at_stop_line = False
+        self.pub_stop_line_reading.publish(stop_line_reading_msg)    
     
     def onShutdown(self):
         rospy.loginfo("[StopLineFilterNode] Shutdown.")

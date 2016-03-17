@@ -80,10 +80,10 @@ forward_kinematics_node::forward_kinematics_node() : nh_("~"), node_name_("forwa
   pub_dutyToWheelOmega_ = nh_.advertise<duckietown_msgs::WheelsCmdStamped>("wheelsOmega", 1);
 
   sub_wheelOmegaToTwist_ = nh_.subscribe("wheelsOmega", 1, &forward_kinematics_node::wheelOmegaToTwistCallback, this);
-  pub_wheelOmegaToTwist_ = nh_.advertise<duckietown_msgs::Twist2DStamped>("twist", 1);
+  pub_wheelOmegaToTwist_ = nh_.advertise<duckietown_msgs::Twist2DStamped>("velocity", 1);
 
-  sub_twistToOdometry_ = nh_.subscribe("twist", 1, &forward_kinematics_node::twistToOdometryCallback, this);
-  pub_twistToOdometry_ = nh_.advertise<duckietown_msgs::Pose2DStamped>("odometricPose", 1);
+  sub_twistToOdometry_ = nh_.subscribe("velocity", 1, &forward_kinematics_node::twistToOdometryCallback, this);
+  pub_twistToOdometry_ = nh_.advertise<duckietown_msgs::Pose2DStamped>("pose", 1);
 
   // the following is only to visualize the odometric trajectory
   pub_odomTrajectory_ = nh_.advertise<visualization_msgs::Marker>("odometricTrajectory", 1);

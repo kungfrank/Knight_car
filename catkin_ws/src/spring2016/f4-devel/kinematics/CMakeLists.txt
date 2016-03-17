@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(forward_kinematics)
+project(kinematics)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp

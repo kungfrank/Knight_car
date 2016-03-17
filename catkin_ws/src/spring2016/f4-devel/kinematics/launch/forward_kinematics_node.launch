@@ -1,5 +1,5 @@
 <launch>
-    <arg name="pkg_name" value="forward_kinematics"/>
+    <arg name="pkg_name" value="kinematics"/>
     <arg name="node_name" default="forward_kinematics_node"/>
 
     <arg name="veh" doc="Name of vehicle. ex: megaman"/>

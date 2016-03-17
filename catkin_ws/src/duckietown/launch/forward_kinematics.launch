@@ -6,7 +6,7 @@
 
     <!-- run forward_kinematics_node -->
     <remap from="forward_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
-    <include file="$(find forward_kinematics)/launch/forward_kinematics_node.launch">
+    <include file="$(find kinematics)/launch/forward_kinematics_node.launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>
         <arg name="config" value="$(arg config)"/>

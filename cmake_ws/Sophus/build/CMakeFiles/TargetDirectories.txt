@@ -1,7 +1,0 @@
-/home/amado/duckietown/cmake_ws/Sophus/build/CMakeFiles/Sophus.dir
-/home/amado/duckietown/cmake_ws/Sophus/build/CMakeFiles/test_scso3.dir
-/home/amado/duckietown/cmake_ws/Sophus/build/CMakeFiles/test_se2.dir
-/home/amado/duckietown/cmake_ws/Sophus/build/CMakeFiles/test_se3.dir
-/home/amado/duckietown/cmake_ws/Sophus/build/CMakeFiles/test_sim3.dir
-/home/amado/duckietown/cmake_ws/Sophus/build/CMakeFiles/test_so2.dir
-/home/amado/duckietown/cmake_ws/Sophus/build/CMakeFiles/test_so3.dir

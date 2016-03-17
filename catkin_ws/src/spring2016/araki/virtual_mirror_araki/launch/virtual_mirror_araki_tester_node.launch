@@ -1,0 +1,11 @@
+<launch>
+    <arg name="pkg_name" value="virtual_mirror_araki"/>
+    <arg name="node_name" default="virtual_mirror_araki_tester_node"/>
+    <arg name="veh"  default="bill"/>
+
+   <arg name="test_img" default="01" doc="test img: 01, 02, 03, 04"/>
+
+    <node ns="$(arg veh)" name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen" >
+        <param name="~test_img" value="$(arg test_img)"/>
+    </node>
+</launch>

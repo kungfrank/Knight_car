@@ -1,0 +1,21 @@
+<launch>
+	<arg name="veh" doc="Name of vehicle" />
+<!--    <arg name="flip_direction" doc="1: horizontal 0 : vertical"/> -->
+	<arg name="original_image_file" doc="full path to original image" />
+	<arg name="horizontal_image_file" doc="full path to horizontal image" />
+	<arg name="vertical_image_file" doc="full path to vertical image" />
+	<remap from="virtual_mirror_node/incoming_image" to="virtual_mirror_test_node/original_image" />
+	<include file="$(find virtual_mirror_atacchet)/launch/virtual_mirror_atacchet.launch">
+		<arg name="veh" value="$(arg veh)"/>
+		<arg name="local" value="true" />
+<!--    	<arg name="flip_direction" value="$(arg flip_direction)"/> -->
+	</include>
+
+	<remap from="virtual_mirror_test_node/processed_image" to="virtual_mirror_node/mirror_image" />
+	<group ns="$(arg veh)">
+		<param name="virtual_mirror_test_node/original_image_file" type="str" value="$(arg original_image_file)" />
+		<param name="virtual_mirror_test_node/horizontal_image_file" type="str" value="$(arg horizontal_image_file)" />
+		<param name="virtual_mirror_test_node/vertical_image_file" type="str" value="$(arg vertical_image_file)" />
+        <node name="virtual_mirror_test_node" pkg="virtual_mirror_atacchet" type="virtual_mirror_node_test.py" output="screen" />
+	</group>
+</launch>

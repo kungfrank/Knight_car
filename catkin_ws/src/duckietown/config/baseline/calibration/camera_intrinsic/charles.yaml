@@ -1,0 +1,23 @@
+camera_matrix:
+  cols: 3
+  data: [325.50907245278995, 0.0, 326.66113230384536, 0.0, 321.26147990040033, 213.27432839208618,
+    0.0, 0.0, 1.0]
+  rows: 3
+camera_name: charles/camera_node
+distortion_coefficients:
+  cols: 5
+  data: [-0.27901443045935, 0.05611661304525232, 0.0023033506806330742, -0.0009226677395739285,
+    0.0]
+  rows: 1
+distortion_model: plumb_bob
+image_height: 480
+image_width: 640
+projection_matrix:
+  cols: 4
+  data: [225.36306762695312, 0.0, 326.36386043460516, 0.0, 0.0, 253.49874877929688,
+    199.52760027656223, 0.0, 0.0, 0.0, 1.0, 0.0]
+  rows: 3
+rectification_matrix:
+  cols: 3
+  data: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+  rows: 3

@@ -12,7 +12,7 @@ else
     sudo sh -c 'echo "deb http://ports.ubuntu.com $(lsb_release -sc)-proposed restricted main multiverse universe" > /etc/apt/sources.list'
 fi
 
-if [ -f /etc/apt/preferences.d/proposed-updates ];
+if [ -f /etc/apt/preferences.d/proposed-updates ]; 
 then
     echo "you already have a preference file in place!"
 else

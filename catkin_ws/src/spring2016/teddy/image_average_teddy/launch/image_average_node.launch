@@ -1,0 +1,11 @@
+<launch>
+    <arg name="veh" default="starducks" doc="Name of vehicle. ex: megaman"/>
+
+    <arg name="pkg_name" value="image_average_teddy"/>
+    <arg name="node_name" default="image_average_node"/>
+
+    <group ns="$(arg veh)">
+        <remap from="$(arg node_name)/image_in" to="camera_node/image/compressed" />
+        <node name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen" />
+    </group>
+</launch>

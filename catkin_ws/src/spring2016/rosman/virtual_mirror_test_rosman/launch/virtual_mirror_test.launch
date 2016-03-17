@@ -1,0 +1,8 @@
+<launch>
+	<arg name="veh" default="duckmobile" doc="Name of vehicle. ex: megaman"/>
+	<group ns="$(arg veh)">
+		<node name="virtual_mirror_tester" pkg="duckietown_rosman" type="virtual_mirror_tester_node.py" output="screen">
+		      <param name="~flip_direction" value="horz"/>
+		 </node>
+	</group>
+</launch>

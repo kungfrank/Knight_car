@@ -1,0 +1,11 @@
+<launch>
+	<arg name="veh"/>
+	<include file="$(find duckietown)/machines"/>
+	
+	<group ns="$(arg veh)">
+		<node machine="$(arg veh)" name="image_average_node" pkg="image_average_lapentab" type="image_average_node.py" output="screen">
+		<remap from="~img_in" to="/ferrari/camera_node/image/compressed"/>
+		</node>
+	</group>
+</launch>
+

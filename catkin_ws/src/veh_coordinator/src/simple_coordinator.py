@@ -3,7 +3,7 @@ from __future__ import print_function
 from random import random
 import rospy
 from duckietown_msgs.msg import ControlMode, IntersectionDetection, VehicleDetection, TrafficLightDetection, \
-    CoordinationClearance, RoofLight
+    CoordinationClearance, CoordinationSignal
 from time import time
 
 
@@ -56,11 +56,11 @@ class VehicleCoordinator():
         rospy.Subscriber('traffic_light_detection', TrafficLightDetection,
                          lambda msg: self.set('traffic_light', msg.color))
 
-        self.right_veh = VehicleDetection.NONE
+        self.right_veh = VehicleDetection.NO_CAR
         rospy.Subscriber('right_vehicle_detection', VehicleDetection,
                          lambda msg: self.set('right_veh', msg.detection))
 
-        self.opposite_veh = VehicleDetection.NONE
+        self.opposite_veh = VehicleDetection.NO_CAR
         rospy.Subscriber('opposite_vehicle_detection', VehicleDetection,
                          lambda msg: self.set('opposite_veh', msg.detection))
 
@@ -68,8 +68,8 @@ class VehicleCoordinator():
         self.clearance_to_go = CoordinationClearance.NA
         self.clearance_to_go_pub = rospy.Publisher('clearance_to_go', CoordinationClearance, queue_size=10)
 
-        self.roof_light = RoofLight.A
-        self.roof_light_pub = rospy.Publisher('roof_light', RoofLight, queue_size=10)
+        self.roof_light = CoordinationSignal.SIGNAL_A
+        self.roof_light_pub = rospy.Publisher('coordination_signal', CoordinationSignal, queue_size=10)
 
         while not rospy.is_shutdown():
             self.loop()
@@ -83,9 +83,9 @@ class VehicleCoordinator():
         self.last_state_transition = time()
 
         if self.state == State.RESERVING:
-            self.roof_light = RoofLight.B
+            self.roof_light = CoordinationSignal.SIGNAL_B
         else:
-            self.roof_light = RoofLight.A
+            self.roof_light = CoordinationSignal.SIGNAL_A
 
         if self.state == State.GO:
             self.clearance_to_go = CoordinationClearance.GO
@@ -102,7 +102,7 @@ class VehicleCoordinator():
 
     def publish_topics(self):
         self.clearance_to_go_pub.publish(CoordinationClearance(status=self.clearance_to_go))
-        self.roof_light_pub.publish(RoofLight(color=self.roof_light))
+        self.roof_light_pub.publish(CoordinationSignal(signal=self.roof_light))
 
     def loop(self):
         self.reconsider()
@@ -120,26 +120,26 @@ class VehicleCoordinator():
                     print('Coordination requested, but no intersection detected!')
 
         elif self.state == State.AT_STOP:
-            if self.right_veh == VehicleDetection.NONE and self.opposite_veh != VehicleDetection.B:
+            if self.right_veh == VehicleDetection.NO_CAR and self.opposite_veh != VehicleDetection.SIGNAL_B:
                 self.set_state(State.AT_STOP_CLEARING)
 
         elif self.state == State.AT_STOP_CLEARING:
-            if self.right_veh != VehicleDetection.NONE or self.opposite_veh == VehicleDetection.B:
+            if self.right_veh != VehicleDetection.NO_CAR or self.opposite_veh == VehicleDetection.SIGNAL_B:
                 self.set_state(State.AT_STOP)
             elif self.time_at_current_state() > self.T_CROSS:
                 self.set_state(State.AT_STOP_CLEAR)
 
         elif self.state == State.AT_STOP_CLEAR:
-            if self.right_veh != VehicleDetection.NONE or self.opposite_veh == VehicleDetection.B:
+            if self.right_veh != VehicleDetection.NO_CAR or self.opposite_veh == VehicleDetection.SIGNAL_B:
                 self.set_state(State.AT_STOP)
             else:
                 self.set_state(State.RESERVING)
 
         elif self.state == State.RESERVING:
-            if self.right_veh != VehicleDetection.NONE:
+            if self.right_veh != VehicleDetection.NO_CAR:
                 self.set_state(State.AT_STOP)
             elif self.time_at_current_state() > self.T_S:
-                if self.opposite_veh == VehicleDetection.B:
+                if self.opposite_veh == VehicleDetection.SIGNAL_B:
                     self.random_delay = random() * self.T_MAX_RANDOM
                     print ("Other vehicle reserving as well. Will wait for %.2f s" % self.random_delay)
                     self.set_state(State.CONFLICT)
@@ -151,7 +151,7 @@ class VehicleCoordinator():
                 self.set_state(State.LANE_FOLLOWING)
 
         elif self.state == State.CONFLICT:
-            if self.right_veh != VehicleDetection.NONE or self.opposite_veh == VehicleDetection.B:
+            if self.right_veh != VehicleDetection.NO_CAR or self.opposite_veh == VehicleDetection.SIGNAL_B:
                 self.set_state(State.AT_STOP)
             elif self.time_at_current_state() > self.random_delay:
                 self.set_state(State.AT_STOP_CLEAR)

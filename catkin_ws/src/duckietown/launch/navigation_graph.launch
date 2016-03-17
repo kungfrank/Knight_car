@@ -1,5 +1,4 @@
 <launch>
-
     <arg name="map_name" default="duckietown_map.pkl" />
     <arg name="draw_solution" default="False" />
 	<param name="map_name" value="$(arg map_name)" />
@@ -12,7 +11,8 @@
     <remap from="~mode" to="fsm_node/mode"/>
     <include file="$(find navigation)/launch/graph_search_server.launch">
       <arg name="map_name" value="$(arg map_name)"/>        
-      <arg name="draw_solution" value="$(arg draw_solution)"/>     
+      <arg name="draw_solution" value="$(arg draw_solution)"/>   
+      <arg name="veh" value="$(arg veh)"/>   
     </include>
     
     <remap from="~turn_type" to="actions_dispatcher/turn_type" />

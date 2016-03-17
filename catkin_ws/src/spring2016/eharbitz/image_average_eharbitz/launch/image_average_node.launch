@@ -4,6 +4,7 @@
 	<arg name="log_out"/>
 	<remap from="image_average_node/image_in" to="/ferrari/camera_node/image/compressed"/>
 	<remap from="image_average_node/image_out" to="image_average_node/topic"/>
+	
 	<node ns="$(arg veh)" pkg="image_average_eharbitz" type="image_average_node.py" name="image_average_node" output="screen">
 	</node>
 

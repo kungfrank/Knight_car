@@ -19,7 +19,7 @@ def handle_graph_search(req):
 	# Checking is nodes exists
     if (req.source_node not in duckietown_graph) or (req.target_node not in duckietown_graph):
         print "Source or target node do not exist."
-        return GraphSearchResponse(["Source or target node do not exist."])
+        return GraphSearchResponse([])
 
     # Running A*
     duckietown_problem = GraphSearchProblem(duckietown_graph, req.source_node, req.target_node)

@@ -10,4 +10,11 @@
 		output="screen"
 	/>
 
+    <node
+		name="actions_dispatcher"
+		pkg="navigation"
+		type="actions_dispatcher.py"
+		output="screen"
+	/>
+
 </launch>

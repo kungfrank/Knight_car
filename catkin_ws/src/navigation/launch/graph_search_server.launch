@@ -6,7 +6,7 @@
 	<param name="draw_solution" value="$(arg draw_solution)" />
 
 	<node
-        node ns="$(arg veh)"
+                ns="$(arg veh)"
 		name="graph_search_server"
 		pkg="navigation"
 		type="graph_search_server.py"
@@ -14,7 +14,7 @@
 	/>
 
     <node
-        node ns="$(arg veh)"
+                ns="$(arg veh)"
 		name="actions_dispatcher"
 		pkg="navigation"
 		type="actions_dispatcher.py"

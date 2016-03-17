@@ -3,7 +3,7 @@ import rospy
 import numpy as np
 import math
 from std_msgs.msg import Bool
-from duckietown_msgs.msg import CarControl, WheelsCmdStamped, LanePose
+from duckietown_msgs.msg import CarControl, WheelsCmdStamped, LanePose, StopLineReading
 from sensor_msgs.msg import Joy
 
 class lane_supervisor(object):
@@ -33,8 +33,7 @@ class lane_supervisor(object):
         self.sub_lane_control = rospy.Subscriber("~wheels_control_lane",WheelsCmdStamped,self.cbLaneControl, queue_size=1)
         self.sub_joy_control  = rospy.Subscriber("~wheels_control_joy",WheelsCmdStamped,self.cbJoyControl, queue_size=1)
         self.sub_joy          = rospy.Subscriber("~joy",Joy,self.cbJoy,queue_size=1)
-        self.sub_in_lane      = rospy.Subscriber("~in_lane", Bool, self.cbInLane, queue_size=1)
-        self.sub_at_stop_line = rospy.Subscriber("~at_stop_line",Bool, self.cbStopLine, queue_size=1)
+        self.sub_at_stop_line = rospy.Subscriber("~stop_line_reading",StopLineReading, self.cbStopLine, queue_size=1)
 
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -43,7 +42,7 @@ class lane_supervisor(object):
         return value
 
     def cbStopLine(self,stop_line_msg):
-        if stop_line_msg.data is False:
+        if stop_line_msg.at_stop_line is False:
             self.at_stop_line=False
             self.stop = False
         else:
@@ -53,10 +52,6 @@ class lane_supervisor(object):
                 rospy.sleep(2)
                 self.stop=False
 
-
-    def cbInLane(self,in_lane_msg):
-        self.in_lane=in_lane_msg.data
-
     def cbJoy(self,joy_msg):
         print joy_msg.buttons
         if (joy_msg.buttons[5] == 1):
@@ -64,6 +59,7 @@ class lane_supervisor(object):
             self.parallel_autonomy_mode = not self.parallel_autonomy_mode
 
     def cbLanePose(self,lane_pose_msg):
+        self.in_lane=in_lane_msg.in_lane
         self.lane_reading = lane_pose_msg 
         cross_track_err = math.fabs(lane_pose_msg.d) 
         heading_err = math.fabs(lane_pose_msg.phi)

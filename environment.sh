@@ -17,4 +17,7 @@ echo "...done"
 echo "Activating development."
 source $DUCKIETOWN_ROOT/catkin_ws/devel/setup.bash
 
+# TODO: check that the time is >= 2015
+# TODO: run a python script that checks all arguments
+
 exec "$@" #Passes arguments. Need this for ROS remote launching to work.

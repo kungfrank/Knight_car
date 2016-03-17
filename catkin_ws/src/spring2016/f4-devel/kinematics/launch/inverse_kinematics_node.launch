@@ -1,6 +1,6 @@
 <launch>
     <arg name="pkg_name" value="kinematics"/>
-    <arg name="node_name" default="forward_kinematics_node"/>
+    <arg name="node_name" default="inverse_kinematics_node"/>
 
     <arg name="veh" doc="Name of vehicle. ex: megaman"/>
     <arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>

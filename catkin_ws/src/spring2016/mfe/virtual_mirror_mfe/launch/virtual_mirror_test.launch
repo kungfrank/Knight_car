@@ -1,0 +1,12 @@
+<launch>
+	<arg name="veh" default="1"/>
+	<arg name="log_in" doc="the full path to the input bag" />
+	<arg name="log_out" doc="the full path to the output bag" /> 	
+
+	<include file="/home/ubuntu/duckietown/catkin_ws/src/spring2016/mfe/virtual_mirror_mfe/launch/virtual_mirror_node.launch">
+		 <param name="veh" value="$(arg veh)"/>
+	</include>
+
+	<node  pkg="rosbag" type="play" name="rosbag_play" args="$(arg log_in)"/>
+	<node  pkg="rosbag" type="record" name="rosbag_record" args="-a -O $(arg log_out)"/> 
+</launch>

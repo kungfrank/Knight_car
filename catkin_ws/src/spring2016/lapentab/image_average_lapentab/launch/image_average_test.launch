@@ -1,0 +1,13 @@
+<launch>
+	<arg name="veh"/>
+	<arg name="log_in" doc="the full path to the input bag" />
+	<arg name="log_out" doc="the full path to the output bag" /> 
+
+	<include file="$(find image_average_lapentab)/launch/image_average_node.launch">
+		 <arg name="veh" value="$(arg veh)"/>
+	</include>
+
+	<node  pkg="rosbag" type="play" name="rosbag_play" args="$(arg log_in)"/>
+	<node  pkg="rosbag" type="record" name="rosbag_record" args="-a  -O $(arg log_out)"/> 
+</launch>
+

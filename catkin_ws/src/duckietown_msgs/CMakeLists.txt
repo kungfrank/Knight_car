@@ -64,7 +64,6 @@ add_message_files(
   Vector2D.msg
   Segment.msg
   SegmentList.msg
-  ControlMode.msg
   Rect.msg
   Rects.msg
   SceneSegments.msg
@@ -74,6 +73,8 @@ add_message_files(
   TrafficLightDetection.msg
   VehicleDetection.msg
   FSMState.msg
+  BoolStamped.msg
+  StopLineReading.msg
 )
 
 ## Generate services in the 'srv' folder

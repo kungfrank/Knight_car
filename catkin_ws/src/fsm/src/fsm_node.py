@@ -1,16 +1,13 @@
 #!/usr/bin/env python
 import rospy
-#from fsm.util import HelloGoodbye #Imports module. Not limited to modules in this pkg. 
-from duckietown_msgs.msg import FSMState
+from duckietown_msgs.msg import FSMState, BoolStamped, StopLineReading, LanePose, CoordinationClearance
 from std_msgs.msg import String #Imports msg
-from std_msgs.msg import Bool #Imports msg
-#from duckietown_msgs.msg import messages to command the wheels
-#from duckietown_msgs.msg import WheelsCmdStamped
 
 class FSMNode(object):
     def __init__(self):
         self.actual = FSMState()
-        self.actual.state = self.actual.LANE_FOLLOWING
+        self.actual.state = FSMState.LANE_FOLLOWING
+        self.actual.header.stamp = rospy.Time.now()
         self.in_lane = False
         self.at_stop_line = False
         self.intersection_go = False
@@ -23,46 +20,37 @@ class FSMNode(object):
 
         # Setup publishers
         self.pub_topic_mode = rospy.Publisher("~mode",FSMState, queue_size=1, latch=True)
-        self.pub_topic_intersection_done = rospy.Publisher("~intersection_done",Bool, queue_size=1)
-        self.pub_topic_intersection_go = rospy.Publisher("~intersection_go",Bool, queue_size=1)
+        
         # Setup subscribers
-        self.sub_topic_in_lane = rospy.Subscriber("~in_lane", Bool, self.cbInLane, queue_size=1)
-        self.sub_topic_at_stop_line = rospy.Subscriber("~at_stop_line", Bool, self.cbAtStopLine, queue_size=1)
-        self.sub_topic_intersection_go = rospy.Subscriber("~intersection_go", Bool, self.cbIntersectionGo, queue_size=1)
-        self.sub_topic_intersection_done = rospy.Subscriber("~intersection_done", Bool, self.cbIntersectionDone, queue_size=1)
+        self.sub_topic_in_lane = rospy.Subscriber("~lane_pose", LanePose, self.cbInLane, queue_size=1)
+        self.sub_topic_at_stop_line = rospy.Subscriber("~stop_line_reading", StopLineReading, self.cbAtStopLine, queue_size=1)
+        self.sub_topic_intersection_go = rospy.Subscriber("~clearance_to_go", CoordinationClearance, self.cbIntersectionGo, queue_size=1)
+        self.sub_topic_intersection_done = rospy.Subscriber("~intersection_done", BoolStamped, self.cbIntersectionDone, queue_size=1)
 
         # Read parameters
-        self.pub_timestep = self.setupParameter("~pub_timestep",1.0)
-        # Create a timer that calls the cbTimer function every 1.0 second
-        #self.timer = rospy.Timer(rospy.Duration.from_sec(self.pub_timestep),self.cbTimer)
-
         rospy.loginfo("[%s] Initialzed." %(self.node_name))
 
-        self.rate = rospy.Rate(30) # 10hz
+    def cbIntersectionDone(self, done_msg):
+        #print done_msg
+        self.intersection_done = done_msg.data
+        self.updateState(done_msg.header.stamp)
 
-    def cbIntersectionDone(self, in_lane_msg):
-        print in_lane_msg
-        self.intersection_done = in_lane_msg.data
-        self.updateState()
+    def cbInLane(self, lane_pose_msg):
+        #print lane_pose_msg
+        self.in_lane = lane_pose_msg.in_lane
+        self.updateState(lane_pose_msg.header.stamp)
 
+    def cbAtStopLine(self, stop_line_reading_msg):
+        #print stop_line_reading_msg
+        self.at_stop_line = stop_line_reading_msg.at_stop_line
+        self.updateState(stop_line_reading_msg.header.stamp)
 
-    def cbInLane(self, in_lane_msg):
-        print in_lane_msg
-        self.in_lane = in_lane_msg.data
-        self.updateState()
+    def cbIntersectionGo(self, go_msg):
+        #print go_msg
+        self.intersection_go = (go_msg.status == CoordinationClearance.GO)
+        self.updateState(go_msg.header.stamp)
 
-    def cbAtStopLine(self, in_lane_msg):
-        print in_lane_msg
-        self.at_stop_line = in_lane_msg.data
-        self.updateState()
-
-    def cbIntersectionGo(self, in_lane_msg):
-        print in_lane_msg
-        self.intersection_go = in_lane_msg.data
-        self.updateState()
-
-
-    def updateState(self):
+    def updateState(self,stamp):
         if(self.actual.state == self.actual.LANE_FOLLOWING):
             if(self.at_stop_line == True):
                 #update the state
@@ -76,30 +64,14 @@ class FSMNode(object):
                 self.actual.state = self.actual.LANE_FOLLOWING
                 self.intersection_done = False
 
-        self.pub_topic_mode.publish(self.actual.state)
-
-
+        self.actual.header.stamp = stamp
+        self.pub_topic_mode.publish(self.actual)
    
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
         rospy.set_param(param_name,value) #Write to parameter server for transparancy
         rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
         return value
-
-    def cbTopic(self,msg):
-        rospy.loginfo("[%s] %s" %(self.node_name,msg.data))
-
-#    def cbTimer(self,event):
-#        singer = HelloGoodbye()
-        # Simulate hearing something
-#        msg = String()
-#        msg.data = "duckietown"
-#singer.sing("duckietown")
-#        self.pub_topic_a.publish(msg)
-#        wheels_cmd_msg = WheelsCmdStamped()
-#        wheels_cmd_msg.vel_left = 0.1
-#        wheels_cmd_msg.vel_right = 0.1
-#        self.pub_wheels_cmd.publish(wheels_cmd_msg)
 
     def on_shutdown(self):
         rospy.loginfo("[%s] Shutting down." %(self.node_name))

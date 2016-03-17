@@ -1,0 +1,17 @@
+<launch>
+	<arg name="veh"/>
+	<arg name="bagin" doc="the full path to the input bag" />
+	<arg name="bagout" doc="the full path to the output bag" /> 
+	<arg name="flip_direction" doc="1: horizontal 0: vertical"  />
+
+	<include file="$(find duckietown_atacchet)/launch/virtual_mirror_atacchet.launch">
+		 <arg name="veh" value="$(arg veh)"/>
+		 <arg name="local" value="true" />
+		 <arg name="flip_direction" value="$(arg flip_direction)" />
+	</include>
+
+	<node  pkg="rosbag" type="play" name="rosbag_play" args="$(arg bagin)"/>
+	<node  pkg="rosbag" type="record" name="rosbag_record" args="-a  -O $(arg bagout)"/> 
+
+</launch>
+

@@ -2,8 +2,8 @@
 from __future__ import print_function
 from random import random
 import rospy
-from duckietown_msgs.msg import IntersectionDetection, VehicleDetection, TrafficLightDetection, \
-    CoordinationClearance, CoordinationSignal, FSMState
+from duckietown_msgs.msg import ControlMode, IntersectionDetection, VehicleDetection, TrafficLightDetection, \
+    CoordinationClearance, CoordinationSignal
 from time import time
 
 

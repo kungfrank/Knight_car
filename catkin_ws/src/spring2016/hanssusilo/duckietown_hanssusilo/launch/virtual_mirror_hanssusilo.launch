@@ -1,0 +1,7 @@
+<launch>
+	<arg name="veh"/>
+	<remap from="~img_topic_in" to="/$(arg veh)/camera_node/image/compressed"/>
+	<remap from="~img_topic_out" to="/$(arg veh)/camera_node/image/flipped"/>
+	<node ns="$(arg veh)" pkg="virtual_mirror_hanssusilo" type="virtual_mirror_node.py" name="virtual_mirror_node" output="screen">
+	</node>
+</launch>

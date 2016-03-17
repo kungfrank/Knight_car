@@ -1,0 +1,28 @@
+<launch>
+	<arg name="veh" default="1"/>
+	<arg name="local" default="false"/>
+	<arg name="raw" default="true"/>
+	<arg name="config" default="baseline"/>
+	<arg name="param_file_name" default="default"/>
+	<arg name="log_in" doc="the full path to the input bag" />
+	<arg name="log_out" doc="the full path to the output bag" /> 	
+
+	<!-- decoder_node -->
+        <remap from="decoder_node/compressed_image" to="/ferrari/camera_node/image/compressed"/>
+        <remap from="decoder_node/image/raw" to="/redrover/camera_node/image/raw"/>
+        <include file="$(find pi_camera)/launch/decoder_node.launch">
+        	<arg name="veh" value="$(arg veh)"/>
+        	<arg name="local" value="$(arg local)"/>
+        	<arg name="config" value="$(arg config)"/>
+        	<arg name="param_file_name" value="$(arg param_file_name)"/>         
+        </include>
+
+
+	<!-- image average node -->
+	<param name="veh" value="$(arg veh)"/>
+	<node name="image_average" pkg="image_average_mfe" type="image_average_mfe_node.py" output="screen"/>
+
+	<!-- rosbag play/record nodes -->
+	<node  pkg="rosbag" type="play" name="rosbag_play" args="$(arg log_in)"/>
+	<node  pkg="rosbag" type="record" name="rosbag_record" args="-O $(arg log_out) /image_average/image/averaged /ferrari/camera_node/image/compressed"/> 
+</launch>

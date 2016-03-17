@@ -1,0 +1,14 @@
+<launch>
+	<arg name="veh" default="milo" doc="Name of vehicle. ex: megaman"/>
+    <arg name="path" default="/home/joseph/test_images/" doc="Location of test image files."/>
+    <arg name="format" default="png" doc="Format of test images."/>
+    <arg name="count" default="4" doc="Number of test images."/>
+	<group ns="$(arg veh)">
+		<node name="virtual_mirror_joewl_tester_node" pkg="virtual_mirror_joewl" type="virtual_mirror_joewl_tester_node.py" output="screen">
+		      <param name="~pub_timestep" value="1.0"/>
+		      <param name="~test_image_path" value="$(arg path)"/>
+              <param name="~test_image_format" value="$(arg format)"/>
+	      	  <param name="~test_image_count" value="$(arg count)"/>
+		 </node>
+	</group>
+</launch>

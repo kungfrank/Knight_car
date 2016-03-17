@@ -1,0 +1,24 @@
+<launch>
+    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
+    <arg name="local" default="false" doc="true: laptop. false: vehicle."/>
+    <arg name="pkg_name" value="virtual_mirror_atacchet"/>
+    <arg name="node_name" default="virtual_mirror_node"/>
+    <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+	<arg name="config" default="baseline" />
+
+    <group ns="$(arg veh)">        
+        <node if="$(arg local)" name="virtual_mirror_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
+        	<rosparam command="load" file="$(find duckietown_atacchet)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
+		</node>
+        <include unless="$(arg local)" file="$(find duckietown)/machines"/>
+        <node unless="$(arg local)" machine="$(arg veh)" name="virtual_mirror_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen" >
+        	<rosparam command="load" file="$(find duckietown_atacchet)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
+		</node>
+    </group>
+
+    <!-- Publications -->
+
+    <!-- Subscriptions -->
+
+</launch>
+

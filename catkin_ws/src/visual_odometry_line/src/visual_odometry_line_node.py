@@ -19,6 +19,7 @@ class VisualOdometryLineNode(object):
     def __init__(self):
         self.node_name = "Visual Odometry Line"
         self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments)
+        self.old_segment_list = SegmentList()
 
         self.pub_entropy    = rospy.Publisher("~entropy",Float32, queue_size=1)
         self.pub_segments = rospy.Publisher("~segment_list_repeater", SegmentList, queue_size=1)
@@ -34,6 +35,7 @@ class VisualOdometryLineNode(object):
 
 
         self.pub_segments.publish(segment_list_msg)
+        self.old_segment_list = segment_list_msg
         # print "time to process segments:"
         # print rospy.get_time() - t_start
     

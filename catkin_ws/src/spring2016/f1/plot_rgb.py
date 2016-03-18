@@ -29,8 +29,8 @@ bottom_third_top_index = int(img_height*2/3.0)
 
 # Randomly sample numSampes^2 pixels from the image (uniformly distributed in x,y)
 numSamples = 50
-iList = [random.randint(bottom_third_top_index,255) for i in range(numSamples)]
-jList = [random.randint(bottom_third_top_index,255) for i in range(numSamples)]
+iList = [random.randint(bottom_third_top_index,len(r)-1) for i in range(numSamples)]
+jList = [random.randint(bottom_third_top_index,len(r)-1) for i in range(numSamples)]
 r_rand = [r[i][j] for i in iList for j in jList]
 b_rand = [b[i][j] for i in iList for j in jList]
 g_rand = [g[i][j] for i in iList for j in jList]

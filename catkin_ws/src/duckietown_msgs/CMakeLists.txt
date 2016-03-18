@@ -73,6 +73,7 @@ add_message_files(
   CoordinationSignal.msg
   TrafficLightDetection.msg
   VehicleCorners.msg
+  VehiclePose.msg
   VehicleDetection.msg
   FSMState.msg
 )

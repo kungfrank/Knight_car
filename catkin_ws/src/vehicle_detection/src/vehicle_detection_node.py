@@ -1,12 +1,14 @@
 #!/usr/bin/env python
+from copy import deepcopy
 from cv_bridge import CvBridge, CvBridgeError
-from sensor_msgs.msg import CompressedImage, Image
 from duckietown_msgs.msg import VehicleCorners
 from geometry_msgs.msg import Point32
-import rospy
+from mutex import mutex
+from sensor_msgs.msg import CompressedImage, Image
 import cv2
 import io
 import numpy as np
+import rospy
 import threading
 
 class VehicleDetectionNode(object):
@@ -15,7 +17,12 @@ class VehicleDetectionNode(object):
 		self.bridge = CvBridge()
 		self.sub_image = rospy.Subscriber("~image", CompressedImage, 
 				self.cbImage, queue_size=1)
-		self.pub_corners = rospy.Publisher("~corners", VehicleCorners, queue_size=1)
+		self.pub_corners = rospy.Publisher("~corners", 
+				VehicleCorners, queue_size=1)
+		self.pub_chessboard_image = rospy.Publisher("~chessboard_image", 
+				Image, queue_size=1)
+		self.lock = mutex()
+		self.lock.unlock()
 		rospy.loginfo("Initialization of [%s] completed" % (self.node_name))
 
 	def cbImage(self, image_msg):
@@ -24,29 +31,36 @@ class VehicleDetectionNode(object):
 		thread.setDaemon(True)
 		thread.start()
 		# Returns rightaway
-
 	def processImage(self, image_msg):
-		image_cv = cv2.imdecode(np.fromstring(image_msg.data, np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
-		rospy.loginfo("Image Shape: [%d x %d]." % (image_cv.shape[0], image_cv.shape[1]))
+		if self.lock.testandset():
+			image_cv = cv2.imdecode(np.fromstring(image_msg.data, np.uint8), 
+					cv2.CV_LOAD_IMAGE_COLOR)
+			rospy.loginfo("Image Shape: [%d x %d]." % 
+					(image_cv.shape[0], image_cv.shape[1]))
+			start = rospy.Time.now()
+			(detection, corners) = cv2.findChessboardCorners(image_cv, (5, 7))
+			rospy.loginfo("find chessboard corners took: %.3f", 
+					(rospy.Time.now() - start).to_sec())
+			cv2.drawChessboardCorners(image_cv, (5, 7), corners, detection)
+			image_msg_out = self.bridge.cv2_to_imgmsg(image_cv, "bgr8")
+			self.pub_chessboard_image.publish(image_msg_out)
 
-		corners_msg_out = VehicleCorners()
-		p_1 = Point32()
-		p_2 = Point32()
-		p_3 = Point32()
+			if not detection:
+				self.lock.unlock()
+				rospy.loginfo("Corners not found")
+				return
+			
+			# publish debug chessboard image
+			rospy.loginfo("Corners FOUND")
 
-		p_1.x = 0.0
-		p_1.y = 10.0
-
-		p_2.x = 1.0
-		p_2.y = 11.0
-
-		p_3.x = 2.0
-		p_3.y = 12.0
-
-		corners_msg_out.corners.append(p_1)
-		corners_msg_out.corners.append(p_2)
-		corners_msg_out.corners.append(p_3)
-		self.pub_corners.publish(corners_msg_out)
+			corners_msg_out = VehicleCorners()
+			for i in np.arange(corners.shape[0]):
+				p = Point32()
+				p.x = corners[i][0][0]
+				p.y = corners[i][0][1]
+				corners_msg_out.corners.append(deepcopy(p))
+			self.pub_corners.publish(corners_msg_out)
+			self.lock.unlock()
 
 if __name__ == '__main__': 
 	rospy.init_node('vehicle_detection', anonymous=False)

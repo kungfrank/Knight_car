@@ -3,10 +3,10 @@ from cv_bridge import CvBridge, CvBridgeError
 from duckietown_msgs.msg import VehicleCorners
 from geometry_msgs.msg import Point32
 from sensor_msgs.msg import CompressedImage, Image
-import rospy
 import cv2
 import io
 import numpy as np
+import rospy
 import threading
 
 class VehicleDetectionTestNode(object):

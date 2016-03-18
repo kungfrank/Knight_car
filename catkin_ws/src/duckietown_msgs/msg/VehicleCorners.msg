@@ -1,7 +1,2 @@
 Header header
-Point32[] corners
-
-
-
-
-
+geometry_msgs/Point32[] corners

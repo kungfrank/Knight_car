@@ -6,7 +6,6 @@ from dagu_car.dagu_wheels_driver import DaguWheelsDriver
 class WheelsDriverNode(object):
     def __init__(self):
         self.node_name = rospy.get_name()
-	rospy.loginfo( "HELLO ARIIIII")
         rospy.loginfo("[%s] Initializing " %(self.node_name))
 
         # Setup publishers
@@ -22,7 +21,7 @@ class WheelsDriverNode(object):
         return value
 
     def cbWheelsCmd(self,msg):
-        self.driver.setWheelsSpeed(left=-msg.vel_right,right=-msg.vel_left)
+	 self.driver.setWheelsSpeed(left=msg.vel_left,right=msg.vel_right)        
 
     def on_shutdown(self):
         self.driver.setWheelsSpeed(left=0.0,right=0.0)

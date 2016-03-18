@@ -23,16 +23,11 @@ IMG_PATH = '''IMG PATH'''
 # class GetKMeansModel(object):
 # 	def __init__(self, img)
 def getimgdatapts(cv2img):
+
 	x, y, p = cv2img.shape
-	data = []
-	# print x, y
-	for i in range(x):
-		for j in range(y):
-			# print cv2img[i][j]
-			data.append(cv2img[i][j])
-	npdata = np.asarray(data)
-	# print npdata.shape
-	# print npdata[1]
+	cv2_tpose=cv2img.transpose()
+	cv2_arr_tpose=np.reshape(cv2_tpose,[p,x*y])
+	npdata=np.transpose(cv2_arr_tpose);
 
 	return npdata
 
@@ -145,7 +140,12 @@ if __name__ == '__main__':
 		img_filename=sys.argv[1]
 		print(img_filename)
 	cv_img = cv2.imread(img_filename)
+	t1=time.clock();
 	testdata = getimgdatapts(cv_img)
+	t2=time.clock();
+	print("Time taken:")
+	print(t2-t1)
+	
 	trained = runKMeans(testdata)
 	mapping = identifyColors(trained[0], CENTERS)
 	getparameters(mapping, trained[0], CENTERS)

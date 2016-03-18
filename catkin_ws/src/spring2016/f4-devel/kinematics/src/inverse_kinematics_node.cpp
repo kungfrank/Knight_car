@@ -70,7 +70,5 @@ void inverse_kinematics_node::carCmdCallback(duckietown_msgs::Twist2DStampedCons
   cmd_msg.vel_left = float(u_l);
   cmd_msg.vel_right = float(u_r);
   pub_wheelsCmd_.publish(cmd_msg);
-
-  ROS_INFO_STREAM("[" << node_name_ << "] Car command received.");
 }
 

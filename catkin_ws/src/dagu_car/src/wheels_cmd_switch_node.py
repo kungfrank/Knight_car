@@ -14,11 +14,13 @@ class WheelsCmdSwitchNode(object):
         self.cmd_dict[FSMState.LANE_FOLLOWING] = None
         self.cmd_dict[FSMState.INTERSECTION_CONTROL] = None
         self.cmd_dict[FSMState.COORDINATION] = None
+        self.cmd_dict[FSMState.OBSTACLE_AVOID] = None
 
         self.mode_name_dict = {}
         self.mode_name_dict[FSMState.LANE_FOLLOWING] = "LANE_FOLLOWING"
         self.mode_name_dict[FSMState.INTERSECTION_CONTROL] = "INTERSECTION_CONTROL"
         self.mode_name_dict[FSMState.COORDINATION] = "COORDINATION_CONTROL"
+        self.mode_name_dict[FSMState.OBSTACLE_AVOID] = "OBSTACLE_AVOID"
 
         # Setup publishers
         self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd", WheelsCmdStamped, queue_size=1)

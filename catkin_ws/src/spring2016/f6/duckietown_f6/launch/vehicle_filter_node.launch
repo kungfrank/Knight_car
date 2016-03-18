@@ -1,0 +1,17 @@
+<launch>
+	<arg name="veh" doc="Name of vehicle" />
+	<arg name="local" default="false" />
+
+	<!-- Camera -->
+	<include unless="$(arg local)" file="$(find duckietown)/launch/camera.launch">
+		<arg name="veh" value="$(arg veh)"/>
+	</include>
+
+	<remap from="virtual_mirror_node/incoming_image" to="camera_node/image/compressed" />
+
+	<!-- Vehicle Filter -->
+	<include file="$(find f6_vehicle_detection)/launch/vehicle_filter.launch">
+		<arg name="veh" value="$(arg veh)"/>
+	</include>
+</launch>
+

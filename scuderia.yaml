@@ -23,6 +23,9 @@ light2:
 light3:
   name: Chandan
 
+light5:
+  name: Chandan
+
 pontiac:
   name: Liam Paull
 
@@ -110,6 +113,9 @@ miata:
 
 feiying:
   name: Yajun
+
+kitt:
+  name: 'Michael "Misha" Novitzky'
 
 2cv:
   name: Daniel Hoehener

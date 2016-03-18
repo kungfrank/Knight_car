@@ -69,7 +69,19 @@ def identifyColors(trained, true):
 		colormap[i] = np.argmin(color)
 		# colormap[2] = 1
 		print colormap
+	colormap = checkMapping(colormap)
 	return colormap
+
+def checkMapping(mymap):
+	maplist = []
+	clearmap = {}
+	for color, mapping in mymap.iteritems():
+		if mapping not in maplist:
+			clearmap[color] = mapping
+			maplist += mapping
+	print clearmap
+	return clearmap
+
 
 def getparameters(mapping, trained, true):
 	redX = np.zeros((3, 1))

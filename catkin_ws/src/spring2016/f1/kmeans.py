@@ -127,7 +127,7 @@ def scaleandshift(img,scale,shift):
 
 	return img_shift
 
-
-#trained = runKMeans()
-#mapping = identifyColors(trained, CENTERS)
-#getparameters(mapping, trained, CENTERS)
+if __name__ == '__main__':
+	trained = runKMeans()
+	mapping = identifyColors(trained, CENTERS)
+	getparameters(mapping, trained, CENTERS)

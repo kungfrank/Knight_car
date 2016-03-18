@@ -134,5 +134,5 @@ if __name__ == '__main__':
 	cv_img = cv2.imread(img_filename)
 	testdata = getimgdatapts(cv_img)
 	trained = runKMeans(testdata)
-	mapping = identifyColors(trained, CENTERS)
-	getparameters(mapping, trained, CENTERS)
+	mapping = identifyColors(trained[0], CENTERS)
+	getparameters(mapping, trained[0], CENTERS)

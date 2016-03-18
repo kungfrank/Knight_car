@@ -32,3 +32,7 @@ add_dependencies(path_visualizer_node duckietown_msgs)
 add_executable(inverse_kinematics_node src/inverse_kinematics_node.cpp)
 target_link_libraries(inverse_kinematics_node ${catkin_LIBRARIES})
 add_dependencies(inverse_kinematics_node duckietown_msgs)
+
+add_executable(kinematics_tester_node src/kinematics_tester_node.cpp)
+target_link_libraries(kinematics_tester_node ${catkin_LIBRARIES})
+add_dependencies(kinematics_tester_node duckietown_msgs)

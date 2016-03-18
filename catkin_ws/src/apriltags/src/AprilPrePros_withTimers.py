@@ -14,6 +14,7 @@ class AprilPrePros(object):
     def __init__(self):    
         """ """
         self.node_name = rospy.get_name()
+        rospy.loginfo("[%s] Initializing " %(self.node_name))
         self.bridge = CvBridge()
  
         self.pub_ToApril_global = rospy.Publisher( "apriltags_global/image_raw", Image, queue_size=1)
@@ -47,17 +48,16 @@ class AprilPrePros(object):
         if not self.camera_IMG == None:
         
             # Crop
-            a = 100
-            c = -50
-            b = 50
-            #crop_img = self.camera_IMG[0+a+c:480-a+c, 0+b:640-b]
-            crop_img = self.camera_IMG
+            a = 50 # up/down edge crop
+            c = -50 # horizontal offset
+            b = 50  # Side crop
+            crop_img = self.camera_IMG[0+a+c:480-a+c, 0+b:640-b]
+            #crop_img = self.camera_IMG
             
             # Downsample
             h,w = crop_img.shape[:2]
-            print h,w
-            processed_img = cv2.pyrDown(crop_img,dstsize = (w/2,h/2))
-            #processed_img = crop_img
+            #processed_img = cv2.pyrDown(crop_img,dstsize = (w/2,h/2))
+            processed_img = crop_img
     
             # Publish Message
             img_msg = self.bridge.cv2_to_imgmsg( processed_img , "bgr8")
@@ -65,8 +65,11 @@ class AprilPrePros(object):
             img_msg.header.frame_id = self.camera_msg.header.frame_id
             self.pub_ToApril_global.publish(img_msg)
             
+            rospy.loginfo("[%s] Global Detection Processed " %(self.node_name))
+            
         else:
-            print 'No camera image to process'
+            
+            rospy.loginfo("[%s] Global Detection: No camera image to process " %(self.node_name))
             
         
             
@@ -77,17 +80,16 @@ class AprilPrePros(object):
         if not self.camera_IMG == None:
         
             # Crop
-            a = 100
-            c = -50
-            b = 50
-            #crop_img = self.camera_IMG[0+a+c:480-a+c, 0+b:640-b]
-            crop_img = self.camera_IMG
+            a = 100 # up/down edge crop
+            c = -50 # horizontal offset
+            b = 150  # Side crop
+            crop_img = self.camera_IMG[0+a+c:480-a+c, 0+b:640-b]
+            #crop_img = self.camera_IMG
             
             # Downsample
             h,w = crop_img.shape[:2]
-            print h,w
-            processed_img = cv2.pyrDown(crop_img,dstsize = (w/2,h/2))
-            #processed_img = crop_img
+            #processed_img = cv2.pyrDown(crop_img,dstsize = (w/2,h/2))
+            processed_img = crop_img
     
             # Publish Message
             img_msg = self.bridge.cv2_to_imgmsg( processed_img , "bgr8")
@@ -95,8 +97,11 @@ class AprilPrePros(object):
             img_msg.header.frame_id = self.camera_msg.header.frame_id
             self.pub_ToApril_fast.publish(img_msg)
             
+            rospy.loginfo("[%s] Fast Detection Published " %(self.node_name))
+            
         else:
-            print 'No camera image to process'
+            
+            rospy.loginfo("[%s] Fast Detection: No camera image to process " %(self.node_name))
 
 
 if __name__ == '__main__': 

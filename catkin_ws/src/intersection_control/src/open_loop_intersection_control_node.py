@@ -101,8 +101,8 @@ class OpenLoopIntersectionNode(object):
  
     def turnLeft(self):
         #move forward
-        forward_for_time_leave = 3.0
-        turn_for_time = 0.7
+        forward_for_time_leave = 2.3
+        turn_for_time = 0.6
         forward_for_time_enter = 2.0
         
         starting_time = rospy.Time.now()

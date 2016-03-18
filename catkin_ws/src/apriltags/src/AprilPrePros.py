@@ -28,13 +28,17 @@ class AprilPrePros(object):
         cv_img = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
         
         # Crop
-        #crop_img = cv_img[100:300, 100:300]
+        a = 100
+        c = -50
+        b = 50
+        #crop_img = cv_img[0+a+c:480-a+c, 0+b:640-b]
         crop_img = cv_img
         
         # Downsample
         h,w = crop_img.shape[:2]
         print h,w
         processed_img = cv2.pyrDown(crop_img,dstsize = (w/2,h/2))
+        #processed_img = crop_img
 
         # Publish Message
         img_msg = self.bridge.cv2_to_imgmsg( processed_img , "bgr8")

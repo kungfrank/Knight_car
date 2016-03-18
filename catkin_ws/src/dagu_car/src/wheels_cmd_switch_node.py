@@ -26,6 +26,7 @@ class WheelsCmdSwitchNode(object):
         # Setup subscribers
         self.sub_mode = rospy.Subscriber("~mode", FSMState, self.cbMode, queue_size=1)
         self.sub_lane = rospy.Subscriber("~wheels_cmd_lane", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=FSMState.LANE_FOLLOWING)
+        self.sub_lane = rospy.Subscriber("~simple_stop_commands", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=FSMState.OBSTACLE_AVOID)
         self.sub_interestion = rospy.Subscriber("~wheels_cmd_intersection", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=FSMState.INTERSECTION_CONTROL)
         self.sub_coordination = rospy.Subscriber("~wheels_cmd_coordination", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=FSMState.COORDINATION)
 

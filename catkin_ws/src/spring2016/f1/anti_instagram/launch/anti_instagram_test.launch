@@ -1,5 +1,6 @@
 <launch>
 	<arg name="veh" default="ferrari"/>
+	<arg name="bagin"/>
 	
 	<remap from="~uncorrected_image" to="$(arg veh)/raw_image"/>
 	<include file="$(find anti_instagram)/launch/anti_instagram_node.launch"/>
@@ -12,5 +13,5 @@
 	<include file="$(find pi_camera)/launch/decoder_node.launch">
 		<arg name="veh" value="$(arg veh)"/>
 	</include>-->
-	<node pkg="rosbag" type="play" name="player" args="/home/mfe/Downloads/20160122-censi-ferrari-RCDP2.bag"/>
+	<node pkg="rosbag" type="play" name="player" args="$(arg bagin)"/>
 </launch>

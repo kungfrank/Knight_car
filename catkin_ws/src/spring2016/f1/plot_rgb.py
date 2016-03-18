@@ -20,10 +20,17 @@ cv2.waitKey(0)
 cv2.destroyAllWindows()
 r,g,b = cv2.split(img)
 
+# crop image and only keep bottom third
+img_height = len(r)
+bottom_third_top_index = int(img_height*2/3.0)
+# r_bottom = r[bottom_third_top_index:]
+# b_bottom = b[bottom_third_top_index:]
+# g_bottom = g[bottom_third_top_index:]
+
 # Randomly sample numSampes^2 pixels from the image (uniformly distributed in x,y)
 numSamples = 50
-iList = [random.randint(0,255) for i in range(numSamples)]
-jList = [random.randint(0,255) for i in range(numSamples)]
+iList = [random.randint(bottom_third_top_index,255) for i in range(numSamples)]
+jList = [random.randint(bottom_third_top_index,255) for i in range(numSamples)]
 r_rand = [r[i][j] for i in iList for j in jList]
 b_rand = [b[i][j] for i in iList for j in jList]
 g_rand = [g[i][j] for i in iList for j in jList]

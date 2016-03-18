@@ -1,0 +1,7 @@
+# Yaml file with list of all the tags
+
+- tag_ID: 511
+  sign_type: "StreetName"
+  street_name: "KIM avenue"
+  traffic_sign_type:
+  vehicle_name:

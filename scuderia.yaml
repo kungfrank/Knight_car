@@ -11,6 +11,21 @@ megaman:
   name: Shih-Yuan Liu
   mac: 00:0f:60:06:92:d5
 
+light4:
+  name: Chandan
+
+light1: 
+  name: Chandan
+
+light2:
+  name: Chandan
+
+light3:
+  name: Chandan
+
+light5:
+  name: Chandan
+
 pontiac:
   name: Liam Paull
 
@@ -98,6 +113,9 @@ miata:
 
 feiying:
   name: Yajun
+
+kitt:
+  name: 'Michael "Misha" Novitzky'
 
 2cv:
   name: Daniel Hoehener

@@ -1,0 +1,4216 @@
+- tag_id: 1
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 2
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: yield
+  location_226: 
+  location_316: 
+
+- tag_id: 3
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: no-right-turn
+  location_226: 
+  location_316: 
+
+- tag_id: 4
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: no-left-turn
+  location_226: 
+  location_316: 
+
+- tag_id: 5
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: do-not-enter
+  location_226: 
+  location_316: 
+
+- tag_id: 6
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: oneway-right
+  location_226: 
+  location_316: 
+
+- tag_id: 7
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: oneway-left
+  location_226: 
+  location_316: 
+
+- tag_id: 8
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 9
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: right-T intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 10
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: left-T intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 11
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: T-intersection
+  location_226: 
+  location_316: 
+
+- tag_id: 12
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: pedestrian
+  location_226: 
+  location_316: 
+
+- tag_id: 13
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 14
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 15
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 16
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 17
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 18
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 19
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 20
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 21
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 22
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 23
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 24
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 25
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 26
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 27
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 28
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 29
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 30
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 31
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 32
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 33
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 34
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 35
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 36
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 37
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 38
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: stop
+  location_226: 
+  location_316: 
+
+- tag_id: 39
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: yield
+  location_226: 
+  location_316: 
+
+- tag_id: 40
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: no-right-turn
+  location_226: 
+  location_316: 
+
+- tag_id: 41
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: no-left-turn
+  location_226: 
+  location_316: 
+
+- tag_id: 42
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: oneway-right
+  location_226: 
+  location_316: 
+
+- tag_id: 43
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: oneway-left
+  location_226: 
+  location_316: 
+
+- tag_id: 44
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 45
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 46
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 47
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 48
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 49
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 50
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 51
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 52
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 53
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 54
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 55
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 56
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 4-way-intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 57
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: right-T intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 58
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: right-T intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 59
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: right-T intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 60
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: right-T intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 61
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: left-T intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 62
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: left-T intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 63
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: left-T intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 64
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: left-T intersect
+  location_226: 
+  location_316: 
+
+- tag_id: 65
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: T-intersection
+  location_226: 
+  location_316: 
+
+- tag_id: 66
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: T-intersection
+  location_226: 
+  location_316: 
+
+- tag_id: 67
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: T-intersection
+  location_226: 
+  location_316: 
+
+- tag_id: 68
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: T-intersection
+  location_226: 
+  location_316: 
+
+- tag_id: 69
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: do-not-enter
+  location_226: 
+  location_316: 
+
+- tag_id: 70
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: pedestrian
+  location_226: 
+  location_316: 
+
+- tag_id: 71
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: pedestrian
+  location_226: 
+  location_316: 
+
+- tag_id: 72
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: pedestrian
+  location_226: 
+  location_316: 
+
+- tag_id: 73
+  tag_type: TrafficSign
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: pedestrian
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 200
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 201
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 202
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 203
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 204
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 205
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 206
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 207
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 208
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 209
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 210
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 211
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 212
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 213
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 214
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 215
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 216
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 217
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 218
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 219
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 220
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 221
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 222
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 223
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 224
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 225
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 226
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 227
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 228
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 229
+  tag_type: Light
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 300
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 301
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 302
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 303
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 304
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 305
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 306
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 307
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 308
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 309
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 310
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 311
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 312
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 313
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 314
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 315
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 316
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 317
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 318
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 319
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 320
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 321
+  tag_type: Localization
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 
+  tag_type: 
+  street_name: 
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 422
+  tag_type: StreetName
+  street_name: BROOKS ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 423
+  tag_type: StreetName
+  street_name: SHAH AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 424
+  tag_type: StreetName
+  street_name: MICALI ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 425
+  tag_type: StreetName
+  street_name: REIF AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 426
+  tag_type: StreetName
+  street_name: KASAN ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 427
+  tag_type: StreetName
+  street_name: KASAN ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 428
+  tag_type: StreetName
+  street_name: CHANDRA ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 429
+  tag_type: StreetName
+  street_name: CHANDRA ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 430
+  tag_type: StreetName
+  street_name: WALTZ AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 431
+  tag_type: StreetName
+  street_name: WALTZ AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 432
+  tag_type: StreetName
+  street_name: KIM AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 433
+  tag_type: StreetName
+  street_name: KIM AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 434
+  tag_type: StreetName
+  street_name: LOZANO ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 435
+  tag_type: StreetName
+  street_name: LOZANO ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 436
+  tag_type: StreetName
+  street_name: HOGAN AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 437
+  tag_type: StreetName
+  street_name: HOGAN AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 438
+  tag_type: StreetName
+  street_name: HOBURG ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 439
+  tag_type: StreetName
+  street_name: HOBURG ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 440
+  tag_type: StreetName
+  street_name: HERR AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 441
+  tag_type: StreetName
+  street_name: HERR AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 442
+  tag_type: StreetName
+  street_name: DUBOWSKY ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 443
+  tag_type: StreetName
+  street_name: DUBOWSKY ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 444
+  tag_type: StreetName
+  street_name: ASADA AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 445
+  tag_type: StreetName
+  street_name: ASADA AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 446
+  tag_type: StreetName
+  street_name: WILLIAMS ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 447
+  tag_type: StreetName
+  street_name: WILLIAMS ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 448
+  tag_type: StreetName
+  street_name: WILLIAMS ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 449
+  tag_type: StreetName
+  street_name: ROY AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 450
+  tag_type: StreetName
+  street_name: ROY AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 451
+  tag_type: StreetName
+  street_name: ROY AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 452
+  tag_type: StreetName
+  street_name: HOSOI AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 453
+  tag_type: StreetName
+  street_name: HOSOI AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 454
+  tag_type: StreetName
+  street_name: HOSOI AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 455
+  tag_type: StreetName
+  street_name: CHEN AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 456
+  tag_type: StreetName
+  street_name: CHEN AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 457
+  tag_type: StreetName
+  street_name: CHEN AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 458
+  tag_type: StreetName
+  street_name: PERAIRE ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 459
+  tag_type: StreetName
+  street_name: PERAIRE ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 460
+  tag_type: StreetName
+  street_name: PERAIRE ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 461
+  tag_type: StreetName
+  street_name: KAELBLING ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 462
+  tag_type: StreetName
+  street_name: KAELBLING ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 463
+  tag_type: StreetName
+  street_name: KAELBLING ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 464
+  tag_type: StreetName
+  street_name: IAGNEMMA ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 465
+  tag_type: StreetName
+  street_name: IAGNEMMA ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 466
+  tag_type: StreetName
+  street_name: IAGNEMMA ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 467
+  tag_type: StreetName
+  street_name: BREAZEAL ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 468
+  tag_type: StreetName
+  street_name: BREAZEAL ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 469
+  tag_type: StreetName
+  street_name: BREAZEAL ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 470
+  tag_type: StreetName
+  street_name: TEDRAKE ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 471
+  tag_type: StreetName
+  street_name: TEDRAKE ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 472
+  tag_type: StreetName
+  street_name: TEDRAKE ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 473
+  tag_type: StreetName
+  street_name: FRAZZOLI ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 474
+  tag_type: StreetName
+  street_name: FRAZZOLI ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 475
+  tag_type: StreetName
+  street_name: FRAZZOLI ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 476
+  tag_type: StreetName
+  street_name: KARAMAN ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 477
+  tag_type: StreetName
+  street_name: KARAMAN ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 478
+  tag_type: StreetName
+  street_name: KARAMAN ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 479
+  tag_type: StreetName
+  street_name: KARAMAN ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 480
+  tag_type: StreetName
+  street_name: KARAMAN ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 481
+  tag_type: StreetName
+  street_name: RUS AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 482
+  tag_type: StreetName
+  street_name: RUS AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 483
+  tag_type: StreetName
+  street_name: RUS AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 484
+  tag_type: StreetName
+  street_name: RUS AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 485
+  tag_type: StreetName
+  street_name: RUS AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 486
+  tag_type: StreetName
+  street_name: LEONARD ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 487
+  tag_type: StreetName
+  street_name: LEONARD ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 488
+  tag_type: StreetName
+  street_name: LEONARD ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 489
+  tag_type: StreetName
+  street_name: LEONARD ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 490
+  tag_type: StreetName
+  street_name: LEONARD ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 491
+  tag_type: StreetName
+  street_name: LEONARD ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 492
+  tag_type: StreetName
+  street_name: LEONARD ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 493
+  tag_type: StreetName
+  street_name: HOW AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 494
+  tag_type: StreetName
+  street_name: HOW AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 495
+  tag_type: StreetName
+  street_name: HOW AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 496
+  tag_type: StreetName
+  street_name: HOW AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 497
+  tag_type: StreetName
+  street_name: HOW AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 498
+  tag_type: StreetName
+  street_name: HOW AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 499
+  tag_type: StreetName
+  street_name: HOW AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 500
+  tag_type: StreetName
+  street_name: FRAZZOLI ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 501
+  tag_type: StreetName
+  street_name: TEDRAKE ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 502
+  tag_type: StreetName
+  street_name: ASADA AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 503
+  tag_type: StreetName
+  street_name: BREAZEAL ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 504
+  tag_type: StreetName
+  street_name: DUBOWSKY ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 505
+  tag_type: StreetName
+  street_name: HERR AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 506
+  tag_type: StreetName
+  street_name: HOBURG ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 507
+  tag_type: StreetName
+  street_name: HOGAN AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 508
+  tag_type: StreetName
+  street_name: IAGNEMMA ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 509
+  tag_type: StreetName
+  street_name: KAELBLING ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 510
+  tag_type: StreetName
+  street_name: LOZANO ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 511
+  tag_type: StreetName
+  street_name: KIM AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 512
+  tag_type: StreetName
+  street_name: REIF AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 513
+  tag_type: StreetName
+  street_name: WALTZ AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 514
+  tag_type: StreetName
+  street_name: PERAIRE ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 515
+  tag_type: StreetName
+  street_name: CHANDRA ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 516
+  tag_type: StreetName
+  street_name: KASAN ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 517
+  tag_type: StreetName
+  street_name: MICALI ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 518
+  tag_type: StreetName
+  street_name: CHEN AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 519
+  tag_type: StreetName
+  street_name: HOSOI AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 520
+  tag_type: StreetName
+  street_name: RUS AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 521
+  tag_type: StreetName
+  street_name: HOW AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 522
+  tag_type: StreetName
+  street_name: ROY AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 523
+  tag_type: StreetName
+  street_name: SHAH AVE
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 524
+  tag_type: StreetName
+  street_name: WILLIAMS ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 525
+  tag_type: StreetName
+  street_name: LEONARD ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 526
+  tag_type: StreetName
+  street_name: BROOKS ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+
+- tag_id: 527
+  tag_type: StreetName
+  street_name: KARAMAN ST
+  vehicle_name: 
+  traffic_sign_type: 
+  location_226: 
+  location_316: 
+

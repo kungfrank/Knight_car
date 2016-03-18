@@ -11,7 +11,7 @@ class AntiInstagram(object):
 
 
 	def applyTransformation(self,image):
-		corrected_image = scaleandshift(img,self.scale,self.shift)
+		corrected_image = kmeans.scaleandshift(img,self.scale,self.shift)
 		return corrected_image
 
 	def calculateTransform(self,image):

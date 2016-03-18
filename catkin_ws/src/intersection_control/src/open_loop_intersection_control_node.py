@@ -7,7 +7,7 @@ class OpenLoopIntersectionNode(object):
     def __init__(self):
         # Save the name of the node
         self.node_name = rospy.get_name()
-        self.turn_type = 0
+        self.turn_type = -1
 
         rospy.loginfo("[%s] Initialzing." %(self.node_name))
 
@@ -140,6 +140,8 @@ class OpenLoopIntersectionNode(object):
             self.rate.sleep()
 
     def turnWait(self):
+        wheels_cmd_msg = WheelsCmdStamped()
+        wheels_cmd_msg.header.stamp = rospy.Time.now()
         wheels_cmd_msg.vel_left = 0.0
         wheels_cmd_msg.vel_right = 0.0
         self.pub_wheels_cmd.publish(wheels_cmd_msg)    

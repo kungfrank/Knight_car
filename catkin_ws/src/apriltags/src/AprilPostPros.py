@@ -9,18 +9,19 @@ class AprilPostPros(object):
     def __init__(self):    
         """ """
         self.node_name = rospy.get_name()
- 
-        self.sub_prePros        = rospy.Subscriber("apriltags/image_raw", AprilTags, queue_size=1)
-        self.pub_postPros       = rospy.Publisher("apriltags", AprilTags, self.callback, queue_size=1)
-        
+
         rospack = rospkg.RosPack()
         self.pkg_path = rospack.get_path('apriltags')
-        tags_filepath = self.setupParameter("~tags_file", self.pkg_path+"/tagID/tags_map_001.yaml") 
+        tags_filepath = self.setupParam("~tags_file", self.pkg_path+"/tagID/tags_map_001.yaml") 
         
         tags_file = open(tags_filepath, 'r')
         self.tags_dict = yaml.load(tags_file)
         tags_file.close()
         self.info = TagInfo()
+ 
+        
+        
+        
         
         self.sign_types = {"StreetName": self.info.S_NAME,
             "TrafficSign": self.info.SIGN,
@@ -41,31 +42,39 @@ class AprilPostPros(object):
             "pedestrian": self.info.PEDESTRIAN,
             "duck-crossing": self.info.DUCK_CROSSING}
 
+        self.sub_prePros        = rospy.Subscriber("apriltags_fast/apriltags", AprilTags, self.callback, queue_size=1)
+        self.pub_postPros       = rospy.Publisher("postpros/apriltags", AprilTags, queue_size=1)
+
+    def setupParam(self,param_name,default_value):
+        value = rospy.get_param(param_name,default_value)
+        rospy.set_param(param_name,value) #Write to parameter server for transparancy
+        rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
+        return value
+
     def callback(self, msg):
         """ """ 
         # Load tag detections message
-        tag_data = msg.data
         tag_infos = []
 
-        for detection in tag_data.detections:
+        for detection in msg.detections:
             new_info = TagInfo()
-            new_info.id = int(id_info['id'])
+            new_info.id = int(detection.id)
             id_info = self.tags_dict[new_info.id]
             
             # Check yaml file to fill in ID-specific information
-            new_info.type = self.sign_types[id_info['tag_type']]
-            if new_info.type == self.info.S_NAME:
+            new_info.tag_type = self.sign_types[id_info['tag_type']]
+            if new_info.tag_type == self.info.S_NAME:
                 new_info.street_name = id_info['street_name']
-            elif new_info.type == self.info.SIGN:
+            elif new_info.tag_type == self.info.SIGN:
                 new_info.traffic_sign_type = self.traffic_sign_types[id_info['traffic_sign_type']]
-            elif new_info.type == self.info.VEHICLE:
+            elif new_info.tag_type == self.info.VEHICLE:
                 new_info.vehicle_name = id_info['vehicle_name']
              
             # TODO: Add relative pose estimation
             tag_infos.append(new_info)
         
         new_tag_data = AprilTags()
-        new_tag_data.detections = tag_data.detections
+        new_tag_data.detections = msg.detections
         new_tag_data.infos = tag_infos
 
         # Publish Message

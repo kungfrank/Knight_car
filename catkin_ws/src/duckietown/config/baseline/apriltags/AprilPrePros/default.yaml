@@ -1,0 +1,9 @@
+# Parameters for joy_mapper/joy_mapper
+fast_period: 0.25
+global_period: 2.0
+fast_v_crop: 100
+fast_v_off:  -50
+fast_h_crop: 100
+global_v_crop:  0
+global_v_off:   0
+global_h_crop:  0

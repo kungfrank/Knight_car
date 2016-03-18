@@ -5,23 +5,6 @@
 	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
 	<arg name="live" default="true" doc="if set to true, run the camera and do live detection. "/>
 	
-    <!-- camera_node -->
-    <group if="$(arg live)">
-        <include  file="$(find pi_camera)/launch/camera_node.launch">
-            <arg name="veh" value="$(arg veh)"/>
-            <arg name="config" value="$(arg config)"/>
-            <arg name="param_file_name" value="$(arg param_file_name)"/>
-        </include>
-    </group>
-
-    <!-- ground projection node -->
-    <include file="$(find ground_projection)/launch/ground_projection.launch">
-        <arg name="veh" value="$(arg veh)"/>
-        <arg name="local" value="$(arg local)"/>
-        <arg name="config" value="$(arg config)"/>
-        <arg name="param_file_name" value="$(arg param_file_name)"/>
-    </include>
-
 	<remap from="static_object_detector_node/image_compressed" to="camera_node/image/compressed"/>
 	<include file="$(find mdoap)/launch/static_object_detector_node.launch">
 	    <arg name="veh" value="$(arg veh)"/>

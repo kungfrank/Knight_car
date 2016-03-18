@@ -52,8 +52,7 @@ digraph D {
 		//F2-3
 		led_emitter_node[label="LED\nled_emitter_node (F2-3)"];
 		led_detector_node[label="LED\nled_detector_node (F2-3)"];
-		vehicle_signal_detector_node[label="LED\nvehicle_signal_detector (F2-3)"];
-		trafficlight_signal_detector_node[label="LED\ntrafficlight_signal_detector_node (F2-3)"];
+		led_interpreter_node[label="LED\nled_interpreter_node (F2-3)"];
 		// TODO: connect this to coordination
 
 		//F4
@@ -161,9 +160,8 @@ digraph D {
 
 	// = F2-3 = //
 	desired_signaling_state[label="~desired_signaling_state\nduckietown_msgs/SignalingState.msg"];
-	intersection_signals[label="~intersection_signals\nduckietown_msgs/IntersectionSignalingState.msg"];
-	trafficlight_signal[label="~trafficlight_signal\nduckietown_msgs/TrafficLightSignalingState.msg"];
-
+	signals_detection[label="~signals_detection\nduckietown_msgs/IntersectionSignalingState.msg"];
+	
 	// = F9 = //
 	object_image_detection_list[label="~detection_list\nduckietown_msgs/ObjectImageDetectionList.msg"];
 	object_too_close[label="~object_too_close\nduckietown_msgs/BoolStamped.msg"];
@@ -413,12 +411,10 @@ digraph D {
 		fillcolor="purple";
 		led_emitter_node;
 		led_detector_node;
-		led_detection;
-		vehicle_signal_detector_node;
-		trafficlight_signal_detector_node;
+		led_interpreter_node;
+		// messages
 		desired_signaling_state;
-		intersection_signals;
-		trafficlight_signal;
+		signals_detection;
 	}
 
 	//== led_emitter_node == //
@@ -435,7 +431,7 @@ digraph D {
 	// == trafficlight_signal_detector_node == //
 	{led_detection, stop_line_dist, lane_pose} -> trafficlight_signal_detector_node;
 	trafficlight_signal_detector_node -> trafficlight_signal;
-
+	//F2-3//
 
 	//F5
 	subgraph cluster_f5{

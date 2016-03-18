@@ -10,35 +10,35 @@ from duckietown_msgs.msg import FSMState, IntersectionDetection, VehicleDetectio
 
 class FakeDuckiebot:
     def __init__(self):
+        self.node = rospy.init_node('fake_duckiebot', anonymous=True)
 
         # publishing
-        self.mode_pub = rospy.Publisher('state', FSMState, queue_size=10)
         self.mode = FSMState.LANE_FOLLOWING
+        self.mode_pub = rospy.Publisher('~mode', FSMState, queue_size=10)
 
-        self.intersection_pub = rospy.Publisher('intersection_detection', IntersectionDetection, queue_size=10)
+        self.intersection_pub = rospy.Publisher('~intersection_detection', IntersectionDetection, queue_size=10)
         self.intersection = IntersectionDetection.NONE
 
-        self.traffic_light_pub = rospy.Publisher('traffic_light_detection', TrafficLightDetection, queue_size=10)
+        self.traffic_light_pub = rospy.Publisher('~traffic_light_detection', TrafficLightDetection, queue_size=10)
         self.traffic_light = TrafficLightDetection.NA
 
-        self.right_veh_pub = rospy.Publisher('right_vehicle_detection', VehicleDetection, queue_size=10)
+        self.right_veh_pub = rospy.Publisher('~right_vehicle_detection', VehicleDetection, queue_size=10)
         self.right_veh = VehicleDetection.NO_CAR
 
-        self.opposite_veh_pub = rospy.Publisher('opposite_vehicle_detection', VehicleDetection, queue_size=10)
+        self.opposite_veh_pub = rospy.Publisher('~opposite_vehicle_detection', VehicleDetection, queue_size=10)
         self.opposite_veh = VehicleDetection.NO_CAR
 
         # subscribing
         self.clearance_to_go = CoordinationClearance.NA
-        self.clearance_to_go_sub = rospy.Subscriber('clearance_to_go', CoordinationClearance,
+        self.clearance_to_go_sub = rospy.Subscriber('~clearance_to_go', CoordinationClearance,
                                                     self.clearance_to_go_callback)
 
         self.roof_light = CoordinationSignal.SIGNAL_A
-        self.clearance_to_go_sub = rospy.Subscriber('coordination_signal',
+        self.clearance_to_go_sub = rospy.Subscriber('~coordination_signal',
                                                     CoordinationSignal, self.roof_light_callback)
 
         self.gui = None
 
-        self.node = rospy.init_node('fake_duckiebot', anonymous=True)
 
     def clearance_to_go_callback(self, msg):
         self.clearance_to_go = msg.status

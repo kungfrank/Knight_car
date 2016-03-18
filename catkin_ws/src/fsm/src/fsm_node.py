@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from duckietown_msgs.msg import FSMState, BoolStamped, StopLineReading, LanePose
+from duckietown_msgs.msg import FSMState, BoolStamped, StopLineReading, LanePose, CoordinationClearance
 from std_msgs.msg import String #Imports msg
 
 class FSMNode(object):
@@ -24,30 +24,30 @@ class FSMNode(object):
         # Setup subscribers
         self.sub_topic_in_lane = rospy.Subscriber("~lane_pose", LanePose, self.cbInLane, queue_size=1)
         self.sub_topic_at_stop_line = rospy.Subscriber("~stop_line_reading", StopLineReading, self.cbAtStopLine, queue_size=1)
-        self.sub_topic_intersection_go = rospy.Subscriber("~intersection_go", BoolStamped, self.cbIntersectionGo, queue_size=1)
+        self.sub_topic_intersection_go = rospy.Subscriber("~clearance_to_go", CoordinationClearance, self.cbIntersectionGo, queue_size=1)
         self.sub_topic_intersection_done = rospy.Subscriber("~intersection_done", BoolStamped, self.cbIntersectionDone, queue_size=1)
 
         # Read parameters
         rospy.loginfo("[%s] Initialzed." %(self.node_name))
 
     def cbIntersectionDone(self, done_msg):
-        print done_msg
+        #print done_msg
         self.intersection_done = done_msg.data
         self.updateState(done_msg.header.stamp)
 
     def cbInLane(self, lane_pose_msg):
-        print lane_pose_msg
+        #print lane_pose_msg
         self.in_lane = lane_pose_msg.in_lane
         self.updateState(lane_pose_msg.header.stamp)
 
     def cbAtStopLine(self, stop_line_reading_msg):
-        print stop_line_reading_msg
+        #print stop_line_reading_msg
         self.at_stop_line = stop_line_reading_msg.at_stop_line
         self.updateState(stop_line_reading_msg.header.stamp)
 
     def cbIntersectionGo(self, go_msg):
-        print go_msg
-        self.intersection_go = go_msg.data
+        #print go_msg
+        self.intersection_go = (go_msg.status == CoordinationClearance.GO)
         self.updateState(go_msg.header.stamp)
 
     def updateState(self,stamp):

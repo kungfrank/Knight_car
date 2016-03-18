@@ -26,9 +26,7 @@ digraph D {
 	subgraph node_missing{
 		node [fillcolor=red];
 		global_localizer[label="global_localizer_node (LC)"];
-		led_detector_node[label="led_detector_node (CC)"];
-		obj_detector_node[label="obj_detector_node (CC)"];
-		traffic_light_detector_node[label="traffic_light_detector_node (??)"];
+		//obj_detector_node[label="obj_detector_node (CC)"];
 		lane_supervisor_node[label="lane_control\nlane_supervisor_node (LP)"];
 	}
 	subgraph node_designed{
@@ -43,15 +41,27 @@ digraph D {
 		node [fillcolor=orange];
 		open_loop_intersection_control_node[label="intersection_control\nopen_loop_intersection_control_node (MN)"];
 		stop_line_filter_node[label="stop_line_filter\nstop_line_filter_node (LP)"];
-		rgb_led_driver_node[label="rgb_led_driver\nrgb_led_driver_node (DY)"];
+		//rgb_led_driver_node[label="rgb_led_driver\nrgb_led_driver_node (DY)"];
 		fsm_node[label="fsm\nfsm_node (MN)"];
 		graph_planner_node[label="graph_planner\ngraph_planner_node (??)"];
 		mission_planner_node[label="mission_planner\nmission_planner_node (MN)"];
+		
+		//F1
 		anti_instagram_node[label="anit_instagram\nanti_instagram_node (F1)"];
-		kinematics_learning_node[label="visual_odometry\nkinematics_learning_node (F4)"];
-		inverse_kinematics_node[label="forward_kinematics\ninverse_kinematics_node (F4)"];
-		forward_kinematics_node[label="forward_kinematics\nforward_kinematics_node (F4)"];
+		
+		//F2-3
+		led_emitter_node[label="led_detection\nled_emitter_node (F2-3)"];
+		led_detector_node[label="led_detection\nled_detector_node (F2-3)"];
+		vehicle_signal_detector_node[label="led_detection\nvehicle_signal_detector (F2-3)"];
+		trafficlight_signal_detector_node[label="led_detection\ntrafficlight_signal_detector_node (F2-3)"];
 
+		//F4
+		odometry_training_pairs_node[label="visual_odometry\nodometry_training_pairs_node (F4)"];
+		kinematics_learning_node[label="kinematics\nkinematics_learning_node (F4)"];
+		inverse_kinematics_node[label="kinematics\ninverse_kinematics_node (F4)"];
+		forward_kinematics_node[label="kinematics\nforward_kinematics_node (F4)"];
+
+		//F9
 		static_object_detector_node[label="mdoap\nstatic_object_detector_node (F9)"];
 		obstacle_safety_node[label="mdoap\nobstacle_safety_node (F9)"];
 		simple_stop_controller_node[label="mdoap\nsimple_stop_controller_node (F9)"];
@@ -73,7 +83,8 @@ digraph D {
 	subgraph node_compiled{
 		node [fillcolor=yellow];
 		wheels_driver_node[label="dagu_car\nwheels_driver_node (DY,SY)"];
-		wheels_cmd_switch_node[label="dagu_car\nwheels_cmd_switch (SY)"]
+		//wheels_cmd_switch_node[label="dagu_car\nwheels_cmd_switch (SY)"]
+		wheels_cmd_switch_node[label="dagu_car\ncar_cmd_switch (SY)"]
 		camera_node[label="pi_camera\ncamera_node (SY,AC)"];
 		decoder_node[label="pi_camera\ndecoder_node (SY)"];
 		cam_info_reader_node[label="pi_camera\ncam_info_reader_node (SY)"];
@@ -82,7 +93,7 @@ digraph D {
 		apriltag_detector_node[label="aprialtags\napril_tag_detector (LP)"];
 		joy_mapper_node[label="joy_mapper\njoy_mapper_node (SY)"];
 		ground_projection_node[label="ground_projection\nground_projection_node (CC)"];
-		wheels_trimmer_node[label="dagu_car\nwheels_trimmer_node (SY)"];
+		//wheels_trimmer_node[label="dagu_car\nwheels_trimmer_node (SY)"];
 		lane_filter_node[label="lane_filter\nlane_filter_node (LP)"]; 
 	}
 	subgraph node_documented{
@@ -103,8 +114,9 @@ digraph D {
 		navigation_graph_file[label="??/navigation_graph_file"];
 		feature_map_file[label="??/feature_map_file"];
 		inverse_kinematics_file[label="calibration/inverse_kinematics"];
-		kinematics_file[label="calibration/kinematics_param"];
+		kinematics_file[label="calibration/forward_kinematics"];
 		tags_map_file[label="map/tags_map.yaml"];
+		odometry_training_pairs_file[label="???/odometry_training_pairs"];
 	}
 
 	// ==== Topics ====
@@ -119,7 +131,7 @@ digraph D {
 	lane_control_sup[label="~lane_control_supervised\nduckietown_msgs/WheelsCmdStamped.msg"];
 	lane_control_safe[label="~lane_control_safe\nduckietown_msgs/WheelsCmdStamped.msg"];
 	apriltag_detection[label="~apriltag_detection\nduckietown_msgs/AprilTags.msg"];
-	led_detection[label="~led_detection"];
+	led_detection[label="~detection"];
 	traffic_light_detection[label="~traffic_light_detection"];
 	obj_detection[label="~obj_detection"];
 	global_readings[label="~global_readings"];
@@ -128,35 +140,44 @@ digraph D {
 	intersection_control[label="~intersection_control\nduckietown_msgs/WheelsCmdStamped.msg"];
 	street_name_detection[label="~street_name_detection\nduckietown_msgs/StreetNameDetection.msg"];
 	wheels_command[label="wheels_driver_node/wheels_cmd\nduckietown_msgs/WheelsCmdStamped.msg"];
-	wheels_command_switch[label="~wheels_command_switch\nduckietown_msgs/WheelsCmdStamped.msg"];
+	wheels_command_switch[label="~car_command_switch\nduckietown_msgs/Twist2DStamped.msg"];
+	//wheels_command_switch[label="~wheels_command_switch\nduckietown_msgs/WheelsCmdStamped.msg"];
 	camera_info[label="camera_node/camera_info\nsensor_msgs/CameraInfo.msg"];
 	image_compressed[label="~image/compressed\nsensor_msgs/CompressedImage.msg"];
 	intersection_go[label="~intersection_go\nstd_msgs/Bool.msg"];
 	intersection_done[label="~intersection_done\nstd_msgs/Bool.msg"];
 	at_stop_line[label="~at_stop_line\nstd_msgs/Bool.msg"];
 	in_lane[label="~in_lane\nstd_msgs/Bool.msg"];
-	led_cmd[label="rgb_led_driver/led_cmd\nduckietown_msgs/LEDControl.msg"];
+	//led_cmd[label="rgb_led_driver/led_cmd\nduckietown_msgs/LEDControl.msg"];
 	stop_line_dist[label="~stop_line_dist\nstd_msgs/Float32.msg"];
 	joy[label="joy\nsensor_msgs/Joy.msg"];
 	corrected_image[label="~corrected_image/compressed\nsensor_msgs/CompressedImage.msg"];
 	image_health[label="~image_health\nduckietown_msgs/AntiInstagramHealth.msg"];
 	forward_kinematics_pose[label="~pose\nduckietown_msgs/Pose2DStamped.msg"];
 	forward_kinematics_velocity[label="~velocity\nduckietown_msgs/Twist2DStamped.msg"];
-	car_cmd[label="~car_cmd\nduckietown_msgs/Twist2DStamped.msg"]; //No publisher yet
+	//car_cmd[label="~car_cmd\nduckietown_msgs/Twist2DStamped.msg"]; //No publisher yet
+
+
+	// = F2-3 = //
+	desired_signaling_state[label="~desired_signaling_state\nduckietown_msgs/SignalingState.msg"];
+	intersection_signals[label="~intersection_signals\nduckietown_msgs/IntersectionSignalingState.msg"];
+	trafficlight_signal[label="~trafficlight_signal\nduckietown_msgs/TrafficLightSignalingState.msg"];
 
 	// = F9 = //
 	object_image_detection_list[label="~detection_list\nduckietown_msgs/ObjectImageDetectionList.msg"];
 	object_too_close[label="~object_too_close\nduckietown_msgs/BoolStamped.msg"];
 	object_projected_detection_list[label="~detection_list_proj\nduckietown_msgs/ObjectProjectedDetectionList.msg"];
 	object_detection_markers[label="~object_detection_markers\nvisualization_msgs/MarkerArray.msg"];
+	simple_stop_control[label="~control\nduckietown_msgs/Twist2DStamped.msg"];
+	modap_conntrol[label="~control\nduckietown_msgs/Twist2DStamped.msg"];
 
 	// = F5 = //
 	ref_traj[label="~ref_traj\nduckietown_msgs/Trajectory.msg"];
 
 
 	// = F6 = //
-	veh_key_points[label="~key_points\nduckietown_msgs/???.msg"];
-	veh_detection[label="~veh_detection\nduckietown_msgs/???.msg"];
+	obs_corners[label="~corners\nduckietown_msgs/ObstalceCorners.msg"];
+	obs_pose[label="~obstacle_pose\nduckietown_msgs/ObstaclePose.msg"];
 	veh_avoidance_control[label="~control\nduckietown_msgs/WheelsCmdStamped.msg"];
 	veh_avoidance_flag[label="~flag\nduckietown_msgs/BoolStamped.msg"];
 
@@ -164,15 +185,15 @@ digraph D {
 	apriltag_detection_with_info[label="~apriltag_detection_with_info\nduckietown_msgs/AprilTags.msg"];
 
 
-	{rank=max; wheels_driver_node;rgb_led_driver_node}
+	//{rank=max; wheels_driver_node}
 	{rank=min; camera_node}
-	{rank=same;wheels_command;led_cmd}
+	//{rank=same;wheels_command}
 
 
 	// ==== Connections ====
 	
 	// fsm_node
-	{intersection_go,intersection_done,at_stop_line,in_lane, veh_avoidance_flag} -> fsm_node;
+	{intersection_go,intersection_done,at_stop_line,in_lane, veh_avoidance_flag, object_too_close} -> fsm_node;
 	fsm_node->mode;
 	
 	// == open_loop_intersection_control_node == //
@@ -183,7 +204,7 @@ digraph D {
 	stop_line_filter_node -> {at_stop_line, stop_line_dist};
 	segment_list_proj->stop_line_filter_node;
 
-	led_cmd->rgb_led_driver_node;
+	//led_cmd->rgb_led_driver_node;
 
 	// == camera_node == //
 	camera_node->image_compressed;
@@ -196,22 +217,11 @@ digraph D {
 	// == decoder_node == //
 	image_compressed->decoder_node;
 	decoder_node->image_raw;
-
-	// == obj_detector_node == //
-	//image_compressed -> obj_detector_node;
-	//obj_detector_node -> obj_detection;
-
-	// == led_detection_node == //	
-	image_compressed->led_detector_node;
-	led_detector_node->led_detection;
 	
 	// == street_name_detector_node == //
 	image_compressed->street_name_detector_node;
 	street_name_detector_node->street_name_detection;
 	
-	// == traffic_light_detector_node == //
-	led_detection->traffic_light_detector_node;
-	traffic_light_detector_node->traffic_light_detection;
 		
 	// == line_detector_node == //
 	line_detector_node -> {segment_list, image_with_lines};
@@ -229,7 +239,7 @@ digraph D {
 	lane_supervisor_node-> lane_control_sup;
 	
 	// == safety_supervisor_node == //
-	{lane_control_sup, veh_detection} -> safety_supervisor_node;
+	{lane_control_sup, obs_pose} -> safety_supervisor_node;
 	safety_supervisor_node->lane_control_safe;
 
 
@@ -239,17 +249,17 @@ digraph D {
 	ground_projection_node->segment_list_proj;
 	
 	// == veh_coordinator_node == //
-	{veh_detection,traffic_light_detection,mode} -> veh_coordinator_node;
+	{obs_pose,traffic_light_detection,mode} -> veh_coordinator_node;
 	veh_coordinator_node->intersection_go;
 
 	// == wheels_cmd_switch_node == //
-	{mode, lane_control, intersection_control, veh_avoidance_control}->wheels_cmd_switch_node;	
+	{mode, lane_control, intersection_control, veh_avoidance_control, simple_stop_control, modap_conntrol}->wheels_cmd_switch_node;	
 	wheels_cmd_switch_node->wheels_command_switch;
 	
-	// == wheels_trimmer_node == //	
-	motion_calibration_file->wheels_trimmer_node[style="dotted"]
-	wheels_command_switch->wheels_trimmer_node;
-	wheels_trimmer_node->wheels_command;
+	//// == wheels_trimmer_node == //	
+	//motion_calibration_file->wheels_trimmer_node[style="dotted"]
+	//wheels_command_switch->wheels_trimmer_node;
+	//wheels_trimmer_node->wheels_command;
 
 	// == wheels_driver_node == //
 	wheels_command->wheels_driver_node;
@@ -289,15 +299,25 @@ digraph D {
 		forward_kinematics_velocity;
 		forward_kinematics_pose;
 		inverse_kinematics_node;
+		odometry_training_pairs_file;
+		odometry_training_pairs_node;
+		//wheels_command_switch;
+		wheels_command;
+		wheels_driver_node;
 	}
 
+
+	// == odometry_training_pairs_node == //
+	{image_compressed,apriltag_detection,segment_list_proj, wheels_command_switch} -> odometry_training_pairs_node;
+	odometry_training_pairs_node -> odometry_training_pairs_file[style="dotted"];
+
 	// == kinematics_learning_node == //
-	{image_compressed,apriltag_detection,segment_list_proj, car_cmd} -> kinematics_learning_node;
-	kinematics_learning_node -> {inverse_kinematics_file, kinematics_file}[style=dotted];
+	odometry_training_pairs_file -> kinematics_learning_node[style="dotted"]
+	kinematics_learning_node -> {inverse_kinematics_file, kinematics_file}[style="dotted"];
 
 	// == inverse_kinematics_node == //
 	inverse_kinematics_file -> inverse_kinematics_node[style="dotted"];
-	car_cmd -> inverse_kinematics_node;
+	wheels_command_switch -> inverse_kinematics_node;
 	inverse_kinematics_node -> wheels_command;
 
 	// == forward_kinematics_node == //
@@ -312,9 +332,9 @@ digraph D {
 		style="filled";
 		fillcolor="purple";
 		vehicle_detector_node;
-		veh_key_points;
+		obs_corners;
 		vehicle_filter_node;
-		veh_detection;
+		obs_pose;
 		vehicle_avoidance_control_node;
 		veh_avoidance_flag;
 		veh_avoidance_control;
@@ -322,17 +342,17 @@ digraph D {
 
 	// == vehicle_detector_node == //
 	image_compressed -> vehicle_detector_node;
-	vehicle_detector_node -> veh_key_points;
+	vehicle_detector_node -> obs_corners;
 	// == vehicle_filter_node == //
-	veh_key_points -> vehicle_filter_node;
-	vehicle_filter_node -> veh_detection;
+	obs_corners -> vehicle_filter_node;
+	vehicle_filter_node -> obs_pose;
 	// == vehicle_avoidance_control_node == //
-	veh_detection -> vehicle_avoidance_control_node;
+	obs_pose -> vehicle_avoidance_control_node;
 	vehicle_avoidance_control_node -> {veh_avoidance_control, veh_avoidance_flag};
 
 	// F8 //
 	subgraph cluster_f8{
-		label="F8";
+		label="F8: Aprialtags";
 		style="filled";
 		fillcolor="purple";
 		tags_map_file;
@@ -363,6 +383,8 @@ digraph D {
 		object_detection_markers;
 		simple_stop_controller_node;
 		mdoap_controller_node;
+		simple_stop_control;
+		modap_conntrol;
 	}
 
 	// == static_object_detector_node ==//
@@ -373,12 +395,45 @@ digraph D {
 	obstacle_safety_node -> {object_too_close,object_projected_detection_list,object_detection_markers};
 	// == simple_stop_controller_node == //
 	{object_projected_detection_list, object_too_close} -> simple_stop_controller_node;
-	simple_stop_controller_node -> wheels_command;
+	simple_stop_controller_node -> simple_stop_control;
 	//TODO: publish to the wheels cmd swtich
 
 	// == mdoap_controller_node == //
 	{object_projected_detection_list, object_too_close} -> mdoap_controller_node;
-	mdoap_controller_node -> wheels_command;
+	mdoap_controller_node -> modap_conntrol;
+
+
+
+
+	//F2-3//
+	subgraph cluster_f2{
+		label="F2-3: LED Detection";
+		style="filled";
+		fillcolor="purple";
+		led_emitter_node;
+		led_detector_node;
+		led_detection;
+		vehicle_signal_detector_node;
+		trafficlight_signal_detector_node;
+		desired_signaling_state;
+		intersection_signals;
+		trafficlight_signal;
+	}
+
+	//== led_emitter_node == //
+	desired_signaling_state->led_emitter_node;
+
+	// == led_detection_node == //	
+	image_compressed->led_detector_node;
+	led_detector_node->led_detection;
+
+	// == vehicle_signal_detector_node == //
+	{image_compressed, stop_line_dist, lane_pose, led_detection} -> vehicle_signal_detector_node;
+	vehicle_signal_detector_node -> intersection_signals;
+
+	// == trafficlight_signal_detector_node == //
+	{led_detection, stop_line_dist, lane_pose} -> trafficlight_signal_detector_node;
+	trafficlight_signal_detector_node -> trafficlight_signal;
 
 
 	//F5
@@ -400,7 +455,7 @@ digraph D {
 	lane_controller_node->lane_control;
 
 	// == lane_filter_node == //
-	segment_list_proj -> lane_filter_node;
+	{segment_list_proj, wheels_command_switch} -> lane_filter_node;
 	lane_filter_node -> {lane_pose, in_lane};
 
 	// == ref_traj_gen_node == //

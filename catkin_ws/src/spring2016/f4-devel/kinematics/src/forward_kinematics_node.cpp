@@ -28,7 +28,7 @@ private:
   double radius_r_; // radius of the right wheel
   double baseline_lr_; //distance between the center of the two wheels
 
-  uint32_t previousTimestamp_;
+  ros::Time previousTimestamp_;
   duckietown_msgs::Pose2DStamped odomPose_;
 
   // callback function declarations
@@ -94,9 +94,9 @@ void forward_kinematics_node::wheelsCmdCallback(duckietown_msgs::WheelsCmdStampe
 
   // Compute the final pose by integration
   // We should skip the first odometry message because we won't know the delta t
-  if(previousTimestamp_ > 0)
+  if(previousTimestamp_.toSec() > 0)
   {
-    double deltaT = (msg->header.stamp.nsec - previousTimestamp_) *1.0e-9;
+    double deltaT = (msg->header.stamp - previousTimestamp_).toSec();
     double theta_tm1 = odomPose_.theta; // orientation at time t
     double theta_t = theta_tm1 + omega * deltaT; // orientation at time t+1
 
@@ -118,5 +118,5 @@ void forward_kinematics_node::wheelsCmdCallback(duckietown_msgs::WheelsCmdStampe
     //Publish the pose message
     pub_vehiclePose_.publish(odomPose_);
   }
-  previousTimestamp_ = msg->header.stamp.nsec; // update time for next integration
+  previousTimestamp_ = msg->header.stamp; // update time for next integration
   }

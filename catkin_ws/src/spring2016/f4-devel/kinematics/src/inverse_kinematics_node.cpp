@@ -67,6 +67,8 @@ void inverse_kinematics_node::carCmdCallback(duckietown_msgs::Twist2DStampedCons
   // stuff the wheel commands in a message and publish
   duckietown_msgs::WheelsCmdStamped cmd_msg;
   cmd_msg.header = msg->header;
+
+  cmd_msg.header.stamp = ros::Time::now();  //Keep the time the command was given to the wheels_driver
   cmd_msg.vel_left = float(u_l);
   cmd_msg.vel_right = float(u_r);
   pub_wheelsCmd_.publish(cmd_msg);

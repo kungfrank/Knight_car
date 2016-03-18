@@ -1,9 +1,10 @@
 <launch>
 	<arg name="veh"/>
 	<node ns="$(arg veh)" pkg="apriltags" type="post_pros.py" name="apriltags_post_pros_node" output="screen">
-
+		<!-- Remapping -->
+		<remap from="???" to="image/compressed"/>
+		<remap from="???" to="???c"/>
 		<!-- Setup parameters -->
-		<param name="~map_file" value="$(find simcity)/maps/censi_map.yaml"/>
-		<param name="~tiles_file" value="$(find simcity)/tiles/tiles.yaml"/>
+		<param name="~tag_ID_file" value="$(find apriltags)/tagID/tags_map_001.yaml"/>
 	</node>
 </launch>

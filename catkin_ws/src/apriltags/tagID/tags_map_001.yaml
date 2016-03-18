@@ -1,7 +1,940 @@
-# Yaml file with list of all the tags
+- tag_ID: 500
+  tag_type: SName
+  name: FRAZZOLI ST
+
+- tag_ID: 501
+  tag_type: SName
+  name: TEDRAKE ST
+
+- tag_ID: 502
+  tag_type: SName
+  name: ASADA AVE
+
+- tag_ID: 503
+  tag_type: SName
+  name: BREAZEAL ST
+
+- tag_ID: 504
+  tag_type: SName
+  name: DUBOWSKY ST
+
+- tag_ID: 505
+  tag_type: SName
+  name: HERR AVE
+
+- tag_ID: 506
+  tag_type: SName
+  name: HOBURG ST
+
+- tag_ID: 507
+  tag_type: SName
+  name: HOGAN AVE
+
+- tag_ID: 508
+  tag_type: SName
+  name: IAGNEMMA ST
+
+- tag_ID: 509
+  tag_type: SName
+  name: KAELBLING ST
+
+- tag_ID: 510
+  tag_type: SName
+  name: LOZANO ST
 
 - tag_ID: 511
-  sign_type: "StreetName"
-  street_name: "KIM avenue"
-  traffic_sign_type:
-  vehicle_name:
+  tag_type: SName
+  name: KIM AVE
+
+- tag_ID: 512
+  tag_type: SName
+  name: REIF AVE
+
+- tag_ID: 513
+  tag_type: SName
+  name: WALTZ AVE
+
+- tag_ID: 514
+  tag_type: SName
+  name: PERAIRE ST
+
+- tag_ID: 515
+  tag_type: SName
+  name: CHANDRA ST
+
+- tag_ID: 516
+  tag_type: SName
+  name: KASAN ST
+
+- tag_ID: 517
+  tag_type: SName
+  name: MICALI ST
+
+- tag_ID: 518
+  tag_type: SName
+  name: CHEN AVE
+
+- tag_ID: 519
+  tag_type: SName
+  name: HOSOI AVE
+
+- tag_ID: 520
+  tag_type: SName
+  name: RUS AVE
+
+- tag_ID: 521
+  tag_type: SName
+  name: HOW AVE
+
+- tag_ID: 522
+  tag_type: SName
+  name: ROY AVE
+
+- tag_ID: 523
+  tag_type: SName
+  name: SHAH AVE
+
+- tag_ID: 524
+  tag_type: SName
+  name: WILLIAMS ST
+
+- tag_ID: 525
+  tag_type: SName
+  name: LEONARD ST
+
+- tag_ID: 526
+  tag_type: SName
+  name: BROOKS ST
+
+- tag_ID: 527
+  tag_type: SName
+  name: KARAMAN ST
+
+- tag_ID: 499
+  tag_type: SName
+  name: HOW AVE
+
+- tag_ID: 498
+  tag_type: SName
+  name: HOW AVE
+
+- tag_ID: 497
+  tag_type: SName
+  name: HOW AVE
+
+- tag_ID: 496
+  tag_type: SName
+  name: HOW AVE
+
+- tag_ID: 495
+  tag_type: SName
+  name: HOW AVE
+
+- tag_ID: 494
+  tag_type: SName
+  name: HOW AVE
+
+- tag_ID: 493
+  tag_type: SName
+  name: HOW AVE
+
+- tag_ID: 492
+  tag_type: SName
+  name: LEONARD ST
+
+- tag_ID: 491
+  tag_type: SName
+  name: LEONARD ST
+
+- tag_ID: 490
+  tag_type: SName
+  name: LEONARD ST
+
+- tag_ID: 489
+  tag_type: SName
+  name: LEONARD ST
+
+- tag_ID: 488
+  tag_type: SName
+  name: LEONARD ST
+
+- tag_ID: 487
+  tag_type: SName
+  name: LEONARD ST
+
+- tag_ID: 486
+  tag_type: SName
+  name: LEONARD ST
+
+- tag_ID: 485
+  tag_type: SName
+  name: RUS AVE
+
+- tag_ID: 484
+  tag_type: SName
+  name: RUS AVE
+
+- tag_ID: 483
+  tag_type: SName
+  name: RUS AVE
+
+- tag_ID: 482
+  tag_type: SName
+  name: RUS AVE
+
+- tag_ID: 481
+  tag_type: SName
+  name: RUS AVE
+
+- tag_ID: 480
+  tag_type: SName
+  name: KARAMAN ST
+
+- tag_ID: 479
+  tag_type: SName
+  name: KARAMAN ST
+
+- tag_ID: 478
+  tag_type: SName
+  name: KARAMAN ST
+
+- tag_ID: 477
+  tag_type: SName
+  name: KARAMAN ST
+
+- tag_ID: 476
+  tag_type: SName
+  name: KARAMAN ST
+
+- tag_ID: 475
+  tag_type: SName
+  name: FRAZZOLI ST
+
+- tag_ID: 474
+  tag_type: SName
+  name: FRAZZOLI ST
+
+- tag_ID: 473
+  tag_type: SName
+  name: FRAZZOLI ST
+
+- tag_ID: 472
+  tag_type: SName
+  name: TEDRAKE ST
+
+- tag_ID: 471
+  tag_type: SName
+  name: TEDRAKE ST
+
+- tag_ID: 470
+  tag_type: SName
+  name: TEDRAKE ST
+
+- tag_ID: 469
+  tag_type: SName
+  name: BREAZEAL ST
+
+- tag_ID: 468
+  tag_type: SName
+  name: BREAZEAL ST
+
+- tag_ID: 467
+  tag_type: SName
+  name: BREAZEAL ST
+
+- tag_ID: 466
+  tag_type: SName
+  name: IAGNEMMA ST
+
+- tag_ID: 465
+  tag_type: SName
+  name: IAGNEMMA ST
+
+- tag_ID: 464
+  tag_type: SName
+  name: IAGNEMMA ST
+
+- tag_ID: 463
+  tag_type: SName
+  name: KAELBLING ST
+
+- tag_ID: 462
+  tag_type: SName
+  name: KAELBLING ST
+
+- tag_ID: 461
+  tag_type: SName
+  name: KAELBLING ST
+
+- tag_ID: 460
+  tag_type: SName
+  name: PERAIRE ST
+
+- tag_ID: 459
+  tag_type: SName
+  name: PERAIRE ST
+
+- tag_ID: 458
+  tag_type: SName
+  name: PERAIRE ST
+
+- tag_ID: 457
+  tag_type: SName
+  name: CHEN AVE
+
+- tag_ID: 456
+  tag_type: SName
+  name: CHEN AVE
+
+- tag_ID: 455
+  tag_type: SName
+  name: CHEN AVE
+
+- tag_ID: 454
+  tag_type: SName
+  name: HOSOI AVE
+
+- tag_ID: 453
+  tag_type: SName
+  name: HOSOI AVE
+
+- tag_ID: 452
+  tag_type: SName
+  name: HOSOI AVE
+
+- tag_ID: 451
+  tag_type: SName
+  name: ROY AVE
+
+- tag_ID: 450
+  tag_type: SName
+  name: ROY AVE
+
+- tag_ID: 449
+  tag_type: SName
+  name: ROY AVE
+
+- tag_ID: 448
+  tag_type: SName
+  name: WILLIAMS ST
+
+- tag_ID: 447
+  tag_type: SName
+  name: WILLIAMS ST
+
+- tag_ID: 446
+  tag_type: SName
+  name: WILLIAMS ST
+
+- tag_ID: 445
+  tag_type: SName
+  name: ASADA AVE
+
+- tag_ID: 444
+  tag_type: SName
+  name: ASADA AVE
+
+- tag_ID: 443
+  tag_type: SName
+  name: DUBOWSKY ST
+
+- tag_ID: 442
+  tag_type: SName
+  name: DUBOWSKY ST
+
+- tag_ID: 441
+  tag_type: SName
+  name: HERR AVE
+
+- tag_ID: 440
+  tag_type: SName
+  name: HERR AVE
+
+- tag_ID: 439
+  tag_type: SName
+  name: HOBURG ST
+
+- tag_ID: 438
+  tag_type: SName
+  name: HOBURG ST
+
+- tag_ID: 437
+  tag_type: SName
+  name: HOGAN AVE
+
+- tag_ID: 436
+  tag_type: SName
+  name: HOGAN AVE
+
+- tag_ID: 435
+  tag_type: SName
+  name: LOZANO ST
+
+- tag_ID: 434
+  tag_type: SName
+  name: LOZANO ST
+
+- tag_ID: 433
+  tag_type: SName
+  name: KIM AVE
+
+- tag_ID: 432
+  tag_type: SName
+  name: KIM AVE
+
+- tag_ID: 431
+  tag_type: SName
+  name: WALTZ AVE
+
+- tag_ID: 430
+  tag_type: SName
+  name: WALTZ AVE
+
+- tag_ID: 429
+  tag_type: SName
+  name: CHANDRA ST
+
+- tag_ID: 428
+  tag_type: SName
+  name: CHANDRA ST
+
+- tag_ID: 427
+  tag_type: SName
+  name: KASAN ST
+
+- tag_ID: 426
+  tag_type: SName
+  name: KASAN ST
+
+- tag_ID: 425
+  tag_type: SName
+  name: REIF AVE
+
+- tag_ID: 424
+  tag_type: SName
+  name: MICALI ST
+
+- tag_ID: 423
+  tag_type: SName
+  name: SHAH AVE
+
+- tag_ID: 422
+  tag_type: SName
+  name: BROOKS ST
+
+- tag_ID: 1
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 2
+  tag_type: Signs
+  name: yield
+
+- tag_ID: 3
+  tag_type: Signs
+  name: no-right-turn
+
+- tag_ID: 4
+  tag_type: Signs
+  name: no-left-turn
+
+- tag_ID: 5
+  tag_type: Signs
+  name: do-not-enter
+
+- tag_ID: 6
+  tag_type: Signs
+  name: oneway right
+
+- tag_ID: 7
+  tag_type: Signs
+  name: oneway left
+
+- tag_ID: 8
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 9
+  tag_type: Signs
+  name: right-T intersect
+
+- tag_ID: 10
+  tag_type: Signs
+  name: left-T intersect
+
+- tag_ID: 11
+  tag_type: Signs
+  name: T intersection
+
+- tag_ID: 12
+  tag_type: Signs
+  name: pedestrian
+
+- tag_ID: 13
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 14
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 15
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 16
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 17
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 18
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 19
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 200
+  tag_type: Light
+  name: traffic-light
+
+- tag_ID: 201
+  tag_type: Light
+  name: traffic-light
+
+- tag_ID: 202
+  tag_type: Light
+  name: traffic-light
+
+- tag_ID: 203
+  tag_type: Light
+  name: traffic-light
+
+- tag_ID: 204
+  tag_type: Light
+  name: traffic-light
+
+- tag_ID: 205
+  tag_type: Light
+  name: traffic-light
+
+- tag_ID: 206
+  tag_type: Light
+  name: traffic-light
+
+- tag_ID: 207
+  tag_type: Light
+  name: traffic-light
+
+- tag_ID: 208
+  tag_type: Light
+  name: traffic-light
+
+- tag_ID: 209
+  tag_type: Light
+  name: traffic-light
+
+- tag_ID: 210
+  tag_type: Light
+  name: traffic-light
+
+- tag_ID: 211
+  tag_type: Light
+  name: traffic-light
+
+- tag_ID: 212
+  tag_type: Light
+  name: traffic-light
+
+- tag_ID: 213
+  tag_type: Light
+  name: traffic-light
+
+- tag_ID: 214
+  tag_type: Light
+  name: traffic-light
+
+- tag_ID: 215
+  tag_type: Light
+  name: traffic-light
+
+- tag_ID: 216
+  tag_type: Light
+  name: traffic-light
+
+- tag_ID: 300
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 301
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 302
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 303
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 304
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 305
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 306
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 307
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 308
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 309
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 310
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 311
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 312
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 313
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 314
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 315
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 316
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 317
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 318
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 319
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 320
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 321
+  tag_type: Localiz
+  name: localization
+
+- tag_ID: 20
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 21
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 22
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 23
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 24
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 25
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 26
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 27
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 28
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 29
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 30
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 31
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 32
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 33
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 34
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 35
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 36
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 37
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 38
+  tag_type: Signs
+  name: stop
+
+- tag_ID: 39
+  tag_type: Signs
+  name: yield
+
+- tag_ID: 40
+  tag_type: Signs
+  name: no-right-turn
+
+- tag_ID: 41
+  tag_type: Signs
+  name: no-left-turn
+
+- tag_ID: 42
+  tag_type: Signs
+  name: oneway right
+
+- tag_ID: 43
+  tag_type: Signs
+  name: oneway left
+
+- tag_ID: 44
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 45
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 46
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 47
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 48
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 49
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 50
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 51
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 52
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 53
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 54
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 55
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 56
+  tag_type: Signs
+  name: 4-way intersect
+
+- tag_ID: 57
+  tag_type: Signs
+  name: right-T intersect
+
+- tag_ID: 58
+  tag_type: Signs
+  name: right-T intersect
+
+- tag_ID: 59
+  tag_type: Signs
+  name: right-T intersect
+
+- tag_ID: 60
+  tag_type: Signs
+  name: right-T intersect
+
+- tag_ID: 61
+  tag_type: Signs
+  name: left-T intersect
+
+- tag_ID: 62
+  tag_type: Signs
+  name: left-T intersect
+
+- tag_ID: 63
+  tag_type: Signs
+  name: left-T intersect
+
+- tag_ID: 64
+  tag_type: Signs
+  name: left-T intersect
+
+- tag_ID: 65
+  tag_type: Signs
+  name: T intersection
+
+- tag_ID: 66
+  tag_type: Signs
+  name: T intersection
+
+- tag_ID: 67
+  tag_type: Signs
+  name: T intersection
+
+- tag_ID: 68
+  tag_type: Signs
+  name: T intersection
+
+- tag_ID: 69
+  tag_type: Signs
+  name: do-not-enter
+
+- tag_ID: 70
+  tag_type: Signs
+  name: pedestrian
+
+- tag_ID: 71
+  tag_type: Signs
+  name: pedestrian
+
+- tag_ID: 72
+  tag_type: Signs
+  name: pedestrian
+
+- tag_ID: 73
+  tag_type: Signs
+  name: pedestrian
+
+- tag_ID: 217
+  tag_type: light
+  name: traffic-light
+
+- tag_ID: 218
+  tag_type: light
+  name: traffic-light
+
+- tag_ID: 219
+  tag_type: light
+  name: traffic-light
+
+- tag_ID: 220
+  tag_type: light
+  name: traffic-light
+
+- tag_ID: 221
+  tag_type: light
+  name: traffic-light
+
+- tag_ID: 222
+  tag_type: light
+  name: traffic-light
+
+- tag_ID: 223
+  tag_type: light
+  name: traffic-light
+
+- tag_ID: 224
+  tag_type: light
+  name: traffic-light
+
+- tag_ID: 225
+  tag_type: light
+  name: traffic-light
+
+- tag_ID: 226
+  tag_type: light
+  name: traffic-light
+
+- tag_ID: 227
+  tag_type: light
+  name: traffic-light
+
+- tag_ID: 228
+  tag_type: light
+  name: traffic-light
+
+- tag_ID: 229
+  tag_type: light
+  name: traffic-light
+
+- tag_ID: 
+  tag_type: 
+  name: traffic-light
+
+- tag_ID: 
+  tag_type: 
+  name: traffic-light
+
+- tag_ID: 
+  tag_type: 
+  name: traffic-light
+
+- tag_ID: 
+  tag_type: 
+  name: traffic-light
+

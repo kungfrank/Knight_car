@@ -12,6 +12,7 @@ class WheelsDriverNode(object):
         self.driver = DaguWheelsDriver()
 
         # Setup subscribers
+        self.control_constant = 1.0
         self.sub_topic = rospy.Subscriber("~wheels_cmd", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1)
 
     def setupParam(self,param_name,default_value):

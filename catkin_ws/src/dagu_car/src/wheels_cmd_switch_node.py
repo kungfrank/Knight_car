@@ -20,6 +20,7 @@ class WheelsCmdSwitchNode(object):
         self.cmd_dict[FSMState.LANE_FOLLOWING] = None
         self.cmd_dict[FSMState.INTERSECTION_CONTROL] = None
         self.cmd_dict[FSMState.COORDINATION] = None
+        self.cmd_dict[FSMState.VEHICLE_AVOIDANCE] = None
 
         self.mode_name_dict = {}
 #        self.mode_name_dict[ControlMode.LANE_FOLLOWING] = "LANE_FOLLOWING"
@@ -28,6 +29,7 @@ class WheelsCmdSwitchNode(object):
         self.mode_name_dict[FSMState.LANE_FOLLOWING] = "LANE_FOLLOWING"
         self.mode_name_dict[FSMState.INTERSECTION_CONTROL] = "INTERSECTION_CONTROL"
         self.mode_name_dict[FSMState.COORDINATION] = "COORDINATION_CONTROL"
+        self.mode_name_dict[FSMState.VEHICLE_AVOIDANCE] = "VEHICLE_AVOIDANCE"
 
         # Setup publishers
         self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd", WheelsCmdStamped, queue_size=1)
@@ -37,6 +39,7 @@ class WheelsCmdSwitchNode(object):
         self.sub_lane = rospy.Subscriber("~wheels_cmd_lane", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=FSMState.LANE_FOLLOWING)
         self.sub_interestion = rospy.Subscriber("~wheels_cmd_intersection", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=FSMState.INTERSECTION_CONTROL)
         self.sub_coordination = rospy.Subscriber("~wheels_cmd_coordination", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=FSMState.COORDINATION)
+        self.sub_vehicle_avoidance = rospy.Subscriber("~wheels_cmd_avoidance", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=FSMState.VEHICLE_AVOIDANCE)
 
     def pubWheelsCmd(self):
         cmd_msg = self.cmd_dict[self.mode_msg.state]

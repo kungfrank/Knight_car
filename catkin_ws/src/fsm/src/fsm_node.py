@@ -15,6 +15,7 @@ class FSMNode(object):
         self.at_stop_line = False
         self.intersection_go = False
         self.intersection_done = False
+        self.vehicle_detected = False
 
         # Save the name of the node
         self.node_name = rospy.get_name()
@@ -30,6 +31,7 @@ class FSMNode(object):
         self.sub_topic_at_stop_line = rospy.Subscriber("~at_stop_line", Bool, self.cbAtStopLine, queue_size=1)
         self.sub_topic_intersection_go = rospy.Subscriber("~intersection_go", Bool, self.cbIntersectionGo, queue_size=1)
         self.sub_topic_intersection_done = rospy.Subscriber("~intersection_done", Bool, self.cbIntersectionDone, queue_size=1)
+        self.sub_topic_vehicle_detected = rospy.Subscriber("~vehicle_detected",Bool,self.cbVehicleDetected, queue_size=1)
 
         # Read parameters
         self.pub_timestep = self.setupParameter("~pub_timestep",1.0)
@@ -39,6 +41,11 @@ class FSMNode(object):
         rospy.loginfo("[%s] Initialzed." %(self.node_name))
 
         self.rate = rospy.Rate(30) # 10hz
+
+    def cbVehicleDetected(self, in_lane_msg):
+        print in_lane_msg
+        self.vehicle_detected = in_lane_msg.data
+        self.updateState()
 
     def cbIntersectionDone(self, in_lane_msg):
         print in_lane_msg
@@ -65,8 +72,9 @@ class FSMNode(object):
     def updateState(self):
         if(self.actual.state == self.actual.LANE_FOLLOWING):
             if(self.at_stop_line == True):
-                #update the state
                 self.actual.state = self.actual.COORDINATION
+            elif(self.vehicle_detected == True):
+                self.actual.state = self.actual.VEHICLE_AVOIDANCE
         elif(self.actual.state == self.actual.COORDINATION):
             if(self.intersection_go == True):
                 self.actual.state = self.actual.INTERSECTION_CONTROL
@@ -75,6 +83,9 @@ class FSMNode(object):
             if(self.in_lane == True and self.intersection_done == True):
                 self.actual.state = self.actual.LANE_FOLLOWING
                 self.intersection_done = False
+        elif(self.actual.state == self.actual.VEHICLE_AVOIDANCE):
+            if(self.vehicle_detected == False and self.in_lane):
+                self.actual.state = self.actual.LANE_FOLLOWING
 
         self.pub_topic_mode.publish(self.actual.state)
 

@@ -59,6 +59,7 @@ add_message_files(
   WheelsCmd.msg
   WheelsCmdStamped.msg
   TagDetection.msg
+  TagInfo.msg
   AprilTags.msg
   Pixel.msg
   Vector2D.msg

@@ -7,6 +7,7 @@ from collections import Counter
 from sklearn.cluster import KMeans
 from sklearn import linear_model
 import IPython
+import time
 
 NUM_COLORS = 3
 

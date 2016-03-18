@@ -1,0 +1,10 @@
+<launch>
+    <node name="anti_instagram_node" pkg="anti_instagram" type="anti_instagram_node.py" output="screen">
+        <param name="~xyz" value="10"/>
+    </node>
+
+    <!-- Publications 
+
+        Subscriptions -->
+
+</launch>

@@ -10,7 +10,8 @@ from sklearn import linear_model
 
 NUM_COLORS = 3
 
-CENTERS = [[0, 0, 0], [0, 255, 255], [255, 255, 255]] 
+CENTERS = np.array([[0, 0, 0], [0, 255, 255], [255, 255, 255]])
+# print CENTERS 
 
 np.random.seed(5)
 
@@ -38,11 +39,11 @@ def getimgdatapts(cv2img):
 #priors
 def runKMeans():
 	testdata = getimgdatapts(cv_img)
-	kmc = KMeans(n_clusters = NUM_COLORS, max_iter = 100)
+	kmc = KMeans(n_clusters = NUM_COLORS, max_iter = 100, n_init = 10, init = CENTERS)
 	kmc.fit_predict(testdata)
 	trained_centers = kmc.cluster_centers_
 	print trained_centers
-	print CENTERS
+	# print CENTERS
 	labels = kmc.labels_
 	labelcount = Counter()
 	for pixel in labels:
@@ -52,7 +53,9 @@ def runKMeans():
 
 
 def identifyColors(trained, true):
-	numcolors, _ = trained.shape
+	# print trained
+	# print np.size(trained)
+	numcolors, _ = np.shape(trained)
 	# print numcolors
 	matching = np.zeros((numcolors, numcolors))
 	# print matching
@@ -65,7 +68,7 @@ def identifyColors(trained, true):
 	colormap= {}
 	for i, color in enumerate(matching):
 		colormap[i] = np.argmin(color)
-		colormap[2] = 1
+		# colormap[2] = 1
 		print colormap
 	return colormap
 
@@ -117,5 +120,5 @@ def getparameters(mapping, trained, true):
 
 
 trained = runKMeans()
-mapping = identifyColors(trained, CENTERS)
-getparameters(mapping, trained, CENTERS)
+mapping = identifyColors(trained[0], CENTERS)
+getparameters(mapping, trained[0], CENTERS)

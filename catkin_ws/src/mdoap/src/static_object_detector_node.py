@@ -12,53 +12,7 @@ import threading
 
 class Matcher:
     def __init__(self):
-        template_loc = rospy.get_param("~template")
-        rospy.loginfo("Template location: "+template_loc)
-        template = cv2.imread(template_loc)
-        if template == None:
-            print "\n\nno image template found at %s, \
-            enter complete path for template image\n\n" % template_loc
-            sys.exit(1)
-        self.h, self.w, _= template.shape
-        pyramid_len =5  # enter number higher than zero for pyramid matching
-        self.templates = [(1, template)]
-        # Use pyramid for matching template.  Create resized copies
-        # of template image:
-        for i in range(2, pyramid_len):
-            if i == 0: continue
-            self.templates.append(\
-                    (1.0/i, cv2.resize(template, (self.w/i, self.h/i ))))
-            self.templates.append(\
-                    (i, cv2.resize(template, (self.w*i, self.h*i ))))
-        self.method = cv2.TM_SQDIFF_NORMED
-
-
-    def template_match(self, img):
-        results = []
-        for  (adjust, template)  in self.templates:
-            t_h, t_w, _ = template.shape
-            if t_h > self.h or t_w > self.w: continue
-            res = cv2.matchTemplate(img,template,self.method)
-            min_val, _ , top_left, _  = cv2.minMaxLoc(res)
-            results.append( (min_val, template, top_left))
-
-        # sort all images to find the best match.
-        results.sort()
-        # min val shows accuracy of each template match. 
-        # it is normalized from 0 to 1.  The smaller the better.
-        min_val, template, top_left = results[0]
-        
-        if min_val < .5: 
-            # draw a box around the best match
-            t_h, t_w, _ =  template.shape
-            bottom_right = (top_left[0] + t_w, top_left[1] + t_h)
-            cv2.rectangle(img,top_left, bottom_right, 255, 4)
-            width = img.shape[1]
-            # compute relative offset from center
-            pose = .5 -( (width-(top_left[0] + .5*t_h)) / width )
-        else:
-            pose = float('nan')
-        return img, pose
+        pass
 
     def contour_match(self, img):
         '''

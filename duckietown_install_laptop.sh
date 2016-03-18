@@ -20,7 +20,7 @@ sudo apt-get install sublime-text-installer -y
 sudo apt-get install ros-indigo-phidgets-drivers ros-indigo-imu-tools -y
 
 # Additional ROS pkgs
-sudo apt-get install ros-indigo-{tf-conversions,cv-bridge,image-transport,camera-info-manager,theora-image-transport}
+sudo apt-get install ros-indigo-{tf-conversions,cv-bridge,image-transport,camera-info-manager,theora-image-transport} -y
 
 # List of additional system pkgs
 # sudo apt-get install libyaml-cpp-dev

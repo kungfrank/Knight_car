@@ -1,0 +1,7 @@
+<launch>
+	<remap from="~uncorrected_image" to="/ferrari/camera_node/image/compressed"/>
+
+
+	<include file="$(find duckietown)/../spring2016/f1/anti_instagram/launch/anti_instagram_node.launch"/>
+	<node pkg="rosbag" type="play" name="player" args="/home/mfe/Downloads/20160122-censi-ferrari-RCDP2.bag"/>
+</launch>

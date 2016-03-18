@@ -14,5 +14,7 @@ $(machines): $(scuderia)
 catkin-clean:
 	rm -rf $(catkin_ws)/build
 
-build:
+build-parallel:
 	catkin_make -C $(catkin_ws) --make-args "-j4"
+build:
+	catkin_make -C $(catkin_ws) 

@@ -46,6 +46,8 @@ kinematics_tester_node::kinematics_tester_node() : nh_("~"), node_name_("kinemat
   nh_.param("omega", omega_, 0.0f);
   nh_.param("hz", hz_, 0.0f);
 
+  ROS_INFO_STREAM("[" << node_name_ << "] has started.");
+
   //If parameters were given, publsh them
   if(hz_ > 0)
   {
@@ -59,8 +61,6 @@ kinematics_tester_node::kinematics_tester_node() : nh_("~"), node_name_("kinemat
       rate.sleep();
     }
   }
-
-  ROS_INFO_STREAM("[" << node_name_ << "] has started.");
 }
 
 void kinematics_tester_node::twistCallback(geometry_msgs::TwistConstPtr const& msg)

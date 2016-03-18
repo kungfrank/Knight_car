@@ -75,6 +75,8 @@ class FSMNode(object):
         elif(self.actual.state == self.actual.OBSTACLE_AVOID):
             if(self.obstacle_found == True):
                 self.actual.state = self.actual.OBSTACLE_AVOID
+            else:
+                self.actual.state = self.actual.LANE_FOLLOWING
 
         self.actual.header.stamp = stamp
         self.pub_topic_mode.publish(self.actual)

@@ -61,6 +61,7 @@ add_message_files(
   Pose2DStamped.msg
   Twist2DStamped.msg
   TagDetection.msg
+  TagInfo.msg
   AprilTags.msg
   Pixel.msg
   Vector2D.msg

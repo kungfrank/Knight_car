@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(duckietown_f6)
+project(vehicle_detection)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -102,8 +102,8 @@ catkin_python_setup()
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES duckietown_f6
-#  CATKIN_DEPENDS cv_bridge duckietown_msgs roscpp rospy
+#  LIBRARIES vehicle_detection
+#  CATKIN_DEPENDS cvbridge duckietown_msgs roscpp rospy
 #  DEPENDS system_lib
 )
 
@@ -119,24 +119,24 @@ include_directories(
 )
 
 ## Declare a C++ library
-# add_library(duckietown_f6
-#   src/${PROJECT_NAME}/duckietown_f6.cpp
+# add_library(vehicle_detection
+#   src/${PROJECT_NAME}/vehicle_detection.cpp
 # )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(duckietown_f6 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(vehicle_detection ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(duckietown_f6_node src/duckietown_f6_node.cpp)
+# add_executable(vehicle_detection_node src/vehicle_detection_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(duckietown_f6_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(vehicle_detection_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(duckietown_f6_node
+# target_link_libraries(vehicle_detection_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -155,7 +155,7 @@ include_directories(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS duckietown_f6 duckietown_f6_node
+# install(TARGETS vehicle_detection vehicle_detection_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -180,7 +180,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_duckietown_f6.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_vehicle_detection.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

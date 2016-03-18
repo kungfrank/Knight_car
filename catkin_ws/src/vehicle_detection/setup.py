@@ -5,7 +5,7 @@ from catkin_pkg.python_setup import generate_distutils_setup
 
 # fetch values from package.xml
 setup_args = generate_distutils_setup(
-    packages=['f6_vehicle_detection'],
+    packages=['vehicle_detection'],
     package_dir={'': 'include'},
 )
 

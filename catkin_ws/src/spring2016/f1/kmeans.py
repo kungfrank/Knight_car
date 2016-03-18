@@ -112,10 +112,20 @@ def getparameters(mapping, trained, true):
 	print GREEN.coef_, GREEN.intercept_
 	return (RED.coef_, RED.intercept_), (BLUE.coef_, BLUE.intercept_), (GREEN.coef_, GREEN.intercept_)
 
+def scaleandshift(img,scale,shift):
+	h = img.shape[0]
+	w = img.shape[1]
+
+	img_scale = np.reshape(img,[h*w,3])
+	img_scale = np.reshape(img_scale*np.array(scale),[h,w,3])
+
+	img_shift = np.reshape(img_scale,[h*w,3])
+	img_shift = np.reshape(img_shift+np.array(shift),[h,w,3])
+
+	return img_shift
 
 
 
-
-trained = runKMeans()
-mapping = identifyColors(trained, CENTERS)
-getparameters(mapping, trained, CENTERS)
+#trained = runKMeans()
+#mapping = identifyColors(trained, CENTERS)
+#getparameters(mapping, trained, CENTERS)

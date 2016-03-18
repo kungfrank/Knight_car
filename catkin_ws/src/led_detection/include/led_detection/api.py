@@ -6,7 +6,7 @@ LED_Detection = namedtuple(
     "LED_Detection",
     "timestamp1 "  # first timestamp
     "timestamp2 "  # second timestamp
-    "image_coordinates "  # in (y, x) = [0,1]x[0,1]
+    "pixels_normalized "  # in (y, x) = [0,1]x[0,1]
     "frequency "  # > 0
     "color "  # [r, g, b]
     "confidence "  # float

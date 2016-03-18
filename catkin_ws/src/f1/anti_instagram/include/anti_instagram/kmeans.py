@@ -6,7 +6,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from collections import Counter
 from sklearn.cluster import KMeans
 from sklearn import linear_model
-
+import IPython
 
 NUM_COLORS = 3
 
@@ -17,7 +17,6 @@ np.random.seed(5)
 
 IMG_PATH = '''IMG PATH'''
 
-cv_img = cv2.imread("test2.jpg")
 # print cv_img.shape
 
 # class GetKMeansModel(object):
@@ -37,10 +36,10 @@ def getimgdatapts(cv2img):
 	return npdata
 
 #priors
-def runKMeans():
-	testdata = getimgdatapts(cv_img)
+def runKMeans(imgdata):
+	
 	kmc = KMeans(n_clusters = NUM_COLORS, max_iter = 100, n_init = 10, init = CENTERS)
-	kmc.fit_predict(testdata)
+	kmc.fit_predict(imgdata)
 	trained_centers = kmc.cluster_centers_
 	print trained_centers
 	# print CENTERS
@@ -128,6 +127,12 @@ def scaleandshift(img,scale,shift):
 	return img_shift
 
 if __name__ == '__main__':
-	trained = runKMeans()
+	img_filename="test2.jpg"
+	if (len(sys.argv)>1):
+		img_filename=sys.argv[1]
+		print(img_filename)
+	cv_img = cv2.imread(img_filename)
+	testdata = getimgdatapts(cv_img)
+	trained = runKMeans(testdata)
 	mapping = identifyColors(trained, CENTERS)
 	getparameters(mapping, trained, CENTERS)

@@ -12,6 +12,8 @@ class FSMNode(object):
         self.at_stop_line = False
         self.intersection_go = False
         self.intersection_done = False
+        self.obstacle_found = False
+
 
         # Save the name of the node
         self.node_name = rospy.get_name()
@@ -26,9 +28,14 @@ class FSMNode(object):
         self.sub_topic_at_stop_line = rospy.Subscriber("~stop_line_reading", StopLineReading, self.cbAtStopLine, queue_size=1)
         self.sub_topic_intersection_go = rospy.Subscriber("~clearance_to_go", CoordinationClearance, self.cbIntersectionGo, queue_size=1)
         self.sub_topic_intersection_done = rospy.Subscriber("~intersection_done", BoolStamped, self.cbIntersectionDone, queue_size=1)
+        self.sub_topic_obstacle_found = rospy.Subscriber("~object_too_close", BoolStamped, self.cbObstacleFound, queue_size=1)
 
         # Read parameters
         rospy.loginfo("[%s] Initialzed." %(self.node_name))
+
+    def cbObstacleFound(self, obs_msg):
+        self.obstacle_found = obs_msg.data
+        self.updateState(obs_msg.header.stamp)
 
     def cbIntersectionDone(self, done_msg):
         #print done_msg
@@ -55,6 +62,8 @@ class FSMNode(object):
             if(self.at_stop_line == True):
                 #update the state
                 self.actual.state = self.actual.COORDINATION
+            elif(self.obstacle_found):
+                self.actual.state = self.actual.OBSTACLE_AVOID
         elif(self.actual.state == self.actual.COORDINATION):
             if(self.intersection_go == True):
                 self.actual.state = self.actual.INTERSECTION_CONTROL
@@ -63,6 +72,9 @@ class FSMNode(object):
             if(self.in_lane == True and self.intersection_done == True):
                 self.actual.state = self.actual.LANE_FOLLOWING
                 self.intersection_done = False
+        elif(self.actual.state == self.actual.OBSTACLE_AVOID):
+            if(self.obstacle_found == True):
+                self.actual.state = self.actual.OBSTACLE_AVOID
 
         self.actual.header.stamp = stamp
         self.pub_topic_mode.publish(self.actual)

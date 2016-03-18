@@ -43,7 +43,6 @@ class VehicleDetectionTestNode(object):
 		
 
 	def processCorners(self, corners_msg):
-		corners = []
 		for i in np.arange(len(corners_msg.corners)):
 			rospy.loginfo('Corners received : (x = %.2f, y = %.2f)' %
 					(corners_msg.corners[i].x, corners_msg.corners[i].y))

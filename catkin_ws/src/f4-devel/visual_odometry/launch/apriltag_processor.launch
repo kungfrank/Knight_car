@@ -19,6 +19,7 @@
         <arg name="config" value="$(arg config)"/>
         <arg name="param_file_name" value="$(arg param_file_name)"/>
     </include>
+    <param name="$(arg veh)/decoder_node/publish_freq" value="30"/>
 
     <!--apriltags-->
 	<remap from="apriltags/image_raw" to="camera_node/image/fast_raw"/>

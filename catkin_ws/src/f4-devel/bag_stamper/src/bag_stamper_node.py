@@ -18,6 +18,8 @@ class BagStamperNode(object):
         count = 0
         with rosbag.Bag(self.bagout, 'w') as outbag:
             for topic, msg, t in rosbag.Bag(self.bagin).read_messages():
+                if rospy.is_shutdown():
+                    break
                 if topic == self.topicin:
                     msgout = WheelsCmdStamped()
                     msgout.vel_left = msg.vel_left
@@ -25,7 +27,8 @@ class BagStamperNode(object):
                     msgout.header.stamp = t
                     outbag.write(self.topicout, msgout, t)
                     count += 1
-                outbag.write(topic, msg, t)
+                else:
+                    outbag.write(topic, msg, t)
         return count
 
     def setupParam(self,param_name,default_value):

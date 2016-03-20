@@ -8,7 +8,7 @@
     <arg name="hz" default="0.0" doc="The frequency of the test command topic" />
     <arg name="v" default="0.0" doc="The linear velocity for the test trajectory" />
     <arg name="omega" default="0.0" doc="The angular velocity for the test trajectory" />
-
+    <arg name="gui" default="true" doc="Show a gui automatically when running this test" />
     <!-- run forward_kinematics_node -->
     <remap from="forward_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
     <include file="$(find kinematics)/launch/forward_kinematics_node.launch">
@@ -46,6 +46,17 @@
         <arg name="v" value="$(arg v)" doc="The linear velocity for the test trajectory" />
         <arg name="omega" value="$(arg omega)" doc="The angular velocity for the test trajectory" />
     </include>
+
+    <group if="$(arg gui)">
+        <!-- run the rqt_robot_steering plugin -->
+        <node pkg="rqt_robot_steering" type="rqt_robot_steering" name="rqt_robot_steering">
+            <param name="default_topic" type="string" value="/$(arg veh)/kinematics_tester_node/twist_in" />
+        </node>
+
+        <!-- run rviz -->
+        <node pkg="rviz" type="rviz" name="rviz" ns="$(arg veh)"
+              args="-f $(arg veh) -d $(find kinematics)/rviz/kinematics.rviz"/>
+    </group>
 
     <node if="$(arg bagin)" pkg="rosbag" type="play" name="rosbag_play" args="$(arg bagin)"/>
     <node if="$(arg bagout)" pkg="rosbag" type="record" name="rosbag_record" args="-a  -O $(arg bagout)"/>

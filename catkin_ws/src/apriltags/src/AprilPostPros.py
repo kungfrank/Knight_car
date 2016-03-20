@@ -12,7 +12,7 @@ class AprilPostPros(object):
 
         rospack = rospkg.RosPack()
         self.pkg_path = rospack.get_path('apriltags')
-        tags_filepath = self.setupParam("~tags_file", self.pkg_path+"/tagID/tags_map_001.yaml") 
+        tags_filepath = self.setupParam("~tags_file", self.pkg_path+"/apriltagsDB/apriltagsDB.yaml") 
         
         tags_file = open(tags_filepath, 'r')
         self.tags_dict = yaml.load(tags_file)
@@ -42,8 +42,8 @@ class AprilPostPros(object):
             "pedestrian": self.info.PEDESTRIAN,
             "duck-crossing": self.info.DUCK_CROSSING}
 
-        self.sub_prePros        = rospy.Subscriber("apriltags_fast/apriltags", AprilTags, self.callback, queue_size=1)
-        self.pub_postPros       = rospy.Publisher("postpros/apriltags", AprilTags, queue_size=1)
+        self.sub_prePros        = rospy.Subscriber("~apriltags_in", AprilTags, self.callback, queue_size=1)
+        self.pub_postPros       = rospy.Publisher("~apriltags_out", AprilTags, queue_size=1)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

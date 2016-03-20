@@ -13,15 +13,13 @@ def tag_writer(id, tag_type,street_name, vehicle_name, sign_type, location_226, 
     yaml.write('  location_316: ' + location_316 + '\n')
     yaml.write('\n')
 
-yaml = open('tags_map_001.yaml', 'w')
+yaml = open('apriltagsDB.yaml', 'w')
 
 n = 0
 N = 1
 with open('tagsDB.csv', 'rb') as csvfile:
     tagDB = csv.reader(csvfile, delimiter=',')
     for row in tagDB:
-        print n
-        print row
         if N < 3:
             N += 1
         else:

@@ -2,24 +2,27 @@ root=local
 
 install:
 	sudo apt-get install -y python-virtualenv mplayer mencoder
-
-install-ffmpeg:
 	sudo add-apt-repository ppa:mc3man/trusty-media
-	sudo apt-get update
+	sudo apt-get update 
 	sudo apt-get install ffmpeg gstreamer0.10-ffmpeg -y
 
-environment:
+clean:
 	rm -rf $(root) 
+	
+environment:
 	bash -c "source ~/duckietown/environment.sh && virtualenv --system-site-packages $(root)"	
 	bash -c "source environment.sh && easy_install pip" 
-	bash -c "source environment.sh && pip install SystemCmd==1.2 ros_node_utils==1.0 ConfTools==1.8"	
-	bash -c "source environment.sh && cd procgraph && python setup.py develop"
+	bash -c "source environment.sh && pip install SystemCmd==1.2 ros_node_utils==1.0 ConfTools==1.8 Procgraph==1.10"	
 
+videos:
+	./make_videos.py --dir ~/duckietown-data/logs/Phase_2/ -c 'clean; rparmake n=2'
+
+
+#bash -c "source environment.sh && cd procgraph && python setup.py develop"
 # bash -c "source environment.sh && pip install https://github.com/AndreaCensi/procgraph/archive/env_fault.zip"
 # git clone -b duckietown2016 git@github.com:AndreaCensi/procgraph.git
 # git clone -b duckietown2016 git@github.com:AndreaCensi/procgraph.git
 # git clone -b duckietown2016 git@github.com:AndreaCensi/conf_tools.git
-
-log=~/duckietown-data/logs/Phase_2/F23/Meeting_1_Logs/allblinking_test1/20160312-allblinking_test1-argo.bag
-go1:
-	./go1.sh $(log) argo  
+# log=~/duckietown-data/logs/Phase_2/F23/Meeting_1_Logs/allblinking_test1/20160312-allblinking_test1-argo.bag
+# go1:
+# 	./go1.sh $(log) argo  

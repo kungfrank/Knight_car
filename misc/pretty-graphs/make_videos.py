@@ -13,7 +13,8 @@ class MakeVideo(QuickApp):
     """ Simplest app example """
 
     def define_options(self, params):
-        params.add_string('dir')
+        params.add_string('dir', help='Directory containing logs')
+        params.add_string('tmpdir', help='Working directory ', default='tmp')
 
     def define_jobs_context(self, context):
         options = self.get_options()
@@ -28,10 +29,11 @@ class MakeVideo(QuickApp):
         for f in bags:
             s = short(f)
             context.comp_dynamic(process, bag_filename=f,
+                                 tmpdir=options.tmpdir,
                                  models=['bag2mp4_fixfps'], job_id=s)
 
 
-def process(context, bag_filename, models=['bag2mp4_fixfps', 'bag2mp4']):
+def process(context, bag_filename, tmpdir, models=['bag2mp4_fixfps', 'bag2mp4']):
     res = d8n_get_all_images_topic(bag_filename)
 
     for topic, msg_type in res:
@@ -46,7 +48,7 @@ def process(context, bag_filename, models=['bag2mp4_fixfps', 'bag2mp4']):
             context.comp(visualize_topic, bag_filename=bag_filename,
                          model=model,
                          topic=topic,
-                         msg_type=msg_type, out=out, tmpdir='tmp')
+                         msg_type=msg_type, out=out, tmpdir=tmpdir)
         
 
 def visualize_topic(bag_filename, model, topic, msg_type, out, tmpdir):

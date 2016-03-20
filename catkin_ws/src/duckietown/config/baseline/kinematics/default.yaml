@@ -1,5 +1,5 @@
   # default parameters for forward_kinematics_node and inverse_kinematics_node
-  K_l:          42.2
+  K_l:          35.3
   K_r:          35.3
   radius_l:     0.02
   radius_r:     0.02

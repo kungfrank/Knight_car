@@ -69,7 +69,8 @@ def visualize_topic(bag_filename, model, topic, msg_type, out, tmpdir):
     if os.path.exists(md):
         os.unlink(md)
     # copy out_tmp to out
-    shutil.copyfile(out_tmp, out)
+    if False: # only AC
+        shutil.copyfile(out_tmp, out)
 
 
 if __name__ == '__main__':

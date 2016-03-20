@@ -12,7 +12,7 @@ clean:
 environment:
 	bash -c "source ~/duckietown/environment.sh && virtualenv --system-site-packages $(root)"	
 	bash -c "source environment.sh && easy_install pip" 
-	bash -c "source environment.sh && pip install SystemCmd==1.2 ros_node_utils==1.0 ConfTools==1.8 Procgraph==1.10"	
+	bash -c "source environment.sh && pip install SystemCmd==1.2 ros_node_utils==1.0 ConfTools==1.8 QuickApp==1.2.2 Procgraph==1.10"	
 
 videos:
 	bash -c "source environment.sh && ./make_videos.py --dir ~/duckietown-data/logs/Phase_2/ -c 'clean; rparmake n=2'"

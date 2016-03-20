@@ -7,7 +7,7 @@ import os
 import shutil
 logging.basicConfig()
 logger = logging.getLogger(__name__)
-
+from decent_params.utils import UserError
 
 class MakeVideo(QuickApp):
     """ Simplest app example """
@@ -19,9 +19,17 @@ class MakeVideo(QuickApp):
     def define_jobs_context(self, context):
         options = self.get_options()
         dirname = options.dir
+        if not os.path.exists(dirname):
+            msg = "Path does not exist: %r." % dirname
+            raise UserError(msg)
+
         from conf_tools.utils import locate_files  # @UnresolvedImport
         bags = list(locate_files(dirname, pattern="*.bag", followlinks=True))
         self.info('I found %d bags in %s' % (len(bags), dirname))
+
+        if len(bags) == 0:
+            msg = "Could not find any bag in %r." % dirname
+            raise UserError(msg)
 
         def short(f):
             return os.path.splitext(os.path.basename(f))[0]

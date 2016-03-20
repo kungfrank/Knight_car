@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+from duckietown_utils.bag_logs import d8n_get_all_images_topic
+from procgraph.scripts.pgmain import pg
+from quickapp import QuickApp  # @UnresolvedImport
+import logging
+import os
+import shutil
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+
+
+class MakeVideo(QuickApp):
+    """ Simplest app example """
+
+    def define_options(self, params):
+        params.add_string('dir')
+
+    def define_jobs_context(self, context):
+        options = self.get_options()
+        dirname = options.dir
+        from conf_tools.utils import locate_files  # @UnresolvedImport
+        bags = list(locate_files(dirname, pattern="*.bag", followlinks=True))
+        self.info('I found %d bags in %s' % (len(bags), dirname))
+
+        def short(f):
+            return os.path.splitext(os.path.basename(f))[0]
+
+        for f in bags:
+            s = short(f)
+            context.comp_dynamic(process, bag_filename=f,
+                                 models=['bag2mp4_fixfps'], job_id=s)
+
+
+def process(context, bag_filename, models=['bag2mp4_fixfps', 'bag2mp4']):
+    res = d8n_get_all_images_topic(bag_filename)
+
+    for topic, msg_type in res:
+
+        sanitized = topic.replace('/', '_')
+        sanitized = sanitized[1:]  # remove first
+        for model in models:
+            bn = os.path.splitext(os.path.basename(bag_filename))[0]
+            bn = bn + '-%s-%s.mp4' % (model, sanitized)
+            out = os.path.join(os.path.dirname(bag_filename), bn)
+
+            context.comp(visualize_topic, bag_filename=bag_filename,
+                         model=model,
+                         topic=topic,
+                         msg_type=msg_type, out=out, tmpdir='tmp')
+        
+
+def visualize_topic(bag_filename, model, topic, msg_type, out, tmpdir):
+    # pg -m procgraph_ros bag2mp4 --bag $bag --topic $topic --out $out
+    import procgraph_ros  # @UnusedImport
+    out_tmp = os.path.join(tmpdir, os.path.basename(out))
+    print('writing to %r' % out)
+    pg(model, config=dict(bag=bag_filename, topic=topic, out=out_tmp))
+    md = out_tmp + '.metadata.yaml'
+    if os.path.exists(md):
+        os.unlink(md)
+    # copy out_tmp to out
+    shutil.copyfile(out_tmp, out)
+
+
+if __name__ == '__main__':
+    app_example_main = MakeVideo.get_sys_main()
+    app_example_main()

@@ -129,8 +129,17 @@ def d8n_get_all_images_topic(bag_filename):
         all_types.add(msg_type)
         message_count = v.message_count
         if msg_type in consider_images:
+
+            # quick fix: ignore image_raw if we have image_compressed version
+            if 'raw' in t:
+                other = t.replace('raw', 'compressed')
+
+                if other in topics:
+                    continue
             found.append((t,msg_type))
+
     print('all_types: %s' % all_types)
+    print('found: %s' % found)
     return found
 
 def get_image_topic(bag):

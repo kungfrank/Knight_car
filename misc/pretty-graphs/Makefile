@@ -7,7 +7,7 @@ install:
 	sudo apt-get install ffmpeg gstreamer0.10-ffmpeg -y
 
 clean:
-	rm -rf $(root) 
+	rm -rf $(root) tmp
 	
 environment:
 	bash -c "source ~/duckietown/environment.sh && virtualenv --system-site-packages $(root)"	
@@ -15,7 +15,7 @@ environment:
 	bash -c "source environment.sh && pip install SystemCmd==1.2 ros_node_utils==1.0 ConfTools==1.8 Procgraph==1.10"	
 
 videos:
-	./make_videos.py --dir ~/duckietown-data/logs/Phase_2/ -c 'clean; rparmake n=2'
+	bash -c "source environment.sh && ./make_videos.py --dir ~/duckietown-data/logs/Phase_2/ -c 'clean; rparmake n=2'"
 
 
 #bash -c "source environment.sh && cd procgraph && python setup.py develop"

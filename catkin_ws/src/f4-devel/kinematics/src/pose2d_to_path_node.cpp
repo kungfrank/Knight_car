@@ -1,5 +1,5 @@
 //
-// Created by teddy on 3/17/16.
+// Created by teddy on 3/20/16.
 //
 #include "ros/ros.h"
 #include "duckietown_msgs/Pose2DStamped.h"
@@ -12,10 +12,10 @@
 
 using namespace std;
 
-class path_visualizer_node
+class pose2d_to_path_node
 {
 public:
-  path_visualizer_node(); // constructor
+  pose2d_to_path_node(); // constructor
 
 // class variables_
 private:
@@ -31,21 +31,21 @@ private:
 };
 
 int main(int argc, char **argv){
-  ros::init(argc, argv, "path_visualizer_node");
-  path_visualizer_node node;
+  ros::init(argc, argv, "pose2d_to_path_node");
+  pose2d_to_path_node node;
   ros::spin();
   return 0;
 }
 
-path_visualizer_node::path_visualizer_node() : nh_("~"), node_name_("path_visualizer_node")
+pose2d_to_path_node::pose2d_to_path_node() : nh_("~"), node_name_("pose2d_to_path_node")
 {
   //Setup the publishers and subscirbers
   pub_path_ = nh_.advertise<nav_msgs::Path>("path", 10);
-  sub_pose_ = nh_.subscribe("pose", 10, &path_visualizer_node::poseCallback, this);
+  sub_pose_ = nh_.subscribe("pose", 10, &pose2d_to_path_node::poseCallback, this);
   ROS_INFO_STREAM("[" << node_name_ << "] has started.");
 }
 
-void path_visualizer_node::poseCallback(duckietown_msgs::Pose2DStampedConstPtr const& msg)
+void pose2d_to_path_node::poseCallback(duckietown_msgs::Pose2DStampedConstPtr const& msg)
 {
   geometry_msgs::PoseStamped pose_msg;
   pose_msg.header = msg->header;

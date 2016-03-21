@@ -1,13 +1,12 @@
 <launch>
     <arg name="veh"/>
+    <arg name="bagin" doc="the full path to the input bag"/>
+    <arg name="bagout" doc="the full path to the output bag"/>
     <arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
     <arg name="config" default="baseline" doc="Specify a config."/>
     <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman."/>
-    <arg name="hz" default="0.0" doc="The frequency of the test command topic" />
-    <arg name="v" default="0.0" doc="The linear velocity for the test trajectory" />
-    <arg name="omega" default="0.0" doc="The angular velocity for the test trajectory" />
     <arg name="gui" default="true" doc="Show a gui automatically when running this test" />
-    <arg name="vicon" default="false" doc="Run a pose_to_path_node on a vicon/measurement topic" />
+    <arg name="vicon" default="true" doc="Run a pose_to_path_node on a vicon/measurement topic" />
 
     <!-- run forward_kinematics_node -->
     <remap from="forward_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
@@ -33,6 +32,18 @@
         <arg name="veh" value="$(arg veh)"/>
     </include>
 
+    <!-- run the pose_to_path_node if there is a vicon -->
+    <group if="$(arg vicon)" >
+        <param name="use_sim_time" value="true"/>
+        <remap from="pose_to_path_node/pose" to="/duckiecar/pose" />
+        <include file="$(find kinematics)/launch/pose_to_path_node.launch">
+            <arg name="veh" value="$(arg veh)"/>
+        </include>
+
+        <node pkg="tf" type="static_transform_publisher" name="initial_pos_pub"
+              args="-0.083041 0.217900 0.090066 -0.0289928 0.0027761 -0.733276 0.679307 vicon $(arg veh) 100" />
+    </group>
+
     <!-- run the kinematics_tester_node -->
     <remap from="kinematics_tester_node/car_cmd" to="inverse_kinematics_node/car_cmd" />
     <include file="$(find kinematics)/launch/kinematics_tester_node.launch">
@@ -40,9 +51,6 @@
         <arg name="local" value="true"/>
         <arg name="config" value="$(arg config)"/>
         <arg name="param_file_name" value="$(arg param_file_name)"/>
-        <arg name="hz" value="$(arg hz)" doc="The frequency of the test command topic" />
-        <arg name="v" value="$(arg v)" doc="The linear velocity for the test trajectory" />
-        <arg name="omega" value="$(arg omega)" doc="The angular velocity for the test trajectory" />
     </include>
 
     <group if="$(arg gui)">
@@ -53,7 +61,11 @@
 
         <!-- run rviz -->
         <node pkg="rviz" type="rviz" name="rviz" ns="$(arg veh)"
-              args="-f $(arg veh) -d $(find kinematics)/rviz/kinematics.rviz"/>
+              args="-f vicon -d $(find kinematics)/rviz/kinematics.rviz"/>
     </group>
+
+    <!-- Start the bags -->
+    <node pkg="rosbag" type="play" name="rosbag_play" args="$(arg bagin) --clock"/>
+    <!--<node pkg="rosbag" type="record" name="rosbag_record" args="-a  -O $(arg bagout)"/>-->
 
 </launch>

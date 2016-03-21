@@ -34,6 +34,9 @@ class Linear_learner(object):
 		self.fit_v(training_set)
 
 
+	# fit theta_dot from a training set. training_set is a matrix whose
+	# first four coloumns are the following:
+	# duty_Left, duty_Right, dt, theta_angle_pose_delta
 	def fit_theta_dot(self, training_set):
 		# extract motor duties, dt, and pose delta from the training set
 		d_L = training_set[:, [0]]
@@ -56,7 +59,9 @@ class Linear_learner(object):
 		# save weights for theta_dot
 		savetxt(self.theta_dot_weights_file, theta_dot_weights)
 
-
+	# fit v from a training set. training_set is a matrix whose
+	# first six coloumns are the following:
+	# duty_Left, duty_Right, dt, theta_angle_pose_delta, x_axis_pose_delta, y_axis_pose_delta
 	def fit_v(self, training_set):
 		# extract motor duties, dt, and pose delta from the training set
 		d_L = training_set[:, [0]]
@@ -85,24 +90,3 @@ class Linear_learner(object):
 
 		# save weights for v and theta_dot
 		savetxt(self.v_weights_file, v_weights)
-
-learner = Linear_learner("./theta_dot_fi_function", "./v_fi_function", "./theta_dot_weights_file", "./v_weights_file")
-learner.fit_theta_dot_from_file("./training_set")
-learner.fit_v_from_file("./training_set")
-
-		#print 'd_L:', d_L
-		#print 'd_R:', d_R
-		#print 'dt:', dt
-		#print 'x_axis_pose_delta:', x_axis_pose_delta
-		#print 'y_axis_pose_delta:', y_axis_pose_delta
-		#print 'theta_angle_pose_delta:', theta_angle_pose_delta
-		#print 'theta_dot:', theta_dot
-		#print 'abs_theta_angle_pose_delta:', abs_theta_angle_pose_delta
-		#print 'c:', c
-		#print 'r:', r
-		#print 's:', s
-		#print 'v:', v
-		#print 'Fi_v:', Fi_v
-		#print 'Fi_theta_dot:', Fi_theta_dot
-		#print 'v_weights:',v_weights
-		#print 'theta_dot_weights:',theta_dot_weights

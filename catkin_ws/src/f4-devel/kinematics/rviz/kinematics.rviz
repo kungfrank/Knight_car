@@ -85,34 +85,6 @@ Visualization Manager:
         Z: 0
       Topic: pose_to_path_node/path
       Value: true
-    - Alpha: 1
-      Axes Length: 1
-      Axes Radius: 0.1
-      Class: rviz/Pose
-      Color: 255; 25; 0
-      Enabled: false
-      Head Length: 0.3
-      Head Radius: 0.1
-      Name: Pose
-      Shaft Length: 1
-      Shaft Radius: 0.05
-      Shape: Axes
-      Topic: /duckiecar/pose
-      Value: false
-    - Class: rviz/TF
-      Enabled: false
-      Frame Timeout: 15
-      Frames:
-        All Enabled: true
-      Marker Scale: 1
-      Name: TF
-      Show Arrows: true
-      Show Axes: true
-      Show Names: true
-      Tree:
-        {}
-      Update Interval: 0
-      Value: false
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -137,22 +109,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 8.5022
+      Distance: 4.48688
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
+        X: -0.570846
+        Y: 0.0730534
+        Z: 0.173968
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 1.1554
+      Pitch: 0.9254
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.995399
+      Yaw: 1.0304
     Saved: ~
 Window Geometry:
   Displays:

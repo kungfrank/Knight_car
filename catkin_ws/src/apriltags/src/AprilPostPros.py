@@ -58,7 +58,7 @@ class AprilPostPros(object):
 
         for detection in msg.detections:
             new_info = TagInfo()
-            new_location_info = Vector2D()
+            #new_location_info = Vector2D()
             new_info.id = int(detection.id)
             id_info = self.tags_dict[new_info.id]
             
@@ -71,10 +71,20 @@ class AprilPostPros(object):
             elif new_info.tag_type == self.info.VEHICLE:
                 new_info.vehicle_name = id_info['vehicle_name']
             
+            # TODO: Implement location more than just a float like it is now.
+            # location is now 0.0 if no location is set which is probably not that smart
+            if self.loc == 226:
+                l = (id_info['location_226'])
+                if l is not None:
+                    new_info.location = l
+            elif self.loc == 316:
+                l = (id_info['location_316'])
+                if l is not None:
+                    new_info.location = l
 
-            new_location_info.x = 2
-            new_location_info.y = 3
-            new_info.location = new_location_info
+            #new_location_info.x = 2
+            #new_location_info.y = 3
+            #new_info.location = new_location_info
 
             # TODO: Add relative pose estimation
             tag_infos.append(new_info)
@@ -82,6 +92,7 @@ class AprilPostPros(object):
         new_tag_data = AprilTags()
         new_tag_data.detections = msg.detections
         new_tag_data.infos = tag_infos
+
 
         # Publish Message
         self.pub_postPros.publish(new_tag_data)

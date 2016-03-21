@@ -74,7 +74,7 @@
   tag_type: TrafficSign
   street_name: 
   vehicle_name: 
-  traffic_sign_type: right-T intersect
+  traffic_sign_type: right-T-intersect
   location_226: 
   location_316: 
 
@@ -82,7 +82,7 @@
   tag_type: TrafficSign
   street_name: 
   vehicle_name: 
-  traffic_sign_type: left-T intersect
+  traffic_sign_type: left-T-intersect
   location_226: 
   location_316: 
 
@@ -458,7 +458,7 @@
   tag_type: TrafficSign
   street_name: 
   vehicle_name: 
-  traffic_sign_type: right-T intersect
+  traffic_sign_type: right-T-intersect
   location_226: 
   location_316: 
 
@@ -466,7 +466,7 @@
   tag_type: TrafficSign
   street_name: 
   vehicle_name: 
-  traffic_sign_type: right-T intersect
+  traffic_sign_type: right-T-intersect
   location_226: 
   location_316: 
 
@@ -474,7 +474,7 @@
   tag_type: TrafficSign
   street_name: 
   vehicle_name: 
-  traffic_sign_type: right-T intersect
+  traffic_sign_type: right-T-intersect
   location_226: 
   location_316: 
 
@@ -482,7 +482,7 @@
   tag_type: TrafficSign
   street_name: 
   vehicle_name: 
-  traffic_sign_type: right-T intersect
+  traffic_sign_type: right-T-intersect
   location_226: 
   location_316: 
 
@@ -490,7 +490,7 @@
   tag_type: TrafficSign
   street_name: 
   vehicle_name: 
-  traffic_sign_type: left-T intersect
+  traffic_sign_type: left-T-intersect
   location_226: 
   location_316: 
 
@@ -498,7 +498,7 @@
   tag_type: TrafficSign
   street_name: 
   vehicle_name: 
-  traffic_sign_type: left-T intersect
+  traffic_sign_type: left-T-intersect
   location_226: 
   location_316: 
 
@@ -506,7 +506,7 @@
   tag_type: TrafficSign
   street_name: 
   vehicle_name: 
-  traffic_sign_type: left-T intersect
+  traffic_sign_type: left-T-intersect
   location_226: 
   location_316: 
 
@@ -514,7 +514,7 @@
   tag_type: TrafficSign
   street_name: 
   vehicle_name: 
-  traffic_sign_type: left-T intersect
+  traffic_sign_type: left-T-intersect
   location_226: 
   location_316: 
 

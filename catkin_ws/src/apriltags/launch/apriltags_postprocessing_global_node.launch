@@ -1,0 +1,12 @@
+<launch>
+	<arg name="veh"/>
+	<arg name="loc" default="-1" doc="Physical room location of the duckietown map. E.g. 226 or 316"/>
+	
+	<group ns="$(arg veh)">
+	    <remap from="apriltags_postprocessing_global_node/apriltags_in" to="apriltags_global/apriltags" /> 
+	    <remap from="apriltags_postprocessing_global_node/apriltags_out" to="apriltags_postprocessing_global_node/apriltags" />
+        <node pkg="apriltags" type="AprilPostPros.py" name="apriltags_postprocessing_global_node" output="screen">
+        <param name="~loc" value="$(arg loc)" />
+        </node>
+	</group>
+</launch>

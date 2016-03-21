@@ -25,4 +25,6 @@ uint8 DUCK_CROSSING=17
 uint8 traffic_sign_type
 
 string vehicle_name
-duckietown_msgs/Vector2D location
+
+# Just added a single number for location. Probably want to use Vector2D.msg, but I get errors when I try to add it.
+float32 location

@@ -59,7 +59,7 @@ class lane_supervisor(object):
             self.parallel_autonomy_mode = not self.parallel_autonomy_mode
 
     def cbLanePose(self,lane_pose_msg):
-        self.in_lane=in_lane_msg.in_lane
+        self.in_lane=lane_pose_msg.in_lane
         self.lane_reading = lane_pose_msg 
         cross_track_err = math.fabs(lane_pose_msg.d) 
         heading_err = math.fabs(lane_pose_msg.phi)

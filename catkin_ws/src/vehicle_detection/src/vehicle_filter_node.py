@@ -25,9 +25,30 @@ class VehicleFilterNode(object):
 		# Returns rightaway
 
 	def processCorners(self, vehicle_corners_msg):
-		for i in np.arange(len(vehicle_corners_msg.corners)):
-			rospy.loginfo('Corners received : (x = %.2f, y = %.2f)' %
-					(vehicle_corners_msg.corners[i].x, vehicle_corners_msg.corners[i].y))
+		#Test node output
+		#for i in np.arange(len(vehicle_corners_msg.corners)):
+		#	rospy.loginfo('Corners received : (x = %.2f, y = %.2f)' %
+		#			(vehicle_corners_msg.corners[i].x, vehicle_corners_msg.corners[i].y))
+		
+		height = 5 #height of checkerboard in blocks
+		width = 7 #width of checkerboard in blocks
+		unit_length = 12.5 #length of block in mm
+
+		object_corners = np.ones((height*width,2))
+
+		#with top left as (0,0)
+		for c in range(0,width):  #to move between columns
+		    for r in range(0,height): #to move between rows
+			object_corners[(c)*height+(r)][0] = (c+1)*unit_length
+			object_corners[(c)*height+(r)][1] = (r+1)*unit_length
+		
+		findHomography(obj, scene, CV_RANSAC);
+		Mat H = cv2.findHomography(object_corners, vehicle_corners_msg.corners, CV_RANSAC)
+		
+		cv2.decomposeProjectionMatrix(projMatrix[, cameraMatrix[, rotMatrix[, transVect[, rotMatrixX[, rotMatrixY[, rotMatrixZ[, eulerAngles]]]]]]]) → cameraMatrix, rotMatrix, transVect, rotMatrixX, rotMatrixY, rotMatrixZ, eulerAngles¶
+
+		vehicle_corners_msg.corners[i].x
+		vehicle_corners_msg.corners[i].y
 
 		pose_msg_out = VehiclePose()
 

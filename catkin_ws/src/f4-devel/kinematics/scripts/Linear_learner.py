@@ -23,29 +23,38 @@ class Linear_learner(object):
 		self.theta_dot_weights_file = theta_dot_weights_file
 		self.v_weights_file = v_weights_file
 
+	# fit theta_dot from a training set. file filename must contain a matrix whose
+	# first four coloumns are the following:
+	# duty_Left, duty_Right, dt, theta_angle_pose_delta
 
 	def fit_theta_dot_from_file(self, filename):
 		training_set = genfromtxt(filename)
-		self.fit_theta_dot(training_set)
-
-
-	def fit_v_from_file(self, filename):
-		training_set = genfromtxt(filename)
-		self.fit_v(training_set)
-
-
-	# fit theta_dot from a training set. training_set is a matrix whose
-	# first four coloumns are the following:
-	# duty_Left, duty_Right, dt, theta_angle_pose_delta
-	def fit_theta_dot(self, training_set):
 		# extract motor duties, dt, and pose delta from the training set
 		d_L = training_set[:, [0]]
 		d_R = training_set[:, [1]]
 		dt = training_set[:, [2]]
+		theta_angle_pose_delta = training_set[:, [3]]
+		self.fit_theta_dot(d_L, d_R, dt, theta_angle_pose_delta)
+
+	# fit v from a training set. file filename must contain a matrix whose
+	# first six coloumns are the following:
+	# duty_Left, duty_Right, dt, theta_angle_pose_delta, x_axis_pose_delta, y_axis_pose_delta
+	def fit_v_from_file(self, filename):
+		training_set = genfromtxt(filename)	
+		# extract motor duties, dt, and pose delta from the training set
+		d_L = training_set[:, [0]]
+		d_R = training_set[:, [1]]
+		dt = training_set[:, [2]]
+		theta_angle_pose_delta = training_set[:, [3]]
+		x_axis_pose_delta = training_set[:, [4]]
+		y_axis_pose_delta = training_set[:, [5]]
+		self.fit_v(d_L, d_R, dt, theta_angle_pose_delta, x_axis_pose_delta, y_axis_pose_delta)
+
+
+	def fit_theta_dot(self, d_L, d_R, dt, theta_angle_pose_delta):
 		# we assume that theta_angle_pose_delta is expressed in radians
 		# and that |theta_angle_pose_delta| is less than pi
-		theta_angle_pose_delta = training_set[:, [3]]
-
+		
 		# compute theta_dot
 		theta_dot = theta_angle_pose_delta/dt
 		
@@ -59,19 +68,9 @@ class Linear_learner(object):
 		# save weights for theta_dot
 		savetxt(self.theta_dot_weights_file, theta_dot_weights)
 
-	# fit v from a training set. training_set is a matrix whose
-	# first six coloumns are the following:
-	# duty_Left, duty_Right, dt, theta_angle_pose_delta, x_axis_pose_delta, y_axis_pose_delta
-	def fit_v(self, training_set):
-		# extract motor duties, dt, and pose delta from the training set
-		d_L = training_set[:, [0]]
-		d_R = training_set[:, [1]]
-		dt = training_set[:, [2]]
+	def fit_v(self, d_L, d_R, dt, theta_angle_pose_delta, x_axis_pose_delta, y_axis_pose_delta):
 		# we assume that theta_angle_pose_delta is expressed in radians
 		# and that |theta_angle_pose_delta| is less than pi
-		theta_angle_pose_delta = training_set[:, [3]]
-		x_axis_pose_delta = training_set[:, [4]]
-		y_axis_pose_delta = training_set[:, [5]]
 
 		# a 0 angle (or one that is too close to 0) would cause a division
 		# by 0 for r and cause problems in calculating s

@@ -23,11 +23,8 @@ class Forward_kinematics(object):
 		self.theta_dot_weights = genfromtxt(theta_dot_weights_file)
 		self.v_weights = genfromtxt(v_weights_file)
 
-		print 'fi_theta_dot_function:', fi_theta_dot_function, 'theta_dot_weights:', self.theta_dot_weights
-		print 'fi_v_function:', fi_v_function, 'v_weights:', self.v_weights
-
 	# compute forward kinematics. (theta_dot and v from d_L and d_R)
 	def evaluate(self, d_L, d_R):
 		fi_theta_dot = self.fi_theta_dot_function.computeFi(d_L, d_R)
 		fi_v = self.fi_v_function.computeFi(d_L, d_R)
-		return [inner(fi_theta_dot, self.theta_dot_weights)[0][0], inner(fi_v, self.v_weights)[0][0]]
+		return [inner(fi_theta_dot, self.theta_dot_weights).flatten()[0], inner(fi_v, self.v_weights).flatten()[0]]

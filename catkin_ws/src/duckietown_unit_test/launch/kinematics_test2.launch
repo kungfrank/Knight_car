@@ -40,6 +40,8 @@
             <arg name="veh" value="$(arg veh)"/>
         </include>
 
+        <!-- TODO
+        must figure out how to best deal with the issue that it is hard to figure out this transform automatically -->
         <node pkg="tf" type="static_transform_publisher" name="initial_pos_pub"
               args="-0.083041 0.217900 0.090066 -0.0289928 0.0027761 -0.733276 0.679307 vicon $(arg veh) 100" />
     </group>

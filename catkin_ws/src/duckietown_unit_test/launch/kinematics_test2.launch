@@ -54,11 +54,6 @@
     </include>
 
     <group if="$(arg gui)">
-        <!-- run the rqt_robot_steering plugin -->
-        <node pkg="rqt_robot_steering" type="rqt_robot_steering" name="rqt_robot_steering">
-            <param name="default_topic" type="string" value="/$(arg veh)/kinematics_tester_node/twist_in" />
-        </node>
-
         <!-- run rviz -->
         <node pkg="rviz" type="rviz" name="rviz" ns="$(arg veh)"
               args="-f vicon -d $(find kinematics)/rviz/kinematics.rviz"/>

@@ -26,7 +26,7 @@ class Forward_kinematics(object):
 		print 'fi_theta_dot_function:', fi_theta_dot_function, 'theta_dot_weights:', self.theta_dot_weights
 		print 'fi_v_function:', fi_v_function, 'v_weights:', self.v_weights
 
-	# compute forward kinematics. (v and theta_dot from d_L and d_R)
+	# compute forward kinematics. (theta_dot and v from d_L and d_R)
 	def evaluate(self, d_L, d_R):
 		fi_theta_dot = self.fi_theta_dot_function.computeFi(d_L, d_R)
 		fi_v = self.fi_v_function.computeFi(d_L, d_R)

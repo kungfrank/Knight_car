@@ -2,7 +2,7 @@
 import rospkg
 import rospy
 import yaml
-from duckietown_msgs.msg import AprilTags, TagDetection, TagInfo
+from duckietown_msgs.msg import AprilTags, TagDetection, TagInfo, Vector2D
 
 class AprilPostPros(object):
     """ """
@@ -12,8 +12,8 @@ class AprilPostPros(object):
 
         rospack = rospkg.RosPack()
         self.pkg_path = rospack.get_path('apriltags')
-        tags_filepath = self.setupParam("~tags_file", self.pkg_path+"/apriltagsDB/apriltagsDB.yaml") 
-        
+        tags_filepath = self.setupParam("~tags_file", self.pkg_path+"/apriltagsDB/apriltagsDB.yaml") # No tags_file input atm., so default value is used
+        self.loc = self.setupParam("~loc", -1) # -1 if no location is given
         tags_file = open(tags_filepath, 'r')
         self.tags_dict = yaml.load(tags_file)
         tags_file.close()
@@ -58,6 +58,7 @@ class AprilPostPros(object):
 
         for detection in msg.detections:
             new_info = TagInfo()
+            new_location_info = Vector2D()
             new_info.id = int(detection.id)
             id_info = self.tags_dict[new_info.id]
             
@@ -69,7 +70,12 @@ class AprilPostPros(object):
                 new_info.traffic_sign_type = self.traffic_sign_types[id_info['traffic_sign_type']]
             elif new_info.tag_type == self.info.VEHICLE:
                 new_info.vehicle_name = id_info['vehicle_name']
-             
+            
+
+            new_location_info.x = 2
+            new_location_info.y = 3
+            new_info.location = new_location_info
+
             # TODO: Add relative pose estimation
             tag_infos.append(new_info)
         

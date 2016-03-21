@@ -25,5 +25,4 @@ uint8 DUCK_CROSSING=17
 uint8 traffic_sign_type
 
 string vehicle_name
-
-# TODO: Add map location specification (which map we're using)
+duckietown_msgs/Vector2D location

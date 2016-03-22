@@ -6,6 +6,7 @@ from duckietown_msgs.msg import AntiInstagramHealth
 from anti_instagram.AntiInstagram import *
 import numpy as np
 import cv2
+from cv_bridge import CvBridge,CvBridgeError
 
 class AntiInstagramNode():
 	def __init__(self):
@@ -24,11 +25,12 @@ class AntiInstagramNode():
 
 		self.ai = AntiInstagram()
 		self.corrected_image = Image()
+		self.bridge = CvBridge()
 
 	def decodeMsg(self,image_msg):
-		rospy.loginfo(msg.header)
-		image_cv = cv2.imdecode(np.fromstring(image_msg.data, np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
-		return cv_image
+		# rospy.loginfo(image_msg.header)
+		image_cv = self.bridge.imgmsg_to_cv2(image_msg,"bgr8")
+		return image_cv
 
 	def cbNewImage(self,msg):
 		'''
@@ -40,9 +42,12 @@ class AntiInstagramNode():
 		to how good of a transformation it is.
 		'''
 		rospy.loginfo(msg.header)
-		cv_image = decodeMsg(msg)
+		cv_image = self.decodeMsg(msg)
+		rospy.loginfo(cv_image)
 		self.ai.calculateTransform(cv_image)
-		self.corrected_image = self.ai.applyTransform(cv_image)
+		corrected_image_cv2 = self.ai.applyTransform(cv_image)
+		corrected_image_cv2 = np.clip(corrected_image_cv2,0,255).astype(np.uint8)
+		self.corrected_image = self.bridge.cv2_to_imgmsg(corrected_image_cv2,"bgr8")
 
 		# self.pub_health.publish(self.health)
 		self.pub_image.publish(self.corrected_image)

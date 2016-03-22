@@ -3,7 +3,7 @@ import rospy
 import numpy as np
 from duckietown_msgs.msg import SegmentList, Segment, BoolStamped, StopLineReading, LanePose
 from std_msgs.msg import Float32
-from geometry_msgs import Point
+from geometry_msgs.msg import Point
 import time
 import math
 
@@ -49,7 +49,7 @@ class StopLineFilterNode(object):
     def processLanePose(self, lane_pose_msg):
         self.lane_pose = lane_pose_msg
 
-    def processSegments(self,segment_list_msg):
+    def processSegments(self, segment_list_msg):
         good_seg_count=0
         stop_line_x_accumulator=0.0
         stop_line_y_accumulator=0.0
@@ -80,15 +80,15 @@ class StopLineFilterNode(object):
         stop_line_point.x = stop_line_x_accumulator/good_seg_count
         stop_line_point.y = stop_line_y_accumulator/good_seg_count
         stop_line_reading_msg.stop_line_point = stop_line_point
-        stop_line_reading_msg.at_stop_line = stop_line_point.x < self.stop_distance and abs(stop_line_point.y) < self.lanewidth/2 and self.lane_pose.in_lane
+        stop_line_reading_msg.at_stop_line = stop_line_point.x < self.stop_distance and abs(stop_line_point.y) < self.lanewidth/4 and self.lane_pose.in_lane
         self.pub_stop_line_reading.publish(stop_line_reading_msg)    
    
-    def to_lane_frame(point):
+    def to_lane_frame(self, point):
         p_homo = np.array([point.x,point.y,1])
         phi = self.lane_pose.phi
         d   = self.lane_pose.d
         T = np.array([[math.cos(phi), -math.sin(phi), 0],
-                      [math.sin(phi), math.cos(phi) , -d],
+                      [math.sin(phi), math.cos(phi) , d],
                       [0,0,1]])
         p_new_homo = T.dot(p_homo)
         p_new = p_new_homo[0:2]

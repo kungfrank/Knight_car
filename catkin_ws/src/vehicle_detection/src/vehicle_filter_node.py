@@ -36,25 +36,49 @@ class VehicleFilterNode(object):
 
 		object_corners = np.ones((height*width,2))
 
-		#with top left as (0,0)
-		for c in range(0,width):  #to move between columns
-		    for r in range(0,height): #to move between rows
-			object_corners[(c)*height+(r)][0] = (c+1)*unit_length
-			object_corners[(c)*height+(r)][1] = (r+1)*unit_length
-		
-		findHomography(obj, scene, CV_RANSAC);
-		Mat H = cv2.findHomography(object_corners, vehicle_corners_msg.corners, CV_RANSAC)
-		
-		cv2.decomposeProjectionMatrix(projMatrix[, cameraMatrix[, rotMatrix[, transVect[, rotMatrixX[, rotMatrixY[, rotMatrixZ[, eulerAngles]]]]]]]) → cameraMatrix, rotMatrix, transVect, rotMatrixX, rotMatrixY, rotMatrixZ, eulerAngles¶
+		K = np.array([[318.0625500880443, 0.0, 316.2438069992162],[0.0, 329.43825629530835, 238.51324730567282],[0.0, 0.0, 1.0]])
 
-		vehicle_corners_msg.corners[i].x
-		vehicle_corners_msg.corners[i].y
+		distCoeff = np.zeros((5,1),np.float64)
+
+		# TODO: add your coefficients here!
+		k1 = 0.0
+		k2 = 0.0
+		p1 = 0.0
+		p2 = 0.0
+		k3 = 0.0
+
+		distCoeff[0,0] = k1
+		distCoeff[1,0] = k2
+		distCoeff[2,0] = p1
+		distCoeff[3,0] = p2
+		distCoeff[4,0] = k3
+
+		objp = np.zeros((5*6,3), np.float32)
+		objp[:,:2] = np.mgrid[0:5,0:6].T.reshape(-1,2)
+		objp = objp/unit_length
+
+		rvecs, tvecs, inliers = cv2.solvePnPRansac(objp, vehicle_corners_msg.corners, K, distCoeff)
+
+		#Need to confirm that these are correct (not sure which is psi)
+		xrot = rvecs[0]
+		yrot = rvecs[1]
+		zrot = rvecs[2]
+
+		psi = zrot
+
+		#If pitch and rotation are outside of some range, we can return psi = 0 to stop the car since an incorrect detection has occured
+
+		#Calculating the length of the total displacement
+		rho = np.power((np.power(tvecs[0],2)+np.power(tvecs[1],2)+np.power(tvecs[2],2)),0.5)
+
+		#Need to calculate theta in degrees given knowledge of the horizontal translation and distance
+		theta = np.arcsin(np.pi/2.) * 180. / np.pi 
 
 		pose_msg_out = VehiclePose()
 
-		pose_msg_out.rho.data = 1.2
-		pose_msg_out.theta.data = 2.3
-		pose_msg_out.psi.data = 3.4
+		pose_msg_out.rho.data = rho
+		pose_msg_out.theta.data = theta
+		pose_msg_out.psi.data = psi
 
 		self.pub_pose.publish(pose_msg_out)
 

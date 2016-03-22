@@ -61,10 +61,6 @@ class StopLineFilterNode(object):
 
             p1_lane = self.to_lane_frame(segment.points[0])
             p2_lane = self.to_lane_frame(segment.points[1])
-            
-
-            dist1 = np.linalg.norm(p1)
-            dist2 = np.linalg.norm(p2)
             avg_x = 0.5*(p1_lane[0] + p2_lane[0])
             avg_y = 0.5*(p1_lane[1] + p2_lane[1])
             stop_line_x_accumulator += avg_x
@@ -102,7 +98,7 @@ class StopLineFilterNode(object):
         rospy.loginfo("[StopLineFilterNode] Shutdown.")
 
 if __name__ == '__main__': 
-    rospy.init_node('lane_filter',anonymous=False)
+    rospy.init_node('stop_line_filter',anonymous=False)
     lane_filter_node = StopLineFilterNode()
     rospy.on_shutdown(lane_filter_node.onShutdown)
     rospy.spin()

@@ -6,7 +6,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from collections import Counter
 from sklearn.cluster import KMeans
 from sklearn import linear_model
-
+import IPython
+import time
 
 NUM_COLORS = 3
 
@@ -23,16 +24,11 @@ IMG_PATH = '''IMG PATH'''
 # class GetKMeansModel(object):
 # 	def __init__(self, img)
 def getimgdatapts(cv2img):
+
 	x, y, p = cv2img.shape
-	data = []
-	# print x, y
-	for i in range(x):
-		for j in range(y):
-			# print cv2img[i][j]
-			data.append(cv2img[i][j])
-	npdata = np.asarray(data)
-	# print npdata.shape
-	# print npdata[1]
+	cv2_tpose=cv2img.transpose()
+	cv2_arr_tpose=np.reshape(cv2_tpose,[p,x*y])
+	npdata=np.transpose(cv2_arr_tpose);
 
 	return npdata
 
@@ -40,7 +36,7 @@ def getimgdatapts(cv2img):
 def runKMeans(cv_img):
 	testdata = getimgdatapts(cv_img)
 	kmc = KMeans(n_clusters = NUM_COLORS, max_iter = 100, n_init = 10, init = CENTERS)
-	kmc.fit_predict(testdata)
+	kmc.fit_predict(imgdata)
 	trained_centers = kmc.cluster_centers_
 	print trained_centers
 	# print CENTERS
@@ -70,7 +66,19 @@ def identifyColors(trained, true):
 		colormap[i] = np.argmin(color)
 		# colormap[2] = 1
 		print colormap
+	colormap = checkMapping(colormap)
 	return colormap
+
+def checkMapping(mymap):
+	maplist = []
+	clearmap = {}
+	for color, mapping in mymap.iteritems():
+		if mapping not in maplist:
+			clearmap[color] = mapping
+			maplist += mapping
+	print clearmap
+	return clearmap
+
 
 def getparameters(mapping, trained, true):
 	redX = np.zeros((3, 1))
@@ -128,6 +136,17 @@ def scaleandshift(img,scale,shift):
 	return img_shift
 
 if __name__ == '__main__':
-	trained = runKMeans()
-	mapping = identifyColors(trained, CENTERS)
-	getparameters(mapping, trained, CENTERS)
+	img_filename="test2.jpg"
+	if (len(sys.argv)>1):
+		img_filename=sys.argv[1]
+		print(img_filename)
+	cv_img = cv2.imread(img_filename)
+	t1=time.clock();
+	testdata = getimgdatapts(cv_img)
+	t2=time.clock();
+	print("Time taken:")
+	print(t2-t1)
+	
+	trained = runKMeans(testdata)
+	mapping = identifyColors(trained[0], CENTERS)
+	getparameters(mapping, trained[0], CENTERS)

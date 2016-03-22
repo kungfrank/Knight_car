@@ -15,6 +15,7 @@ class AntiInstagram(object):
 		return corrected_image
 
 	def calculateTransform(self,image):
+		
 		trained,counter = kmeans.runKMeans(image)
 		mapping = kmeans.identifyColors(trained, kmeans.CENTERS)
 		r,g,b = kmeans.getparameters(mapping, trained, kmeans.CENTERS)

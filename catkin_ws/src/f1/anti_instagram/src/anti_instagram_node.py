@@ -27,10 +27,8 @@ class AntiInstagramNode():
 		self.corrected_image = Image()
 		self.bridge = CvBridge()
 
-	def decodeMsg(self,image_msg):
-		# rospy.loginfo(image_msg.header)
-		image_cv = self.bridge.imgmsg_to_cv2(image_msg,"bgr8")
-		return image_cv
+		self.numFramesSeen = 0
+
 
 	def cbNewImage(self,msg):
 		'''
@@ -41,16 +39,22 @@ class AntiInstagramNode():
 		and publishes the corrected image and the health state. Health somehow corresponds
 		to how good of a transformation it is.
 		'''
-		rospy.loginfo(msg.header)
-		cv_image = self.decodeMsg(msg)
-		rospy.loginfo(cv_image)
-		self.ai.calculateTransform(cv_image)
+
+		rospy.loginfo('New image received')
+		cv_image = self.bridge.imgmsg_to_cv2(msg,"bgr8")
+		if self.numFramesSeen < 10:
+			# only calculate transform for the first few frames
+			# then apply the same transform indefintely
+			rospy.loginfo('Calculating new transform...')
+			self.ai.calculateTransform(cv_image)
+		rospy.loginfo('Applying transform')
 		corrected_image_cv2 = self.ai.applyTransform(cv_image)
 		corrected_image_cv2 = np.clip(corrected_image_cv2,0,255).astype(np.uint8)
 		self.corrected_image = self.bridge.cv2_to_imgmsg(corrected_image_cv2,"bgr8")
 
 		# self.pub_health.publish(self.health)
 		self.pub_image.publish(self.corrected_image)
+		self.numFramesSeen += 1
 		return
 
 	

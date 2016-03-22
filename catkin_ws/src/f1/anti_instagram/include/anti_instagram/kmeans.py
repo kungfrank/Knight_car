@@ -38,13 +38,13 @@ def runKMeans(cv_img):
 	kmc = KMeans(n_clusters = NUM_COLORS, max_iter = 100, n_init = 10, init = CENTERS)
 	kmc.fit_predict(imgdata)
 	trained_centers = kmc.cluster_centers_
-	print trained_centers
+	# print trained_centers
 	# print CENTERS
 	labels = kmc.labels_
 	labelcount = Counter()
 	for pixel in labels:
 		labelcount[pixel] += 1
-	print labelcount
+	# print labelcount
 	return trained_centers, labelcount
 
 
@@ -60,12 +60,12 @@ def identifyColors(trained, true):
 		for j, truecolor in enumerate(true):
 			matching[i][j] = np.linalg.norm(color - truecolor)
 
-	print matching
+	# print matching
 	colormap= {}
 	for i, color in enumerate(matching):
 		colormap[i] = np.argmin(color)
 		# colormap[2] = 1
-		print colormap
+		# print colormap
 	colormap = checkMapping(colormap)
 	return colormap
 
@@ -76,7 +76,7 @@ def checkMapping(mymap):
 		if mapping not in maplist:
 			clearmap[color] = mapping
 			maplist += mapping
-	print clearmap
+	# print clearmap
 	return clearmap
 
 
@@ -88,7 +88,7 @@ def getparameters(mapping, trained, true):
 	blueX = np.zeros((3, 1))
 	blueY = np.zeros((3, 1))
 	# print type(redY), redX
-	print trained, true
+	# print trained, true
 	for i, color in enumerate(true):
 		mapped = mapping[i]
 		# print i, color
@@ -111,16 +111,16 @@ def getparameters(mapping, trained, true):
 			if j2 == 2:
 				blueX[i] = index2
 	# print redX
-	print redX, redY
+	# print redX, redY
 	RED = linear_model.LinearRegression()
 	BLUE = linear_model.LinearRegression()
 	GREEN = linear_model.LinearRegression()
 	RED.fit(redX, redY)
 	BLUE.fit(blueX, blueY)
 	GREEN.fit(greenX, greenY)
-	print RED.coef_, RED.intercept_
-	print BLUE.coef_, BLUE.intercept_
-	print GREEN.coef_, GREEN.intercept_
+	# print RED.coef_, RED.intercept_
+	# print BLUE.coef_, BLUE.intercept_
+	# print GREEN.coef_, GREEN.intercept_
 	return (RED.coef_, RED.intercept_), (BLUE.coef_, BLUE.intercept_), (GREEN.coef_, GREEN.intercept_)
 
 def scaleandshift(img,scale,shift):

@@ -17,7 +17,7 @@ np.random.seed(5)
 
 IMG_PATH = '''IMG PATH'''
 
-cv_img = cv2.imread("test2.jpg")
+#cv_img = cv2.imread("test2.jpg")
 # print cv_img.shape
 
 # class GetKMeansModel(object):
@@ -37,7 +37,7 @@ def getimgdatapts(cv2img):
 	return npdata
 
 #priors
-def runKMeans():
+def runKMeans(cv_img):
 	testdata = getimgdatapts(cv_img)
 	kmc = KMeans(n_clusters = NUM_COLORS, max_iter = 100, n_init = 10, init = CENTERS)
 	kmc.fit_predict(testdata)

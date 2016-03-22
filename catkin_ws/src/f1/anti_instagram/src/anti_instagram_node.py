@@ -4,6 +4,8 @@ from copy import deepcopy
 from sensor_msgs.msg import CompressedImage,Image
 from duckietown_msgs.msg import AntiInstagramHealth
 from anti_instagram.AntiInstagram import *
+import numpy as np
+import cv2
 
 class AntiInstagramNode():
 	def __init__(self):
@@ -23,6 +25,11 @@ class AntiInstagramNode():
 		self.ai = AntiInstagram()
 		self.corrected_image = Image()
 
+	def decodeMsg(self,image_msg):
+		rospy.loginfo(msg.header)
+		image_cv = cv2.imdecode(np.fromstring(image_msg.data, np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
+		return cv_image
+
 	def cbNewImage(self,msg):
 		'''
 		Inputs:
@@ -33,7 +40,9 @@ class AntiInstagramNode():
 		to how good of a transformation it is.
 		'''
 		rospy.loginfo(msg.header)
-		self.corrected_image = deepcopy(msg)
+		cv_image = decodeMsg(msg)
+		self.ai.calculateTransform(cv_image)
+		self.corrected_image = self.ai.applyTransform(cv_image)
 
 		# self.pub_health.publish(self.health)
 		self.pub_image.publish(self.corrected_image)

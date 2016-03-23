@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 from cv_bridge import CvBridge, CvBridgeError
 from duckietown_msgs.msg import VehicleCorners, VehiclePose
+from image_geometry import PinholeCameraModel
+from mutex import mutex
+from sensor_msgs.msg import CameraInfo
 from geometry_msgs.msg import Point32
 import rospy
 import cv2
@@ -15,7 +18,20 @@ class VehicleFilterNode(object):
 		self.sub_corners = rospy.Subscriber("~corners", VehicleCorners, 
 				self.cbCorners, queue_size=1)
 		self.pub_pose = rospy.Publisher("~pose", VehiclePose, queue_size=1)
+		self.sub_info = rospy.Subscriber("~camera_info", CameraInfo,
+				self.cbCameraInfo, queue_size=1)
+		self.pcm = PinholeCameraModel()
 		rospy.loginfo("Initialization of [%s] completed" % (self.node_name))
+		self.lock = mutex()
+
+	def cbCameraInfo(self, camera_info_msg):
+		thread = threading.Thread(target=self.processCameraInfo,
+				args=(camera_info_msg,))
+		thread.setDaemon(True)
+		thread.start()
+	
+	def processCameraInfo(self, camera_info_msg):
+		self.pcm.fromCameraInfo(camera_info_msg)
 
 	def cbCorners(self, vehicle_corners_msg):
 		# Start a daemon thread to process the image
@@ -29,59 +45,56 @@ class VehicleFilterNode(object):
 		#for i in np.arange(len(vehicle_corners_msg.corners)):
 		#	rospy.loginfo('Corners received : (x = %.2f, y = %.2f)' %
 		#			(vehicle_corners_msg.corners[i].x, vehicle_corners_msg.corners[i].y))
-		
-		height = 5 #height of checkerboard in blocks
-		width = 7 #width of checkerboard in blocks
-		unit_length = 12.5 #length of block in mm
+		if self.lock.testandset():
+			if not vehicle_corners_msg.detection:
+				self.lock.unlock()
+				return
+			height = 5 #height of checkerboard in blocks
+			width = 7 #width of checkerboard in blocks
+			unit_length = 12.5 #length of block in mm
 
-		object_corners = np.ones((height*width,2))
+			object_corners = np.ones((height * width,2), dtype=np.float32)
+			for i in np.arange(len(vehicle_corners_msg.corners)):
+				object_corners[i][0] = \
+						np.float32(vehicle_corners_msg.corners[i].x)
+				object_corners[i][1] = \
+					np.float32(vehicle_corners_msg.corners[i].y)
+			
 
-		#Need to generalize this for each vehicle/camera setup
-		K = np.array([[318.0625500880443, 0.0, 316.2438069992162],[0.0, 329.43825629530835, 238.51324730567282],[0.0, 0.0, 1.0]])
+			distCoeff = np.float32(self.pcm.distortionCoeffs())
+			K = self.pcm.fullIntrinsicMatrix()
+			K = np.float32(K)
+			rospy.loginfo("K.shape: (%d, %d)" % K.shape)
 
-		distCoeff = np.zeros((5,1),np.float64)
+			objp = np.zeros((5*6,3), np.float32)
+			objp[:,:2] = np.mgrid[0:5,0:6].T.reshape(-1,2)
+			objp = objp/unit_length
 
-		# TODO: add your coefficients here!
-		k1 = 0.0
-		k2 = 0.0
-		p1 = 0.0
-		p2 = 0.0
-		k3 = 0.0
+			rvecs, tvecs, inliers = cv2.solvePnPRansac(objp, object_corners, K, distCoeff)
 
-		distCoeff[0,0] = k1
-		distCoeff[1,0] = k2
-		distCoeff[2,0] = p1
-		distCoeff[3,0] = p2
-		distCoeff[4,0] = k3
+			#Need to confirm that these are correct (not sure which is psi)
+			xrot = rvecs[0]
+			yrot = rvecs[1]
+			zrot = rvecs[2]
 
-		objp = np.zeros((5*6,3), np.float32)
-		objp[:,:2] = np.mgrid[0:5,0:6].T.reshape(-1,2)
-		objp = objp/unit_length
+			psi = zrot
 
-		rvecs, tvecs, inliers = cv2.solvePnPRansac(objp, vehicle_corners_msg.corners, K, distCoeff)
+			#If pitch and rotation are outside of some range, we can return psi = 0 to stop the car since an incorrect detection has occured
 
-		#Need to confirm that these are correct (not sure which is psi)
-		xrot = rvecs[0]
-		yrot = rvecs[1]
-		zrot = rvecs[2]
+			#Calculating the length of the total displacement
+			rho = np.power((np.power(tvecs[0],2)+np.power(tvecs[1],2)+np.power(tvecs[2],2)),0.5)
 
-		psi = zrot
+			#Need to calculate theta in degrees given knowledge of the horizontal translation and distance
+			theta = np.arcsin(np.pi/2.) * 180. / np.pi 
 
-		#If pitch and rotation are outside of some range, we can return psi = 0 to stop the car since an incorrect detection has occured
+			pose_msg_out = VehiclePose()
 
-		#Calculating the length of the total displacement
-		rho = np.power((np.power(tvecs[0],2)+np.power(tvecs[1],2)+np.power(tvecs[2],2)),0.5)
+			pose_msg_out.rho.data = rho
+			pose_msg_out.theta.data = theta
+			pose_msg_out.psi.data = psi
 
-		#Need to calculate theta in degrees given knowledge of the horizontal translation and distance
-		theta = np.arcsin(np.pi/2.) * 180. / np.pi 
-
-		pose_msg_out = VehiclePose()
-
-		pose_msg_out.rho.data = rho
-		pose_msg_out.theta.data = theta
-		pose_msg_out.psi.data = psi
-
-		self.pub_pose.publish(pose_msg_out)
+			self.pub_pose.publish(pose_msg_out)
+			self.lock.unlock()
 
 if __name__ == '__main__': 
 	rospy.init_node('vehicle_filter_node', anonymous=False)

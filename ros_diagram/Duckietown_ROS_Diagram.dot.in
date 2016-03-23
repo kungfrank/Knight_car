@@ -1,12 +1,12 @@
 digraph D {
 	fontname="sans";
-	//rankdir=LR;
+	
 	penwidth="2.0"
 	edge [penwidth=1.5]
 	node [penwidth=2.0]
 
 	subgraph cluster_sensors {
-		label = "sensors";
+		label = "robot sensors";
 		camera_node [!NODE:compiled!, label="pi_camera\ncamera_node (SY,AC)"];
 		joy_node [!NODE:tested!, label="joy_node"];
  		joy[!TOPIC!, label="joy\nsensor_msgs/Joy.msg"];
@@ -25,7 +25,6 @@ digraph D {
 		tested      [!NODE:tested!,      label="tested"];
 		missing->designed->development->compiled->documented->tested;
 	}
-
 
 	//global_localizer[!NODE:missing!, label="global_localizer_node (LC)"];
 	lane_supervisor_node[!NODE:missing!, label="lane_control\nlane_supervisor_node (LP)"];
@@ -375,3 +374,4 @@ digraph D {
 
 
 }
+

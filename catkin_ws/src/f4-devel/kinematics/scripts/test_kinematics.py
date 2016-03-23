@@ -18,7 +18,7 @@ inverse_kinematics = Inverse_kinematics("./theta_dot_fi_function", "./v_fi_funct
 print 'fi_theta_dot_function:', forward_kinematics.fi_theta_dot_function, 'theta_dot_weights:', forward_kinematics.theta_dot_weights
 print 'fi_v_function:', forward_kinematics.fi_v_function, 'v_weights:', forward_kinematics.v_weights
 
-print 'forward'
+print 'forward:'
 theta_dot, v = forward_kinematics.evaluate(matrix([0]), matrix([0]))
 print 'd_L: 0, d_R: 0', 'theta_dot:', theta_dot, 'v:', v
 theta_dot, v = forward_kinematics.evaluate(matrix([0]), matrix([1]))
@@ -29,7 +29,8 @@ theta_dot, v = forward_kinematics.evaluate(matrix([1]), matrix([1]))
 print 'd_L: 1, d_R: 1', 'theta_dot:', theta_dot, 'v:', v
 theta_dot, v = forward_kinematics.evaluate(matrix([-1]), matrix([1]))
 print 'd_L: -1, d_R: 1', 'theta_dot:', theta_dot, 'v:', v
-print 'inverse'
+
+print 'inverse:'
 d_L, d_R = inverse_kinematics.evaluate(matrix([0]), matrix([0]))
 print 'theta_dot: 0', 'v: 0', 'd_L:', d_L, 'd_R:', d_R
 d_L, d_R = inverse_kinematics.evaluate(matrix([-0.5]), matrix([0.5]))
@@ -41,6 +42,7 @@ print 'theta_dot: 0', 'v: 1', 'd_L:', d_L, 'd_R:', d_R
 d_L, d_R = inverse_kinematics.evaluate(matrix([-1]), matrix([0]))
 print 'theta_dot: -1', 'v: 0', 'd_L:', d_L, 'd_R:', d_R
 
+print 'evaluate_and_integrate:'
 print forward_kinematics.evaluate_and_integrate(1,1,1)
 print forward_kinematics.evaluate_and_integrate(1,-1,1)
 print forward_kinematics.evaluate_and_integrate(1,0,1)
@@ -51,6 +53,14 @@ print forward_kinematics.evaluate_and_integrate(1.0,0.5,2)
 print forward_kinematics.evaluate_and_integrate(1.0,0.5,5)
 print forward_kinematics.evaluate_and_integrate(1.0,1.0,1)
 print forward_kinematics.evaluate_and_integrate(1.0,0.99,1)
+
+print 'propagate:'
+print forward_kinematics.propagate(0,0,0,0,1)
+print forward_kinematics.propagate(0,0,0,pi/2,1)
+print forward_kinematics.propagate(0,0,0,pi,1)
+print forward_kinematics.propagate(0,0,0,3*pi/2,1)
+print forward_kinematics.propagate(0,0,0,2*pi,1)
+print forward_kinematics.propagate(0,1,0,-pi,1)
 
 		#print 'd_L:', d_L
 		#print 'd_R:', d_R

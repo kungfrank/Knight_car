@@ -34,7 +34,7 @@ def getimgdatapts(cv2img):
 
 #priors
 def runKMeans(cv_img):
-	imgdata = getimgdatapts(cv_img[80:,:,:])
+	imgdata = getimgdatapts(cv_img[-100:,:,:])
 	kmc = KMeans(n_clusters = NUM_COLORS, max_iter = 100, n_init = 10, init = CENTERS)
 	kmc.fit_predict(imgdata)
 	trained_centers = kmc.cluster_centers_

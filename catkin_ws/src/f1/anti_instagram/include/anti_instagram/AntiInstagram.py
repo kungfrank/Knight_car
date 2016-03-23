@@ -9,16 +9,16 @@ class AntiInstagram(object):
 		self.shift = [0,0,0]
 		self.health = 0
 
-
 	def applyTransform(self,image):
 		corrected_image = kmeans.scaleandshift(image,self.scale,self.shift)
 		return corrected_image
 
 	def calculateTransform(self,image):
-		
+
 		trained,counter = kmeans.runKMeans(image)
 		mapping = kmeans.identifyColors(trained, kmeans.CENTERS)
 		r,g,b = kmeans.getparameters(mapping, trained, kmeans.CENTERS)
+		if r[0][0][0] == 0.0: return
 
 		self.scale = [r[0][0][0],g[0][0][0],b[0][0][0]]
 		self.shift = [r[1][0], g[1][0],b[1][0]]

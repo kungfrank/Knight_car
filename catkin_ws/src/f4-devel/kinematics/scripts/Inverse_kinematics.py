@@ -37,4 +37,6 @@ class Inverse_kinematics(object):
 		self.b[1] = theta_dot
 		self.b[2] = v
 		x = solve(self.A, self.b)
-		return [x[1,0], x[2,0]]
+		d_L = clip(x[1,0], -1.0, 1.0)
+		d_R = clip(x[2,0], -1.0, 1.0)
+		return [d_L, d_R]

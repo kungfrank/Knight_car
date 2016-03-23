@@ -41,6 +41,17 @@ print 'theta_dot: 0', 'v: 1', 'd_L:', d_L, 'd_R:', d_R
 d_L, d_R = inverse_kinematics.evaluate(matrix([-1]), matrix([0]))
 print 'theta_dot: -1', 'v: 0', 'd_L:', d_L, 'd_R:', d_R
 
+print forward_kinematics.evaluate_and_integrate(1,1,1)
+print forward_kinematics.evaluate_and_integrate(1,-1,1)
+print forward_kinematics.evaluate_and_integrate(1,0,1)
+print forward_kinematics.evaluate_and_integrate(0.5,0.5,1)
+print forward_kinematics.evaluate_and_integrate(1.0,0.5,0.5)
+print forward_kinematics.evaluate_and_integrate(1.0,0.5,1)
+print forward_kinematics.evaluate_and_integrate(1.0,0.5,2)
+print forward_kinematics.evaluate_and_integrate(1.0,0.5,5)
+print forward_kinematics.evaluate_and_integrate(1.0,1.0,1)
+print forward_kinematics.evaluate_and_integrate(1.0,0.99,1)
+
 		#print 'd_L:', d_L
 		#print 'd_R:', d_R
 		#print 'dt:', dt

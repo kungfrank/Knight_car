@@ -26,7 +26,6 @@ class Linear_learner(object):
 	# fit theta_dot from a training set. file filename must contain a matrix whose
 	# first four coloumns are the following:
 	# duty_Left, duty_Right, dt, theta_angle_pose_delta
-
 	def fit_theta_dot_from_file(self, filename):
 		training_set = genfromtxt(filename)
 		# extract motor duties, dt, and pose delta from the training set

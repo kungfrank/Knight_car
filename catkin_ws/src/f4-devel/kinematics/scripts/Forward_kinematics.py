@@ -28,3 +28,19 @@ class Forward_kinematics(object):
 		fi_theta_dot = self.fi_theta_dot_function.computeFi(d_L, d_R)
 		fi_v = self.fi_v_function.computeFi(d_L, d_R)
 		return [inner(fi_theta_dot, self.theta_dot_weights).flatten()[0], inner(fi_v, self.v_weights).flatten()[0]]
+
+	# compute forward kinematics. (theta_dot and v from d_L and d_R)
+	def evaluate_and_integrate(self, d_L, d_R, dt):
+		theta_dot, v = self.evaluate(d_L, d_R)
+		theta_delta = theta_dot*dt
+		theta_delta_complement = pi - theta_delta
+		if (theta_delta%2*pi) < 0.000001:
+			# straight line
+			c = v*dt
+		else:
+			# find chord length
+			s = v*dt
+			r = s/theta_delta
+			c = 2*r*sin(theta_delta/2.0)
+
+		return [theta_dot, v, theta_delta, c]

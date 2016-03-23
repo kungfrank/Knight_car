@@ -36,6 +36,7 @@ class VehicleFilterNode(object):
 
 		object_corners = np.ones((height*width,2))
 
+		#Need to generalize this for each vehicle/camera setup
 		K = np.array([[318.0625500880443, 0.0, 316.2438069992162],[0.0, 329.43825629530835, 238.51324730567282],[0.0, 0.0, 1.0]])
 
 		distCoeff = np.zeros((5,1),np.float64)

@@ -119,4 +119,4 @@ void forward_kinematics_node::wheelsCmdCallback(duckietown_msgs::WheelsCmdStampe
     pub_vehiclePose_.publish(odomPose_);
   }
   previousTimestamp_ = msg->header.stamp; // update time for next integration
-  }
+}

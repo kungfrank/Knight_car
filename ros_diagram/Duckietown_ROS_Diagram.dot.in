@@ -17,13 +17,31 @@ digraph D {
 	}
 
 	subgraph cluster_sensors {
-		label = "SENSORS";
+		label = "Sensors";
 		camera_node [!NODE:compiled!, label="pi_camera\ncamera_node (SY,AC)"];
 		joy_node [!NODE:tested!, label="joy_node"];
  		joy[!TOPIC!, label="joy\nsensor_msgs/Joy.msg"];
  		
  		image_compressed[!TOPIC!, label="~image/compressed\nsensor_msgs/CompressedImage.msg"];
  		camera_node->image_compressed;
+	}
+
+	subgraph cluster_actuators {
+		label = "Actuators";
+		wheels_command[!TOPIC!, label="wheels_driver_node/wheels_cmd\nduckietown_msgs/WheelsCmdStamped.msg"];
+	
+		
+		desired_signaling_state [!TOPIC!, label="~desired_signaling_state\nduckietown_msgs/CoordinationSignal.msg"];
+
+		LED_emitter_node     [!NODE:development!, label="LED\nLED_emitter_node"    ];
+		wheels_driver_node[!NODE:compiled!, label="dagu_car\nwheels_driver_node (DY,SY)"];
+	}
+
+	subgraph cluster_visualization {
+		label = "Visualization for operator";
+		image_with_lines[!TOPIC!, label="~image_with_lines\nsensor_msgs/Image.msg"];
+		object_detection_markers[!TOPIC!, label="~object_detection_markers\nvisualization_msgs/MarkerArray.msg"];
+
 	}
 
 	//global_localizer[!NODE:missing!, label="global_localizer_node (LC)"];
@@ -68,7 +86,7 @@ digraph D {
 	//map_representation[!TOPIC!, label="~map_representation"];
 	segment_list[!TOPIC!, label="~segment_list\nduckietown_msgs/SegmentList.msg"];
 	segment_list_proj[!TOPIC!, label="~segment_list_proj\nduckietown_msgs/SegmentList.msg"];
-	image_with_lines[!TOPIC!, label="~image_with_lines\nsensor_msgs/Image.msg"];
+	
 	
 	
 	lane_control_sup[!TOPIC!, label="~lane_control_supervised\nduckietown_msgs/WheelsCmdStamped.msg"];
@@ -104,12 +122,11 @@ digraph D {
 		!FEATURE!
 		label="F2-3: LED Detection";
 		
-		LED_emitter_node     [!NODE:development!, label="LED\nLED_emitter_node"    ];
+		
 		LED_detector_node    [!NODE:development!, label="LED\nLED_detector_node"   ];
 		LED_interpreter_node [!NODE:development!, label="LED\nLED_interpreter_node"];
 		LED_joystick_node    [!NODE:development!, label="LED\nLED_joystick_node"   ];
 		
-		desired_signaling_state [!TOPIC!, label="~desired_signaling_state\nduckietown_msgs/CoordinationSignal.msg"];
 		raw_led_detection       [!TOPIC!, label="~raw_led_detection\nled_detection/LEDDetectionArray.msg"];
 		signals_detection       [!TOPIC!, label="~signals_detection\nled_detection/SignalsDetection.msg"];
 	}
@@ -129,9 +146,7 @@ digraph D {
 		forward_kinematics_pose[!TOPIC!, label="~pose\nduckietown_msgs/Pose2DStamped.msg"];
 		forward_kinematics_velocity[!TOPIC!, label="~velocity\nduckietown_msgs/Twist2DStamped.msg"];
 
-		wheels_command[!TOPIC!, label="wheels_driver_node/wheels_cmd\nduckietown_msgs/WheelsCmdStamped.msg"];
-	
-		wheels_driver_node[!NODE:compiled!, label="dagu_car\nwheels_driver_node (DY,SY)"];
+		
 	}
 
 	subgraph cluster_f5 {
@@ -177,7 +192,6 @@ digraph D {
 		object_image_detection_list[!TOPIC!, label="~detection_list\nduckietown_msgs/ObjectImageDetectionList.msg"];
 		object_too_close[!TOPIC!, label="~object_too_close\nduckietown_msgs/BoolStamped.msg"];
 		object_projected_detection_list[!TOPIC!, label="~detection_list_proj\nduckietown_msgs/ObjectProjectedDetectionList.msg"];
-		object_detection_markers[!TOPIC!, label="~object_detection_markers\nvisualization_msgs/MarkerArray.msg"];
 		simple_stop_control[!TOPIC!, label="~control\nduckietown_msgs/Twist2DStamped.msg"];
 		mdoap_control[!TOPIC!, label="~control\nduckietown_msgs/Twist2DStamped.msg"];
 

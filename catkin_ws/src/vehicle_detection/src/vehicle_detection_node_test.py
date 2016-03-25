@@ -3,10 +3,10 @@ from cv_bridge import CvBridge, CvBridgeError
 from duckietown_msgs.msg import VehicleCorners
 from geometry_msgs.msg import Point32
 from sensor_msgs.msg import CompressedImage, Image
-import rospy
 import cv2
 import io
 import numpy as np
+import rospy
 import threading
 
 class VehicleDetectionTestNode(object):
@@ -43,7 +43,6 @@ class VehicleDetectionTestNode(object):
 		
 
 	def processCorners(self, corners_msg):
-		corners = []
 		for i in np.arange(len(corners_msg.corners)):
 			rospy.loginfo('Corners received : (x = %.2f, y = %.2f)' %
 					(corners_msg.corners[i].x, corners_msg.corners[i].y))

@@ -1,2 +1,3 @@
 Header header
 geometry_msgs/Point32[] corners
+bool detection

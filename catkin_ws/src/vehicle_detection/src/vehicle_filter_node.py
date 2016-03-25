@@ -31,7 +31,9 @@ class VehicleFilterNode(object):
 		thread.start()
 	
 	def processCameraInfo(self, camera_info_msg):
-		self.pcm.fromCameraInfo(camera_info_msg)
+		if self.lock.testandset():
+			self.pcm.fromCameraInfo(camera_info_msg)
+			self.lock.unlock()
 
 	def cbCorners(self, vehicle_corners_msg):
 		# Start a daemon thread to process the image

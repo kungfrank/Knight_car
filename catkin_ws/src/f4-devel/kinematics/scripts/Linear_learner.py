@@ -8,20 +8,9 @@ from Duty_fi_function import *
 
 
 class Linear_learner(object):
-	def __init__(self, theta_dot_fi_function_file, v_fi_function_file, theta_dot_weights_file, v_weights_file):
-		# select fi functions dynamically from configuration file
-		with open(theta_dot_fi_function_file, 'r') as fi_functions_file:
-			fi_functions=fi_functions_file.readlines()
-		fi_theta_dot_function = fi_functions[0].replace('\n', '')
-		with open(v_fi_function_file, 'r') as fi_functions_file:
-			fi_functions=fi_functions_file.readlines()
-		fi_v_function = fi_functions[0].replace('\n', '')
-		self.fi_theta_dot_function = globals()[fi_theta_dot_function]()
-		self.fi_v_function = globals()[fi_v_function]()
-
-		# save the name of the weights files
-		self.theta_dot_weights_file = theta_dot_weights_file
-		self.v_weights_file = v_weights_file
+	def __init__(self, theta_dot_fi_function_name, v_fi_function_name):
+		self.fi_theta_dot_function = globals()[theta_dot_fi_function_name]()
+		self.fi_v_function = globals()[v_fi_function_name]()
 
 	# fit theta_dot from a training set. file filename must contain a matrix whose
 	# first four coloumns are the following:
@@ -33,7 +22,7 @@ class Linear_learner(object):
 		d_R = training_set[:, [1]]
 		dt = training_set[:, [2]]
 		theta_angle_pose_delta = training_set[:, [3]]
-		self.fit_theta_dot(d_L, d_R, dt, theta_angle_pose_delta)
+		return self.fit_theta_dot(d_L, d_R, dt, theta_angle_pose_delta)
 
 	# fit v from a training set. file filename must contain a matrix whose
 	# first six coloumns are the following:
@@ -47,7 +36,7 @@ class Linear_learner(object):
 		theta_angle_pose_delta = training_set[:, [3]]
 		x_axis_pose_delta = training_set[:, [4]]
 		y_axis_pose_delta = training_set[:, [5]]
-		self.fit_v(d_L, d_R, dt, theta_angle_pose_delta, x_axis_pose_delta, y_axis_pose_delta)
+		return self.fit_v(d_L, d_R, dt, theta_angle_pose_delta, x_axis_pose_delta, y_axis_pose_delta)
 
 
 	def fit_theta_dot(self, d_L, d_R, dt, theta_angle_pose_delta):
@@ -62,10 +51,10 @@ class Linear_learner(object):
 
 		# Find the weights for theta_dot
 		# We use a simple least squares fit
-		theta_dot_weights = linalg.lstsq(Fi_theta_dot, theta_dot)[0]
+		theta_dot_weights = matrix(linalg.lstsq(Fi_theta_dot, theta_dot)[0].flatten())
 
-		# save weights for theta_dot
-		savetxt(self.theta_dot_weights_file, theta_dot_weights)
+		return theta_dot_weights
+
 
 	def fit_v(self, d_L, d_R, dt, theta_angle_pose_delta, x_axis_pose_delta, y_axis_pose_delta):
 		# we assume that theta_angle_pose_delta is expressed in radians
@@ -84,7 +73,6 @@ class Linear_learner(object):
 
 		# Find the weights for v
 		# We use a simple least squares fit
-		v_weights = linalg.lstsq(Fi_v, v)[0]
+		v_weights = matrix(linalg.lstsq(Fi_v, v)[0].flatten())
 
-		# save weights for v and theta_dot
-		savetxt(self.v_weights_file, v_weights)
+		return v_weights

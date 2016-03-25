@@ -8,21 +8,12 @@ import csv
 from Duty_fi_function import *
 
 class Inverse_kinematics(object):
-	def __init__(self, theta_dot_fi_function_file, v_fi_function_file, theta_dot_weights_file, v_weights_file):
-		
-		# select fi functions dynamically from configuration file
-		with open(theta_dot_fi_function_file, 'r') as fi_functions_file:
-			fi_functions=fi_functions_file.readlines()
-		fi_theta_dot_function = fi_functions[0].replace('\n', '')
-		with open(v_fi_function_file, 'r') as fi_functions_file:
-			fi_functions=fi_functions_file.readlines()
-		fi_v_function = fi_functions[0].replace('\n', '')
-		fi_theta_dot_function = globals()[fi_theta_dot_function]()
-		fi_v_function = globals()[fi_v_function]()
-
-		# input weights from file
-		theta_dot_weights = matrix(genfromtxt(theta_dot_weights_file))
-		v_weights = matrix(genfromtxt(v_weights_file))
+	# Inverse_kinematics takes as input the name of the two feature functions to use as well as
+	# the weights for theta and v.
+	def __init__(self, fi_theta_dot_function_name, fi_v_function_name, theta_dot_weights, v_weights):
+		# load fi_functions (notice that they are used only once, so we don't need to save them)
+		fi_theta_dot_function = globals()[fi_theta_dot_function_name]()
+		fi_v_function = globals()[fi_v_function_name]()
 
 		# set up the liner system to be solved
 		# currently this only works for up to three features per fi function

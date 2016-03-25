@@ -6,8 +6,7 @@ import numpy as np
 from sensor_msgs.msg import CompressedImage,Image
 import time
 
-# bridge = CvBridge()
-# publisher = None
+
 
 class AprilPrePros(object):
     """ """
@@ -46,6 +45,10 @@ class AprilPrePros(object):
         self.global_v_crop   = rospy.get_param("~global_v_crop")
         self.global_v_off    = rospy.get_param("~global_v_off")
         
+        #Downsampling factors
+        self.fast_x_down     = rospy.get_param("~fast_x_down")
+        self.global_x_down   = rospy.get_param("~global_x_down")
+        
         rospy.loginfo("[%s] Parameters Loaded " %(self.node_name))
         
         
@@ -82,9 +85,14 @@ class AprilPrePros(object):
             #crop_img = self.camera_IMG
             
             # Downsample
-            h,w = crop_img.shape[:2]
-            #processed_img = cv2.pyrDown(crop_img,dstsize = (w/2,h/2))
-            processed_img = crop_img
+            if self.global_x_down == 1:
+                """ No down sampling """
+                processed_img = crop_img
+                
+            else:
+                h,w           = crop_img.shape[:2]
+                dstsize       = ( int( w / self.global_x_down ) , int( h / self.global_x_down ) )
+                processed_img = cv2.pyrDown( crop_img , dstsize )
     
             # Publish Message
             img_msg = self.bridge.cv2_to_imgmsg( processed_img , "bgr8")
@@ -115,9 +123,14 @@ class AprilPrePros(object):
             #crop_img = self.camera_IMG
             
             # Downsample
-            h,w = crop_img.shape[:2]
-            #processed_img = cv2.pyrDown(crop_img,dstsize = (w/2,h/2))
-            processed_img = crop_img
+            if self.fast_x_down == 1:
+                """ No down sampling """
+                processed_img = crop_img
+                
+            else:
+                h,w           = crop_img.shape[:2]
+                dstsize       = ( int( w / self.fast_x_down ) , int( h / self.fast_x_down ) )
+                processed_img = cv2.pyrDown( crop_img , dstsize )
     
             # Publish Message
             img_msg = self.bridge.cv2_to_imgmsg( processed_img , "bgr8")
@@ -130,6 +143,8 @@ class AprilPrePros(object):
         else:
             
             rospy.loginfo("[%s] Fast Detection: No camera image to process " %(self.node_name))
+            
+        
 
 
 if __name__ == '__main__': 

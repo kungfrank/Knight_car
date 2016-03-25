@@ -8,12 +8,16 @@ from Linear_learner import Linear_learner
 from Forward_kinematics import Forward_kinematics
 from Inverse_kinematics import Inverse_kinematics
 
+#self.theta_dot_weights = genfromtxt(theta_dot_weights_file)
+#self.v_weights = genfromtxt(v_weights_file)
 
-learner = Linear_learner("./theta_dot_fi_function", "./v_fi_function", "./theta_dot_weights_file", "./v_weights_file")
-learner.fit_theta_dot_from_file("./training_set")
-learner.fit_v_from_file("./training_set")
-forward_kinematics = Forward_kinematics("./theta_dot_fi_function", "./v_fi_function", "./theta_dot_weights_file", "./v_weights_file")
-inverse_kinematics = Inverse_kinematics("./theta_dot_fi_function", "./v_fi_function", "./theta_dot_weights_file", "./v_weights_file")
+theta_dot_fi_function = 'Duty_fi_theta_dot_naive'
+v_fi_function = 'Duty_fi_v_naive'
+learner = Linear_learner(theta_dot_fi_function, v_fi_function)
+theta_dot_weights = learner.fit_theta_dot_from_file("./training_set")
+v_weights = learner.fit_v_from_file("./training_set")
+forward_kinematics = Forward_kinematics(theta_dot_fi_function, v_fi_function, theta_dot_weights, v_weights)
+inverse_kinematics = Inverse_kinematics(theta_dot_fi_function, v_fi_function, theta_dot_weights, v_weights)
 
 print 'fi_theta_dot_function:', forward_kinematics.fi_theta_dot_function, 'theta_dot_weights:', forward_kinematics.theta_dot_weights
 print 'fi_v_function:', forward_kinematics.fi_v_function, 'v_weights:', forward_kinematics.v_weights

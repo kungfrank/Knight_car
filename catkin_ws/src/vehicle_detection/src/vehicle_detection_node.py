@@ -52,7 +52,9 @@ class VehicleDetectionNode(object):
 		data = yaml.load(stream)
 		stream.close()
 		self.chessboard_dims = tuple(data['chessboard_dims']['data'])
+		self.detection_max_time = data['detection_max_time']
 		rospy.loginfo('chessboard dim : %s' % (self.chessboard_dims,))
+		rospy.loginfo('detection max time: %.4f' % (self.detection_max_time))
 
 	def cbImage(self, image_msg):
 		# Start a daemon thread to process the image
@@ -68,7 +70,7 @@ class VehicleDetectionNode(object):
 					cv2.CV_LOAD_IMAGE_COLOR)
 			rospy.loginfo("Image Shape: [%d x %d]." % 
 					(image_cv.shape[0], image_cv.shape[1]))
-			with stopit.ThreadingTimeout(0.2) as to_ctx_mgr:
+			with stopit.ThreadingTimeout(self.detection_max_time) as to_ctx_mgr:
 				start = rospy.Time.now()
 				(detection, corners) = cv2.findChessboardCorners(image_cv, 
 						self.chessboard_dims)

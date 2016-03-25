@@ -1,0 +1,17 @@
+<launch>
+	<arg name="veh" doc="Name of vehicle" />
+	<arg name="original_image_file" doc="full path to original image" />
+
+	<remap from="vehicle_avoidance_control_node/vehicle_avoidance_control" to="vehicle_avoidance_control_node_test/vehicle_avoidance_control" />
+	<remap from="vehicle_avoidance_control_node/vehicle_detected" to="vehicle_avoidance_control_node_test/vehicle_detected" />
+
+	<include file="$(find vehicle_detection)/launch/vehicle_avoidance_control_node.launch">
+		<arg name="veh" value="$(arg veh)"/>
+		<arg name="local" value="true" />
+	</include>
+
+	<remap from="vehicle_avoidance_control_node_test/vehicle_pose" to="vehicle_avoidance_control_node/vehicle_pose" />
+	<group ns="$(arg veh)">
+        <node name="vehicle_avoidance_control_node_test" pkg="vehicle_detection" type="vehicle_avoidance_control_node_test.py" output="screen" />
+	</group>
+</launch>

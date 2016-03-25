@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-from std_msgs.msg import String
+from std_msgs.msg import String, Bool
 from duckietown_msgs.msg import WheelsCmdStamped, VehiclePose
 
 class f6_controller:
@@ -14,13 +14,13 @@ class f6_controller:
         self.subscriber = rospy.Subscriber("~vehicle_pose",VehiclePose, self.callback,  queue_size = 1)
 
     def callback(self,data):
-        distance = data.p
+        distance = data.rho.data
         min_distance = 0.7 #don't want to approach any closer than this distance in meters
         vehicle_detected = False
-        if distance < min_distance
+        if distance < min_distance:
             vehicle_detected = True
-        self.vehicle_detected_pub.publish(vehicle_detected)
         self.publishCmd()
+        self.vehicle_detected_pub.publish(vehicle_detected)
 
     def publishCmd(self): #maybe include a stamp one day
         wheels_cmd_msg = WheelsCmdStamped()
@@ -34,7 +34,7 @@ class f6_controller:
    
 def f6_control_node():
 
-    rospy.init_node('f6_control_node', anonymous=True)
+    rospy.init_node('vehicle_avoidance_control_node', anonymous=True)
     controller = f6_controller()
 
     try:

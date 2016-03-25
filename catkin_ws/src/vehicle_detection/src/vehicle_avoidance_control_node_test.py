@@ -2,7 +2,7 @@
 
 import rospy
 from std_msgs.msg import String, Bool
-from duckietown_msgs.msg import WheelsCmdStamped, VehiclePose
+from duckietown_msgs.msg import WheelsCmdStamped, VehiclePose, FSMState
 
 class VehicleAvoidanceControlNodeTest:
 
@@ -11,6 +11,8 @@ class VehicleAvoidanceControlNodeTest:
 
         self.wheels_cmd_sub = rospy.Subscriber("~vehicle_avoidance_control",WheelsCmdStamped, self.cbCmd, queue_size = 1)
         self.vehicle_detected_sub = rospy.Subscriber("~vehicle_detected",Bool, self.cbDetected, queue_size=1)
+        self.in_lane_pub = rospy.Publisher("~in_lane",Bool, queue_size=1)
+        self.fsm_mode_sub = rospy.Subscriber("~mode",FSMState,self.cbMode,queue_size=1)
         self.pose_pub = rospy.Publisher("~vehicle_pose",VehiclePose, queue_size = 1)
 
         self.rho = 0.1
@@ -18,6 +20,7 @@ class VehicleAvoidanceControlNodeTest:
         rospy.loginfo("Initialization of [%s] completed" % (self.node_name))
 
         rospy.Timer(rospy.Duration.from_sec(1.0), self.pubPose)
+        rospy.Timer(rospy.Duration.from_sec(1.0), self.pubInLane)
 
     def pubPose(self,args=None):
         pose_msg_out = VehiclePose()
@@ -30,6 +33,9 @@ class VehicleAvoidanceControlNodeTest:
 
         self.pose_pub.publish(pose_msg_out)
 
+    def pubInLane(self,args=None):
+        self.in_lane_pub.publish(True)
+
     def cbCmd(self, cmd_msg):
         rospy.loginfo('Command received : (left = %.2f, right = %.2f)' %
                     (cmd_msg.vel_left, cmd_msg.vel_right))
@@ -37,6 +43,9 @@ class VehicleAvoidanceControlNodeTest:
     def cbDetected(self,detected_msg):
         rospy.loginfo('Vehicle detected? : %r' %
                     (detected_msg))
+
+    def cbMode(self, mode_msg):
+        rospy.loginfo('Mode : %d' % (mode_msg.state))
 
 if __name__ == '__main__':
     rospy.init_node('vehicle_avoidance_control_node_test', anonymous=False)

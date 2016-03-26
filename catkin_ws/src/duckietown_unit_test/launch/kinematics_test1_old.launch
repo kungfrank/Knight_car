@@ -7,7 +7,6 @@
     <arg name="v" default="0.0" doc="The linear velocity for the test trajectory" />
     <arg name="omega" default="0.0" doc="The angular velocity for the test trajectory" />
     <arg name="gui" default="true" doc="Show a gui automatically when running this test" />
-    <arg name="vicon" default="false" doc="Run a pose_to_path_node on a vicon/measurement topic" />
 
     <!-- run forward_kinematics_node -->
     <remap from="forward_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />

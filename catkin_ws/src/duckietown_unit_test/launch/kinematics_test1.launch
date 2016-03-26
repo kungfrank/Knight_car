@@ -26,8 +26,17 @@
         <arg name="param_file_name" value="$(arg param_file_name)"/>
     </include>
 
+    <!-- run position_filter_node -->
+    <remap from="position_filter_node/velocity" to="forward_kinematics_node/velocity" />
+    <include file="$(find kinematics)/launch/position_filter_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="local" value="$(arg local)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+    </include>
+
     <!-- run the pose2d_to_path_node -->
-    <remap from="pose2d_to_path_node/pose" to="forward_kinematics_node/pose" />
+    <remap from="pose2d_to_path_node/pose" to="position_filter_node/pose" />
     <include file="$(find kinematics)/launch/pose2d_to_path_node.launch">
         <arg name="veh" value="$(arg veh)"/>
     </include>

@@ -14,7 +14,7 @@ class ForwardKinematicsNode(object):
         self.node_name = 'forward_kinematics_node'
 
         # Read parameters
-        self.veh_name = self.setupParameter("~veh_name","megaman")
+        # self.veh_name = self.setupParameter("~veh_name","megaman")
         fi_theta_dot_function = self.setupParameter('~fi_theta_dot_function', 'Duty_fi_theta_dot_naive')
         fi_v_function = self.setupParameter('~fi_v_function', 'Duty_fi_v_naive')
         theta_dot_weights = self.setupParameter('~theta_dot_weights', [-1.0])
@@ -26,12 +26,6 @@ class ForwardKinematicsNode(object):
         #Setup the publisher and subscriber
         self.sub = rospy.Subscriber("~wheels_cmd", WheelsCmdStamped, self.wheelsCmdCallback)
         self.pub_velocity = rospy.Publisher("~velocity", Twist2DStamped, queue_size=1)
-        self.pub_pose = rospy.Publisher("~pose", Pose2DStamped, queue_size=1)
-
-        #Keep track of the last known pose
-        self.last_pose = Pose2DStamped()
-        self.last_theta_dot = 0
-        self.last_v = 0
 
         rospy.loginfo("[%s] has started", self.node_name)
 
@@ -46,29 +40,6 @@ class ForwardKinematicsNode(object):
         msg_velocity.v = v
         msg_velocity.omega = theta_dot
         self.pub_velocity.publish(msg_velocity)
-
-        delta_t = (msg_wheels_cmd.header.stamp - self.last_pose.header.stamp).to_sec()
-        [theta_delta, chord] = self.fk.integrate(self.last_theta_dot, self.last_v, delta_t)
-
-        if self.last_pose.header.stamp.to_sec() > 0:
-            delta_t = (msg_wheels_cmd.header.stamp - self.last_pose.header.stamp).to_sec()
-            [theta_res, x_res, y_res] = self.fk.propagate(self.last_pose.theta, self.last_pose.x, self.last_pose.y, theta_delta, chord)
-            self.last_pose.x = x_res
-            self.last_pose.y = y_res
-            self.last_pose.theta = theta_res
-
-            # Stuff the new pose into a message and publish
-            msg_pose = Pose2DStamped()
-            msg_pose.header = msg_wheels_cmd.header
-            msg_pose.header.frame_id = self.veh_name
-            msg_pose.x = x_res
-            msg_pose.y = y_res
-            msg_pose.theta = theta_res
-            self.pub_pose.publish(msg_pose)
-        
-        self.last_pose.header.stamp = msg_wheels_cmd.header.stamp
-        self.last_theta_dot = theta_dot
-        self.last_v = v
 
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

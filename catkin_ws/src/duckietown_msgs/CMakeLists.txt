@@ -53,7 +53,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   CarControl.msg
-  LEDControl.msg
+#  LEDControl.msg
   DuckieSensor.msg
   LanePose.msg
   WheelsCmd.msg
@@ -70,9 +70,9 @@ add_message_files(
   Rects.msg
   SceneSegments.msg
   CoordinationClearance.msg
-  IntersectionDetection.msg
-  CoordinationSignal.msg
-  TrafficLightDetection.msg
+#  IntersectionDetection.msg
+#  CoordinationSignal.msg
+#  TrafficLightDetection.msg
   VehicleDetection.msg
   FSMState.msg
   BoolStamped.msg

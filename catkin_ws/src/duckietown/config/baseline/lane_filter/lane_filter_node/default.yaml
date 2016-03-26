@@ -11,6 +11,7 @@ phi_min: -0.7
 phi_max: 0.7
 cov_v: 0.5
 linewidth_white: 0.05
-linewidth_yellow: 0.03
-lanewidth: 0.19
-min_max: 0.3
+linewidth_yellow: 0.025
+lanewidth: 0.20
+min_max: 0.4
+min_segs: 10

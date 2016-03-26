@@ -14,7 +14,7 @@ class RandomAprilTagTurnsNode(object):
 
         # Setup publishers
         # self.pub_topic_a = rospy.Publisher("~topic_a",String, queue_size=1)
-        self.pub_wheels_done = rospy.Publisher("~turn_type",Int16, queue_size=1)
+        self.pub_turn_type = rospy.Publisher("~turn_type",Int16, queue_size=1, latch=True)
 
         # Setup subscribers
         # self.sub_topic_b = rospy.Subscriber("~topic_b", String, self.cbTopic)
@@ -36,10 +36,11 @@ class RandomAprilTagTurnsNode(object):
         self.fsm_mode = mode_msg.state
             
     def cbTag(self, tag_msgs):
-#loop through list of april tags
+        #loop through list of april tags
         for taginfo in tag_msgs.infos:
             print tag_msg
             if(taginfo.tag_type == taginfo.SIGN):
+                aailableTurns = []
                 #go through possible intersection types
                 signType = taginfo.traffic_sign_type
                 if(signType == NO_RIGHT_TURN or signType == LEFT_T_INTERSECT):
@@ -52,15 +53,10 @@ class RandomAprilTagTurnsNode(object):
                     availableTurns = [0,2]
 
                     #now randomly choose a possible direction
-                chosenTurn = numpy.random.randint(1,len(availableTurns))
-
-
-                self.mode = mode_msg.INTERSECTION_CONTRO
-            
-            rospy.loginfo("Turn type now: %i" %(self.turn_type))
-        else:
-            # If not in intersection control mode anymore, pubisher intersection_done False.
-            self.setIntersectionDone(False)
+                if(len(availableTurns)>0):
+                    chosenTurn = numpy.random.randint(1,len(availableTurns))
+                    pub_turn_type.pub(chosenTurn)
+                    rospy.loginfo("Turn type now: %i" %(self.turn_type))
 
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

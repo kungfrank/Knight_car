@@ -4,5 +4,7 @@
   radius_l:     0.02
   radius_r:     0.02
   baseline_lr:  0.217
-  theta_dot_weights: [-2.0]
-  v_weights: [2.0]
+  fi_theta_dot_function: Duty_fi_theta_dot_naive
+  fi_v_function: Duty_fi_v_naive
+  theta_dot_weights: [-1.0]
+  v_weights: [1.0]

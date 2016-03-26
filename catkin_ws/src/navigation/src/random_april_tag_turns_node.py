@@ -34,28 +34,34 @@ class RandomAprilTagTurnsNode(object):
     def cbMode(self, mode_msg):
         #print mode_msg
         self.fsm_mode = mode_msg.state
+        if(self.fsm_mode != mode_msg.INTERSECTION_CONTROL):
+            self.pub_turn_type.publish(-1)
+            rospy.loginfo("Turn type now: %i" %(self.turn_type))
+
+
             
     def cbTag(self, tag_msgs):
         #loop through list of april tags
         for taginfo in tag_msgs.infos:
             print taginfo
+            rospy.loginfo("[%s] taginfo." %(taginfo))
             if(taginfo.tag_type == taginfo.SIGN):
                 availableTurns = []
                 #go through possible intersection types
                 signType = taginfo.traffic_sign_type
-                if(signType == NO_RIGHT_TURN or signType == LEFT_T_INTERSECT):
+                if(signType == taginfo.NO_RIGHT_TURN or signType == taginfo.LEFT_T_INTERSECT):
                     availableTurns = [1,2]
-                elif (signType == NO_LEFT_TURN or signType == RIGHT_T_INTERSECT):
+                elif (signType == taginfo.NO_LEFT_TURN or signType == taginfo.RIGHT_T_INTERSECT):
                     availableTurns = [0,1]
-                elif (signType== FOUR_WAY):
+                elif (signType== taginfo.FOUR_WAY):
                     availableTurns = [0,1,2]
-                elif (signType == T_INTERSECTION):
+                elif (signType == taginfo.T_INTERSECTION):
                     availableTurns = [0,2]
 
                     #now randomly choose a possible direction
                 if(len(availableTurns)>0):
                     chosenTurn = numpy.random.randint(1,len(availableTurns))
-                    pub_turn_type.pub(chosenTurn)
+                    self.pub_turn_type.publish(chosenTurn)
                     rospy.loginfo("Turn type now: %i" %(self.turn_type))
 
     def setupParameter(self,param_name,default_value):

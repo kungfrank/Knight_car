@@ -20,7 +20,7 @@
       <arg name="camera" value="false"/> <!-- camera is launched by navigation -->
     </include>
 
-    <remap from="random_april_tag_turns_node/mode" to="fsm/mode"/>
+    <remap from="random_april_tag_turns_node/mode" to="fsm_node/mode"/>
     <remap from="random_april_tag_turns_node/tag"  to="apriltags_postprocessing_global_node/apriltags"/>
     <include file="$(find navigation)/launch/random_april_tag_turns_node.launch">
       <arg name="veh" value="$(arg veh)"/>        

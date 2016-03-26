@@ -53,14 +53,16 @@ class WheelsCmdSwitchNode(object):
     def cbMode(self,mode_msg):
         if not self.mode_msg.state == mode_msg.state:
             rospy.loginfo("[%s] Switching to %s" %(self.node_name,self.mode_name_dict[mode_msg.state]))
-        self.mode_msg = mode_msg
-        # Always publish a cmd when changing mode.
-        self.pubWheelsCmd()
+            #THESE LINES WERE NOT IN THE IF STATEMENT ORIGINALLY!!!!!
+            self.mode_msg = mode_msg
+            # Always publish a cmd when changing mode.
+            self.pubWheelsCmd()
 
     def cbWheelsCmd(self,cmd_msg,cb_args):
         # Save the cmd_msg 
         self.cmd_dict[cb_args] = cmd_msg
         # Publish if the received cmd channel matches the current mode
+        #rospy.loginfo("cb_args is [%d]. Mode is [%d]." %(cb_args, self.mode_msg.state))
         if cb_args == self.mode_msg.state:
             self.pubWheelsCmd()
 

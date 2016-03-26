@@ -43,7 +43,7 @@ class FSMNode(object):
         self.rate = rospy.Rate(30) # 10hz
 
     def cbVehicleDetected(self, in_lane_msg):
-        print in_lane_msg
+        print "FSM Vehicle Detected: [%r]" % in_lane_msg
         self.vehicle_detected = in_lane_msg.data
         self.updateState()
 

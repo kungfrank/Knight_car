@@ -13,6 +13,7 @@ class VehicleAvoidanceControlNodeTest:
         self.vehicle_detected_sub = rospy.Subscriber("~vehicle_detected",Bool, self.cbDetected, queue_size=1)
         self.in_lane_pub = rospy.Publisher("~in_lane",Bool, queue_size=1)
         self.fsm_mode_sub = rospy.Subscriber("~mode",FSMState,self.cbMode,queue_size=1)
+        self.wheel_cmd_switch_sub = rospy.Subscriber("~switch_commands",WheelsCmdStamped,self.cbWheelSwitch, queue_size=1)
         self.pose_pub = rospy.Publisher("~vehicle_pose",VehiclePose, queue_size = 1)
 
         self.rho = 0.1
@@ -35,6 +36,10 @@ class VehicleAvoidanceControlNodeTest:
 
     def pubInLane(self,args=None):
         self.in_lane_pub.publish(True)
+
+    def cbWheelSwitch(self,switch_msg):
+        rospy.loginfo('SWITCH OUTPUT : (left = %.2f, right = %.2f)' % 
+            (switch_msg.vel_left, switch_msg.vel_right))
 
     def cbCmd(self, cmd_msg):
         rospy.loginfo('Command received : (left = %.2f, right = %.2f)' %

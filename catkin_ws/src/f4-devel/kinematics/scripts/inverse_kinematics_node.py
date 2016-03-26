@@ -15,9 +15,13 @@ class InverseKinematicsNode(object):
 
         # Read parameters
         #self.veh_name = self.setupParameter("~veh_name","megaman")
+        theta_dot_weights = self.setupParameter("~theta_dot_weights", [-1.0])
+        rospy.loginfo("theta_dot_weights: %s", theta_dot_weights)
+        v_weights = self.setupParameter("~v_weights", [1.0])
+        rospy.loginfo("v_weights: %s", v_weights)
 
         # Setup the inverse kinematics model
-        self.ik = Inverse_kinematics.Inverse_kinematics('Duty_fi_theta_dot_naive', 'Duty_fi_v_naive', matrix([-1.0]), matrix([1.0]))
+        self.ik = Inverse_kinematics.Inverse_kinematics('Duty_fi_theta_dot_naive', 'Duty_fi_v_naive', matrix(theta_dot_weights), matrix(v_weights))
 
         #Setup the publisher and subscriber
         self.sub_car_cmd = rospy.Subscriber("~car_cmd", Twist2DStamped, self.carCmdCallback)
@@ -36,6 +40,12 @@ class InverseKinematicsNode(object):
         msg_wheels_cmd.vel_left = d_L
         msg_wheels_cmd.vel_right = d_R
         self.pub_wheels_cmd.publish(msg_wheels_cmd)
+
+    def setupParameter(self,param_name,default_value):
+        value = rospy.get_param(param_name,default_value)
+        rospy.set_param(param_name,value) #Write to parameter server for transparancy
+        rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
+        return value
 
 if __name__ == '__main__':
     rospy.init_node('inverse_kinematics_node', anonymous=False)

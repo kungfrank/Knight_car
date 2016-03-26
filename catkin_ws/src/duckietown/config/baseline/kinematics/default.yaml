@@ -4,3 +4,5 @@
   radius_l:     0.02
   radius_r:     0.02
   baseline_lr:  0.217
+  theta_dot_weights: [-2.0]
+  v_weights: [2.0]

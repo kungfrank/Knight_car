@@ -38,9 +38,9 @@ class RandomAprilTagTurnsNode(object):
     def cbTag(self, tag_msgs):
         #loop through list of april tags
         for taginfo in tag_msgs.infos:
-            print tag_msg
+            print taginfo
             if(taginfo.tag_type == taginfo.SIGN):
-                aailableTurns = []
+                availableTurns = []
                 #go through possible intersection types
                 signType = taginfo.traffic_sign_type
                 if(signType == NO_RIGHT_TURN or signType == LEFT_T_INTERSECT):

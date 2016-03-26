@@ -4,6 +4,7 @@ from cv_bridge import CvBridge, CvBridgeError
 import cv2
 import numpy as np
 from sensor_msgs.msg import CompressedImage,Image
+from duckietown_msgs.msg import BoolStamped
 import time
 
 
@@ -16,8 +17,14 @@ class AprilPrePros(object):
         rospy.loginfo("[%s] Initializing " %(self.node_name))
         self.bridge = CvBridge()
  
+        self.switch = False
+
+        self.glob = True # LP: read these from params?
+        self.fast = False 
+
         self.pub_ToApril_global = rospy.Publisher( "apriltags_global/image_raw", Image, queue_size=1)
         self.pub_ToApril_fast   = rospy.Publisher( "apriltags_fast/image_raw", Image, queue_size=1)
+        self.sub_switch         = rospy.Subscriber("apriltags/switch", BoolStamped, self.cbSwitch, queue_size=1)
         self.sub_compressed_img = rospy.Subscriber( "camera_node/image/compressed" , CompressedImage, self.callback, queue_size=1)
         
         self.param_timer  = rospy.Timer(rospy.Duration.from_sec(1.0),    self.load_params  )
@@ -59,8 +66,13 @@ class AprilPrePros(object):
         self.fast_timer   = rospy.Timer(rospy.Duration.from_sec( self.fast_period ), self.fast_detection )
         
 
+    def cbSwitch(self,msg):
+        self.switch = msg.data
+
     def callback(self,msg):
         """ Process camera IMG """ 
+        if not self.switch:
+            return
         
         # Load message
         #cv_img = self.bridge.imgmsg_to_cv2( msg.data )
@@ -73,7 +85,9 @@ class AprilPrePros(object):
         
     def global_detection(self,event):
         """ Pre-pros image and publish """
-        
+        if not self.switch or not self.glob:
+            return
+
         if not self.camera_IMG == None:
         
             # Crop
@@ -111,7 +125,9 @@ class AprilPrePros(object):
             
     def fast_detection(self,event):
         """ Pre-pros image and publish """
-        
+        if not self.switch or not self.fast:
+            return
+
         if not self.camera_IMG == None:
         
             # Crop

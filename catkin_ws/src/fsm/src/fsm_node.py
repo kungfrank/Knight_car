@@ -20,6 +20,7 @@ class FSMNode(object):
 
         # Setup publishers
         self.pub_topic_mode = rospy.Publisher("~mode",FSMState, queue_size=1, latch=True)
+        self.pub_topic_april_tags_switch = rospy.Publisher("apriltags/switch",BoolStamped, queue_size=1, latch=True)
         
         # Setup subscribers
         self.sub_topic_in_lane = rospy.Subscriber("~lane_pose", LanePose, self.cbInLane, queue_size=1)
@@ -51,21 +52,32 @@ class FSMNode(object):
         self.updateState(go_msg.header.stamp)
 
     def updateState(self,stamp):
+        previousState = self.actual.state
         if(self.actual.state == self.actual.LANE_FOLLOWING):
             if(self.at_stop_line == True):
                 #update the state
                 self.actual.state = self.actual.COORDINATION
+                self.setAprilTagSwitch(False)
         elif(self.actual.state == self.actual.COORDINATION):
             if(self.intersection_go == True):
                 self.actual.state = self.actual.INTERSECTION_CONTROL
                 self.intersection_go = False
+                self.setAprilTagSwitch(True)
         elif(self.actual.state == self.actual.INTERSECTION_CONTROL):
             if(self.in_lane == True and self.intersection_done == True):
                 self.actual.state = self.actual.LANE_FOLLOWING
                 self.intersection_done = False
+                self.setAprilTagSwitch(False)
 
-        self.actual.header.stamp = stamp
-        self.pub_topic_mode.publish(self.actual)
+        if(previousState !=  self.actual.state):
+            self.actual.header.stamp = stamp
+            self.pub_topic_mode.publish(self.actual)
+
+    def setAprilTagSwitch(self,state):
+        aprilTagOn = BoolStamped()
+        aprilTagOn.header.stamp = rospy.Time.now()
+        aprilTagOn.data = state
+        self.pub_topic_april_tags_switch.publish(aprilTagOn)
    
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

@@ -60,7 +60,7 @@ class RandomAprilTagTurnsNode(object):
 
                     #now randomly choose a possible direction
                 if(len(availableTurns)>0):
-                    chosenTurn = numpy.random.randint(1,len(availableTurns))
+                    chosenTurn = numpy.random.randint(0,len(availableTurns)-1)
                     self.pub_turn_type.publish(chosenTurn)
                     rospy.loginfo("Turn type now: %i" %(self.turn_type))
 

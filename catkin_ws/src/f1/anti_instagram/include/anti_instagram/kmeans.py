@@ -6,7 +6,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from collections import Counter
 from sklearn.cluster import KMeans
 from sklearn import linear_model
-# import IPython
+import IPython
+import itertools
 import time
 
 NUM_COLORS = 3
@@ -79,6 +80,87 @@ def checkMapping(mymap):
 	# print clearmap
 	return clearmap
 
+def getparameters2(mapping, trained, true):
+	redX = np.zeros((3, 1))
+	redY = np.zeros((3, 1))
+	greenX = np.zeros((3, 1))
+	greenY = np.zeros((3, 1))
+	blueX = np.zeros((3, 1))
+	blueY = np.zeros((3, 1))
+	prior_redX = np.zeros((3, 1))
+	prior_redY = np.zeros((3, 1))
+	prior_greenX = np.zeros((3, 1))
+	prior_greenY = np.zeros((3, 1))
+	prior_blueX = np.zeros((3, 1))
+	prior_blueY = np.zeros((3, 1))
+	# print type(redY), redX
+	# print trained, true
+	prior_trained=np.array([[255, 0, 0],[0, 255, 0],[0, 0, 255]])
+	prior_true=np.array([[255, 0, 0],[0, 255, 0],[0, 0, 255]])
+	diagonal_prior_weight=300 # the coefficients along the diagonal should be close to each other - i.e close to "white" light
+	a_prior_weight=0.1 # a should be close to 1
+	INFEASIBILITY_PENALTY=1000000
+	
+	min_fitting_cost=np.inf
+	t1=time.clock()
+
+	# perms=itertools.permutations([0,1,2])
+	perms=[[0,1,2]]
+	for perm in perms:
+		redY[:,0]=true[:,0]# BGR..
+		greenY[:,0]=true[:,1]
+		blueY[:,0]=true[:,2]
+		prior_redY[:,0]=prior_true[:,0]# BGR..
+		prior_greenY[:,0]=prior_true[:,1]
+		prior_blueY[:,0]=prior_true[:,2]
+		redX[:,0]=trained[:,perm[0]]
+		greenX[:,0]=trained[:,perm[1]]
+		blueX[:,0]=trained[:,perm[2]]
+		# IPython.embed()
+		prior_redX[:,0]=prior_trained[:,perm[0]]
+		prior_greenX[:,0]=prior_trained[:,perm[1]]
+		prior_blueX[:,0]=prior_trained[:,perm[2]]
+		redY2=np.concatenate((redY,prior_redY),axis=0)
+		greenY2=np.concatenate((greenY,prior_greenY),axis=0)
+		blueY2=np.concatenate((blueY,prior_blueY),axis=0)
+		redX2=np.concatenate((redX,prior_redX),axis=0)
+		greenX2=np.concatenate((greenX,prior_greenX),axis=0)
+		blueX2=np.concatenate((blueX,prior_blueX),axis=0)
+		A1=np.concatenate((np.concatenate((redX,np.ones(np.shape(redX)),redX*0,redX*0,redX*0,redX*0),1),np.concatenate((greenX*0,greenX*0,greenX,np.ones(np.shape(greenX)),greenX*0,greenX*0),1),np.concatenate((blueX*0,blueX*0,blueX*0,blueX*0,blueX,np.ones(np.shape(blueX))),1)),0)
+		b1=np.concatenate((redY,greenY,blueY),0)
+		A2=np.array([[1.,0.,-1.,0.,0.,0.],[0.,0.,1.,0.,-1.,0.],[1.,0.,0.,0.,-1.,0.]])*diagonal_prior_weight
+		A3=np.array([[1.,0.,0.,0.,0.,0.],[0.,0.,1.,0.,0.,0.],[0.,0.,0.,0.,1.,0.]])*a_prior_weight
+		b2=np.array([[0.0],[0.0],[0.0]])*diagonal_prior_weight
+		b3=np.array([[1.0],[1.0],[1.0]])*a_prior_weight
+		A=np.concatenate((A1,A2,A3),0)
+		b=np.concatenate((b1,b2,b3),0)
+		p,residuals,rank,s=np.linalg.lstsq(A,b);
+		fitting_cost=residuals
+		RED_a=p[0]
+		GREEN_a=p[2]
+		BLUE_a=p[4]
+		if (RED_a<0 or GREEN_a<0 or BLUE_a<0):
+				fitting_cost=fitting_cost+INFEASIBILITY_PENALTY
+
+		if (fitting_cost<min_fitting_cost):
+			min_fitting_cost=fitting_cost
+			print("perm: %s, fitting cost: %s"% (perm,fitting_cost))
+			MIN_RED_a=p[0]
+			MIN_GREEN_a=p[2]
+			MIN_BLUE_a=p[4]
+			MIN_RED_b=p[1]
+			MIN_GREEN_b=p[3]
+			MIN_BLUE_b=p[5]
+			min_perm=perm
+	# IPython.embed()
+	t2=time.clock()
+
+
+	print MIN_RED_a, MIN_RED_b
+	print MIN_BLUE_a, MIN_BLUE_b
+	print MIN_GREEN_a, MIN_GREEN_b
+	print("time: %d"%(t2-t1))
+	return ([MIN_RED_a], MIN_RED_b), ([MIN_BLUE_a], MIN_BLUE_b), ([MIN_GREEN_a], MIN_GREEN_b),fitting_cost
 
 def getparameters(mapping, trained, true):
 	redX = np.zeros((3, 1))
@@ -110,18 +192,18 @@ def getparameters(mapping, trained, true):
 				greenX[i] = index2
 			if j2 == 2:
 				blueX[i] = index2
-	# print redX
-	# print redX, redY
+	# IPython.embed()
 	RED = linear_model.LinearRegression()
 	BLUE = linear_model.LinearRegression()
 	GREEN = linear_model.LinearRegression()
 	RED.fit(redX, redY)
 	BLUE.fit(blueX, blueY)
 	GREEN.fit(greenX, greenY)
-	# print RED.coef_, RED.intercept_
-	# print BLUE.coef_, BLUE.intercept_
-	# print GREEN.coef_, GREEN.intercept_
-	return (RED.coef_, RED.intercept_), (BLUE.coef_, BLUE.intercept_), (GREEN.coef_, GREEN.intercept_)
+	fitting_cost=0 # should use score() from the regression
+	# print RED_a_, RED_b
+	# print BLUE_a_, BLUE_b
+	# print GREEN_a_, GREEN_b
+	return (RED.coef_, RED.intercept_), (BLUE.coef_, BLUE.intercept_), (GREEN.coef_, GREEN.intercept_),fitting_cost
 
 def scaleandshift(img,scale,shift):
 	h = img.shape[0]

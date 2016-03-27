@@ -42,7 +42,8 @@ class AntiInstagramNode():
 
 		rospy.loginfo('New image received')
 		cv_image = self.bridge.imgmsg_to_cv2(msg,"bgr8")
-		if self.numFramesSeen < 5:
+		# cv_image=cv_image*0.3 # for testing only
+		if self.numFramesSeen < 5e6:
 			# only calculate transform for the first few frames
 			# then apply the same transform indefintely
 			rospy.loginfo('Calculating new transform...')
@@ -50,6 +51,7 @@ class AntiInstagramNode():
 			print (self.ai.scale,self.ai.shift)
 		rospy.loginfo('Applying transform')
 		corrected_image_cv2 = self.ai.applyTransform(cv_image)
+		# corrected_image_cv2 = cv_image
 		corrected_image_cv2 = np.clip(corrected_image_cv2,0,255).astype(np.uint8)
 		self.corrected_image = self.bridge.cv2_to_imgmsg(corrected_image_cv2,"bgr8")
 

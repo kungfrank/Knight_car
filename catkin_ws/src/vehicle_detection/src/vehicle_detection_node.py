@@ -5,6 +5,7 @@ from duckietown_msgs.msg import VehicleCorners
 from geometry_msgs.msg import Point32
 from mutex import mutex
 from sensor_msgs.msg import CompressedImage, Image
+from std_msgs.msg import Bool
 import cv2
 import numpy as np
 import os

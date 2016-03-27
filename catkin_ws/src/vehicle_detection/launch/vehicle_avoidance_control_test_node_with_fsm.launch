@@ -2,7 +2,7 @@
 
 	<arg name="veh" doc="Name of vehicle" />
 
-    <remap from="fsm_node/vehicle_detected" to="vehicle_avoidance_control_node/vehicle_detected" />
+    <remap from="fsm_node/vehicle_detected" to="vehicle_avoidance_control_node/flag" />
     <remap from="fsm_node/in_lane" to="vehicle_avoidance_control_node_test/in_lane" />
     <remap from="vehicle_avoidance_control_node_test/mode" to="fsm_node/mode" />
 

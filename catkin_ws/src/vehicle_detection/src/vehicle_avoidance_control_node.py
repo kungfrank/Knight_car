@@ -22,9 +22,9 @@ class VehicleAvoidanceControlNode(object):
 			rospy.logwarn("[%s] Can't find calibration file: %s.\n" 
 					% (self.node_name, self.cali_file))
 		self.loadConfig(self.cali_file)
-		self.wheels_cmd_pub = rospy.Publisher("~vehicle_avoidance_control",
+		self.wheels_cmd_pub = rospy.Publisher("~wheels_cmd",
 				WheelsCmdStamped, queue_size = 1)
-		self.vehicle_detected_pub = rospy.Publisher("~vehicle_detected",
+		self.vehicle_detected_pub = rospy.Publisher("~flag",
 				Bool, queue_size=1)
 		self.subscriber = rospy.Subscriber("~vehicle_pose",
 				VehiclePose, self.callback,  queue_size = 1)

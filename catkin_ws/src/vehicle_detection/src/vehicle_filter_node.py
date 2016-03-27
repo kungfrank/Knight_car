@@ -75,6 +75,12 @@ class VehicleFilterNode(object):
 		if self.lock.testandset():
 			if not vehicle_corners_msg.detection:
 				self.lock.unlock()
+				pose_msg_out = VehiclePose()
+				pose_msg_out.rho.data = 0.0
+				pose_msg_out.theta.data = 0.0
+				pose_msg_out.psi.data = 0.0
+				pose_msg_out.detection.data = False
+				self.pub_pose.publish(pose_msg_out)
 				return
 			height = vehicle_corners_msg.H 
 			width  = vehicle_corners_msg.W
@@ -101,6 +107,7 @@ class VehicleFilterNode(object):
 			pose_msg_out.rho.data = rho
 			pose_msg_out.theta.data = theta
 			pose_msg_out.psi.data = psi
+			pose_msg_out.detection.data = True
 			self.pub_pose.publish(pose_msg_out)
 			self.lock.unlock()
 

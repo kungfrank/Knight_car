@@ -16,6 +16,7 @@ import time
 import yaml
 
 class VehicleDetectionNode(object):
+
 	def __init__(self):
 		self.node_name = "Vehicle Detection"
 		self.bridge = CvBridge()
@@ -95,7 +96,10 @@ class VehicleDetectionNode(object):
 					corners_msg_out.corners.append(deepcopy(p))
 				self.pub_corners.publish(corners_msg_out)
 			except stopit.TimeoutException:
-				pass
+				corners_msg_out.detection = False
+				self.pub_corners.publish(corners_msg_out)
+				self.lock.unlock()
+				return
 			self.lock.unlock()
 
 if __name__ == '__main__': 

@@ -143,7 +143,7 @@ digraph D {
 	
 		forward_kinematics_pose[!TOPIC!, label="~pose\nduckietown_msgs/Pose2DStamped.msg"];
 		forward_kinematics_velocity[!TOPIC!, label="~velocity\nduckietown_msgs/Twist2DStamped.msg"];
-		car_command_swtich[!TOPIC!, label="~car_command_switch\nduckietown_msgs/Twist2DStamped.msg"];
+		car_command_switch[!TOPIC!, label="~car_command_switch\nduckietown_msgs/Twist2DStamped.msg"];
 		
 	}
 
@@ -272,11 +272,11 @@ digraph D {
 
 	// == wheels_cmd_switch_node == //
 	{mode, lane_control, intersection_control, veh_avoidance_control, simple_stop_control, mdoap_control, joy_control, lane_control_sup}->wheels_cmd_switch_node;	
-	wheels_cmd_switch_node->car_command_swtich;
+	wheels_cmd_switch_node->car_command_switch;
 	
 	//// == wheels_trimmer_node == //	
 	//motion_calibration_file->wheels_trimmer_node[style="dotted"]
-	//car_command_swtich->wheels_trimmer_node;
+	//car_command_switch->wheels_trimmer_node;
 	//wheels_trimmer_node->wheels_command;
 
 	// == wheels_driver_node == //
@@ -309,7 +309,7 @@ digraph D {
  
 	// == F4 == //
 	// == odometry_training_pairs_node == //
-	{image_compressed, apriltags_global_tags_detection_processed ,segment_list_proj, car_command_swtich} -> odometry_training_pairs_node;
+	{image_compressed, apriltags_global_tags_detection_processed ,segment_list_proj, car_command_switch} -> odometry_training_pairs_node;
 	odometry_training_pairs_node -> odometry_training_pairs_file[style="dotted"];
 
 	// == kinematics_learning_node == //
@@ -318,7 +318,7 @@ digraph D {
 
 	// == inverse_kinematics_node == //
 	inverse_kinematics_file -> inverse_kinematics_node[style="dotted"];
-	car_command_swtich -> inverse_kinematics_node;
+	car_command_switch -> inverse_kinematics_node;
 	inverse_kinematics_node -> wheels_command;
 
 	// == forward_kinematics_node == //
@@ -333,7 +333,7 @@ digraph D {
 	lane_controller_node->lane_control;
 
 	// == lane_filter_node == //
-	{segment_list_proj, car_command_swtich} -> lane_filter_node;
+	{segment_list_proj, car_command_switch} -> lane_filter_node;
 	lane_filter_node -> {lane_pose};
 
 	// == ref_traj_gen_node == //

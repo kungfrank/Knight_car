@@ -73,7 +73,7 @@ class VehicleFilterNode(object):
 
 	def processCorners(self, vehicle_corners_msg):
 		if self.lock.testandset():
-			if not vehicle_corners_msg.detection:
+			if not vehicle_corners_msg.detection.data:
 				self.lock.unlock()
 				pose_msg_out = VehiclePose()
 				pose_msg_out.rho.data = 0.0

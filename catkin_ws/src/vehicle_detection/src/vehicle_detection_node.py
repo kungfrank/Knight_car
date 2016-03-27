@@ -76,7 +76,7 @@ class VehicleDetectionNode(object):
 					(detection, corners) = cv2.findChessboardCorners(image_cv, 
 						self.chessboard_dims)
 				if not ctx_mgr:	
-					corners_msg_out.detection = False
+					corners_msg_out.detection.data = False
 					self.pub_corners.publish(corners_msg_out)
 					self.lock.unlock()
 					return
@@ -85,11 +85,11 @@ class VehicleDetectionNode(object):
 				image_msg_out = self.bridge.cv2_to_imgmsg(image_cv, "bgr8")
 				self.pub_chessboard_image.publish(image_msg_out)
 				if not detection:
-					corners_msg_out.detection = False
+					corners_msg_out.detection.data = False
 					self.pub_corners.publish(corners_msg_out)
 					self.lock.unlock()
 					return
-				corners_msg_out.detection = True
+				corners_msg_out.detection.data = True
 				(corners_msg_out.H, corners_msg_out.W) = self.chessboard_dims
 				for i in np.arange(corners.shape[0]):
 					p = Point32()
@@ -97,7 +97,7 @@ class VehicleDetectionNode(object):
 					corners_msg_out.corners.append(deepcopy(p))
 				self.pub_corners.publish(corners_msg_out)
 			except stopit.TimeoutException:
-				corners_msg_out.detection = False
+				corners_msg_out.detection.data = False
 				self.pub_corners.publish(corners_msg_out)
 				self.lock.unlock()
 				return

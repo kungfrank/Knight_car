@@ -1,0 +1,5 @@
+chessboard_dims:
+  cols: 2
+  data: [5, 7]
+  rows: 1
+detection_max_time: 0.2

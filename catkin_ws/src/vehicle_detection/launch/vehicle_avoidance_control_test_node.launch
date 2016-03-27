@@ -1,8 +1,8 @@
 <launch>
 	<arg name="veh" doc="Name of vehicle" />
 
-	<remap from="vehicle_avoidance_control_node_test/vehicle_avoidance_control" to="vehicle_avoidance_control_node/vehicle_avoidance_control" />
-	<remap from="vehicle_avoidance_control_node_test/vehicle_detected" to="vehicle_avoidance_control_node/vehicle_detected" />
+	<remap from="vehicle_avoidance_control_node_test/vehicle_avoidance_control" to="vehicle_avoidance_control_node/wheels_cmd" />
+	<remap from="vehicle_avoidance_control_node_test/vehicle_detected" to="vehicle_avoidance_control_node/flag" />
 	<remap from="vehicle_avoidance_control_node/vehicle_pose" to="vehicle_avoidance_control_node_test/vehicle_pose" />
 
 	<include file="$(find vehicle_detection)/launch/vehicle_avoidance_control_node.launch">

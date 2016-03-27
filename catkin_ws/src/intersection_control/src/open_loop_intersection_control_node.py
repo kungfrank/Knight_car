@@ -68,7 +68,7 @@ class OpenLoopIntersectionNode(object):
 
     def turnRight(self):
         #move forward
-        forward_for_time_leave = 1.2
+        forward_for_time_leave = 2.0
         turn_for_time = 0.6
         forward_for_time_enter = 2.0
         

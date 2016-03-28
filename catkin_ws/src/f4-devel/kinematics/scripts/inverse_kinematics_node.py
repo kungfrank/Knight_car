@@ -30,7 +30,7 @@ class InverseKinematicsNode(object):
     def carCmdCallback(self, msg_car_cmd):
         [d_L, d_R] = self.ik.evaluate(msg_car_cmd.omega, msg_car_cmd.v)
 
-        # Stuff the wheel commands in a message and publish
+        # Put the wheel commands in a message and publish
         msg_wheels_cmd = WheelsCmdStamped()
         msg_wheels_cmd.header = msg_car_cmd.header
 

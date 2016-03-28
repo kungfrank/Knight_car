@@ -36,7 +36,7 @@ class WheelsDriverAdvancedNode(object):
 
         # Put the wheel commands in a message and publish
         msg_wheels_cmd = WheelsCmdStamped()
-        msg_wheels_cmd.header = msg_car_cmd.header
+        msg_wheels_cmd.header = msg.header
 
         msg_wheels_cmd.header.stamp = rospy.get_rostime()  # Record the time the command was given to the wheels_driver
         msg_wheels_cmd.vel_left = self.vel_left

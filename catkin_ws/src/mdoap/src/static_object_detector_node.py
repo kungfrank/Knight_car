@@ -73,7 +73,7 @@ class StaticObjectDetectorNode:
         self.thread_lock = threading.Lock()
         self.sub_image = rospy.Subscriber("~image_compressed", CompressedImage, self.cbImage, queue_size=1)
         self.pub_image = rospy.Publisher("~cone_detection_image", Image, queue_size=1)
-        self.pub_detections_list = rospy.Publisher("~object_image_detection_list", ObstacleImageDetectionList, queue_size=1)
+        self.pub_detections_list = rospy.Publisher("~detection_list", ObstacleImageDetectionList, queue_size=1)
         self.bridge = CvBridge()
 
         rospy.loginfo("[%s] Initialized." %(self.name))

@@ -19,7 +19,7 @@ class StaticObjectDetectorTesterNode(object):
         self.num_im = self.setupParam("~num_im", 0)
 
         self.bridge = CvBridge()
-        self.sub_detections = rospy.Subscriber("static_object_detector_node/object_image_detection_list", ObstacleImageDetectionList, self.checkDetection)
+        self.sub_detections = rospy.Subscriber("static_object_detector_node/detection_list", ObstacleImageDetectionList, self.checkDetection)
         #start the first image
         self.num_sent = 1
         rospy.sleep(1)

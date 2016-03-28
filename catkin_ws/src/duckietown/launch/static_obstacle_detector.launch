@@ -12,6 +12,15 @@
         <arg name="config" value="$(arg config)"/>
         <arg name="param_file_name" value="$(arg param_file_name)"/>        
     </include>
+    
+    <!-- Ground projection -->
+    <include unless="$(arg only)" file="$(find duckietown)/launch/ground_projection.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="local" value="$(arg local)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+        <arg name="live" value="$(arg live)"/>
+    </include>
 
 	<remap from="static_object_detector_node/image_compressed" to="camera_node/image/compressed"/>
 	<include file="$(find mdoap)/launch/static_object_detector_node.launch">
@@ -21,7 +30,7 @@
 	    <arg name="param_file_name" value="$(arg param_file_name)"/>
 	</include>
 
-    <remap from="obstacle_safety_node/object_image_detection_list" to="static_object_detector_node/object_image_detection_list"/>
+    <remap from="obstacle_safety_node/detection_list" to="static_object_detector_node/detection_list"/>
 	<include file="$(find mdoap)/launch/obstacle_safety_node.launch">
 	    <arg name="veh" value="$(arg veh)"/>
 	    <arg name="local" value="$(arg local)"/>

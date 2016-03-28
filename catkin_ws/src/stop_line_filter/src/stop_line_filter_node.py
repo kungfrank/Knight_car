@@ -7,7 +7,6 @@ from geometry_msgs.msg import Point
 import time
 import math
 
-
 class StopLineFilterNode(object):
     def __init__(self):
         self.node_name = "Stop Line Filter"

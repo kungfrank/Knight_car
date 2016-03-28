@@ -19,7 +19,6 @@ build-parallel:
 build:
 	catkin_make -C $(catkin_ws) 
 
-
 # HW testing 
 
 test-camera:

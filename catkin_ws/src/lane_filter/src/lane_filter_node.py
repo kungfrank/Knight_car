@@ -70,8 +70,7 @@ class LaneFilterNode(object):
             i = floor((d_i - self.d_min)/self.delta_d)
             j = floor((phi_i - self.phi_min)/self.delta_phi)
             measurement_likelihood[i,j] = measurement_likelihood[i,j] +  1/(l_i)
-#        if np.linalg.norm(measurement_likelihood) == 0:
-#            return
+
         measurement_likelihood = measurement_likelihood/np.linalg.norm(measurement_likelihood)
         #self.updateBelief(measurement_likelihood)
         self.beliefRV = measurement_likelihood
@@ -92,7 +91,7 @@ class LaneFilterNode(object):
 
 
         max_val = self.beliefRV.max()
-        self.lanePose.in_lane = max_val > self.min_max and len(segment_list_msg.segments) > self.min_segs and np.linalg.norm(self.beliefRV) != 0
+        self.lanePose.in_lane = max_val > self.min_max and len(segment_list_msg.segments) > self.min_segs and np.linalg.norm(self.measurement_likelihood) != 0
         self.pub_lane_pose.publish(self.lanePose)
         self.pub_belief_img.publish(belief_img)
         # print "time to process segments:"

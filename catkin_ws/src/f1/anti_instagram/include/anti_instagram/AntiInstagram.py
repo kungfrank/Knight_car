@@ -23,6 +23,8 @@ class AntiInstagram(object):
 		r,g,b,cost = kmeans.getparameters2(mapping, trained, kmeans.CENTERS)
 
 		if r[0][0] == 0.0: return
+
+		# Estimates the scale and shift over multiple frame via an IIR filter with preference towards low-cost frames
 		IIR_weight=100000/(1000000+cost)
 		# self.scale = [r[0][0][0],g[0][0][0],b[0][0][0]]
 		# self.shift = [r[1][0], g[1][0],b[1][0]]

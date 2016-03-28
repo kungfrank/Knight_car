@@ -21,6 +21,8 @@ class ObstacleSafetyNode:
         self.pub_markers = rospy.Publisher("~object_detection_markers", MarkerArray, queue_size=1)
         self.maxMarkers = 0
 
+        self.veh_name = rospy.get_namespace().strip("/")
+
         #TODO(CL): Setup param from default.yaml
         self.closeness_threshold = 0.2
     def cbDetectionsList(self, detections_msg):
@@ -52,16 +54,20 @@ class ObstacleSafetyNode:
                 minDist = dist
             #print projected_point.gp
             marker.header = detections_msg.header
+            marker.header.frame_id = self.veh_name
             marker.type = marker.ARROW
             marker.action = marker.ADD
-            marker.scale.x = 0.01
+            marker.scale.x = 0.1
             marker.scale.y = 0.01
-            marker.scale.z = 0.1
+            marker.scale.z = 0.01
             marker.color.a = 1.0
             marker.color.r = 1.0
             marker.color.g = 0.5
             marker.color.b = 0.0
-            marker.pose.orientation.w = 1.0
+            marker.pose.orientation.x = 0.0
+            marker.pose.orientation.y = -0.7071
+            marker.pose.orientation.z = 0
+            marker.pose.orientation.w = 0.7071
             marker.pose.position.x = projected_point.gp.x
             marker.pose.position.y = projected_point.gp.y
             marker.pose.position.z = projected_point.gp.z 

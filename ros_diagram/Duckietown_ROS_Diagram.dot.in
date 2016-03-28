@@ -348,10 +348,10 @@ digraph D {
 	vehicle_detector_node -> veh_corners;
 	// == vehicle_filter_node == //
 	{veh_corners, camera_info} -> vehicle_filter_node;
-	vehicle_filter_node -> {veh_pose, veh_avoidance_flag};
+	vehicle_filter_node -> {veh_pose};
 	// == vehicle_avoidance_control_node == //
 	veh_pose -> vehicle_avoidance_control_node;
-	vehicle_avoidance_control_node -> veh_avoidance_control;
+	vehicle_avoidance_control_node -> {veh_avoidance_control, veh_avoidance_flag};
 
 ////////// F8 //
 	// == apriltag_detector_node == //

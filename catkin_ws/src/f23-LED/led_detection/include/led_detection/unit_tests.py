@@ -44,8 +44,6 @@ class LEDDetectionUnitTest():
                  min_distance_between_LEDs_pixels=self.query['min_distance_between_LEDs_pixels'])
         return d
 
-
-
 def LEDDetectionUnitTest_from_yaml(s):
     """
         Returns an instance of LEDDetectionUnitTest from YAML.

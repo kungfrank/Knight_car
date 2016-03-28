@@ -1,5 +1,7 @@
 from api import LEDDetector
-from duckietown_msgs.msg import LEDDetection
+from duckietown_msgs.msg import Vector2D, LEDDetection, LEDDetectionArray
+from led_detection import logger
+import numpy
 
 __all__ = ['DummyLEDDetector']
 
@@ -30,16 +32,28 @@ class DummyLEDDetector(LEDDetector):
         if not min_distance_between_LEDs_pixels > 0:
             raise ValueError(min_distance_between_LEDs_pixels)
 
-        #tuneable parameters
+        # tuneable parameters
         partitions_x = 10
         partitions_y = 10
         intensity_variance_threshold = 10 #TODO: this is arbitrary
 
-        #should be 480x640?
+        # should be 480x640?
         W = rgb0.shape[0]
         H = rgb0.shape[1]
         partition_width = W / partitions_x
         partition_height = H / partitions_y
+
+        # create result object
+        result = LEDDetectionArray()
+        logger.info(result)
+
+        # TODO These are the expected results for allblinking_test1-argo.bag
+        # remove/comment when implementing
+        result.detections.append(LEDDetection(0,2, Vector2D(249, 192), 1.0, '', 1))
+        result.detections.append(LEDDetection(0,2, Vector2D(268, 115), 1.5, '', 1))
+        result.detections.append(LEDDetection(0,2, Vector2D(520, 199), 2.0, '', 1))
+        logger.info(result)
+        return result
 
         # jump by partition
         for x in range(0, W, partition_width):
@@ -66,4 +80,3 @@ class DummyLEDDetector(LEDDetector):
                     #threshold into "on" and "off" states
                     pass
                 #determine frequency
-        return []

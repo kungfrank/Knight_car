@@ -102,7 +102,7 @@ def getparameters2(mapping, trained, true):
 	INFEASIBILITY_PENALTY=1000000
 	
 	min_fitting_cost=np.inf
-	t1=time.clock()
+	t1=time.time()
 
 	# perms=itertools.permutations([0,1,2])
 	perms=[[0,1,2]]
@@ -153,13 +153,13 @@ def getparameters2(mapping, trained, true):
 			MIN_BLUE_b=p[5]
 			min_perm=perm
 	# IPython.embed()
-	t2=time.clock()
+	t2=time.time()
 
 
 	print MIN_RED_a, MIN_RED_b
 	print MIN_BLUE_a, MIN_BLUE_b
 	print MIN_GREEN_a, MIN_GREEN_b
-	print("time: %d"%(t2-t1))
+	print("time: %f"%(t2-t1))
 	return ([MIN_RED_a], MIN_RED_b), ([MIN_BLUE_a], MIN_BLUE_b), ([MIN_GREEN_a], MIN_GREEN_b),fitting_cost
 
 def getparameters(mapping, trained, true):

@@ -33,6 +33,7 @@ class LaneFilterNode(object):
         self.linewidth_yellow = self.setupParam("~linewidth_yellow",0.02)
         self.lanewidth        = self.setupParam("~lanewidth",0.4)
         self.min_max = self.setupParam("~min_max", 0.3) # nats
+        self.min_segs = self.setupParam("~min_segs", 10)
 
         self.d,self.phi = np.mgrid[self.d_min:self.d_max:self.delta_d,self.phi_min:self.phi_max:self.delta_phi]
         self.beliefRV=np.empty(self.d.shape)
@@ -44,7 +45,6 @@ class LaneFilterNode(object):
         self.pub_lane_pose  = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
         self.pub_belief_img = rospy.Publisher("~belief_img", Image, queue_size=1)
         self.pub_entropy    = rospy.Publisher("~entropy",Float32, queue_size=1)
-        # self.pub_in_lane    = rospy.Publisher("~in_lane",BoolStamped, queue_size=1)
         self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments)
 
     def setupParam(self,param_name,default_value):
@@ -69,9 +69,9 @@ class LaneFilterNode(object):
                 continue
             i = floor((d_i - self.d_min)/self.delta_d)
             j = floor((phi_i - self.phi_min)/self.delta_phi)
-            measurement_likelihood[i,j] = measurement_likelihood[i,j] +  1/l_i
-        if np.linalg.norm(measurement_likelihood) == 0:
-            return
+            measurement_likelihood[i,j] = measurement_likelihood[i,j] +  1/(l_i)
+#        if np.linalg.norm(measurement_likelihood) == 0:
+#            return
         measurement_likelihood = measurement_likelihood/np.linalg.norm(measurement_likelihood)
         #self.updateBelief(measurement_likelihood)
         self.beliefRV = measurement_likelihood
@@ -92,8 +92,7 @@ class LaneFilterNode(object):
 
 
         max_val = self.beliefRV.max()
-        print max_val
-        self.lanePose.in_lane = max_val > self.min_max
+        self.lanePose.in_lane = max_val > self.min_max and len(segment_list_msg.segments) > self.min_segs and np.linalg.norm(self.beliefRV) != 0
         self.pub_lane_pose.publish(self.lanePose)
         self.pub_belief_img.publish(belief_img)
         # print "time to process segments:"
@@ -146,6 +145,7 @@ class LaneFilterNode(object):
                 d_i = - d_i
                 phi_i = -phi_i
             d_i = d_i - self.lanewidth/2
+
         elif segment.color == segment.YELLOW: # left lane is yellow
             if (p2[0] > p1[0]): # left edge of yellow lane
                 d_i = d_i - self.linewidth_yellow
@@ -153,6 +153,7 @@ class LaneFilterNode(object):
             else: # right edge of white lane
                 d_i = -d_i
             d_i =  self.lanewidth/2 - d_i
+
         return d_i, phi_i, l_i
     
     def onShutdown(self):

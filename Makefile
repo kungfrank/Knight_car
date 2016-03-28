@@ -5,6 +5,8 @@ machines := $(catkin_ws)/src/duckietown/machines
 
 all: $(machines)
 
+fix-time:
+	sudo ntpdate -u us.pool.ntp.org 
 
 $(machines): $(scuderia)
 	python setup/create-machines-file.py $(scuderia) > $(machines)
@@ -12,5 +14,7 @@ $(machines): $(scuderia)
 catkin-clean:
 	rm -rf $(catkin_ws)/build
 
-build:
+build-parallel:
 	catkin_make -C $(catkin_ws) --make-args "-j4"
+build:
+	catkin_make -C $(catkin_ws) 

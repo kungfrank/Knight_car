@@ -67,9 +67,9 @@ def LEDDetectionUnitTest_from_yaml(s):
         e['image_coordinates'] = tuple(e['image_coordinates'])
         e['image_coordinates_margin']
         e['frequency']
-        e['color']
-        e['color_tolerance']
-        e['confidence_min']
+        #e['color']
+        #e['color_tolerance']
+        #e['confidence_min']
 
     # TODO: data validation
     return LEDDetectionUnitTest(data=data, query=query, expected=expected)

@@ -13,6 +13,7 @@
 #include <boost/filesystem.hpp>
 #include "geometry_msgs/Point.h"
 #include "ground_projection/GetGroundCoord.h"
+#include "ground_projection/GetImageCoord.h"
 #include "ground_projection/EstimateHomography.h"
 #include "duckietown_msgs/Pixel.h"
 #include "duckietown_msgs/Vector2D.h"
@@ -34,12 +35,13 @@ class GroundProjection
 {
   ros::NodeHandle nh_;
   ros::ServiceServer service_homog_;
-  ros::ServiceServer service_coord_;
+  ros::ServiceServer service_gnd_coord_;
+  ros::ServiceServer service_img_coord_;
   ros::Subscriber sub_lineseglist_;
   ros::Publisher pub_lineseglist_;
   sensor_msgs::CameraInfo::ConstPtr camera_info_;
   image_geometry::PinholeCameraModel pcm_;
-  cv::Mat H_;
+  cv::Mat H_, Hinv_;
   bool rectified_input_;
 
   std::string node_name_;
@@ -81,6 +83,8 @@ public:
         H_.at<float>(r, c) = h[r*3+c];
       }
     }
+    // estimate inv(H_)
+    Hinv_ = H_.inv();
 
     nh_.param<bool>("rectified_input", rectified_input_, false);
     
@@ -97,8 +101,10 @@ public:
     // Ready the services
     service_homog_ = nh_.advertiseService("estimate_homography", &GroundProjection::estimate_homography_cb, this);
     ROS_INFO("estimate_homography is ready.");
-    service_coord_ = nh_.advertiseService("get_ground_coordinate", &GroundProjection::get_ground_coordinate_cb, this);
+    service_gnd_coord_ = nh_.advertiseService("get_ground_coordinate", &GroundProjection::get_ground_coordinate_cb, this);
     ROS_INFO("get_ground_coordinate is ready.");
+    service_img_coord_  = nh_.advertiseService("get_image_coordinate", &GroundProjection::get_image_coordinate_cb, this);
+    ROS_INFO("get_image_coordinate is ready.");
 
     // Subscriber
     sub_lineseglist_ = nh_.subscribe("lineseglist_in", 1, &GroundProjection::lineseglist_cb, this);
@@ -109,7 +115,7 @@ public:
   }
 
 private:
-  duckietown_msgs::Pixel vector2pixel(duckietown_msgs::Vector2D& vec)
+  duckietown_msgs::Pixel vector2pixel(const duckietown_msgs::Vector2D& vec)
   {
     float w = static_cast<float>(camera_info_->width);
     float h = static_cast<float>(camera_info_->height);
@@ -128,6 +134,18 @@ private:
     return pixel;
   }
 
+  duckietown_msgs::Vector2D pixel2vector(const duckietown_msgs::Pixel pixel)
+  {
+    float w = static_cast<float>(camera_info_->width);
+    float h = static_cast<float>(camera_info_->height);
+
+    duckietown_msgs::Vector2D vec;
+
+    vec.x = static_cast<float>(pixel.u)/w;
+    vec.y = static_cast<float>(pixel.v)/h;
+    
+    return vec;
+  }
 
   void getRectifiedImage(const sensor_msgs::Image::ConstPtr img_msg, cv::Mat &mat_rect)
   {
@@ -137,13 +155,20 @@ private:
     pcm_.rectifyImage(cv_img->image,mat_rect);
   }
 
-  void estimate_ground_coordinate(duckietown_msgs::Vector2D& vec, geometry_msgs::Point& point)
+  void image2ground(const duckietown_msgs::Vector2D& vec, geometry_msgs::Point& point)
   {
     duckietown_msgs::Pixel pixel = vector2pixel(vec);
-    estimate_ground_coordinate(pixel, point);
+    image2ground(pixel, point);
   }
 
-  void estimate_ground_coordinate(duckietown_msgs::Pixel& pixel, geometry_msgs::Point& point)
+  void ground2image(const geometry_msgs::Point& point, duckietown_msgs::Vector2D& vec)
+  {
+    duckietown_msgs::Pixel pixel;
+    ground2image(point, pixel);
+    vec = pixel2vector(pixel);
+  }
+
+  void image2ground(const duckietown_msgs::Pixel& pixel, geometry_msgs::Point& point)
   {
     cv::Point3f pt_img(static_cast<float>(pixel.u), static_cast<float>(pixel.v), 1.f);
 
@@ -166,14 +191,41 @@ private:
     point.z = 0.f;
   }
 
+  void ground2image(const geometry_msgs::Point& point, duckietown_msgs::Pixel& pixel)
+  {
+    cv::Point3f pt_gnd(static_cast<float>(point.x), static_cast<float>(point.y), 1.f);
+
+    cv::Mat pt_img_ = Hinv_ * cv::Mat(pt_gnd);
+    cv::Point3f pt_img(pt_img_);
+
+    pt_img.x /= pt_img.z;
+    pt_img.y /= pt_img.z;
+
+    if(!rectified_input_)
+    {
+      // get distorted image coordinate (pt_distorted) from undistorted one (pt_img)
+      cv::Point2d pt_distorted = pcm_.unrectifyPoint(
+        cv::Point2d(static_cast<double>(pt_img.x), static_cast<double>(pt_img.y))
+      );
+
+      pixel.u = static_cast<int>(pt_distorted.x);
+      pixel.v = static_cast<int>(pt_distorted.y);
+    }
+    else
+    {
+      pixel.u = static_cast<int>(pt_img.x);
+      pixel.v = static_cast<int>(pt_img.y);
+    }
+  }
+
   void lineseglist_cb(const duckietown_msgs::SegmentList::ConstPtr& msg)
   {
     duckietown_msgs::SegmentList msg_new = *msg;
     for(int i=0; i<msg_new.segments.size(); i++)
     {
       // each line segment is composed of two end points [0:1]
-      estimate_ground_coordinate(msg_new.segments[i].pixels_normalized[0], msg_new.segments[i].points[0]);
-      estimate_ground_coordinate(msg_new.segments[i].pixels_normalized[1], msg_new.segments[i].points[1]);
+      image2ground(msg_new.segments[i].pixels_normalized[0], msg_new.segments[i].points[0]);
+      image2ground(msg_new.segments[i].pixels_normalized[1], msg_new.segments[i].points[1]);
     }
     pub_lineseglist_.publish(msg_new);
   }
@@ -181,9 +233,18 @@ private:
   bool get_ground_coordinate_cb(ground_projection::GetGroundCoord::Request &req, 
                                 ground_projection::GetGroundCoord::Response &res)
   {
-    estimate_ground_coordinate(req.normalized_uv, res.gp);
+    image2ground(req.normalized_uv, res.gp);
 
-    ROS_INFO("image coord (u=%f, v=%f), ground coord (x=%f, y=%f, z=%f)", req.normalized_uv.x, req.normalized_uv.y, res.gp.x, res.gp.y, res.gp.z);
+    ROS_INFO("normalized image coord (norm u=%f, norm v=%f), ground coord (x=%f, y=%f, z=%f)", req.normalized_uv.x, req.normalized_uv.y, res.gp.x, res.gp.y, res.gp.z);
+    return true;
+  }
+
+  bool get_image_coordinate_cb(ground_projection::GetImageCoord::Request &req, 
+                                ground_projection::GetImageCoord::Response &res)
+  {
+    ground2image(req.gp, res.normalized_uv);
+
+    ROS_INFO("ground coord (x=%f, y=%f, z=%f), normalized image coord (norm u=%f, norm v=%f)", req.gp.x, req.gp.y, req.gp.z, res.normalized_uv.x, res.normalized_uv.y);
     return true;
   }
 

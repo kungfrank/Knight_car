@@ -50,7 +50,7 @@ class WheelsDriverAdvancedNode(object):
 
 if __name__ == '__main__':
     # Initialize the node with rospy
-    rospy.init_node('wheels_driver_node', anonymous=False)
+    rospy.init_node('wheels_driver_synce_node', anonymous=False)
     # Create the DaguCar object
     node = WheelsDriverAdvancedNode()
     # Setup proper shutdown behavior 

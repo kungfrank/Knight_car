@@ -1,4 +1,5 @@
 from api import LEDDetector
+from duckietown_msgs.msg import LEDDetection
 
 __all__ = ['DummyLEDDetector']
 

@@ -45,15 +45,25 @@ class DummyLEDDetector(LEDDetector):
 
         # create result object
         result = LEDDetectionArray()
-        logger.info(result)
 
-        # TODO These are the expected results for allblinking_test1-argo.bag
-        # remove/comment when implementing
-        result.detections.append(LEDDetection(0,2, Vector2D(249, 192), 1.0, '', 1))
-        result.detections.append(LEDDetection(0,2, Vector2D(268, 115), 1.5, '', 1))
-        result.detections.append(LEDDetection(0,2, Vector2D(520, 199), 2.0, '', 1))
-        logger.info(result)
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        #  TESTING REFERENCE
+
+        # These are the expected results for allblinking_test1-argo.bag
+        # When implementing, remove/comment these lines and populate results
+        # similarly. Comment one of these lines or change coords / frequencies
+        # to see test failures. Any order in the output will be fine.
+
+        # TODO for now, the unit test checks un-normalized pixels (actual 
+        # image coords) shall we really move to normalized pixels? (why?)
+        #                                                    |
+        #                                                    V
+        result.detections.append(LEDDetection(0,2, Vector2D(518, 194), 2.0, '', 1))
+        result.detections.append(LEDDetection(0,2, Vector2D(245, 190), 1.0, '', 1))
+        result.detections.append(LEDDetection(0,2, Vector2D(266, 110), 1.5, '', 1))
         return result
+
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         # jump by partition
         for x in range(0, W, partition_width):
@@ -69,8 +79,8 @@ class DummyLEDDetector(LEDDetector):
                                 continue
                             pixel = image[x_coord][y_coord]
                             # a simple approach from http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
-                            #could also use matplotlib's rgb_to_hsv?
-                            #TODO: check if pixel order is RGB or BGR (assuming RGB)
+                            # could also use matplotlib's rgb_to_hsv?
+                            # TODO: check if pixel order is RGB or BGR (assuming RGB)
                             intensity = 0.299*pixel[0] + 0.587*pixel[1] + 0.114*pixel[2]
                             intensities.append(intensity)
 
@@ -80,3 +90,4 @@ class DummyLEDDetector(LEDDetector):
                     #threshold into "on" and "off" states
                     pass
                 #determine frequency
+        return result

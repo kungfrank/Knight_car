@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # colored logging
-from duckietown_utils import col_logging  # @UnusedImport
-from led_detection import logger
-
-from led_detection.dummy import DummyLEDDetector
-from led_detection.unit_tests import load_tests
 import os
 import sys
+
+from duckietown_utils import col_logging 
+from led_detection import logger
+from led_detection.dummy import DummyLEDDetector
+from led_detection.unit_tests import load_tests
 from duckietown_utils.wildcards import expand_string
 from duckietown_utils.wrap_main import wrap_main
 
@@ -53,23 +53,44 @@ For example, this runs all tests on all algorithms:
     logger.info('estimators: %r |-> %s' % (which_estimators0, which_estimators))
 
     # which tests to execute
+    test_results = []
     for id_test in which_tests:
         for id_estimator in which_estimators:
-            test_results = run_test(id_test, alltests[id_test],
-                                    id_estimator, estimators[id_estimator])
+            test_results.append(run_test(id_test, alltests[id_test],
+                                    id_estimator, estimators[id_estimator]))
 
-   
-def find_match(detection, expected):
-    # scan the list of expected detections and see if you find one
-    # return first match
-    # TODO this can probably be done in a more python style
-    for i in range(0, len(expected)):
-        e = expected[i]
-        if(abs(detection.pixels_normalized.x-e['image_coordinates'][0])<e['image_coordinates_margin']\
-           and abs(detection.pixels_normalized.y-e['image_coordinates'][1])<e['image_coordinates_margin']):
-            return i
+    if(test_results.count(False)==0):
+        logger.info('All test passed')
+    else:
+        logger.error('Some tests failed')
 
-    return -1
+def is_match(detection, expected):
+    # Determines whether a detection matches with an expectation
+    # if either the frequency or the position match but something
+    # else doesn't, it warns about what it is
+    predicates = dict({
+    'position': abs(detection.pixels_normalized.x-expected['image_coordinates'][0])<expected['image_coordinates_margin']
+    and abs(detection.pixels_normalized.y-expected['image_coordinates'][1])<expected['image_coordinates_margin'],
+    'frequency': detection.frequency == expected['frequency'],
+    'timestamps': detection.timestamp1 == expected['timestamp1'] and
+                  detection.timestamp2 == expected['timestamp2']
+    })
+
+    unsatisfied = [n for n in predicates if not predicates[n]]
+    if(unsatisfied and (predicates['position'] or predicates['frequency'])):
+        logger.warning('\nAlmost a match - (%s mismatch) - between detection: \n%s \nand expectation: \n%s'
+                        % (unsatisfied, detection, expected))
+
+    return not unsatisfied
+
+def find_match(detection, expected_set):
+    # return index (in expected) of the first match to detection
+    # or -1 if there is no match
+    try:
+        return (n for n in range(len(expected_set)) if \
+        (is_match(detection, expected_set[n]))).next()
+    except StopIteration:
+        return -1
 
 def run_test(id_test, test, id_estimator, estimator):
     logger.info('     id_test: %s' % id_test)
@@ -78,16 +99,21 @@ def run_test(id_test, test, id_estimator, estimator):
     assert isinstance(test, LEDDetectionUnitTest)
     query = test.get_query()
     result = estimator.detect_led(**query)
-    logger.info(test.expected[0])
+
+    # We are testing whether the expected detections are a subset of 
+    # the returned ones, we will accept duplicate detections of the
+    # same LED 
     match_count = [0]*len(test.expected)
     for r in result.detections:
         m = find_match(r, test.expected) 
         if(m != -1):
             match_count[m]+=1
 
-    logger.info(match_count)
-
-    # TODO before return, output which LED was expected and not detected 
+    #logger.info(' matches: %s' % match_count)
+    
+    missedLEDs = [test.expected[i] for i in range(0,  len(match_count)) if match_count[i]==0]
+    if(missedLEDs):
+        logger.error('missed LED detections: \n %s' % missedLEDs)
 
     return not 0 in match_count
 

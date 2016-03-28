@@ -1,17 +1,18 @@
 allblinking_test1-argo-magitek_front:
   # how to create the test data
   data:
+    # change this path locally if needed (TODO more portable solution?)
     bag: "~/Dropbox (MIT)/duckietown-data/logs/Phase_2/F23/Meeting_1_Logs/allblinking_test1/20160312-allblinking_test1-argo.bag"
-    interval: [0, 2]
+    interval: [0, 3]
   # what to query for
   query:
     frequencies_to_detect: [1.0, 1.5, 2.0]
     min_distance_between_LEDs_pixels: 5         
 
-  # TODO ask Andrea whether he really still thinks 
-  # we should include timestamps in each LEDDetection.
-  # It is easy to make this yaml file (and a message)
-  # inconsistent, which sounds like it's a poor decision imo.
+  # TODO should we really include timestamps in each LEDDetection
+  # or is one pair of timestamps enough for a LEDDetectionArray?
+  # It is easy to make this yaml file inconsistent, which sounds
+  # like it's a poor decision imo.
 
   # what we expect to see
   expected: 

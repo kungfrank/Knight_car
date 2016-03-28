@@ -12,7 +12,7 @@
         <!-- run local -->
         <node if="$(arg local)" name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
             <!--For making sure that it runs with bag files locally, when launched by itself, comment out later when conforming to duckietown standards-->
-            <!-- <remap from="~object_image_detection_list" to="/$(arg veh)/static_object_detector_node/object_image_detection_list"/> -->
+            <!-- <remap from="~detection_list" to="/$(arg veh)/static_object_detector_node/detection_list"/> -->
             <rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
         </node>
 

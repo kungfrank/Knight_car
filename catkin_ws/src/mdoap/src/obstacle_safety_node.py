@@ -10,15 +10,15 @@ class ObstacleSafetyNode:
         self.name = 'obstacle_safety_node'
         rospy.loginfo('[%s] started', self.name)
 
-        self.sub_ = rospy.Subscriber("~object_image_detection_list", ObstacleImageDetectionList, self.cbDetectionsList, queue_size=1)
+        self.sub_ = rospy.Subscriber("~detection_list", ObstacleImageDetectionList, self.cbDetectionsList, queue_size=1)
 
         rospy.wait_for_service('ground_projection/get_ground_coordinate')
         self.ground_proj = rospy.ServiceProxy('ground_projection/get_ground_coordinate',GetGroundCoord)
 
         self.pub_too_close = rospy.Publisher("~object_too_close", BoolStamped, queue_size=1)
-        self.pub_projections = rospy.Publisher("~object_projected_detection_list", ObstacleProjectedDetectionList, queue_size=1)
+        self.pub_projections = rospy.Publisher("~detection_list_proj", ObstacleProjectedDetectionList, queue_size=1)
         
-        self.pub_markers = rospy.Publisher("~obstacle_markers", MarkerArray, queue_size=1)
+        self.pub_markers = rospy.Publisher("~object_detection_markers", MarkerArray, queue_size=1)
         self.maxMarkers = 0
 
         #TODO(CL): Setup param from default.yaml

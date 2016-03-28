@@ -6,7 +6,7 @@ class SimpleStopControllerNode:
         self.name = 'simple_stop_controller_node'
         rospy.loginfo('[%s] started', self.name)
         self.sub_close = rospy.Subscriber("~too_close", BoolStamped, self.cbBool, queue_size=1)
-        self.pub_wheels_cmd = rospy.Publisher("~wheels_control",WheelsCmdStamped,queue_size=1)
+        self.pub_wheels_cmd = rospy.Publisher("~control",WheelsCmdStamped,queue_size=1)
 
     def cbBool(self, bool_msg):
         stop = WheelsCmdStamped()

@@ -11,6 +11,10 @@ megaman:
   name: Shih-Yuan Liu
   mac: 00:0f:60:06:92:d5
 
+oreo:
+  name: Ari
+  
+
 light4:
   name: Chandan
 
@@ -120,3 +124,7 @@ kitt:
 2cv:
   name: Daniel Hoehener
   mac: b8:ca:3a:c9:73:e9
+
+kitt:
+  name: Misha
+

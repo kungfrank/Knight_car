@@ -3,8 +3,8 @@ import rospy
 import numpy as np
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
-from std_msgs.msg import Bool, Float32
-from duckietown_msgs.msg import SegmentList, Segment, Pixel, LanePose
+from std_msgs.msg import Float32
+from duckietown_msgs.msg import SegmentList, Segment, Pixel, LanePose, BoolStamped
 from scipy.stats import multivariate_normal, entropy
 from math import floor, atan2, pi, cos, sin
 import time
@@ -33,6 +33,7 @@ class LaneFilterNode(object):
         self.linewidth_yellow = self.setupParam("~linewidth_yellow",0.02)
         self.lanewidth        = self.setupParam("~lanewidth",0.4)
         self.min_max = self.setupParam("~min_max", 0.3) # nats
+        self.min_segs = self.setupParam("~min_segs", 10)
 
         self.d,self.phi = np.mgrid[self.d_min:self.d_max:self.delta_d,self.phi_min:self.phi_max:self.delta_phi]
         self.beliefRV=np.empty(self.d.shape)
@@ -40,12 +41,11 @@ class LaneFilterNode(object):
         self.lanePose = LanePose()
         self.lanePose.d=self.mean_0[0]
         self.lanePose.phi=self.mean_0[1]
-        self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments)
         # self.sub = rospy.Subscriber("~velocity",
         self.pub_lane_pose  = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
         self.pub_belief_img = rospy.Publisher("~belief_img", Image, queue_size=1)
         self.pub_entropy    = rospy.Publisher("~entropy",Float32, queue_size=1)
-        self.pub_in_lane    = rospy.Publisher("~in_lane",Bool, queue_size=1)
+        self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -69,9 +69,9 @@ class LaneFilterNode(object):
                 continue
             i = floor((d_i - self.d_min)/self.delta_d)
             j = floor((phi_i - self.phi_min)/self.delta_phi)
-            measurement_likelihood[i,j] = measurement_likelihood[i,j] +  1/l_i
-        if np.linalg.norm(measurement_likelihood) == 0:
-            return
+            measurement_likelihood[i,j] = measurement_likelihood[i,j] +  1/(l_i)
+#        if np.linalg.norm(measurement_likelihood) == 0:
+#            return
         measurement_likelihood = measurement_likelihood/np.linalg.norm(measurement_likelihood)
         #self.updateBelief(measurement_likelihood)
         self.beliefRV = measurement_likelihood
@@ -88,17 +88,15 @@ class LaneFilterNode(object):
         bridge = CvBridge()
         belief_img = bridge.cv2_to_imgmsg((255*self.beliefRV).astype('uint8'), "mono8")
         belief_img.header.stamp = segment_list_msg.header.stamp
+        
+
+
+        max_val = self.beliefRV.max()
+        self.lanePose.in_lane = max_val > self.min_max and len(segment_list_msg.segments) > self.min_segs and np.linalg.norm(self.beliefRV) != 0
         self.pub_lane_pose.publish(self.lanePose)
         self.pub_belief_img.publish(belief_img)
         # print "time to process segments:"
         # print rospy.get_time() - t_start
-
-        max_val = self.beliefRV.max()
-        print max_val
-        if (max_val > self.min_max):
-            self.pub_in_lane.publish(True)
-        else:
-            self.pub_in_lane.publish(False)
 #        ent = entropy(self.beliefRV)
 #        print ent
 #        if (ent < self.max_entropy):
@@ -147,6 +145,7 @@ class LaneFilterNode(object):
                 d_i = - d_i
                 phi_i = -phi_i
             d_i = d_i - self.lanewidth/2
+
         elif segment.color == segment.YELLOW: # left lane is yellow
             if (p2[0] > p1[0]): # left edge of yellow lane
                 d_i = d_i - self.linewidth_yellow
@@ -154,6 +153,7 @@ class LaneFilterNode(object):
             else: # right edge of white lane
                 d_i = -d_i
             d_i =  self.lanewidth/2 - d_i
+
         return d_i, phi_i, l_i
     
     def onShutdown(self):

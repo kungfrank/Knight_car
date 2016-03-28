@@ -78,6 +78,9 @@ add_message_files(
   FSMState.msg
   BoolStamped.msg
   StopLineReading.msg
+  KinematicsWeights.msg
+  ThetaDotSample.msg
+  Vsample.msg
 )
 
 ## Generate services in the 'srv' folder

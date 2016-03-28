@@ -5,9 +5,7 @@ from kinematics import Inverse_kinematics
 from numpy import *
 
 # Inverse Kinematics Node
-# Authors: Jason Pazis
-# Inputs: 
-# Outputs: 
+# Author: Jason Pazis
 
 class InverseKinematicsNode(object):
     def __init__(self):

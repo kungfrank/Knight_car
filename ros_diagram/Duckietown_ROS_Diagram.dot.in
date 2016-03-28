@@ -269,6 +269,7 @@ digraph D {
 	// == veh_coordinator_node == //
 	{signals_detection,mode} -> veh_coordinator_node;
 	veh_coordinator_node->intersection_go;
+	veh_coordinator_node->desired_signaling_state;
 
 	// == wheels_cmd_switch_node == //
 	{mode, lane_control, intersection_control, veh_avoidance_control, simple_stop_control, mdoap_control, joy_control, lane_control_sup}->wheels_cmd_switch_node;	
@@ -295,8 +296,9 @@ digraph D {
 
 	// == F2-3 == //
 	// the joystick is connected to LED_joystick_node, which produces a desired_signaling_state
-	joy->LED_joystick_node->desired_signaling_state;
-	
+	joy->LED_joystick_node;
+	LED_joystick_node->desired_signaling_state[style="dashed"]; // dashed = only for testing
+
 	// LED_emitter_node reads desired_signaling_state and activates the LED
 	desired_signaling_state->LED_emitter_node;
 
@@ -306,6 +308,7 @@ digraph D {
 	raw_led_detection->LED_interpreter_node->signals_detection;
 	// the node also needs to know where the vehicle is
 	{stop_line_dist, lane_pose} -> LED_interpreter_node;
+	{intrinsic_calibration_file, extrinsic_calibration_file}->LED_interpreter_node[style="dotted"];
  
 	// == F4 == //
 	// == odometry_training_pairs_node == //

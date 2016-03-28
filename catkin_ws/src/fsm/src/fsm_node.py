@@ -1,77 +1,47 @@
 #!/usr/bin/env python
 import rospy
-from duckietown_msgs.msg import FSMState, BoolStamped, StopLineReading, LanePose, CoordinationClearance
-from std_msgs.msg import String #Imports msg
+from duckietown_msgs.msg import FSMState, BoolStamped
 
 class FSMNode(object):
     def __init__(self):
-        self.actual = FSMState()
-        self.actual.state = FSMState.LANE_FOLLOWING
-        self.actual.header.stamp = rospy.Time.now()
-        self.in_lane = False
-        self.at_stop_line = False
-        self.intersection_go = False
-        self.intersection_done = False
-
-        # Save the name of the node
         self.node_name = rospy.get_name()
+
+        self.state_msg = FSMState()
+        # TODO: set default state
+        self.pub_state = rospy.Publisher("~state",FSMState,queue_size=1)
         
-        rospy.loginfo("[%s] Initialzing." %(self.node_name))
+        # Build dict from FSMState.mode to name of states and transition table for each state
+        self.name_state_dict = rospy.get_param("~states")
+        self.state_name_dict = dict()
+        self.state_trans_dict = dict()
+        for state_name,state_id in self.name_state_dict.items():
+            self.state_name_dict[state_id] = state_name
+            # TODO: check if param exsit, complain and shutdown if not.
+            self.state_trans_dict[state_id] = rospy.get_param("~%s"%(state_name))
 
-        # Setup publishers
-        self.pub_topic_mode = rospy.Publisher("~mode",FSMState, queue_size=1, latch=True)
-        
-        # Setup subscribers
-        self.sub_topic_in_lane = rospy.Subscriber("~lane_pose", LanePose, self.cbInLane, queue_size=1)
-        self.sub_topic_at_stop_line = rospy.Subscriber("~stop_line_reading", StopLineReading, self.cbAtStopLine, queue_size=1)
-        self.sub_topic_intersection_go = rospy.Subscriber("~clearance_to_go", CoordinationClearance, self.cbIntersectionGo, queue_size=1)
-        self.sub_topic_intersection_done = rospy.Subscriber("~intersection_done", BoolStamped, self.cbIntersectionDone, queue_size=1)
+        # Construct subscribers
+        param_events_dict = rospy.get_param("~events")
+        self.sub_list = list()
+        self.event_id_name_dict = dict()
+        for event_name,event_id in param_events_dict.items():
+            self.sub_list.append(rospy.Subscriber("~%s"%(event_name), BoolStamped, self.cbEvent, callback_args=event_id))
+            self.event_id_name_dict[event_id] = event_name
 
-        # Read parameters
-        rospy.loginfo("[%s] Initialzed." %(self.node_name))
-
-    def cbIntersectionDone(self, done_msg):
-        #print done_msg
-        self.intersection_done = done_msg.data
-        self.updateState(done_msg.header.stamp)
-
-    def cbInLane(self, lane_pose_msg):
-        #print lane_pose_msg
-        self.in_lane = lane_pose_msg.in_lane
-        self.updateState(lane_pose_msg.header.stamp)
-
-    def cbAtStopLine(self, stop_line_reading_msg):
-        #print stop_line_reading_msg
-        self.at_stop_line = stop_line_reading_msg.at_stop_line
-        self.updateState(stop_line_reading_msg.header.stamp)
-
-    def cbIntersectionGo(self, go_msg):
-        #print go_msg
-        self.intersection_go = (go_msg.status == CoordinationClearance.GO)
-        self.updateState(go_msg.header.stamp)
-
-    def updateState(self,stamp):
-        if(self.actual.state == self.actual.LANE_FOLLOWING):
-            if(self.at_stop_line == True):
-                #update the state
-                self.actual.state = self.actual.COORDINATION
-        elif(self.actual.state == self.actual.COORDINATION):
-            if(self.intersection_go == True):
-                self.actual.state = self.actual.INTERSECTION_CONTROL
-                self.intersection_go = False
-        elif(self.actual.state == self.actual.INTERSECTION_CONTROL):
-            if(self.in_lane == True and self.intersection_done == True):
-                self.actual.state = self.actual.LANE_FOLLOWING
-                self.intersection_done = False
-
-        self.actual.header.stamp = stamp
-        self.pub_topic_mode.publish(self.actual)
-   
-    def setupParameter(self,param_name,default_value):
-        value = rospy.get_param(param_name,default_value)
-        rospy.set_param(param_name,value) #Write to parameter server for transparancy
-        rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
-        return value
+    def cbEvent(self,msg,event_id):
+        if (msg.data):
+            self.state_msg.header.stamp = msg.header.stamp
+            trans_dict = self.state_trans_dict.get(self.state_msg.state)
+            if trans_dict is None:
+                # TODO ERROR state not handled
+                return
+            event_name = self.event_id_name_dict[event_id]
+            next_state_name = trans_dict.get(event_name)
+            if next_state_name is not None:
+                next_state_id = self.name_state_dict.get(next_state_name)
+                rospy.loginfo("[%s] FSMState: %s" %(self.node_name, next_state_name))
+                # if not next_state_id == self.state_msg.state:
+                self.state_msg.state = next_state_id
+                self.pub_state.publish(self.state_msg)
 
     def on_shutdown(self):
         rospy.loginfo("[%s] Shutting down." %(self.node_name))

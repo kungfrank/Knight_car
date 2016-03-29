@@ -32,8 +32,8 @@ class WheelsDriverAdvancedNode(object):
     
     def cbCamInfo(self,msg):
         #synchronization between video frames and set wheelspeed
-        self.driver.setWheelsSpeed(left=self.vel_left,right=self.vel_right)
-        #rospy.loginfo("d_L: %f d_R: %f" %self.vel_left, self.vel_right)
+        self.driver.setWheelsSpeed(left=1.0,right=1.0)
+        #self.driver.setWheelsSpeed(left=self.vel_left,right=self.vel_right)
 
         # Put the wheel commands in a message and publish
         msg_wheels_cmd = WheelsCmdStamped()

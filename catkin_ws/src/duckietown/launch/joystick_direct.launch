@@ -22,10 +22,9 @@
         <arg name="param_file_name" value="$(arg param_file_name)"/>
     </include>
 
-    <!-- Inverse Kinematics Node -->
+    <!-- All Kinematics Nodes -->
     <remap from="inverse_kinematics_node/car_cmd" to="joy_mapper_node/car_cmd"/>
-    <remap from="inverse_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd"/>
-    <include file="$(find kinematics)/launch/inverse_kinematics_node.launch">
+    <include file="$(find duckietown)/launch/kinematics.launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>
         <arg name="config" value="$(arg config)"/>

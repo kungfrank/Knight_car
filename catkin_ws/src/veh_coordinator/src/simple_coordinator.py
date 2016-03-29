@@ -2,8 +2,8 @@
 from __future__ import print_function
 from random import random
 import rospy
-from duckietown_msgs.msg import ControlMode, IntersectionDetection, VehicleDetection, TrafficLightDetection, \
-    CoordinationClearance, CoordinationSignal
+from duckietown_msgs.msg import IntersectionDetection, VehicleDetection, TrafficLightDetection, \
+    CoordinationClearance, CoordinationSignal, FSMState
 from time import time
 
 
@@ -44,32 +44,32 @@ class VehicleCoordinator():
         self.node = rospy.init_node('veh_coordinator', anonymous=True)
 
         # Subscriptions
-        self.mode = ControlMode.LANE_FOLLOWING
-        rospy.Subscriber('mode', ControlMode,
-                         lambda msg: self.set('mode', msg.mode))
+        self.mode = FSMState.LANE_FOLLOWING
+        rospy.Subscriber('~mode', FSMState,
+                         lambda msg: self.set('mode', msg.state))
 
         self.intersection = IntersectionDetection.NONE
-        rospy.Subscriber('intersection_detection', IntersectionDetection,
+        rospy.Subscriber('~intersection_detection', IntersectionDetection,
                          lambda msg: self.set('intersection', msg.type))
 
         self.traffic_light = TrafficLightDetection.NA
-        rospy.Subscriber('traffic_light_detection', TrafficLightDetection,
+        rospy.Subscriber('~traffic_light_detection', TrafficLightDetection,
                          lambda msg: self.set('traffic_light', msg.color))
 
         self.right_veh = VehicleDetection.NO_CAR
-        rospy.Subscriber('right_vehicle_detection', VehicleDetection,
+        rospy.Subscriber('~right_vehicle_detection', VehicleDetection,
                          lambda msg: self.set('right_veh', msg.detection))
 
         self.opposite_veh = VehicleDetection.NO_CAR
-        rospy.Subscriber('opposite_vehicle_detection', VehicleDetection,
+        rospy.Subscriber('~opposite_vehicle_detection', VehicleDetection,
                          lambda msg: self.set('opposite_veh', msg.detection))
 
         # Publishing
         self.clearance_to_go = CoordinationClearance.NA
-        self.clearance_to_go_pub = rospy.Publisher('clearance_to_go', CoordinationClearance, queue_size=10)
+        self.clearance_to_go_pub = rospy.Publisher('~clearance_to_go', CoordinationClearance, queue_size=10)
 
         self.roof_light = CoordinationSignal.SIGNAL_A
-        self.roof_light_pub = rospy.Publisher('coordination_signal', CoordinationSignal, queue_size=10)
+        self.roof_light_pub = rospy.Publisher('~coordination_signal', CoordinationSignal, queue_size=10)
 
         while not rospy.is_shutdown():
             self.loop()
@@ -111,7 +111,7 @@ class VehicleCoordinator():
     def reconsider(self):
 
         if self.state == State.LANE_FOLLOWING:
-            if self.mode == ControlMode.COORDINATION_CONTROL:
+            if self.mode == FSMState.COORDINATION:
                 if self.intersection == IntersectionDetection.STOP:
                     self.set_state(State.AT_STOP)
                 elif self.intersection == IntersectionDetection.TRAFFIC_LIGHT:
@@ -147,7 +147,7 @@ class VehicleCoordinator():
                     self.set_state(State.GO)
 
         elif self.state == State.GO:
-            if self.mode == ControlMode.LANE_FOLLOWING:
+            if self.mode == FSMState.LANE_FOLLOWING:
                 self.set_state(State.LANE_FOLLOWING)
 
         elif self.state == State.CONFLICT:

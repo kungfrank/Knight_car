@@ -8,6 +8,8 @@
 	<arg name="raw" default="true" doc="If set to true, also publish raw image using decoder."/>
 	<arg name="live" default="true" doc="live set to false means we don't run the actual camera (i.e. running from a log file" />
 
+	<arg name="global" default="true"/>
+	<arg name="fast"   default="false"/>
 
 	<!-- Camera -->
 	<include if="$(arg camera)" file="$(find duckietown)/launch/camera.launch">
@@ -21,7 +23,7 @@
 	</include>
 
 	<!-- Preprocessing and apriltags detection (#TODO update to final launch file) -->
-	<include file="$(find apriltags)/launch/apriltags_node_wihtPreProsTimers_Alex.launch">
+	<include file="$(find apriltags)/launch/apriltags_node_wihtPreProsTimersParams_Alex.launch">
 		<arg name="veh" value="$(arg veh)"/>
 		<arg name="local" value="$(arg local)"/>
 		<arg name="config" value="$(arg config)"/>
@@ -29,12 +31,12 @@
 	</include>
 
 	<!-- Postprocessing nodes -->
-	<include file="$(find apriltags)/launch/apriltags_postprocessing_fast_node.launch">
+	<include if="$(arg fast)" file="$(find apriltags)/launch/apriltags_postprocessing_fast_node.launch">
 		<arg name="veh" value="$(arg veh)"/>
 		<arg name="loc" value="$(arg loc)"/>
 	</include>
 
-	<include file="$(find apriltags)/launch/apriltags_postprocessing_global_node.launch">
+	<include if="$(arg global)" file="$(find apriltags)/launch/apriltags_postprocessing_global_node.launch">
 		<arg name="veh" value="$(arg veh)"/>
 		<arg name="loc" value="$(arg loc)"/>
 	</include>

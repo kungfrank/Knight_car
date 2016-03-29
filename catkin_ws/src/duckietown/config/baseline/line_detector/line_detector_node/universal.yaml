@@ -9,7 +9,7 @@ hough_max_line_gap:    1
 
 hsv_white1:  [0,0,50]
 hsv_white2:  [180,120,255]
-hsv_yellow1: [25,210,50]
+hsv_yellow1: [25,150,50]
 hsv_yellow2: [45,255,255]
 hsv_red1:    [0,200,50]
 hsv_red2:    [15,255,255]

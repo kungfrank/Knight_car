@@ -23,7 +23,7 @@
 
     <!-- Inverse Kinematics Node -->
     <remap from="inverse_kinematics_node/car_cmd" to="joy_mapper_node/car_cmd"/>
-    <remap from="inverse_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd"/>
+    <remap from="inverse_kinematics_node/wheels_cmd" to="wheels_driver_sync_node/wheels_cmd"/>
     <include file="$(find kinematics)/launch/inverse_kinematics_node.launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>

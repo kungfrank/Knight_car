@@ -5,10 +5,9 @@ from duckietown_msgs.msg import FSMState, BoolStamped
 class FSMNode(object):
     def __init__(self):
         self.node_name = rospy.get_name()
-
         self.state_msg = FSMState()
         # TODO: set default state
-        self.pub_state = rospy.Publisher("~state",FSMState,queue_size=1)
+        self.pub_state = rospy.Publisher("~state",FSMState,queue_size=1,latch=True)
         
         # Build dict from FSMState.mode to name of states and transition table for each state
         self.name_state_dict = rospy.get_param("~states")
@@ -16,8 +15,12 @@ class FSMNode(object):
         self.state_trans_dict = dict()
         for state_name,state_id in self.name_state_dict.items():
             self.state_name_dict[state_id] = state_name
-            # TODO: check if param exsit, complain and shutdown if not.
-            self.state_trans_dict[state_id] = rospy.get_param("~%s"%(state_name))
+            if rospy.has_param("~transitions/%s"%(state_name)):
+                self.state_trans_dict[state_id] = rospy.get_param("~transitions/%s"%(state_name))
+                rospy.loginfo("[%s] state: %s transitions loaded."%(self.node_name,state_name))
+            else:
+                self.state_trans_dict[state_id] = dict()
+                rospy.loginfo("[%s] state: %s has no transitions defined."%(self.node_name,state_name))
 
         # Construct subscribers
         param_events_dict = rospy.get_param("~events")
@@ -29,19 +32,29 @@ class FSMNode(object):
 
     def cbEvent(self,msg,event_id):
         if (msg.data):
+            # Update timestamp
             self.state_msg.header.stamp = msg.header.stamp
+            # Load transitions of the current state
             trans_dict = self.state_trans_dict.get(self.state_msg.state)
             if trans_dict is None:
-                # TODO ERROR state not handled
-                return
+                # State not defined
+                rospy.logerr("[%s] Transition into undefined state %s."%(self.node_name,next_state_name))
+                rospy.signal_shutdown("Undefined state.")
+
             event_name = self.event_id_name_dict[event_id]
             next_state_name = trans_dict.get(event_name)
             if next_state_name is not None:
-                next_state_id = self.name_state_dict.get(next_state_name)
-                rospy.loginfo("[%s] FSMState: %s" %(self.node_name, next_state_name))
-                # if not next_state_id == self.state_msg.state:
-                self.state_msg.state = next_state_id
-                self.pub_state.publish(self.state_msg)
+                # Has transition for the event
+                if next_state_name not in self.name_state_dict.keys():
+                    # Transition into undefined state
+                    rospy.logerr("[%s] Transition into undefined state %s."%(self.node_name,next_state_name))
+                    rospy.signal_shutdown("Undefined state.")
+                else:
+                    # Transitoin into next state according to event
+                    next_state_id = self.name_state_dict.get(next_state_name)
+                    rospy.loginfo("[%s] FSMState: %s" %(self.node_name, next_state_name))
+                    self.state_msg.state = next_state_id
+                    self.pub_state.publish(self.state_msg)
 
     def on_shutdown(self):
         rospy.loginfo("[%s] Shutting down." %(self.node_name))

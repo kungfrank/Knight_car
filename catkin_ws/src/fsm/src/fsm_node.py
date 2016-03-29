@@ -25,12 +25,11 @@ class FSMNode(object):
         # Construct subscribers
         param_events_dict = rospy.get_param("~events")
         self.sub_list = list()
-        self.event_id_name_dict = dict()
-        for event_name,event_id in param_events_dict.items():
-            self.sub_list.append(rospy.Subscriber("~%s"%(event_name), BoolStamped, self.cbEvent, callback_args=event_id))
-            self.event_id_name_dict[event_id] = event_name
+        self.event_names = list()
+        for event_name, topic_name in param_events_dict.items():
+            self.sub_list.append(rospy.Subscriber("%s"%(topic_name), BoolStamped, self.cbEvent, callback_args=event_name))
 
-    def cbEvent(self,msg,event_id):
+    def cbEvent(self,msg,event_name):
         if (msg.data):
             # Update timestamp
             self.state_msg.header.stamp = msg.header.stamp
@@ -41,7 +40,6 @@ class FSMNode(object):
                 rospy.logerr("[%s] Transition into undefined state %s."%(self.node_name,next_state_name))
                 rospy.signal_shutdown("Undefined state.")
 
-            event_name = self.event_id_name_dict[event_id]
             next_state_name = trans_dict.get(event_name)
             if next_state_name is not None:
                 # Has transition for the event

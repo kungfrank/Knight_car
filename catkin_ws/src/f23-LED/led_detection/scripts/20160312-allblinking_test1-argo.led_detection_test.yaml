@@ -1,21 +1,45 @@
 allblinking_test1-argo-magitek_front:
   # how to create the test data
   data:
-    bag: "~/duckietown-data/logs/Phase_2/F23/Meeting_1_Logs/allblinking_test1/20160312-allblinking_test1-argo.bag"
-    interval: [0, 2]
+    # change this path locally if needed (TODO more portable solution?)
+    bag: "~/Dropbox (MIT)/duckietown-data/logs/Phase_2/F23/Meeting_1_Logs/allblinking_test1/20160312-allblinking_test1-argo.bag"
+    interval: [0, 3]
   # what to query for
   query:
-    frequencies_to_detect: [1.0, 3.0]
+    frequencies_to_detect: [1.0, 1.5, 2.0]
     min_distance_between_LEDs_pixels: 5         
+
+  # TODO should we really include timestamps in each LEDDetection
+  # or is one pair of timestamps enough for a LEDDetectionArray?
+  # It is easy to make this yaml file inconsistent, which sounds
+  # like it's a poor decision imo.
+
   # what we expect to see
   expected: 
-  - timestamp1: 0
+  - 
+    timestamp1: 0
     timestamp2: 2
-    image_coordinates: [10, 10]
-    image_coordinates_margin: 5 # pixels
+    image_coordinates: [249, 192]
+    image_coordinates_margin: 10 # pixels
     frequency: 1.0
-    color: [1,1,1]
-    color_tolerance: 0.1
+    # color: 'r'
+    # color_tolerance: 0.1
     confidence_min: 0.9
-
-    
+  - 
+    timestamp1: 0
+    timestamp2: 2
+    image_coordinates: [268, 115]
+    image_coordinates_margin: 10 # pixels
+    frequency: 1.5
+    # color: 'r'
+    # color_tolerance: 0.1
+    confidence_min: 0.9
+  - 
+    timestamp1: 0
+    timestamp2: 2
+    image_coordinates: [520, 199]
+    image_coordinates_margin: 10 # pixels
+    frequency: 2.0
+    # color: 'r'
+    # color_tolerance: 0.1
+    confidence_min: 0.9

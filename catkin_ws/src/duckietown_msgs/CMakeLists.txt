@@ -54,6 +54,8 @@ add_message_files(
   FILES
   CarControl.msg
   LEDControl.msg
+  LEDDetection.msg
+  LEDDetectionArray.msg
   DuckieSensor.msg
   LanePose.msg
   WheelsCmd.msg

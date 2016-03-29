@@ -6,11 +6,11 @@
 
     <include file="$(find duckietown)/machines"/>
     <!-- intersection control -->
-    <node ns="$(arg veh)" if="$(arg local)" pkg="fsm" type="fsm_node.py" name="fsm_node" output="screen">
+    <node ns="$(arg veh)" if="$(arg local)" pkg="fsm" type="fsm_node.py" name="fsm_node" clear_params="true" output="screen">
         <rosparam command="load" file="$(find duckietown)/config/$(arg config)/fsm/fsm_node/$(arg param_file_name).yaml"/>
     </node>
     
-    <node ns="$(arg veh)" unless="$(arg local)" machine="$(arg veh)" pkg="fsm" type="fsm_node.py" name="fsm_node" output="screen">
+    <node ns="$(arg veh)" unless="$(arg local)" machine="$(arg veh)" pkg="fsm" type="fsm_node.py" name="fsm_node" clear_params="true" output="screen">
         <rosparam command="load" file="$(find duckietown)/config/$(arg config)/fsm/fsm_node/$(arg param_file_name).yaml"/>
     </node>
 

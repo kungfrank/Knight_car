@@ -1,18 +1,8 @@
-states: #Maps from name of state to FSMState.mode
-  STATE_0: 0 # FSMState.LANE_FOLLOWING=0 
-  STATE_1: 1 # FSMState.COORDINATION=1 
-  STATE_2: 2 # FSMState.INTERSECTION_CONTROL=2
 switches: # Define switches and coorespoinding topics
   switch_0: "~topic_0"
   switch_1: "~topic_1"
   switch_2: "~topic_2"
 tables:
-  STATE_0:
-    turn_on: ["switch_0"]
-    turn_off: ["switch_1","switch_2"]
-  STATE_1:
-    turn_on: ["switch_1"]
-    turn_off: []
-  STATE_2:
-    turn_on: ["switch_2"]
-    turn_off: ["switch_0"]
+  STATE_0: ["switch_0", "switch_1", "switch_2"]
+  STATE_1: ["switch_1"]
+  STATE_2: []

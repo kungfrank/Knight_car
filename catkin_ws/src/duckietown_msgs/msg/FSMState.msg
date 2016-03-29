@@ -1,6 +1,8 @@
 Header header
-uint8 LANE_FOLLOWING=0
-uint8 COORDINATION=1	
-uint8 INTERSECTION_CONTROL=2
-uint8 state
+string state
+
+#List of states
+# LANE_FOLLOWING
+# COORDINATION	
+# INTERSECTION_CONTROL
 

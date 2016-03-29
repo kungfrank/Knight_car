@@ -92,8 +92,5 @@ class DummyLEDDetector(LEDDetector):
                     #threshold into "on" and "off" states
                     pass
                 #determine frequency
-<<<<<<< HEAD
+
         return partition_intensity_data
-=======
-        return result
->>>>>>> 832ee462a88a84304b4974af171ed4a2e73d95f8

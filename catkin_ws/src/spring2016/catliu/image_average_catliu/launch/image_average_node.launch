@@ -1,0 +1,35 @@
+<launch>
+    <arg name="veh"/>
+    <arg name="log_in" doc="the full path to the input bag" />
+    <arg name="log_out" doc="the full path to the output bag" /> 
+    <arg name="config" default="baseline" doc="Specify a config."/>
+    <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+    <arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+    
+    
+    <arg name="pkg_name" value="image_average_catliu"/>
+    <arg name="node_name" default="image_average_node"/>
+
+    <group ns="$(arg veh)">        
+        <!-- run local -->
+        <node if="$(arg local)" name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
+            <remap from="image_average_node/topic_in" to="camera_node/image/compressed"/>
+            <remap from="image_average_node/topic_out" to="image_average_node/image/average"/>
+        </node>
+
+        <!-- run remote -->
+        <node unless="$(arg local)" machine="$(arg veh)" name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen">
+            <remap from="image_average_node/topic_in" to="camera_node/image/compressed"/>
+            <remap from="image_average_node/topic_out" to="image_average_node/image/average"/>
+        </node>
+    </group>
+
+    <!-- Publications -->
+    <!-- image_average_node/image/average -->
+    <!-- Subscriptions -->
+    <!-- camera_node/image/compressed-->
+    
+
+    <node  pkg="rosbag" type="play" name="rosbag_play" args="$(arg log_in)"/>
+    <node  pkg="rosbag" type="record" name="rosbag_record" args="-a  -O $(arg log_out)"/> 
+</launch>

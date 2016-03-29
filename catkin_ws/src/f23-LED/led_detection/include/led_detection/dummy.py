@@ -40,6 +40,7 @@ class DummyLEDDetector(LEDDetector):
         partition_width = W / partitions_x
         partition_height = H / partitions_y
 
+        partition_intensity_data = []
         # jump by partition
         for x in range(0, W, partition_width):
             for y in range(0, H, partition_height):
@@ -60,9 +61,10 @@ class DummyLEDDetector(LEDDetector):
                             intensities.append(intensity)
 
                     average_intensities.append(numpy.mean(intensities))
-                variance = numpy.var(average_intensities)
+                partition_intensity_data.append(average_intensities)
+                #variance = numpy.var(average_intensities)
                 if variance > intensity_variance_threshold:
                     #threshold into "on" and "off" states
                     pass
                 #determine frequency
-        return []
+        return partition_intensity_data

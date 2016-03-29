@@ -1,8 +1,0 @@
-switches: # Define switches and coorespoinding topics
-  switch_0: "~topic_0"
-  switch_1: "~topic_1"
-  switch_2: "~topic_2"
-tables:
-  STATE_0: ["switch_0", "switch_1", "switch_2"]
-  STATE_1: ["switch_1"]
-  STATE_2: []

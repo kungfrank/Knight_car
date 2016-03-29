@@ -20,6 +20,8 @@ catkin_package(
    CATKIN_DEPENDS message_runtime duckietown_msgs roscpp rospy
 )
 
+add_message_files(FILES WheelsCmdStamped.msg Twist2DStamped.msg KinematicsWeights.msg Pose2DStamped.msg WheelsCmdStamped.msg ThetaDotSample.msg Vsample.msg)
+
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )

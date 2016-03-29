@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy, rospkg
-from duckietown_msgs.msg import WheelsCmdStamped, Twist2DStamped, Pose2DStamped
+from duckietown_msgs.msg import WheelsCmdStamped, Twist2DStamped, Pose2DStamped, KinematicsWeights
 from kinematics import Forward_kinematics
 from numpy import *
 
@@ -23,9 +23,11 @@ class ForwardKinematicsNode(object):
         #Setup the forward kinematics model
         self.fk = Forward_kinematics.Forward_kinematics(fi_theta_dot_function, fi_v_function, matrix(theta_dot_weights), matrix(v_weights))
 
-        #Setup the publisher and subscriber
-        self.sub = rospy.Subscriber("~wheels_cmd", WheelsCmdStamped, self.wheelsCmdCallback)
+        #Setup the publisher and subscribers
         self.pub_velocity = rospy.Publisher("~velocity", Twist2DStamped, queue_size=1)
+        self.sub = rospy.Subscriber("~wheels_cmd", WheelsCmdStamped, self.wheelsCmdCallback)
+        self.sub_theta_dot_weights = rospy.Subscriber("~theta_dot_weights", KinematicsWeights, self.thedaDotWeightsCallback)
+        self.sub_v_weights = rospy.Subscriber("~v_weights", KinematicsWeights, self.vWeightsCallback)
 
         rospy.loginfo("[%s] has started", self.node_name)
 
@@ -40,6 +42,15 @@ class ForwardKinematicsNode(object):
         msg_velocity.v = v
         msg_velocity.omega = theta_dot
         self.pub_velocity.publish(msg_velocity)
+
+
+    def thedaDotWeightsCallback(self, msg):
+        # update theta_dot_weights for the forward kinematics model
+        self.fk.theta_dot_weights = msg.weights
+
+    def vWeightsCallback(self, msg):
+        # update v_weights for the forward kinematics model
+        self.fk.v_weights = msg.weights
 
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

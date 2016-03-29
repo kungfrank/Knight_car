@@ -154,8 +154,8 @@ digraph D {
 		lane_controller_node[!NODE:compiled!, label="lane_control\nlane_controller_node (SY,SC)"];
 		lane_pose[!TOPIC!, label="~lane_pose\nduckietown_msgs/LanePose.msg"]; //LaneReading: y, phi, sigma_y, sigma_phi, status
 		//in_lane[!TOPIC!, label="~in_lane\nstd_msgs/Bool.msg"];
-		ref_traj_gen_node[!NODE:development!,  label="lane_filter\nref_traj_gen_node (F5)"];
-		ref_traj[!TOPIC!, label="~ref_traj\nduckietown_msgs/Trajectory.msg"];
+		//ref_traj_gen_node[!NODE:development!,  label="lane_filter\nref_traj_gen_node (F5)"];
+		//ref_traj[!TOPIC!, label="~ref_traj\nduckietown_msgs/Trajectory.msg"];
 		lane_control[!TOPIC!, label="~lane_control\nduckietown_msgs/Twist2DStamped.msg"];
 	}
 

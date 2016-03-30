@@ -41,7 +41,7 @@ For example, this runs all tests on all algorithms:
 
     root = os.environ['DUCKIETOWN_ROOT']
     dirname = 'catkin_ws/src/f23-LED/led_detection/scripts/'
-    filename = '20160312-allblinking_test1-argo.led_detection_test.yaml'
+    filename = 'all_tests.yaml'
     filename = os.path.join(root, dirname, filename)
 
     alltests = load_tests(filename)
@@ -109,9 +109,7 @@ def run_test(id_test, test, id_estimator, estimator):
         m = find_match(r, test.expected) 
         if(m != -1):
             match_count[m]+=1
-
-    #logger.info(' matches: %s' % match_count)
-    
+   
     missedLEDs = [test.expected[i] for i in range(0,  len(match_count)) if match_count[i]==0]
     if(missedLEDs):
         logger.error('missed LED detections (%s): \n %s' % (len(missedLEDs),missedLEDs))

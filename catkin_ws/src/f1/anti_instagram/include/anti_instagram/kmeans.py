@@ -98,7 +98,7 @@ def getparameters2(mapping, trained, true):
 	prior_trained=np.array([[255, 0, 0],[0, 255, 0],[0, 0, 255]])
 	prior_true=np.array([[255, 0, 0],[0, 255, 0],[0, 0, 255]])
 	diagonal_prior_weight=300 # the coefficients along the diagonal should be close to each other - i.e close to "white" light
-	a_prior_weight=0.1 # a should be close to 1
+	a_prior_weight=1 # a should be close to 1
 	INFEASIBILITY_PENALTY=1000000
 	
 	min_fitting_cost=np.inf

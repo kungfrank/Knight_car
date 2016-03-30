@@ -25,7 +25,8 @@ class AntiInstagram(object):
 		if r[0][0] == 0.0: return
 
 		# Estimates the scale and shift over multiple frame via an IIR filter with preference towards low-cost frames
-		IIR_weight=100000/(1000000+cost)
+		IIR_weight=1000/(10000+cost)
+		print("cost = %f, IIR_weight = %f"%(cost,IIR_weight))
 		# self.scale = [r[0][0][0],g[0][0][0],b[0][0][0]]
 		# self.shift = [r[1][0], g[1][0],b[1][0]]
 		self.scale = (self.scale+np.array([r[0][0][0],g[0][0][0],b[0][0][0]])*IIR_weight)/(1+IIR_weight)

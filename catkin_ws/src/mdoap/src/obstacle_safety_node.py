@@ -44,11 +44,13 @@ class ObstacleSafetyNode:
 
         minDist = 999999999999999999999999.0
         dists = []
+        width = detections_msg.imwidth
+        height = detections_msg.imheight
         for obstacle in detections_msg.list: 
             marker = Marker()
             rect = obstacle.bounding_box
-            p.x = float(rect.x)/float(rect.w)
-            p.y = float(rect.y)/float(rect.h)
+            p.x = float(rect.x)/float(width)
+            p.y = float(rect.y)/float(height)
             projected_point = self.ground_proj(p)
 
             projection = ObstacleProjectedDetection()

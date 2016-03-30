@@ -24,6 +24,8 @@ class Matcher:
         object_list.list = []
 
         height,width = img.shape[:2]
+        object_list.imwidth = width
+        object_list.imheight = height
         hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         COLOR_MIN = np.array([0, 80, 80],np.uint8)
         COLOR_MAX = np.array([22, 255, 255],np.uint8)

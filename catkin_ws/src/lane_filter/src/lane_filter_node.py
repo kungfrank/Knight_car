@@ -45,7 +45,7 @@ class LaneFilterNode(object):
         self.pub_lane_pose  = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
         self.pub_belief_img = rospy.Publisher("~belief_img", Image, queue_size=1)
         self.pub_entropy    = rospy.Publisher("~entropy",Float32, queue_size=1)
-        # self.pub_in_lane    = rospy.Publisher("~in_lane",BoolStamped, queue_size=1)
+        self.pub_in_lane    = rospy.Publisher("~in_lane",BoolStamped, queue_size=1)
         self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments)
 
     def setupParam(self,param_name,default_value):
@@ -99,13 +99,18 @@ class LaneFilterNode(object):
         self.pub_belief_img.publish(belief_img)
         # print "time to process segments:"
         # print rospy.get_time() - t_start
-#        ent = entropy(self.beliefRV)
 #        print ent
-#        if (ent < self.max_entropy):
-#            self.pub_in_lane.publish(True)
-#        else:
-#            self.pub_in_lane.publish(False)
-
+        
+        # Publish in_lane according to the ent
+        in_lane_msg = BoolStamped()
+        in_lane_msg.header.stamp = segment_list_msg.header.stamp
+        in_lane_msg.data = self.lanePose.in_lane
+        # ent = entropy(self.beliefRV)
+        # if (ent < self.max_entropy):
+        #     in_lane_msg.data = True
+        # else:
+        #     in_lane_msg.data = False
+        self.pub_in_lane.publish(in_lane_msg)
 
     def initializeBelief(self):
         pos = np.empty(self.d.shape + (2,))

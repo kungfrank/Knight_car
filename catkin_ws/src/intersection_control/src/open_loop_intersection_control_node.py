@@ -24,10 +24,6 @@ class OpenLoopIntersectionNode(object):
         self.sub_topic_turn_type = rospy.Subscriber("~turn_type", Int16, self.cbTurnType, queue_size=1)
         self.sub_in_lane = rospy.Subscriber("~in_lane", BoolStamped, self.cbInLane, queue_size=1)
 
-        # Read parameters
-        # Create a timer that calls the cbTimer function every 1.0 second
-        #self.timer = rospy.Timer(rospy.Duration.from_sec(self.pub_timestep),self.cbTimer)
-
         rospy.loginfo("[%s] Initialzed." %(self.node_name))
 
         self.rate = rospy.Rate(30) # 10hz
@@ -56,7 +52,6 @@ class OpenLoopIntersectionNode(object):
                 self.turnLeft()
             elif(self.turn_type==-1):
                 self.turnWait()
-
 
     def cbTurnType(self, turn_msg):
         print turn_msg

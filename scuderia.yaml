@@ -14,6 +14,8 @@ megaman:
 oreo:
   name: Ari
   
+autopilot:
+  name: Chandan
 
 light4:
   name: Chandan
@@ -124,3 +126,12 @@ kitt:
 2cv:
   name: Daniel Hoehener
   mac: b8:ca:3a:c9:73:e9
+
+tesla:
+  name: Hang Zhao
+
+shamrock:
+  name: Hang Zhao
+
+ernie:
+  name: Noam Buckman

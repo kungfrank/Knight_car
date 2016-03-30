@@ -7,23 +7,24 @@ class OpenLoopIntersectionNode(object):
     def __init__(self):
         # Save the name of the node
         self.node_name = rospy.get_name()
-        self.turn_type = -1
-        self.state = FSMState.LANE_FOLLOWING
+        # self.turn_type = -1
+        self.turn_type = 0
+        self.state = "LANE_FOLLOWING"
+        self.in_lane = False
+        self.intersection_done = False
 
         rospy.loginfo("[%s] Initialzing." %(self.node_name))
 
         # Setup publishers
-        # self.pub_topic_a = rospy.Publisher("~topic_a",String, queue_size=1)
         self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd",WheelsCmdStamped, queue_size=1)
-        self.pub_wheels_done = rospy.Publisher("~intersection_done",BoolStamped, queue_size=1)
+        self.pub_intersection_done = rospy.Publisher("~intersection_done",BoolStamped, queue_size=1)
 
         # Setup subscribers
-        # self.sub_topic_b = rospy.Subscriber("~topic_b", String, self.cbTopic)
         self.sub_topic_mode = rospy.Subscriber("~mode", FSMState, self.cbMode, queue_size=1)
         self.sub_topic_turn_type = rospy.Subscriber("~turn_type", Int16, self.cbTurnType, queue_size=1)
+        self.sub_in_lane = rospy.Subscriber("~in_lane", BoolStamped, self.cbInLane, queue_size=1)
 
         # Read parameters
-        self.pub_timestep = self.setupParameter("~pub_timestep",1.0)
         # Create a timer that calls the cbTimer function every 1.0 second
         #self.timer = rospy.Timer(rospy.Duration.from_sec(self.pub_timestep),self.cbTimer)
 
@@ -31,19 +32,22 @@ class OpenLoopIntersectionNode(object):
 
         self.rate = rospy.Rate(30) # 10hz
 
+    def cbInLane(self,msg):
+        self.in_lane = msg.data
+
     def cbMode(self, mode_msg):
-        print mode_msg
-        if(mode_msg.state == mode_msg.INTERSECTION_CONTROL):
+        rospy.loginfo("[%s] mode: %s."%(self.node_name,mode_msg.state))
+        if(mode_msg.state == "INTERSECTION_CONTROL"):
             self.state = mode_msg.state
             self.movement()
         else:
             # If not in intersection control mode anymore, pubisher intersection_done False.
             self.state = mode_msg.state
-            self.setIntersectionDone(False)
-            
+            self.intersection_done = False
 
     def movement(self):
-        if(self.state == FSMState.INTERSECTION_CONTROL):
+        if(self.state == "INTERSECTION_CONTROL"):
+            self.intersection_done = False
             if(self.turn_type==0):
                 self.turnRight()
             elif (self.turn_type==1):
@@ -60,11 +64,12 @@ class OpenLoopIntersectionNode(object):
         rospy.loginfo("Turn type now: %i" %(self.turn_type))
         self.movement()
 
-    def setIntersectionDone(self,state):
-        boolstamped = BoolStamped()
-        boolstamped.header.stamp = rospy.Time.now()
-        boolstamped.data = state
-        self.pub_wheels_done.publish(boolstamped)
+    def pubIntersectionDone(self):
+        if self.intersection_done and self.in_lane:
+            boolstamped = BoolStamped()
+            boolstamped.header.stamp = rospy.Time.now()
+            boolstamped.data = True
+            self.pub_intersection_done.publish(boolstamped)
 
     def turnRight(self):
         #move forward
@@ -79,7 +84,7 @@ class OpenLoopIntersectionNode(object):
             wheels_cmd_msg.vel_left = 0.4
             wheels_cmd_msg.vel_right = 0.4
             self.pub_wheels_cmd.publish(wheels_cmd_msg)    
-            rospy.loginfo("Moving?.")
+            # rospy.loginfo("Moving?.")
             self.rate.sleep()
         #turn right
         starting_time = rospy.Time.now()
@@ -89,11 +94,12 @@ class OpenLoopIntersectionNode(object):
             wheels_cmd_msg.vel_left = 0.25
             wheels_cmd_msg.vel_right = -0.25
             self.pub_wheels_cmd.publish(wheels_cmd_msg)    
-            rospy.loginfo("Moving?.")
+            # rospy.loginfo("Moving?.")
             self.rate.sleep()
    
         #coordination with lane controller means part way through announce finished turn
-        self.setIntersectionDone(True)
+        # self.setIntersectionDone(True)
+        self.intersection_done = True
 
         #move forward
         starting_time = rospy.Time.now()
@@ -102,8 +108,9 @@ class OpenLoopIntersectionNode(object):
             wheels_cmd_msg.header.stamp = rospy.Time.now()
             wheels_cmd_msg.vel_left = 0.4
             wheels_cmd_msg.vel_right = 0.4
-            self.pub_wheels_cmd.publish(wheels_cmd_msg)    
-            rospy.loginfo("Moving?.")
+            self.pub_wheels_cmd.publish(wheels_cmd_msg)
+            self.pubIntersectionDone()
+            # rospy.loginfo("Moving?.")
             self.rate.sleep()
 
  
@@ -120,7 +127,7 @@ class OpenLoopIntersectionNode(object):
             wheels_cmd_msg.vel_left = 0.4
             wheels_cmd_msg.vel_right = 0.4
             self.pub_wheels_cmd.publish(wheels_cmd_msg)    
-            rospy.loginfo("Moving?.")
+            # rospy.loginfo("Moving?.")
             self.rate.sleep()
         #turn left
         starting_time = rospy.Time.now()
@@ -130,11 +137,13 @@ class OpenLoopIntersectionNode(object):
             wheels_cmd_msg.vel_left = -0.25
             wheels_cmd_msg.vel_right = 0.25
             self.pub_wheels_cmd.publish(wheels_cmd_msg)    
-            rospy.loginfo("Moving?.")
+            # rospy.loginfo("Moving?.")
             self.rate.sleep()
    
         #coordination with lane controller means part way through announce finished turn
-        self.setIntersectionDone(True)
+        # self.setIntersectionDone(True)
+        self.intersection_done = True
+
 
         #move forward
         starting_time = rospy.Time.now()
@@ -143,9 +152,11 @@ class OpenLoopIntersectionNode(object):
             wheels_cmd_msg.header.stamp = rospy.Time.now()
             wheels_cmd_msg.vel_left = 0.4
             wheels_cmd_msg.vel_right = 0.4
-            self.pub_wheels_cmd.publish(wheels_cmd_msg)    
-            rospy.loginfo("Moving?.")
+            self.pub_wheels_cmd.publish(wheels_cmd_msg)
+            self.pubIntersectionDone()  
+            # rospy.loginfo("Moving?.")
             self.rate.sleep()
+
 
     def turnWait(self):
         wheels_cmd_msg = WheelsCmdStamped()
@@ -168,11 +179,12 @@ class OpenLoopIntersectionNode(object):
             wheels_cmd_msg.vel_left = 0.4
             wheels_cmd_msg.vel_right = 0.4
             self.pub_wheels_cmd.publish(wheels_cmd_msg)    
-            rospy.loginfo("Moving?.")
+            # rospy.loginfo("Moving?.")
             self.rate.sleep()
    
         #coordination with lane controller means part way through announce finished turn
-        self.setIntersectionDone(True)
+        # self.setIntersectionDone(True)
+        self.intersection_done = True
 
         #move forward
         starting_time = rospy.Time.now()
@@ -181,8 +193,9 @@ class OpenLoopIntersectionNode(object):
             wheels_cmd_msg.header.stamp = rospy.Time.now()
             wheels_cmd_msg.vel_left = 0.4
             wheels_cmd_msg.vel_right = 0.4
+            self.pubIntersectionDone()  
             self.pub_wheels_cmd.publish(wheels_cmd_msg)    
-            rospy.loginfo("Moving?.")
+            # rospy.loginfo("Moving?.")
             self.rate.sleep()
 
     def setupParameter(self,param_name,default_value):

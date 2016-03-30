@@ -23,8 +23,14 @@ class ObstacleSafetyNode:
 
         self.veh_name = rospy.get_namespace().strip("/")
 
-        #TODO(CL): Setup param from default.yaml
-        self.closeness_threshold = 0.2
+        self.closeness_threshold = self.setupParam("~closeness_threshold", 0.2)
+
+    def setupParam(self, param_name, default_value):
+        value = rospy.get_param(param_name,default_value)
+        rospy.set_param(param_name,value) #Write to parameter server for transparancy
+        rospy.loginfo("[%s] %s = %s " %(self.name,param_name,value))
+        return value
+
     def cbDetectionsList(self, detections_msg):
         #For ground projection uncomment the next lines
         marker_array = MarkerArray()
@@ -37,6 +43,7 @@ class ObstacleSafetyNode:
         projection_list.header = detections_msg.header
 
         minDist = 999999999999999999999999.0
+        dists = []
         for obstacle in detections_msg.list: 
             marker = Marker()
             rect = obstacle.bounding_box
@@ -49,7 +56,12 @@ class ObstacleSafetyNode:
             projection.type = obstacle.type
 
             projection_list.list.append(projection)
+
+            rospy.loginfo("[%s] Object projected_point (%s, %s, %s)"% (self.name, projected_point.gp.x, projected_point.gp.y, projected_point.gp.z))
             dist = projected_point.gp.x**2 + projected_point.gp.y**2 + projected_point.gp.z**2
+            dist = dist ** 0.5
+            rospy.loginfo("[%s] Object Distance estimate = %s " %(self.name,dist))
+            dists.append(dist)
             if dist<minDist:
                 minDist = dist
             #print projected_point.gp
@@ -75,10 +87,11 @@ class ObstacleSafetyNode:
             count = count +1
 
             marker_array.markers.append(marker)
-       
+        
+        rospy.loginfo("[%s] Object Distance estimate = %s " %(self.name,dists))                   
         if count > self.maxMarkers:
             self.maxMarkers = count
-            
+
         while count <= self.maxMarkers:
             marker = Marker()
             marker.action = 2

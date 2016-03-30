@@ -41,13 +41,13 @@ class InverseKinematicsNode(object):
         self.pub_wheels_cmd.publish(msg_wheels_cmd)
 
     def thedaDotWeightsCallback(self, msg):
-        self.theta_dot_weights = matrix(msg.weights)
+        self.theta_dot_weights = msg.weights
         
         # Update the inverse kinematics model
         self.ik = Inverse_kinematics.Inverse_kinematics(self.fi_theta_dot_function, self.fi_v_function, matrix(self.theta_dot_weights), matrix(self.v_weights))
 
     def vWeightsCallback(self, msg):
-        self.v_weights = matrix(msg.weights)
+        self.v_weights = msg.weights
         
         # Update the inverse kinematics model
         self.ik = Inverse_kinematics.Inverse_kinematics(self.fi_theta_dot_function, self.fi_v_function, matrix(self.theta_dot_weights), matrix(self.v_weights))

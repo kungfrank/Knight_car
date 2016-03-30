@@ -13,7 +13,6 @@ import numpy
 class ViconLearningNode(object):
     def __init__(self):
         self.node_name = 'vicon_learning_node'
-        self.param_name = self.setupParam("~<param_name>", '<default value>')
 
         # Setup the publishers and subscribers
         self.sub_pose = rospy.Subscriber("~pose", PoseStamped, self.poseCallback)

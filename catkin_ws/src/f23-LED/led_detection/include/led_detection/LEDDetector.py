@@ -135,9 +135,9 @@ class LEDDetector(LEDDetector):
         result = LEDDetectionArray()
 
         # Detect frequencies and discard non-periodic signals
-        ts_tolerance = 0.2
-        T = timestamps[-1]-timestamps[0]
-        min_num_periods = 5
+        # ts_tolerance = 0.2 # unnecessary
+        f_tolerance = 0.25
+        min_num_periods = 3
 
         for (i,j) in candidate_cells:
             signal = cell_vals[:,i,j]
@@ -152,25 +152,48 @@ class LEDDetector(LEDDetector):
                 logger.info('Coords: %s, %s'% (led_img_coords.x,led_img_coords.y))
                 logger.info('Zero crossings: %s'%zero_crossings_t)
                 logger.info('Diffs: %s'%diffs)
-                logger.info('Measured freq %s'% (0.5/np.mean(diffs)))
+                logger.info('Zero-crossing measured freq %s'% (0.5/np.mean(diffs)))
 
-            for f in frequencies_to_detect:
-                if(len(zero_crossings)<min_num_periods):
-                    if(self.verbose):
-                        logger.info('Not an LED, discarded\n')
-                    break
-                if(all(d-ts_tolerance <= 0.5/f <= d+ts_tolerance for d in diffs)):
-                    if(self.verbose):
-                        logger.info('Confirmed LED with frequency %s\n'%f)
+            if(len(zero_crossings)<min_num_periods):
+                if(self.verbose):
+                    logger.info('Not an LED, discarded\n')
+                continue
+
+            # Frequency estimation based on zero crossings - quite bad
+            #for f in frequencies_to_detect:
+            #    if(all(d-ts_tolerance <= 0.5/f <= d+ts_tolerance for d in diffs)):
+            #        if(self.verbose):
+            #            logger.info('Confirmed LED with frequency %s\n'%f)
                    # recover coordinates of centroid
-                    result.detections.append(LEDDetection(timestamps[0], timestamps[-1],
-                    led_img_coords, f, '', -1)) # -1...confidence not implemented
-                    break
+            #        result.detections.append(LEDDetection(timestamps[0], timestamps[-1],
+            #        led_img_coords, f, '', -1)) # -1...confidence not implemented
+            #        break
 
-            # Plot all signals
+            # Frequency estimation based on FFT
+            T = 1.0/30 # TODO expecting 30 fps, but RESAMPLE to be sure
+            f = np.linspace(0.0, 1.0/(2.0*T), n/2)
+            signal_f = scipy.fftpack.fft(signal)
+            y_f =  2.0/n * np.abs(signal_f[:n/2])
+            fft_peak_freq = 1.0*np.argmax(y_f)/T/n
+            if(self.verbose):
+                logger.info('FFT peak frequency: %s'% fft_peak_freq)
+
+            # Bin frequency into the ones to detect
+            freq = [x for x in frequencies_to_detect if abs(x-fft_peak_freq)<f_tolerance]
+            if(freq):
+                if(self.verbose):
+                    logger.info('LED confirmed, frequency: %s'% freq)
+                result.detections.append(LEDDetection(timestamps[0], timestamps[-1],
+                    led_img_coords, freq[0], '', -1)) # -1...confidence not implemented
+            else:
+                logger.info('Could not associate frequency, discarding')
+
+            # Plot all signals and FFTs
             if(self.ploteverything):
                 fig, ax1 = plt.subplots()
                 ax1.plot(timestamps, signal)
+                fig, ax2 = plt.subplots()
+                ax2.plot(f,y_f)
                 plt.show()
 
         plt.imshow(rgb0)
@@ -181,12 +204,12 @@ class LEDDetector(LEDDetector):
                 'weight': 'bold',
                 'size': 16,
                 }
+
         # Plot all results
         for r in result.detections:
             pos = r.pixels_normalized
             ax.add_patch(Rectangle((pos.x-0.5*cell_width, pos.y-0.5*cell_height), cell_width, cell_height, edgecolor="red", linewidth=3, facecolor="none"))
             plt.text(pos.x-0.5*cell_width, pos.y-cell_height, str(r.frequency), fontdict=font)
-        #    pass
 
         plt.show()
 

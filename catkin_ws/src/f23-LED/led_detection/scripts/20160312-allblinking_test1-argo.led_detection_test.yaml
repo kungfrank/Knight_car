@@ -18,7 +18,7 @@ allblinking_test1-argo-magitek_front:
   expected: 
   - 
     timestamp1: 0
-    timestamp2: 2
+    timestamp2: 3
     image_coordinates: [249, 192]
     image_coordinates_margin: 10 # pixels
     frequency: 1.0
@@ -27,7 +27,7 @@ allblinking_test1-argo-magitek_front:
     confidence_min: 0.9
   - 
     timestamp1: 0
-    timestamp2: 2
+    timestamp2: 3
     image_coordinates: [268, 115]
     image_coordinates_margin: 10 # pixels
     frequency: 1.5
@@ -36,10 +36,10 @@ allblinking_test1-argo-magitek_front:
     confidence_min: 0.9
   - 
     timestamp1: 0
-    timestamp2: 2
+    timestamp2: 3
     image_coordinates: [520, 199]
     image_coordinates_margin: 10 # pixels
-    frequency: 2.0
+    frequency: 1.0
     # color: 'r'
     # color_tolerance: 0.1
     confidence_min: 0.9

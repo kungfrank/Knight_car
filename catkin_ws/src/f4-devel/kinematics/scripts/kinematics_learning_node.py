@@ -63,6 +63,7 @@ class KinematicsLearningNode(object):
                     weights = self.kl.fit_theta_dot(self.theta_dot_d_L, self.theta_dot_d_R, self.theta_dot_dt, self.theta_dot_theta_angle_pose_delta).flatten()
                     # Put the weights in a message and publish
                     msg_kinematics_weights = KinematicsWeights()
+                    msg_kinematics_weights.weights = weights
                     self.pub_theta_dot_kinematics_weights.publish(msg_kinematics_weights)
                 # reset index
                 self.theta_dot_index = self.noZeros
@@ -86,6 +87,7 @@ class KinematicsLearningNode(object):
                     weights = self.kl.fit_v(self.v_d_L, self.v_d_R, self.v_dt, self.v_theta_angle_pose_delta, self.v_x_axis_pose_delta, self.v_y_axis_pose_delta).flatten()
                     # Put the weights in a message and publish
                     msg_kinematics_weights = KinematicsWeights()
+                    msg_kinematics_weights.weights = weights
                     self.pub_v_kinematics_weights.publish(msg_kinematics_weights)
                 # reset index
                 self.v_index = self.noZeros

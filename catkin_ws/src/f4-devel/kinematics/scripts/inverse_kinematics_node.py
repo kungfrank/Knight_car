@@ -13,8 +13,8 @@ class InverseKinematicsNode(object):
 
         # Read parameters
         #self.veh_name = self.setupParameter("~veh_name","megaman")
-        self.fi_theta_dot_function = self.setupParameter('~self.fi_theta_dot_function', 'Duty_fi_theta_dot_naive')
-        self.fi_v_function = self.setupParameter('~self.fi_v_function', 'Duty_fi_v_naive')
+        self.fi_theta_dot_function = self.setupParameter('~fi_theta_dot_function', 'Duty_fi_theta_dot_naive')
+        self.fi_v_function = self.setupParameter('~fi_v_function', 'Duty_fi_v_naive')
         self.theta_dot_weights = self.setupParameter('~theta_dot_weights', [-1.0])
         self.v_weights = self.setupParameter('~v_weights', [1.0])
 

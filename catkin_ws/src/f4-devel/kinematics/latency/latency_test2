@@ -1,0 +1,49 @@
+running without the synchronization of wheels command with frames:
+roslaunch duckietown joystick_direct.launch veh:=ada
+roslaunch duckietown camera.launch veh:=ada
+
+rqt_bag 2016-03-30-14-50-00.bag
+
+delta time between joystick actuation and first camera frame motion: 
+377.17-254.02 = 123.15ms
+delta time between each camera frame is irregular.
+
+joy_mapper_node/car_cmd_raw:
+seq: 232 
+secs: 6106 
+msecs: 560.3
+omega=0.157
+
+wheels_driver_node/wheels_cmd_raw
+seq: 55
+secs: 802 
+msecs: 254.02
+vel_left:-0.5
+vel_right:0.5
+
+camera_node/image/compressed_Raw: 
+frame before moving:
+seq: 887 
+secs: 802 
+msecs: 352.91
+
+first moving frame:
+seq:888
+secs: 802 
+msecs: 377.17
+
+second frame after moving
+seq:889
+secs: 802 
+msecs: 407.71
+
+third frame after moving
+seq:891
+secs: 802 
+msecs: 476.29
+
+fourth frame after moving
+seq:892
+secs: 802 
+msecs: 507.73
+

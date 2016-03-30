@@ -6,6 +6,7 @@ import sys
 from duckietown_utils import col_logging 
 from led_detection import logger
 from led_detection.dummy import DummyLEDDetector
+from led_detection.LEDDetector import LEDDetector
 from led_detection.unit_tests import load_tests
 from duckietown_utils.wildcards import expand_string
 from duckietown_utils.wrap_main import wrap_main
@@ -44,7 +45,7 @@ For example, this runs all tests on all algorithms:
     filename = os.path.join(root, dirname, filename)
 
     alltests = load_tests(filename)
-    estimators = {'dummy': DummyLEDDetector()}
+    estimators = {'LEDDetector' : LEDDetector()}
     
     which_tests = expand_string(which_tests0, list(alltests))
     which_estimators = expand_string(which_estimators0, list(estimators))

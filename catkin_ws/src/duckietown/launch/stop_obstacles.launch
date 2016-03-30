@@ -43,7 +43,7 @@
     <!-- Wheels Cmd Switch -->
     <remap from="wheels_cmd_switch_node/mode" to="fsm_node/mode"/>
     <remap from="wheels_cmd_switch_node/wheels_cmd_lane" to="lane_controller_node/wheels_control" />
-    <remap from="wheels_cmd_switch_node/simple_stop_commands" to="mdoap_controller_node/control" />
+    <remap from="wheels_cmd_switch_node/simple_stop_commands" to="simple_stop_controller_node/control" />
     <remap from="wheels_cmd_switch_node/wheels_cmd_intersection" to="open_loop_intersection_control_node/wheels_cmd" />
     <include file="$(find dagu_car)/launch/wheels_cmd_switch_node.launch">
       <arg name="veh" value="$(arg veh)"/>        
@@ -78,8 +78,8 @@
       <arg name="param_file_name" value="$(arg param_file_name)"/>        
     </include>
 
-  <remap from="mdoap_controller_node/too_close" to="obstacle_safety_node/object_too_close"/>
-	<include file="$(find mdoap)/launch/mdoap_controller_node.launch">
+  <remap from="simple_stop_controller_node/too_close" to="obstacle_safety_node/object_too_close"/>
+	<include file="$(find mdoap)/launch/simple_stop_controller_node.launch">
 	    <arg name="veh" value="$(arg veh)"/>
 	    <arg name="local" value="$(arg local)"/>
 	    <arg name="config" value="$(arg config)"/>

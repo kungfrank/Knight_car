@@ -22,6 +22,8 @@ class LEDDetector(LEDDetector):
     """ The LEDDetector class """
 
     def __init__(self):
+        self.ploteverything = False
+        self.verbose = False
         pass
 
     # ~~~~~~~~~~~~~~~~~~~ Downsample ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -46,13 +48,17 @@ class LEDDetector(LEDDetector):
 
         # Split images into rectangles
         cell_values = np.array(np.split(imgs_cropped,ncells_x, axis=2))
-        print('First split: {0}'.format(cell_values.shape))
+        if(self.verbose):
+            print('First split: {0}'.format(cell_values.shape))
         cell_values = np.mean(cell_values, axis=3)
-        print('First reduction: {0}'.format(cell_values.shape))
+        if(self.verbose):
+            print('First reduction: {0}'.format(cell_values.shape))
         cell_values = np.array(np.split(cell_values,ncells_y, axis=2))
-        print('Second split: {0}'.format(cell_values.shape))
+        if(self.verbose):
+            print('Second split: {0}'.format(cell_values.shape))
         cell_values = np.mean(cell_values, axis=3)
-        print('Second reduction: {0}'.format(cell_values.shape))
+        if(self.verbose):
+            print('Second reduction: {0}'.format(cell_values.shape))
         cell_values = np.swapaxes(cell_values, 2, 0)
         cell_values = np.swapaxes(cell_values, 2, 1)
         return (cell_values, [ceil(.5*rest_y), ceil(.5*rest_x)])
@@ -78,16 +84,15 @@ class LEDDetector(LEDDetector):
         variance = np.var(cell_values, axis=0)
         peaks_mask = self.detect_peaks(variance)
         threshold_mask = variance>threshold
-
-        #plt.figure()
-        #plt.imshow(variance,cmap=cm.gray, interpolation="nearest")
-        #plt.title('Variance map')
-
-        #plt.figure()
-        #plt.imshow(peaks_mask*threshold_mask)
-        #plt.title('Peaks')
-
-        plt.show()
+        if(self.ploteverything):
+            plt.figure()
+            plt.imshow(variance,cmap=cm.gray, interpolation="nearest")
+            plt.title('Variance map')
+            plt.figure()
+            plt.imshow(peaks_mask*threshold_mask)
+            plt.title('Peaks')
+            plt.show()
+    
         return peaks_mask*threshold_mask
 
     # ~~~~~~~~~~~~~~~~~~~ Detect LEDs ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -130,41 +135,43 @@ class LEDDetector(LEDDetector):
         result = LEDDetectionArray()
 
         # Detect frequencies and discard non-periodic signals
-        ts_tolerance = 0.1
+        ts_tolerance = 0.2
         T = timestamps[-1]-timestamps[0]
         min_num_periods = 5
 
         for (i,j) in candidate_cells:
             signal = cell_vals[:,i,j]
             signal = signal-np.mean(signal)
-            print('signal.shape: {0}'.format(signal.shape))
 
             zero_crossings = np.where(np.diff(np.sign(signal)))[0]
             zero_crossings_t = timestamps[zero_crossings]
             led_img_coords = Vector2D((0.5+j)*cell_width+crop_offset[1], (0.5+i)*cell_height+crop_offset[0])       
-            logger.info('Coords: %s, %s'% (led_img_coords.x,led_img_coords.y))
-            logger.info('Zero crossings: %s'%zero_crossings_t)
-
             diffs = [b-a for a, b in zip(zero_crossings_t, zero_crossings_t[1:])]
-            logger.info('Diffs: %s'%diffs)
-            logger.info('Measured freq %s'% (0.5/np.mean(diffs)))
+            
+            if(self.verbose):
+                logger.info('Coords: %s, %s'% (led_img_coords.x,led_img_coords.y))
+                logger.info('Zero crossings: %s'%zero_crossings_t)
+                logger.info('Diffs: %s'%diffs)
+                logger.info('Measured freq %s'% (0.5/np.mean(diffs)))
 
-            print(frequencies_to_detect)
             for f in frequencies_to_detect:
                 if(len(zero_crossings)<min_num_periods):
-                    logger.info('Not an LED, discarded\n')
+                    if(self.verbose):
+                        logger.info('Not an LED, discarded\n')
                     break
                 if(all(d-ts_tolerance <= 0.5/f <= d+ts_tolerance for d in diffs)):
-                    logger.info('Confirmed LED with frequency %s\n'%f)
+                    if(self.verbose):
+                        logger.info('Confirmed LED with frequency %s\n'%f)
                    # recover coordinates of centroid
                     result.detections.append(LEDDetection(timestamps[0], timestamps[-1],
                     led_img_coords, f, '', -1)) # -1...confidence not implemented
                     break
 
             # Plot all signals
-            #fig, ax1 = plt.subplots()
-            #ax1.plot(timestamps, signal)
-            #plt.show()
+            if(self.ploteverything):
+                fig, ax1 = plt.subplots()
+                ax1.plot(timestamps, signal)
+                plt.show()
 
         plt.imshow(rgb0)
         ax = plt.gca()

@@ -18,7 +18,7 @@
 	<!-- Trainings Pairs -->
 	<remap from="odometry_training_pairs_node/stop_line_reading" to="stop_line_filter_node/stop_line_reading"/>
 	<remap from="odometry_training_pairs_node/lane_pose" to="lane_filter_node/lane_pose"/>
-	<remap from="odometry_training_pairs_node/wheels_cmd_executed" to="wheels_driver_node/wheels_cmd"/>
+	<remap from="odometry_training_pairs_node/wheels_cmd_executed" to="wheels_driver_node/wheels_cmd_executed"/>
 	<include file="$(find visual_odometry)/launch/odometry_training_pairs_node.launch">
 	    <arg name="veh" value="$(arg veh)"/>
 	    <arg name="local" value="$(arg local)"/>

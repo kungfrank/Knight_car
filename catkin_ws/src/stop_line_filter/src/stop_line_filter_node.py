@@ -7,6 +7,12 @@ from geometry_msgs.msg import Point
 import time
 import math
 
+# Lane Filter Node
+# Author: Liam Paull
+# Inputs: SegmentList from line detector
+# Outputs: LanePose - the d (lateral displacement) and phi (relative angle) of the car in the lane
+# For more info on algorithm and parameters please refer to the google doc: https://drive.google.com/open?id=0B49dGT7ubfmSX1k5ZVN1dEU4M2M
+
 
 class StopLineFilterNode(object):
     def __init__(self):
@@ -74,7 +80,7 @@ class StopLineFilterNode(object):
         stop_line_point.x = stop_line_x_accumulator/good_seg_count
         stop_line_point.y = stop_line_y_accumulator/good_seg_count
         stop_line_reading_msg.stop_line_point = stop_line_point
-        stop_line_reading_msg.at_stop_line = stop_line_point.x < self.stop_distance and math.fabs(stop_line_point.y) < self.lanewidth/4 and self.lane_pose.in_lane
+        stop_line_reading_msg.at_stop_line = stop_line_point.x < self.stop_distance and abs(stop_line_point.y) < self.lanewidth/4 and self.lane_pose.in_lane
         self.pub_stop_line_reading.publish(stop_line_reading_msg)    
    
     def to_lane_frame(self, point):

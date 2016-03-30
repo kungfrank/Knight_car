@@ -1,0 +1,16 @@
+<launch>
+	<arg name="veh"/>
+	<arg name="config" default="baseline"/>
+    	<arg name="local" default="false" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman"/>
+	<group ns="$(arg veh)">
+                <remap from="apriltags_global/camera_info" to="camera_node/camera_info"/>
+                <remap from="apriltags_fast/camera_info" to="camera_node/camera_info"/>
+            <node pkg="apriltags" type="april_tag_detector" name="apriltags_fast" output="screen">
+		</node>
+		<node pkg="apriltags" type="april_tag_detector" name="apriltags_global" output="screen">
+		</node>
+                <node pkg="apriltags" type="AprilPrePros_withTimers.py" name="AprilPrePros" output="screen">
+		</node>
+	</group>
+</launch>

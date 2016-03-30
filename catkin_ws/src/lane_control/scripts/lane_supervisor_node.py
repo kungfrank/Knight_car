@@ -35,23 +35,14 @@ class lane_supervisor(object):
         self.sub_joy          = rospy.Subscriber("~joy",Joy,self.cbJoy,queue_size=1)
         self.sub_at_stop_line = rospy.Subscriber("~stop_line_reading",StopLineReading, self.cbStopLine, queue_size=1)
 
-        self.params_update = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
-
-
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
         rospy.set_param(param_name,value) #Write to parameter server for transparancy
         rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
         return value
 
-    def updateParams(self,event):
-        self.max_cross_track_error = rospy.get_param("~max_cross_track_error")
-        self.max_heading_error     = rospy.get_param("~max_heading_error")
-        self.max_speed             = rospy.get_param("~max_speed")
-        self.max_steer             = rospy.get_param("~max_steer")
-
     def cbStopLine(self,stop_line_msg):
-        if not stop_line_msg.at_stop_line:
+        if stop_line_msg.at_stop_line is False:
             self.at_stop_line=False
             self.stop = False
         else:
@@ -93,7 +84,7 @@ class lane_supervisor(object):
         elif self.stop:
             wheels_cmd_msg.vel_right=0
             wheels_cmd_msg.vel_left=0
-        elif self.safe or not self.in_lane:
+        elif self.safe: # or not self.in_lane:
             car_control_joy = self.wheelsCmdToCarControl(self.joy_control)
             car_control_joy.speed = min(car_control_joy.speed,self.max_speed)
             car_control_joy.steering = np.clip(car_control_joy.steering, -self.max_steer, self.max_steer)

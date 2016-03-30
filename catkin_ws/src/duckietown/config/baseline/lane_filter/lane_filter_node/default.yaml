@@ -13,5 +13,5 @@ cov_v: 0.5
 linewidth_white: 0.05
 linewidth_yellow: 0.025
 lanewidth: 0.20
-min_max: 0.3
+min_max: 0.4
 min_segs: 10

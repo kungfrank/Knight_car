@@ -7,7 +7,8 @@ class OpenLoopIntersectionNode(object):
     def __init__(self):
         # Save the name of the node
         self.node_name = rospy.get_name()
-        self.turn_type = 0
+        self.turn_type = -1
+        self.state = FSMState.LANE_FOLLOWING
 
         rospy.loginfo("[%s] Initialzing." %(self.node_name))
 
@@ -33,22 +34,31 @@ class OpenLoopIntersectionNode(object):
     def cbMode(self, mode_msg):
         print mode_msg
         if(mode_msg.state == mode_msg.INTERSECTION_CONTROL):
+            self.state = mode_msg.state
+            self.movement()
+        else:
+            # If not in intersection control mode anymore, pubisher intersection_done False.
+            self.state = mode_msg.state
+            self.setIntersectionDone(False)
+            
+
+    def movement(self):
+        if(self.state == FSMState.INTERSECTION_CONTROL):
             if(self.turn_type==0):
                 self.turnRight()
             elif (self.turn_type==1):
                 self.turnStraight()
             elif(self.turn_type==2):
                 self.turnLeft()
+            elif(self.turn_type==-1):
+                self.turnWait()
 
-            rospy.loginfo("Turn type now: %i" %(self.turn_type))
-        else:
-            # If not in intersection control mode anymore, pubisher intersection_done False.
-            self.setIntersectionDone(False)
 
     def cbTurnType(self, turn_msg):
         print turn_msg
         self.turn_type = turn_msg.data
         rospy.loginfo("Turn type now: %i" %(self.turn_type))
+        self.movement()
 
     def setIntersectionDone(self,state):
         boolstamped = BoolStamped()
@@ -58,7 +68,7 @@ class OpenLoopIntersectionNode(object):
 
     def turnRight(self):
         #move forward
-        forward_for_time_leave = 1.2
+        forward_for_time_leave = 2.0
         turn_for_time = 0.6
         forward_for_time_enter = 2.0
         
@@ -99,8 +109,8 @@ class OpenLoopIntersectionNode(object):
  
     def turnLeft(self):
         #move forward
-        forward_for_time_leave = 3.0
-        turn_for_time = 0.7
+        forward_for_time_leave = 2.3
+        turn_for_time = 0.6
         forward_for_time_enter = 2.0
         
         starting_time = rospy.Time.now()
@@ -136,7 +146,15 @@ class OpenLoopIntersectionNode(object):
             self.pub_wheels_cmd.publish(wheels_cmd_msg)    
             rospy.loginfo("Moving?.")
             self.rate.sleep()
-   
+
+    def turnWait(self):
+        wheels_cmd_msg = WheelsCmdStamped()
+        wheels_cmd_msg.header.stamp = rospy.Time.now()
+        wheels_cmd_msg.vel_left = 0.0
+        wheels_cmd_msg.vel_right = 0.0
+        self.pub_wheels_cmd.publish(wheels_cmd_msg)    
+        rospy.loginfo("Not Moving. Turn Type = Waiting")
+
     def turnStraight(self):
         #move forward
         forward_for_time_leave = 3.0

@@ -2,6 +2,7 @@ from api import LEDDetector
 from duckietown_msgs.msg import Vector2D, LEDDetection, LEDDetectionArray
 from led_detection import logger
 import numpy
+import json
 
 __all__ = ['DummyLEDDetector']
 
@@ -33,9 +34,9 @@ class DummyLEDDetector(LEDDetector):
             raise ValueError(min_distance_between_LEDs_pixels)
 
         # tuneable parameters
-        partitions_x = 10
-        partitions_y = 10
-        intensity_variance_threshold = 10 #TODO: this is arbitrary
+        partitions_x = 20
+        partitions_y = 20
+        intensity_variance_threshold = 500 #TODO: this is arbitrary
 
         # should be 480x640?
         W = rgb0.shape[0]
@@ -46,29 +47,17 @@ class DummyLEDDetector(LEDDetector):
         # create result object
         result = LEDDetectionArray()
 
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        #  TESTING REFERENCE
-
-        # These are the expected results for allblinking_test1-argo.bag
-        # When implementing, remove/comment these lines and populate results
-        # similarly. Comment one of these lines or change coords / frequencies
-        # to see test failures. Any order in the output will be fine.
-
-        # TODO for now, the unit test checks un-normalized pixels (actual 
-        # image coords) shall we really move to normalized pixels? (why?)
-        #                                                    |
-        #                                                    V
-        result.detections.append(LEDDetection(0,2, Vector2D(518, 194), 2.0, '', 1))
-        result.detections.append(LEDDetection(0,2, Vector2D(245, 190), 1.0, '', 1))
-        result.detections.append(LEDDetection(0,2, Vector2D(266, 110), 1.5, '', 1))
-        return result
-
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        
         partition_intensity_data = []
+
+        with open('raw_data_argo1.json','w') as f: 
+            numpy.savez(f, images=images, mask=mask,
+                frequencies_to_detect=frequencies_to_detect, min_distance_between_LEDs_pixels=min_distance_between_LEDs_pixels)
+
+        return 0
         # jump by partition
         for x in range(0, W, partition_width):
             for y in range(0, H, partition_height):
+                logger.info('Looking at partition %s %s' % (x, y))
                 # look at same partition across multiple images
                 average_intensities = []
                 for image in images['rgb']:
@@ -82,15 +71,27 @@ class DummyLEDDetector(LEDDetector):
                             # a simple approach from http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
                             # could also use matplotlib's rgb_to_hsv?
                             # TODO: check if pixel order is RGB or BGR (assuming RGB)
-                            intensity = 0.299*pixel[0] + 0.587*pixel[1] + 0.114*pixel[2]
+                            #intensity = 0.299*pixel[0] + 0.587*pixel[1] + 0.114*pixel[2]
+                            #intensity = pixel[0] # red channel
+                            #intensity = pixel[1] # green channel
+                            intensity = pixel[2] # blue channel
                             intensities.append(intensity)
 
-                    average_intensities.append(numpy.mean(intensities))
+
+                    average_intensities.append(numpy.amax(intensities))
                 partition_intensity_data.append(average_intensities)
-                #variance = numpy.var(average_intensities)
+                variance = numpy.var(average_intensities)
                 if variance > intensity_variance_threshold:
                     #threshold into "on" and "off" states
                     pass
-                #determine frequency
+                #determine frequency    
 
-        return partition_intensity_data
+        # MATLAB output
+        #strout = 'data = ['
+        #for row in partition_intensity_data:
+        #    strout+=str(row)+';'
+        #strout+=']'
+        #logger.info(strout)
+        #f = open('allblinking_test1_argo_maxblue.m', 'w')
+        #f.write(strout)
+        #return partition_intensity_data

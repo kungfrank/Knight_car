@@ -7,6 +7,13 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from math import floor, ceil
 
+# image filters
+from scipy.ndimage.filters import maximum_filter
+from scipy.ndimage.morphology import generate_binary_structure, binary_erosion
+
+# fft
+import scipy.fftpack
+
 __all__ = ['LEDDetector']
 
 class LEDDetector(LEDDetector):
@@ -50,15 +57,36 @@ class LEDDetector(LEDDetector):
 
     # ~~~~~~~~~~~~~~~~~~~ Select candidates ~~~~~~~~~~~~~~~~~~~~
 
+    def detect_peaks(self, image):
+        """
+        Takes an image and detect the peaks usingthe local maximum filter.
+        Returns a boolean mask of the peaks (i.e. 1 when
+        the pixel's value is the neighborhood maximum, 0 otherwise)
+        """
+        neighborhood = generate_binary_structure(2,2)
+        local_max = maximum_filter(image, 5)==image
+        background = (image==0)
+        eroded_background = binary_erosion(background, structure=neighborhood, border_value=1)
+        detected_peaks = local_max - eroded_background
+        return detected_peaks
+
+    # ~~~~~~~~~~~~~~~~~~~ Select candidates ~~~~~~~~~~~~~~~~~~~~
     def get_candidate_cells(self, cell_values, threshold):
         variance = np.var(cell_values, axis=0)
+        peaks_mask = self.detect_peaks(variance)
+        threshold_mask = variance>threshold
 
         plt.figure()
-        plt.imshow(variance, cmap=cm.gray, interpolation="nearest")
+        plt.imshow(variance,cmap=cm.gray, interpolation="nearest")
         plt.title('Variance map')
+
+        plt.figure()
+        plt.imshow(peaks_mask*threshold_mask)
+        plt.title('Peaks')
+
         plt.show()
-        pass
-    
+        return peaks_mask*threshold_mask
+        
     # ~~~~~~~~~~~~~~~~~~~ Detect LEDs ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     def detect_led(self,
@@ -89,7 +117,29 @@ class LEDDetector(LEDDetector):
 
         channel = images['rgb'][:,:,:,0] # just using first channel
 
-        cell_vals = self.downsample(channel, 10, 10)
+        cell_vals = self.downsample(channel, 15, 15)
 
-        self.get_candidate_cells(cell_vals, 0)
+        candidates_mask = self.get_candidate_cells(cell_vals, 100)
+        candidate_cells = [(i,j) for (i,j) in np.ndindex(candidates_mask.shape) if candidates_mask[i,j]]
+
+        T = 1.0/30 # expectin 30 fps
+        f = np.linspace(0.0, 1.0/(2.0*T), n/2)
+
+        print('f.shape: {0}'.format(f.shape))
+
+        for (i,j) in candidate_cells:
+            signal = cell_vals[:,i,j]
+            signal = signal-np.mean(signal)
+            print('signal.shape: {0}'.format(signal.shape))
+            # TODO resample!!
+            signal_f = scipy.fftpack.fft(signal)
+            print('signal_f.shape: {0}'.format(signal_f.shape))
+            y_f =  2.0/n * np.abs(signal_f[:n/2])
+
+            fig, ax1 = plt.subplots()
+            ax1.plot(signal)
+            fig, ax2 = plt.subplots()
+            ax2.plot(f,y_f)
+            plt.show()
+
 

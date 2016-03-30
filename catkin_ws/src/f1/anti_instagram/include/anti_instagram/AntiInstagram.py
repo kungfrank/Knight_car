@@ -20,7 +20,8 @@ class AntiInstagram(object):
 
 		trained,counter = kmeans.runKMeans(image)
 		mapping = kmeans.identifyColors(trained, kmeans.CENTERS)
-		r,g,b,cost = kmeans.getparameters2(mapping, trained, kmeans.CENTERS)
+		# IPython.embed()
+		r,g,b,cost = kmeans.getparameters2(mapping, trained, counter, kmeans.CENTERS)
 
 		if r[0][0] == 0.0: return
 

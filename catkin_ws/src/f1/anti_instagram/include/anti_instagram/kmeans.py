@@ -80,7 +80,7 @@ def checkMapping(mymap):
 	# print clearmap
 	return clearmap
 
-def getparameters2(mapping, trained, true):
+def getparameters2(mapping, trained, weights, true):
 	redX = np.zeros((3, 1))
 	redY = np.zeros((3, 1))
 	greenX = np.zeros((3, 1))
@@ -98,7 +98,7 @@ def getparameters2(mapping, trained, true):
 	prior_trained=np.array([[255, 0, 0],[0, 255, 0],[0, 0, 255]])
 	prior_true=np.array([[255, 0, 0],[0, 255, 0],[0, 0, 255]])
 	diagonal_prior_weight=300 # the coefficients along the diagonal should be close to each other - i.e close to "white" light
-	a_prior_weight=1 # a should be close to 1
+	a_prior_weight=0.8 # a should be close to 1
 	INFEASIBILITY_PENALTY=1000000
 	
 	min_fitting_cost=np.inf

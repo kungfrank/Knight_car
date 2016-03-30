@@ -12,7 +12,7 @@ class WheelsDriverNode(object):
         self.driver = DaguWheelsDriver()
         #add publisher for wheels command wih execution time
         self.msg_wheels_cmd = WheelsCmdStamped()
-
+        rospy.loginfo("here0")
         self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd_executed",WheelsCmdStamped, self.cbWheelsCmd, queue_size=1)
 
         # Setup subscribers
@@ -25,7 +25,7 @@ class WheelsDriverNode(object):
         return value
 
     def cbWheelsCmd(self,msg):
-	    self.driver.setWheelsSpeed(left=msg.vel_left,right=msg.vel_right)
+        self.driver.setWheelsSpeed(left=msg.vel_left,right=msg.vel_right)
         # Put the wheel commands in a message and publish
         self.msg_wheels_cmd.header = msg.header
         # Record the time the command was given to the wheels_driver

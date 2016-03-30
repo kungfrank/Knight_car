@@ -12,8 +12,8 @@ class OdometryTrainingPairsNode(object):
 
         ## state vars
         self.in_lane = False
-        self.current_wheels_cmd = None
-        self.old_stop_line_msg = None
+        self.current_wheels_cmd = WheelsCmdStamped()
+        self.old_stop_line_msg = StopLineReading()
 
         ## publishers and subscribers
         self.sub_stop_lin_reading = rospy.Subscriber("~stop_line_reading", StopLineReading, self.stopLineCB)

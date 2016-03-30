@@ -46,11 +46,11 @@ class ForwardKinematicsNode(object):
 
     def thedaDotWeightsCallback(self, msg):
         # update theta_dot_weights for the forward kinematics model
-        self.fk.theta_dot_weights = msg.weights
+        self.fk.theta_dot_weights = matrix(msg.weights)
 
     def vWeightsCallback(self, msg):
         # update v_weights for the forward kinematics model
-        self.fk.v_weights = msg.weights
+        self.fk.v_weights = matrix(msg.weights)
 
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

@@ -41,7 +41,7 @@
         <arg name="live" value="true"/>
     </include>
 
-    <!-- Wheel Driver -->
+    <!-- Wheel Driver Synced with Camera-->
     <remap from="wheels_driver_sync_node/camera_info" to="camera_node/camera_info"/>
     <include file="$(find dagu_car)/launch/wheels_driver_sync_node.launch">
         <arg name="veh" value="$(arg veh)"/>

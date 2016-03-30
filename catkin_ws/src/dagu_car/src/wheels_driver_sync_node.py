@@ -16,6 +16,7 @@ class WheelsDriverAdvancedNode(object):
         # Setup publishers
         self.driver = DaguWheelsDriver()
         #add publisher for wheels command wih execution time
+        self.msg_wheels_cmd = WheelsCmdStamped()
         self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd_executed",WheelsCmdStamped, self.cbWheelsCmd, queue_size=1)
 
         # Setup subscribers
@@ -35,13 +36,11 @@ class WheelsDriverAdvancedNode(object):
         self.driver.setWheelsSpeed(left=self.vel_left,right=self.vel_right)
 
         # Put the wheel commands in a message and publish
-        msg_wheels_cmd = WheelsCmdStamped()
-        msg_wheels_cmd.header = msg.header
-
-        msg_wheels_cmd.header.stamp = rospy.get_rostime()  # Record the time the command was given to the wheels_driver
-        msg_wheels_cmd.vel_left = self.vel_left
-        msg_wheels_cmd.vel_right = self.vel_right
-        self.pub_wheels_cmd.publish(msg_wheels_cmd)
+        self.msg_wheels_cmd.header = msg.header
+        self.msg_wheels_cmd.header.stamp = rospy.get_rostime()  # Record the time the command was given to the wheels_driver
+        self.msg_wheels_cmd.vel_left = self.vel_left
+        self.msg_wheels_cmd.vel_right = self.vel_right
+        self.pub_wheels_cmd.publish(self.msg_wheels_cmd)
 
     def cbWheelsCmd(self,msg):
         #to allow synchronization just store commanded values for now     

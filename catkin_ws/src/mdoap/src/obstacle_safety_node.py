@@ -57,15 +57,14 @@ class ObstacleSafetyNode:
             projection.location = projected_point.gp
             projection.type = obstacle.type
 
-            projection_list.list.append(projection)
-
-            rospy.loginfo("[%s] Object projected_point (%s, %s, %s)"% (self.name, projected_point.gp.x, projected_point.gp.y, projected_point.gp.z))
             dist = projected_point.gp.x**2 + projected_point.gp.y**2 + projected_point.gp.z**2
             dist = dist ** 0.5
-            rospy.loginfo("[%s] Object Distance estimate = %s " %(self.name,dist))
-            dists.append(dist)
+
             if dist<minDist:
                 minDist = dist
+            projection.distance = dist
+            projection_list.list.append(projection)
+            
             #print projected_point.gp
             marker.header = detections_msg.header
             marker.header.frame_id = self.veh_name
@@ -89,8 +88,7 @@ class ObstacleSafetyNode:
             count = count +1
 
             marker_array.markers.append(marker)
-        
-        rospy.loginfo("[%s] Object Distance estimate = %s " %(self.name,dists))                   
+                         
         if count > self.maxMarkers:
             self.maxMarkers = count
 

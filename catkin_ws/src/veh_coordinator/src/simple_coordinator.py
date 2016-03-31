@@ -3,7 +3,7 @@ from __future__ import print_function
 from random import random
 import rospy
 from duckietown_msgs.msg import IntersectionDetection, VehicleDetection, TrafficLightDetection, \
-    CoordinationClearance, CoordinationSignal, FSMState
+    CoordinationClearance, CoordinationSignal, FSMState, BoolStamped
 from time import time
 
 
@@ -44,7 +44,7 @@ class VehicleCoordinator():
         self.node = rospy.init_node('veh_coordinator', anonymous=True)
 
         # Subscriptions
-        self.mode = FSMState.LANE_FOLLOWING
+        self.mode = "LANE_FOLLOWING"
         rospy.Subscriber('~mode', FSMState,
                          lambda msg: self.set('mode', msg.state))
 
@@ -67,6 +67,7 @@ class VehicleCoordinator():
         # Publishing
         self.clearance_to_go = CoordinationClearance.NA
         self.clearance_to_go_pub = rospy.Publisher('~clearance_to_go', CoordinationClearance, queue_size=10)
+        self.pub_intersection_go = rospy.Publisher('~intersection_go', BoolStamped, queue_size=1)
 
         self.roof_light = CoordinationSignal.SIGNAL_A
         self.roof_light_pub = rospy.Publisher('~coordination_signal', CoordinationSignal, queue_size=10)
@@ -102,6 +103,13 @@ class VehicleCoordinator():
 
     def publish_topics(self):
         self.clearance_to_go_pub.publish(CoordinationClearance(status=self.clearance_to_go))
+        # Publish intersection_go flag
+        if (self.clearance_to_go == CoordinationClearance.GO):
+            msg = BoolStamped()
+            msg.header.stamp = rospy.Time.now()
+            msg.data = True
+            self.pub_intersection_go.publish(msg)
+            # TODO: publish intersection go only once.
         self.roof_light_pub.publish(CoordinationSignal(signal=self.roof_light))
 
     def loop(self):
@@ -111,7 +119,7 @@ class VehicleCoordinator():
     def reconsider(self):
 
         if self.state == State.LANE_FOLLOWING:
-            if self.mode == FSMState.COORDINATION:
+            if self.mode == "COORDINATION":
                 if self.intersection == IntersectionDetection.STOP:
                     self.set_state(State.AT_STOP)
                 elif self.intersection == IntersectionDetection.TRAFFIC_LIGHT:
@@ -147,7 +155,7 @@ class VehicleCoordinator():
                     self.set_state(State.GO)
 
         elif self.state == State.GO:
-            if self.mode == FSMState.LANE_FOLLOWING:
+            if self.mode == "LANE_FOLLOWING":
                 self.set_state(State.LANE_FOLLOWING)
 
         elif self.state == State.CONFLICT:

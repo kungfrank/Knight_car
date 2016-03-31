@@ -1,8 +1,13 @@
+import numpy as np
+
 from api import LEDDetector
 from duckietown_msgs.msg import Vector2D, LEDDetection, LEDDetectionArray
 from led_detection import logger
 from math import floor, ceil
-import numpy as np
+
+from scipy.misc import imresize
+import cv2
+
 import rospy
 import time
 
@@ -38,32 +43,19 @@ class LEDDetector(LEDDetector):
         print('Original shape: {0}'.format(channel[0].shape))
 
         # crop image around borders to get integer submultiples
-        ncells_x = floor(1.0*W/cell_width)
-        ncells_y = floor(1.0*H/cell_height)
+        ncells_x = int(floor(1.0*W/cell_width))
+        ncells_y = int(floor(1.0*H/cell_height))
         rest_x = W%cell_width
         rest_y = H%cell_height
         imgs_cropped = channel[:, ceil(.5*rest_y):H-floor(.5*rest_y), ceil(.5*rest_x):W-floor(.5*rest_x)]
-        print('ncells_x: %s, ncells_y: %s' % (ncells_x, ncells_y))
-        print('rest_x: %s, rest_y: %s' % (rest_x, rest_y))
-        print('Cropped shape: {0}'.format(imgs_cropped.shape))
-        assert imgs_cropped.shape[1]%cell_height == 0
-        assert imgs_cropped.shape[2]%cell_width == 0
 
-        # Split images into rectangles
-        cell_values = np.array(np.split(imgs_cropped,ncells_x, axis=2))
-        if(self.verbose):
-            print('First split: {0}'.format(cell_values.shape))
-        cell_values = np.mean(cell_values, axis=3)
-        if(self.verbose):
-            print('First reduction: {0}'.format(cell_values.shape))
-        cell_values = np.array(np.split(cell_values,ncells_y, axis=2))
-        if(self.verbose):
-            print('Second split: {0}'.format(cell_values.shape))
-        cell_values = np.mean(cell_values, axis=3)
-        if(self.verbose):
-            print('Second reduction: {0}'.format(cell_values.shape))
-        cell_values = np.swapaxes(cell_values, 2, 0)
-        cell_values = np.swapaxes(cell_values, 2, 1)
+        N = imgs_cropped.shape[0]
+        cell_values = np.zeros((N,ncells_y, ncells_x))
+        # resize
+        for i in range(N):
+            #cell_values[i,:,:] = imresize(imgs_cropped[i,:,:],(ncells_y, ncells_x))
+            cell_values[i,:,:] = cv2.resize(imgs_cropped[i,:,:],(ncells_x, ncells_y))
+
         return (cell_values, [ceil(.5*rest_y), ceil(.5*rest_x)])
 
     # ~~~~~~~~~~~~~~~~~~~ Find local maxima ~~~~~~~~~~~~~~~~~~~~
@@ -125,13 +117,21 @@ class LEDDetector(LEDDetector):
             raise ValueError(min_distance_between_LEDs_pixels)
 
         channel = images['rgb'][:,:,:,0] # just using first channel
+        
+        #channel = np.zeros(images['rgb'].shape[0:-1])
+
+        #for i in range(n):
+        #    channel[i,:,:] = cv2.cvtColor(images['rgb'][i,:,:,:], cv2.COLOR_BGR2GRAY)
+
+        print('channel.shape {0}'.format(channel.shape))
 
         cell_width = 15
         cell_height = 15
+        var_threshold = 400
 
         (cell_vals, crop_offset) = self.downsample(channel, cell_width, cell_height)
 
-        candidates_mask = self.get_candidate_cells(cell_vals, 100)
+        candidates_mask = self.get_candidate_cells(cell_vals, var_threshold)
         candidate_cells = [(i,j) for (i,j) in np.ndindex(candidates_mask.shape) if candidates_mask[i,j]]
 
         # Create result object
@@ -140,7 +140,7 @@ class LEDDetector(LEDDetector):
         # Detect frequencies and discard non-periodic signals
         # ts_tolerance = 0.2 # unnecessary
         f_tolerance = 0.25
-        min_num_periods = 3
+        min_num_periods = 2
 
         for (i,j) in candidate_cells:
             signal = cell_vals[:,i,j]

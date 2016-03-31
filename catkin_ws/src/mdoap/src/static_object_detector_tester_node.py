@@ -46,6 +46,8 @@ class StaticObjectDetectorTesterNode(object):
     def pubImage(self):
         if self.num_sent<self.num_im:
             filename = '0'+str(self.num_sent)+'.jpg'
+            if self.num_sent>=10:
+                filename = str(self.num_sent)+'.jpg'
             image = cv2.imread(self.im_dir+filename)
             msg = CompressedImage()
             msg.header.stamp = rospy.Time.now()

@@ -14,18 +14,31 @@ class Matcher:
     CONE = [np.array(x, np.uint8) for x in [[0,80,80], [22, 255,255]] ]
     DUCK = [np.array(x, np.uint8) for x in [[25,100,150], [35, 255, 255]] ]
     terms = {0:"cone", 1:"duck"}
+    def __init__(self):
+        self.cone_color_low = self.setupParam("~cone_low", [0,80,80])
+        self.cone_color_high = self.setupParam("~cone_high", [22, 255,255])
+        self.duckie_color_low = self.setupParam("~duckie_low", [25, 100, 150])
+        self.duckie_color_high = self.setupParam("~duckie_high", [35, 255,255])
+        self.CONE = [np.array(x, np.uint8) for x in [self.cone_color_low, self.cone_color_high] ]
+        self.DUCK = [np.array(x, np.uint8) for x in [self.duckie_color_low, self.duckie_color_high] ]
+
+    def setupParam(self, param_name, default_value):
+        value = rospy.get_param(param_name,default_value)
+        rospy.set_param(param_name,value) #Write to parameter server for transparancy
+        rospy.loginfo("[%s] %s = %s " %('static_object_detector_node',param_name,value))
+        return value
 
     def get_filtered_contours(self,img, contour_type):
         hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         
         if contour_type == "CONE":
-            frame_threshed = cv2.inRange(hsv_img, *self.CONE)
+            frame_threshed = cv2.inRange(hsv_img, self.CONE[0], self.CONE[1])
             ret,thresh = cv2.threshold(frame_threshed,22,255,0)
         elif contour_type == "DUCK_COLOR":
-            frame_threshed = cv2.inRange(hsv_img, *self.DUCK)
+            frame_threshed = cv2.inRange(hsv_img, self.DUCK[0], self.DUCK[1])
             ret,thresh = cv2.threshold(frame_threshed,30,255,0)
         elif contour_type == "DUCK_CANNY":
-            frame_threshed = cv2.inRange(hsv_img, *self.DUCK)
+            frame_threshed = cv2.inRange(hsv_img, self.DUCK[0], self.DUCK[1])
             frame_threshed = cv2.adaptiveThreshold(frame_threshed,255,\
                     cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,5,2)
             thresh = cv2.Canny(frame_threshed, 100,200)
@@ -108,10 +121,9 @@ class Matcher:
         return img, object_list
 
 class StaticObjectDetectorNode:
-    def __init__(self, target_img="cone.png"):
+    def __init__(self):
         self.name = 'static_object_detector_node'
         
-
         self.tm = Matcher()
         self.thread_lock = threading.Lock()
         self.sub_image = rospy.Subscriber("~image_compressed", CompressedImage, self.cbImage, queue_size=1)

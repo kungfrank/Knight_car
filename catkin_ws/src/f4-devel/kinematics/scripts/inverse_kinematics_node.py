@@ -13,10 +13,10 @@ class InverseKinematicsNode(object):
 
         # Read parameters
         #self.veh_name = self.setupParameter("~veh_name","megaman")
-        self.fi_theta_dot_function = self.setupParameter('~fi_theta_dot_function', 'Duty_fi_theta_dot_naive')
-        self.fi_v_function = self.setupParameter('~fi_v_function', 'Duty_fi_v_naive')
-        self.theta_dot_weights = matrix(self.setupParameter('~theta_dot_weights', [-1.0]))
-        self.v_weights = matrix(self.setupParameter('~v_weights', [1.0]))
+        self.fi_theta_dot_function = self.setupParameter('~fi_theta_dot_function_param', 'Duty_fi_theta_dot_naive')
+        self.fi_v_function = self.setupParameter('~fi_v_function_param', 'Duty_fi_v_naive')
+        self.theta_dot_weights = matrix(self.setupParameter('~theta_dot_weights_param', [-1.0]))
+        self.v_weights = matrix(self.setupParameter('~v_weights_param', [1.0]))
 
         # Setup the inverse kinematics model
         self.ik = Inverse_kinematics.Inverse_kinematics(self.fi_theta_dot_function, self.fi_v_function, matrix(self.theta_dot_weights), matrix(self.v_weights))

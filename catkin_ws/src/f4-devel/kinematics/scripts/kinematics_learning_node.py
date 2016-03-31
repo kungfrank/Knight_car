@@ -41,7 +41,7 @@ class KinematicsLearningNode(object):
         self.v_d_L = zeros((self.noZeros + self.noSamples,1))
         self.v_d_R = zeros((self.noZeros + self.noSamples,1))
         self.v_dt = zeros((self.noZeros + self.noSamples,1))
-        self.theta_dot_dt[:self.noZeros,:] = 1
+        self.v_dt[:self.noZeros,:] = 1
         self.v_theta_angle_pose_delta = zeros((self.noZeros + self.noSamples,1))
         self.v_x_axis_pose_delta = zeros((self.noZeros + self.noSamples,1))
         self.v_y_axis_pose_delta = zeros((self.noZeros + self.noSamples,1))

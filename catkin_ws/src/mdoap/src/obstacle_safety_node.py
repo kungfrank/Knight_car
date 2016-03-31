@@ -46,6 +46,7 @@ class ObstacleSafetyNode:
         dists = []
         width = detections_msg.imwidth
         height = detections_msg.imheight
+        too_close = False
         for obstacle in detections_msg.list: 
             marker = Marker()
             rect = obstacle.bounding_box
@@ -62,6 +63,8 @@ class ObstacleSafetyNode:
 
             if dist<minDist:
                 minDist = dist
+            # Only say it's too close if it's in the lane
+            if dist<self.closeness_threshold and abs(projected_point.gp.y) < 0.15:
             projection.distance = dist
             projection_list.list.append(projection)
             
@@ -99,10 +102,9 @@ class ObstacleSafetyNode:
             marker_array.markers.append(marker)
             count = count+1
 
-        closeness = minDist<self.closeness_threshold
         b = BoolStamped()
         b.header = detections_msg.header
-        b.data = closeness
+        b.data = too_close
 
         self.pub_too_close.publish(b)
         self.pub_projections.publish(projection_list)

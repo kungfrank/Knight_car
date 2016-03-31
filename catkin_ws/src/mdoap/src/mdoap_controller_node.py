@@ -29,10 +29,14 @@ class MDOAPControllerNode:
             # + -> offset to left in lane
             # - -> offset to right in lane
             for projected in detections_msg.list:
-                if projected.distance <minDist:
+                # ~0.23 is the lane width
+                if projected.distance < minDist and abs(projected.location.y) < 0.15:
                     minDist = projected.distance
-                    offset = projected.location.y * 2.0
+                    # + y -> obstacle to the left, drive right
+                    # - y -> obstacle to the right, drive left
+                    offset = 0.15 - projected.location.y
             #Hijack the param for seting offset of the lane
+
             self.setupParameter("lane_controller/d_offset", offset)
         else:
             #Reset offset of lane to 0

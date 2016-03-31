@@ -65,6 +65,7 @@ class ObstacleSafetyNode:
                 minDist = dist
             # Only say it's too close if it's in the lane
             if dist<self.closeness_threshold and abs(projected_point.gp.y) < 0.15:
+                too_close = True
             projection.distance = dist
             projection_list.list.append(projection)
             

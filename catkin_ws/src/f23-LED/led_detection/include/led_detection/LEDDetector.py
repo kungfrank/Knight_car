@@ -5,8 +5,9 @@ from duckietown_msgs.msg import Vector2D, LEDDetection, LEDDetectionArray
 from led_detection import logger
 from math import floor, ceil
 
-from scipy.misc import imresize
-import cv2
+# image filters
+from scipy.ndimage.filters import maximum_filter
+from scipy.ndimage.morphology import generate_binary_structure, binary_erosion
 
 import rospy
 import time
@@ -15,10 +16,6 @@ import time
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from matplotlib.patches import Rectangle
-
-# image filters
-from scipy.ndimage.filters import maximum_filter
-from scipy.ndimage.morphology import generate_binary_structure, binary_erosion
 
 # fft
 import scipy.fftpack
@@ -42,19 +39,21 @@ class LEDDetector(LEDDetector):
 
         print('Original shape: {0}'.format(channel[0].shape))
 
-        # crop image around borders to get integer submultiples
+        # determine top-left offset to center the grid  
         ncells_x = int(floor(1.0*W/cell_width))
         ncells_y = int(floor(1.0*H/cell_height))
         rest_x = W%cell_width
         rest_y = H%cell_height
-        imgs_cropped = channel[:, ceil(.5*rest_y):H-floor(.5*rest_y), ceil(.5*rest_x):W-floor(.5*rest_x)]
 
-        N = imgs_cropped.shape[0]
+        N = channel.shape[0]
         cell_values = np.zeros((N,ncells_y, ncells_x))
-        # resize
-        for i in range(N):
-            #cell_values[i,:,:] = imresize(imgs_cropped[i,:,:],(ncells_y, ncells_x))
-            cell_values[i,:,:] = cv2.resize(imgs_cropped[i,:,:],(ncells_x, ncells_y))
+
+        # Compute values
+        for i in range(ncells_y):
+            for j in range(ncells_x):
+                tly = ceil(.5*rest_y)+i*cell_height
+                tlx = ceil(.5*rest_x)+j*cell_width
+                cell_values[:, i, j] = np.mean(channel[:,tly:tly+cell_height, tlx:tlx+cell_width], axis=tuple([1, 2]))
 
         return (cell_values, [ceil(.5*rest_y), ceil(.5*rest_x)])
 
@@ -118,8 +117,9 @@ class LEDDetector(LEDDetector):
 
         channel = images['rgb'][:,:,:,0] # just using first channel
         
+        # Go for the following lines if you want to use a grayscale image
+        # as an input instead of preferring one specific channel 
         #channel = np.zeros(images['rgb'].shape[0:-1])
-
         #for i in range(n):
         #    channel[i,:,:] = cv2.cvtColor(images['rgb'][i,:,:,:], cv2.COLOR_BGR2GRAY)
 
@@ -127,7 +127,7 @@ class LEDDetector(LEDDetector):
 
         cell_width = 15
         cell_height = 15
-        var_threshold = 400
+        var_threshold = 100
 
         (cell_vals, crop_offset) = self.downsample(channel, cell_width, cell_height)
 
@@ -161,16 +161,6 @@ class LEDDetector(LEDDetector):
                 if(self.verbose):
                     logger.info('Not an LED, discarded\n')
                 continue
-
-            # Frequency estimation based on zero crossings - quite bad
-            #for f in frequencies_to_detect:
-            #    if(all(d-ts_tolerance <= 0.5/f <= d+ts_tolerance for d in diffs)):
-            #        if(self.verbose):
-            #            logger.info('Confirmed LED with frequency %s\n'%f)
-                   # recover coordinates of centroid
-            #        result.detections.append(LEDDetection(timestamps[0], timestamps[-1],
-            #        led_img_coords, f, '', -1)) # -1...confidence not implemented
-            #        break
 
             # Frequency estimation based on FFT
             T = 1.0/30 # TODO expecting 30 fps, but RESAMPLE to be sure

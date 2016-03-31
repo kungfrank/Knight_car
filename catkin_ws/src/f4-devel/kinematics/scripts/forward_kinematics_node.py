@@ -17,11 +17,12 @@ class ForwardKinematicsNode(object):
         # self.veh_name = self.setupParameter("~veh_name","megaman")
         fi_theta_dot_function = self.setupParameter('~fi_theta_dot_function', 'Duty_fi_theta_dot_naive')
         fi_v_function = self.setupParameter('~fi_v_function', 'Duty_fi_v_naive')
-        theta_dot_weights = self.setupParameter('~theta_dot_weights', [-1.0])
-        v_weights = self.setupParameter('~v_weights', [1.0])
+        theta_dot_weights = matrix(self.setupParameter('~theta_dot_weights', [-1.0]))
+        v_weights = matrix(self.setupParameter('~v_weights', [1.0]))
+        #print 'theta_dot_weights', type(theta_dot_weights), theta_dot_weights.shape, theta_dot_weights
 
         #Setup the forward kinematics model
-        self.fk = Forward_kinematics.Forward_kinematics(fi_theta_dot_function, fi_v_function, matrix(theta_dot_weights), matrix(v_weights))
+        self.fk = Forward_kinematics.Forward_kinematics(fi_theta_dot_function, fi_v_function, theta_dot_weights, v_weights)
 
         #Setup the publisher and subscribers
         self.pub_velocity = rospy.Publisher("~velocity", Twist2DStamped, queue_size=1)

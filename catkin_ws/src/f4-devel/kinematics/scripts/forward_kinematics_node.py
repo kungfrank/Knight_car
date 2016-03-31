@@ -32,7 +32,7 @@ class ForwardKinematicsNode(object):
         rospy.loginfo("[%s] has started", self.node_name)
 
     def wheelsCmdCallback(self, msg_wheels_cmd):
-        [theta_dot, v] = self.fk.evaluate(msg_wheels_cmd.vel_left, msg_wheels_cmd.vel_right)
+        [theta_dot, v] = self.fk.evaluate(matrix(msg_wheels_cmd.vel_left), matrix(msg_wheels_cmd.vel_right))
         
         # Stuff the v and omega into a message and publish
         msg_velocity = Twist2DStamped()

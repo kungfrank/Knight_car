@@ -3,6 +3,8 @@ from duckietown_msgs.msg import Vector2D, LEDDetection, LEDDetectionArray
 from led_detection import logger
 from math import floor, ceil
 import numpy as np
+import rospy
+import time
 
 # plotting 
 import matplotlib.pyplot as plt
@@ -21,9 +23,10 @@ __all__ = ['LEDDetector']
 class LEDDetector(LEDDetector):
     """ The LEDDetector class """
 
-    def __init__(self):
-        self.ploteverything = False
-        self.verbose = False
+    def __init__(self, ploteverything_=False, verbose_=False, plotfinal_=False):
+        self.ploteverything = ploteverything_
+        self.verbose = verbose_
+        self.plotfinal = plotfinal_
         pass
 
     # ~~~~~~~~~~~~~~~~~~~ Downsample ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -181,10 +184,10 @@ class LEDDetector(LEDDetector):
             # Bin frequency into the ones to detect
             freq = [x for x in frequencies_to_detect if abs(x-fft_peak_freq)<f_tolerance]
             if(freq):
+                result.detections.append(LEDDetection(rospy.Time.from_sec(timestamps[0]),
+                rospy.Time.from_sec(timestamps[-1]), led_img_coords, freq[0], '', -1)) # -1...confidence not implemented
                 if(self.verbose):
                     logger.info('LED confirmed, frequency: %s'% freq)
-                result.detections.append(LEDDetection(timestamps[0], timestamps[-1],
-                    led_img_coords, freq[0], '', -1)) # -1...confidence not implemented
             else:
                 logger.info('Could not associate frequency, discarding')
 
@@ -206,12 +209,13 @@ class LEDDetector(LEDDetector):
                 }
 
         # Plot all results
-        for r in result.detections:
-            pos = r.pixels_normalized
-            ax.add_patch(Rectangle((pos.x-0.5*cell_width, pos.y-0.5*cell_height), cell_width, cell_height, edgecolor="red", linewidth=3, facecolor="none"))
-            plt.text(pos.x-0.5*cell_width, pos.y-cell_height, str(r.frequency), fontdict=font)
+        if(self.plotfinal):
+            for r in result.detections:
+                pos = r.pixels_normalized
+                ax.add_patch(Rectangle((pos.x-0.5*cell_width, pos.y-0.5*cell_height), cell_width, cell_height, edgecolor="red", linewidth=3, facecolor="none"))
+                plt.text(pos.x-0.5*cell_width, pos.y-cell_height, str(r.frequency), fontdict=font)
 
-        plt.show()
+            plt.show()
 
         return result
 

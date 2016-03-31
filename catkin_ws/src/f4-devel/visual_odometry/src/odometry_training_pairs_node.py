@@ -52,6 +52,9 @@ class OdometryTrainingPairsNode(object):
             self.cmd_buffer.popleft()
 
     def findMatchingDuties(self, new_stamp):
+        # if no cmds have been received, return (0, 0)
+        if not self.cmd_buffer:
+            return (0, 0)
         cmd = None
         # delete cmds in the buffer older than new_stamp
         while (self.cmd_buffer[0].header.stamp.secs + self.cmd_buffer[0].header.stamp.nsecs/1e9) < (new_stamp.secs + new_stamp.nsecs/1e9):

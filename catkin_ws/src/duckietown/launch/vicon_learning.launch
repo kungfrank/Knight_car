@@ -7,6 +7,7 @@
     <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman."/>
     <arg name="gui" default="true" doc="Show a gui automatically when running this test" />
     <arg name="log" default="false" doc="True to use the bagout arg to save a log" />
+    <arg name="learn_online" default="true" doc="True to update the weights from the vicon data online" />
 
     <param name="use_sim_time" value="true"/>
 
@@ -19,14 +20,16 @@
     </include>
 
     <!-- run the vicon_learning_node -->
-    <remap from="vicon_learning_node/pose" to="/duckiecar/pose" />
-    <remap from="vicon_learning_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
-    <include file="$(find kinematics)/launch/vicon_learning_node.launch">
-        <arg name="veh" value="$(arg veh)"/>
-        <arg name="local" value="$(arg local)"/>
-        <arg name="config" value="$(arg config)"/>
-        <arg name="param_file_name" value="$(arg param_file_name)"/>
-    </include>
+    <group if="$(arg learn_online)">
+        <remap from="vicon_learning_node/pose" to="/duckiecar/pose" />
+        <remap from="vicon_learning_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
+        <include file="$(find kinematics)/launch/vicon_learning_node.launch">
+            <arg name="veh" value="$(arg veh)"/>
+            <arg name="local" value="$(arg local)"/>
+            <arg name="config" value="$(arg config)"/>
+            <arg name="param_file_name" value="$(arg param_file_name)"/>
+        </include>
+    </group>
 
     <!-- run the pose2d_to_path_node -->
     <remap from="pose2d_to_path_node/pose" to="position_filter_node/pose" />

@@ -18,12 +18,12 @@
                 <rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
 		</node>
 		<remap from="apriltags_postprocessing_global_node/apriltags_in" to="apriltags_global/apriltags" /> 
-	        <remap from="apriltags_postprocessing_global_node/apriltags_out" to="apriltags_postprocessing_global_node/apriltags" />
+	        <remap from="apriltags_postprocessing_global_node/apriltags_out" to="apriltags_global/detections" />
 		<node pkg="apriltags" type="AprilPostPros.py" name="apriltags_postprocessing_global_node" output="screen">
 		<param name="~loc" value="$(arg loc)" />
 		</node>
 		<remap from="apriltags_postprocessing_fast_node/apriltags_in" to="apriltags_fast/apriltags" /> 
-		<remap from="apriltags_postprocessing_fast_node/apriltags_out" to="apriltags_postprocessing_fast_node/apriltags" />
+		<remap from="apriltags_postprocessing_fast_node/apriltags_out" to="apriltags_fast/detections" />
 		<node pkg="apriltags" type="AprilPostPros.py" name="apriltags_postprocessing_fast_node" output="screen">
 		<param name="~loc" value="$(arg loc)" />
 		</node>

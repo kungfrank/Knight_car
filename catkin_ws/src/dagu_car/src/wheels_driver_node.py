@@ -13,7 +13,7 @@ class WheelsDriverNode(object):
         #add publisher for wheels command wih execution time
         self.msg_wheels_cmd = WheelsCmdStamped()
         rospy.loginfo("here0")
-        self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd_executed",WheelsCmdStamped, self.cbWheelsCmd, queue_size=1)
+        self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd_executed",WheelsCmdStamped, queue_size=1)
 
         # Setup subscribers
         self.sub_topic = rospy.Subscriber("~wheels_cmd", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1)
@@ -32,7 +32,7 @@ class WheelsDriverNode(object):
         self.msg_wheels_cmd.header.stamp = rospy.get_rostime()  
         self.msg_wheels_cmd.vel_left = msg.vel_left
         self.msg_wheels_cmd.vel_right = msg.vel_right
-        self.pub_wheels_cmd.publish(msg)
+        self.pub_wheels_cmd.publish(self.msg_wheels_cmd)
 
     def on_shutdown(self):
         self.driver.setWheelsSpeed(left=0.0,right=0.0)

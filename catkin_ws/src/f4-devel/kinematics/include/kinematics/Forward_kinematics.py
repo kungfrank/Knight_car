@@ -22,7 +22,6 @@ class Forward_kinematics(object):
     def evaluate(self, d_L, d_R):
         fi_theta_dot = self.fi_theta_dot_function.computeFi(d_L, d_R)
         fi_v = self.fi_v_function.computeFi(d_L, d_R)
-        #print 'fi_theta_dot', fi_theta_dot, 'self.theta_dot_weights', self.theta_dot_weights, 'fi_v', fi_v, 'self.v_weights: ', self.v_weights
         return [inner(fi_theta_dot, self.theta_dot_weights).flatten()[0], inner(fi_v, self.v_weights).flatten()[0]]
 
     # integrate for a dt long step. This function returns relative

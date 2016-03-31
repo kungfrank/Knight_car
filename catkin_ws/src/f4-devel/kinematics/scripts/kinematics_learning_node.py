@@ -41,12 +41,11 @@ class KinematicsLearningNode(object):
         self.v_d_L = zeros((self.noZeros + self.noSamples,1))
         self.v_d_R = zeros((self.noZeros + self.noSamples,1))
         self.v_dt = zeros((self.noZeros + self.noSamples,1))
-        self.v_dt[:self.noZeros,:] = 1
+        self.theta_dot_dt[:self.noZeros,:] = 1
         self.v_theta_angle_pose_delta = zeros((self.noZeros + self.noSamples,1))
         self.v_x_axis_pose_delta = zeros((self.noZeros + self.noSamples,1))
         self.v_y_axis_pose_delta = zeros((self.noZeros + self.noSamples,1))
         rospy.loginfo("[%s] has started", self.node_name)
-
 
     def thetaDotSampleCallback(self, theta_dot_sample):
         # Only use this sample if at least one of the motors is above the threshold
@@ -62,7 +61,6 @@ class KinematicsLearningNode(object):
                 # Only fit if the set contains a sufficient number of samples with large absolute d_L and d_R values
                 if (average(abs(self.theta_dot_d_L)) > self.duty_threshold) and (average(abs(self.theta_dot_d_R)) > self.duty_threshold):
                     weights = self.kl.fit_theta_dot(self.theta_dot_d_L, self.theta_dot_d_R, self.theta_dot_dt, self.theta_dot_theta_angle_pose_delta).flatten()
-                    rospy.loginfo("new theta_dot_weights: %s", weights)
                     # Put the weights in a message and publish
                     msg_kinematics_weights = KinematicsWeights()
                     msg_kinematics_weights.weights = weights
@@ -86,9 +84,7 @@ class KinematicsLearningNode(object):
             if self.v_index >= (self.noZeros+self.noSamples):
                 # Only fit if the set contains a sufficient number of samples with large absolute d_L and d_R values
                 if (average(abs(self.v_d_L)) > self.duty_threshold) and (average(abs(self.v_d_R)) > self.duty_threshold):
-                    #rospy.loginfo("computing v_weights. d_L: %s d_R: %s dt: %s theta_angle_pose_delta: % s v_x_axis_pose_delta: %s v_y_axis_pose_delta %s", self.v_d_L, self.v_d_R, self.v_dt, self.v_theta_angle_pose_delta, self.v_x_axis_pose_delta, self.v_y_axis_pose_delta)
                     weights = self.kl.fit_v(self.v_d_L, self.v_d_R, self.v_dt, self.v_theta_angle_pose_delta, self.v_x_axis_pose_delta, self.v_y_axis_pose_delta).flatten()
-                    rospy.loginfo("new v_weights: %s", weights)
                     # Put the weights in a message and publish
                     msg_kinematics_weights = KinematicsWeights()
                     msg_kinematics_weights.weights = weights
@@ -102,7 +98,6 @@ class KinematicsLearningNode(object):
         rospy.set_param(param_name,value) #Write to parameter server for transparancy
         rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
         return value
-
 
 if __name__ == '__main__':
     rospy.init_node('kinematics_learning_node', anonymous=False)

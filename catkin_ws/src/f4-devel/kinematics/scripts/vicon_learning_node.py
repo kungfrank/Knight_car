@@ -36,7 +36,7 @@ class ViconLearningNode(object):
             # Calculate the change in pose
             trans_cur = self.poseToTransform(self.pose_cur.pose)
             trans_prev = self.poseToTransform(self.pose_prev.pose)
-            trans_diff = inverse_matrix(trans_prev) * trans_cur
+            trans_diff = numpy.dot(inverse_matrix(trans_prev), trans_cur)
             dx, dy, dz = translation_from_matrix(trans_diff)
             dw = euler_from_matrix(trans_diff)[2] #Only the z axis
             dt = (msg_wheels_cmd.header.stamp - self.wheels_cmd_prev.header.stamp).to_sec()
@@ -49,12 +49,13 @@ class ViconLearningNode(object):
             msg_theta_dot.theta_angle_pose_delta = dw
             self.pub_theta_dot.publish(msg_theta_dot)
 
+
             msg_v = Vsample()
             msg_v.d_L = self.wheels_cmd_prev.vel_left
             msg_v.d_R = self.wheels_cmd_prev.vel_right
             msg_v.dt = dt
-            msg_v.x_axis_pose_delta = dx
-            msg_v.y_axis_pose_delta = dy
+            msg_v.x_axis_pose_delta = -dy   # The vicon frame is setup with -y facing forward on the duckiecar
+            msg_v.y_axis_pose_delta = dx
             msg_v.theta_angle_pose_delta = dw
             self.pub_v.publish(msg_v)
 
@@ -63,7 +64,7 @@ class ViconLearningNode(object):
         self.pose_prev = self.pose_cur
 
     def poseToTransform(self, pose):
-        # Convert the pose to a 4x4 matrix transform
+        # Convert the pose to a 4x4 homogeneous transform
         pos = (pose.position.x, pose.position.y, pose.position.z)
         rot = (pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)
         trans = concatenate_matrices(translation_matrix(pos), quaternion_matrix(rot))

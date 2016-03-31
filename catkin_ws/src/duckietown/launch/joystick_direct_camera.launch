@@ -17,10 +17,8 @@
     <group if="$(arg live)">
         <include  file="$(find pi_camera)/launch/camera_node.launch">
         <arg name="veh" value="$(arg veh)"/>
-        <arg name="local" value="$(arg local)"/>
         <arg name="config" value="$(arg config)"/>
         <arg name="param_file_name" value="$(arg param_file_name)"/>
-        <arg name="live" value="$(arg live)"/>
         </include>
     </group>
 

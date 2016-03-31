@@ -63,9 +63,14 @@ class ObstacleSafetyNode:
 
             if dist<minDist:
                 minDist = dist
-            # Only say it's too close if it's in the lane
-            if dist<self.closeness_threshold and abs(projected_point.gp.y) < 0.15:
-                too_close = True
+            if dist<self.closeness_threshold:
+                # Trying not to falsely detect the lane lines as duckies that are too close
+                # Cone width  = 0.065 (in projection, in real life, probably more like 0.3)
+                # Duckie width = 0.08
+                if obstacle.type == ObstacleType.DUCKIE and -0.124< projected_point.gp.y < 0.23:
+                    too_close = True
+                elif obstacle.type == ObstacleType.CONE and -0.0785< projected_point.gp.y < 0.21:
+                    too_close = True
             projection.distance = dist
             projection_list.list.append(projection)
             

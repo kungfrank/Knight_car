@@ -11,11 +11,11 @@ from Inverse_kinematics import Inverse_kinematics
 #self.theta_dot_weights = genfromtxt(theta_dot_weights_file)
 #self.v_weights = genfromtxt(v_weights_file)
 
-theta_dot_fi_function = 'Duty_fi_theta_dot_naive'
-v_fi_function = 'Duty_fi_v_naive'
+theta_dot_fi_function = 'Duty_fi_linear'
+v_fi_function = 'Duty_fi_linear'
 learner = Linear_learner(theta_dot_fi_function, v_fi_function)
-theta_dot_weights = learner.fit_theta_dot_from_file("./training_set")
-v_weights = learner.fit_v_from_file("./training_set")
+theta_dot_weights = learner.fit_theta_dot_from_file("./training_data.txt")
+v_weights = learner.fit_v_from_file("./training_data.txt")
 forward_kinematics = Forward_kinematics(theta_dot_fi_function, v_fi_function, theta_dot_weights, v_weights)
 inverse_kinematics = Inverse_kinematics(theta_dot_fi_function, v_fi_function, theta_dot_weights, v_weights)
 

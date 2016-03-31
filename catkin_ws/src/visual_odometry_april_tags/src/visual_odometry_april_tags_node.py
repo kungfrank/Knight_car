@@ -43,7 +43,7 @@ class VisualOdometryAprilTagsNode(object):
         t = msg.header.stamp
         odometry_info['duty_L'] = self.duty_L
         odometry_info['duty_R'] = self.duty_R
-        odometry_info['t'] = t.nsecs/1000000000.0; #nanoseconds to seconds
+        odometry_info['t'] = t.nsecs/1e9; #nanoseconds to seconds
         count = 0
         for i in msg.detections:
         	tag_id = i.id
@@ -61,7 +61,7 @@ class VisualOdometryAprilTagsNode(object):
 
         	#compare with odometry data from last step, take average if multiple tags
 
-        	if tag_id in self.old_odometry_info:
+        	if tag_id in self.old_odometry_info and odometry_info['t'] > self.old_odometry_info['t']:
         		count += 1.0
         		odometry_deltas[0] = self.old_odometry_info['duty_L'] #duty_L
         		odometry_deltas[1] = self.old_odometry_info['duty_R'] #duty_R

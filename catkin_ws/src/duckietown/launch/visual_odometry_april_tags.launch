@@ -7,6 +7,7 @@
     <arg name="camera" default="true" doc="If set to false, won't launch the camera. This is for easier relaunching of the line_detector_node only "/>
     <arg name="cam_info" default="true" doc="If set to true, use cam_info_reader_node to pusblish CameraInfo."/>
     <arg name="live" default="true" doc="live set to false means we don't run the actual camera (i.e. running from a log file" />
+    <arg name="bagin"/>
 
     <!-- decoder_node -->
     <group if="$(arg raw)">
@@ -53,4 +54,6 @@
 	    <arg name="param_file_name" value="$(arg param_file_name)"/>
 	</include>
 
+    <!-- Start the bags -->
+    <node pkg="rosbag" type="play" name="rosbag_play" args="$(arg bagin) -r 0.02"/>
 </launch>	

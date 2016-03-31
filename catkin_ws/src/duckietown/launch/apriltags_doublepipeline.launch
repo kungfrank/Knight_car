@@ -5,6 +5,8 @@
         <arg name="node_name" default="AprilPrePros"/>
     	<arg name="local" default="false" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
 	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman"/>
+	<arg name="loc" default="-1" doc="Physical room location of the duckietown map. E.g. 226 or 316"/>
+
 	<group ns="$(arg veh)">
                 <remap from="apriltags_global/camera_info" to="camera_node/camera_info"/>
                 <remap from="apriltags_fast/camera_info" to="camera_node/camera_info"/>
@@ -15,5 +17,16 @@
                 <node pkg="apriltags" type="AprilPrePros.py" name="AprilPrePros" output="screen">
                 <rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
 		</node>
+		<remap from="apriltags_postprocessing_global_node/apriltags_in" to="apriltags_global/apriltags" /> 
+	        <remap from="apriltags_postprocessing_global_node/apriltags_out" to="apriltags_postprocessing_global_node/apriltags" />
+		<node pkg="apriltags" type="AprilPostPros.py" name="apriltags_postprocessing_global_node" output="screen">
+		<param name="~loc" value="$(arg loc)" />
+		</node>
+		<remap from="apriltags_postprocessing_fast_node/apriltags_in" to="apriltags_fast/apriltags" /> 
+		<remap from="apriltags_postprocessing_fast_node/apriltags_out" to="apriltags_postprocessing_fast_node/apriltags" />
+		<node pkg="apriltags" type="AprilPostPros.py" name="apriltags_postprocessing_fast_node" output="screen">
+		<param name="~loc" value="$(arg loc)" />
+		</node>
 	</group>
+
 </launch>

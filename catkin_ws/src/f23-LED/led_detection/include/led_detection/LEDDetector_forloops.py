@@ -20,7 +20,7 @@ import scipy.fftpack
 
 __all__ = ['LEDDetector']
 
-class LEDDetector():
+class LEDDetector_forloops():
     """ The LEDDetector class """
 
     def __init__(self, ploteverything_=False, verbose_=False, plotfinal_=False):
@@ -34,37 +34,43 @@ class LEDDetector():
     def downsample(self, channel, cell_width=20, cell_height=20):
         W = channel.shape[2]
         H = channel.shape[1]
+        cell_intensity_data = []
+        for x in range(0, W, cell_width):
+            for y in range(0, H, cell_height):
+                #logger.info('Looking at partition %s %s' % (x, y))
+                # look at same partition across multiple images
+                average_intensities = []
+                for image in channel[:15]: # TODO hardcoded value
+                    intensities = []
+                    # loop through pixels in each partition
+                    for x_coord in range(x, x+cell_width):
+                        for y_coord in range(y,y+cell_height):
+                            if x_coord >= W or y_coord >= H:
+                                continue
+                            pixel = image[y_coord][x_coord]
+                            # a simple approach from http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
+                            # could also use matplotlib's rgb_to_hsv?
+                            # TODO: check if pixel order is RGB or BGR (assuming RGB)
+                            #intensity = 0.299*pixel[0] + 0.587*pixel[1] + 0.114*pixel[2]
+                            #intensity = pixel[0] # red channel
+                            #intensity = pixel[1] # green channel
+                            intensity = pixel # blue channel
+                            intensities.append(intensity)
 
-        print('Original shape: {0}'.format(channel[0].shape))
 
-        # crop image around borders to get integer submultiples
-        ncells_x = floor(1.0*W/cell_width)
-        ncells_y = floor(1.0*H/cell_height)
-        rest_x = W%cell_width
-        rest_y = H%cell_height
-        imgs_cropped = channel[:, ceil(.5*rest_y):H-floor(.5*rest_y), ceil(.5*rest_x):W-floor(.5*rest_x)]
-        print('ncells_x: %s, ncells_y: %s' % (ncells_x, ncells_y))
-        print('rest_x: %s, rest_y: %s' % (rest_x, rest_y))
-        print('Cropped shape: {0}'.format(imgs_cropped.shape))
-        assert imgs_cropped.shape[1]%cell_height == 0
-        assert imgs_cropped.shape[2]%cell_width == 0
-
-        # Split images into rectangles
-        cell_values = np.array(np.split(imgs_cropped,ncells_x, axis=2))
-        if(self.verbose):
-            print('First split: {0}'.format(cell_values.shape))
-        cell_values = np.mean(cell_values, axis=3)
-        if(self.verbose):
-            print('First reduction: {0}'.format(cell_values.shape))
-        cell_values = np.array(np.split(cell_values,ncells_y, axis=2))
-        if(self.verbose):
-            print('Second split: {0}'.format(cell_values.shape))
-        cell_values = np.mean(cell_values, axis=3)
-        if(self.verbose):
-            print('Second reduction: {0}'.format(cell_values.shape))
-        cell_values = np.swapaxes(cell_values, 2, 0)
-        cell_values = np.swapaxes(cell_values, 2, 1)
-        return (cell_values, [ceil(.5*rest_y), ceil(.5*rest_x)])
+                    average_intensities.append(np.amax(intensities))
+                cell_intensity_data.append(average_intensities)
+        out = np.array(cell_intensity_data)
+        print(1.0*W/cell_width)
+        print(1.0*H/cell_height)
+        print(1.0*W/cell_width*1.0*H/cell_height)
+        # HACK1 
+        out = np.reshape(out, [ceil(1.0*W/cell_width), ceil(1.0*H/cell_height), out.shape[1]]) # TODO change the code above later
+        #HACK2
+        out = np.swapaxes(out, 0,2)
+        print(out.shape)
+        #plt.imshow(out[:,:,0])
+        return (out, [0,0])
 
     # ~~~~~~~~~~~~~~~~~~~ Find local maxima ~~~~~~~~~~~~~~~~~~~~
 
@@ -191,12 +197,14 @@ class LEDDetector():
             else:
                 logger.info('Could not associate frequency, discarding')
 
+            print(signal.shape)
+            print(timestamps[:15].shape)
             # Plot all signals and FFTs
             if(self.ploteverything):
                 fig, ax1 = plt.subplots()
-                ax1.plot(timestamps, signal)
+                ax1.plot(timestamps[:15], signal)
                 fig, ax2 = plt.subplots()
-                ax2.plot(f,y_f)
+                ax2.plot(f[:15],y_f)
                 plt.show()
 
         plt.imshow(rgb0)

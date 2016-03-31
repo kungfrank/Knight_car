@@ -11,8 +11,58 @@ import threading
 
 
 class Matcher:
-    def __init__(self):
-        pass
+    CONE = [np.array(x, np.uint8) for x in [[0,80,80], [22, 255,255]] ]
+    DUCK = [np.array(x, np.uint8) for x in [[25,100,150], [35, 255, 255]] ]
+    terms = {0:"cone", 1:"duck"}
+
+    def get_filtered_contours(self,img, contour_type):
+        hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        
+        if contour_type == "CONE":
+            frame_threshed = cv2.inRange(hsv_img, *self.CONE)
+            ret,thresh = cv2.threshold(frame_threshed,22,255,0)
+        elif contour_type == "DUCK_COLOR":
+            frame_threshed = cv2.inRange(hsv_img, *self.DUCK)
+            ret,thresh = cv2.threshold(frame_threshed,30,255,0)
+        elif contour_type == "DUCK_CANNY":
+            frame_threshed = cv2.inRange(hsv_img, *self.DUCK)
+            frame_threshed = cv2.adaptiveThreshold(frame_threshed,255,\
+                    cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,5,2)
+            thresh = cv2.Canny(frame_threshed, 100,200)
+        else:
+            return 
+        
+        filtered_contours = []
+        
+        contours, hierarchy = cv2.findContours(\
+                thresh,cv2.RETR_CCOMP,cv2.CHAIN_APPROX_SIMPLE)
+        contour_area = [ (cv2.contourArea(c), (c) ) for c in contours]
+        contour_area = sorted(contour_area,reverse=True, key=lambda x: x[0])
+
+        height,width = img.shape[:2]
+        for (area,(cnt)) in contour_area:
+        # plot box around contour
+            x,y,w,h = cv2.boundingRect(cnt)
+            box = (x,y,w,h)
+            d =  0.5*(x-width/2)**2 + (y-height)**2 
+            if not(h>15 and w >15 and d  < 120000):
+                    continue
+            if contour_type =="DUCK_COLOR": # extra filtering to remove lines
+                val = cv2.arcLength(cnt,True)**2/ cv2.contourArea(cnt)
+                if val > 35: continue
+                rect = cv2.minAreaRect(cnt)
+                ctr, sides, deg = rect
+                val  = 0.5*cv2.arcLength(cnt,True) / (w**2+h**2)**0.5
+                if val < 1.12: continue
+                #if area > 1000: continue
+
+            mask = np.zeros(thresh.shape,np.uint8)
+            cv2.drawContours(mask,[cnt],0,255,-1)
+            mean_val = cv2.mean(img,mask = mask)
+            aspect_ratio = float(w)/h
+            filtered_contours.append( (cnt, box, d, aspect_ratio, mean_val) )
+        return filtered_contours
+
 
     def contour_match(self, img):
         '''
@@ -26,44 +76,35 @@ class Matcher:
         height,width = img.shape[:2]
         object_list.imwidth = width
         object_list.imheight = height
-        hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        COLOR_MIN = np.array([0, 80, 80],np.uint8)
-        COLOR_MAX = np.array([22, 255, 255],np.uint8)
-        frame_threshed = cv2.inRange(hsv_img, COLOR_MIN, COLOR_MAX)
-        imgray = frame_threshed
-        ret,thresh = cv2.threshold(frame_threshed,22,255,0)
-        try:
-            contours, hierarchy = cv2.findContours(\
-                    thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+        
+        # get filtered contours
+        cone_contours = self.get_filtered_contours(img, "CONE")
+        duck_contours = self.get_filtered_contours(img, "DUCK_COLOR")
 
-            # Find the index of the largest contour
-            areas = [cv2.contourArea(c) for c in contours]
-            max_index = np.argmax(areas)
-            cnt = contours[max_index]
-            contour_area = [ (cv2.contourArea(c), (c) ) for c in contours]
-            #contour_area.sort()
-            contour_area = sorted(contour_area,reverse=True, key=lambda x: x[0])
-            for (area,(cnt)) in contour_area[:10]:
-            # plot box around contour
-                x,y,w,h = cv2.boundingRect(cnt)
-                d =  0.5*(x-width/2)**2 + (y-height)**2 
-                if h>15 and w >15 and d  < 120000:
-                    r = Rect()
-                    r.x = x
-                    r.y = y
-                    r.w = w
-                    r.h = h
-                    t = ObstacleType()
-                    #TODO(??): Assign type based on color
-                    t.type = ObstacleType.CONE
-                    d = ObstacleImageDetection()
-                    d.bounding_box = r
-                    d.type = t
+        all_contours = [cone_contours, duck_contours]
+        for i, contours in enumerate(all_contours):
+            for (cnt, box, ds, aspect_ratio, mean_color)  in contours:
+                            
+                # plot box around contour
+                x,y,w,h = box
+                font = cv2.FONT_HERSHEY_SIMPLEX
+                cv2.putText(img,self.terms[i], (x,y), font, 0.5,mean_color,4)
+                cv2.rectangle(img,(x,y),(x+w,y+h), mean_color,2)
+                
+                r = Rect()
+                r.x = x
+                r.y = y
+                r.w = w
+                r.h = h
 
-                    object_list.list.append(d);
-                    cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
-        except:
-            print "contr err"
+                t = ObstacleType()
+                t.type = i
+
+                d = ObstacleImageDetection()
+                d.bounding_box = r
+                d.type = t
+
+                object_list.list.append(d);
         return img, object_list
 
 class StaticObjectDetectorNode:
@@ -88,7 +129,6 @@ class StaticObjectDetectorNode:
     def processImage(self, image_msg):
         if not self.thread_lock.acquire(False):
             return
-
         np_arr = np.fromstring(image_msg.data, np.uint8)
         
         image_cv = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)

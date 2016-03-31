@@ -16,10 +16,10 @@ class PositionFilterNode(object):
         # Read parameters
         self.veh_name = self.setupParameter("~veh_name","megaman")
         
-        fi_theta_dot_function = self.setupParameter('~fi_theta_dot_function', 'Duty_fi_theta_dot_naive')
-        fi_v_function = self.setupParameter('~fi_v_function', 'Duty_fi_v_naive')
-        theta_dot_weights = self.setupParameter('~theta_dot_weights', [-1.0])
-        v_weights = self.setupParameter('~v_weights', [1.0])
+        fi_theta_dot_function = self.setupParameter('~fi_theta_dot_function_param', 'Duty_fi_theta_dot_naive')
+        fi_v_function = self.setupParameter('~fi_v_function_param', 'Duty_fi_v_naive')
+        theta_dot_weights = matrix(self.setupParameter('~theta_dot_weights_param', [-1.0]))
+        v_weights = matrix(self.setupParameter('~v_weights_param', [1.0]))
 
         #Setup the forward kinematics model
         self.fk = Forward_kinematics.Forward_kinematics(fi_theta_dot_function, fi_v_function, matrix(theta_dot_weights), matrix(v_weights))
@@ -37,7 +37,7 @@ class PositionFilterNode(object):
 
 
     def velocicyCallback(self, msg_velocity):
-        if self.last_pose.header.stamp.to_sec() > 0:
+        if self.last_pose.header.stamp.to_sec() > 0:    # skip first frame
             delta_t = (msg_velocity.header.stamp - self.last_pose.header.stamp).to_sec()
             [theta_delta, chord] = self.fk.integrate(self.last_theta_dot, self.last_v, delta_t)
             [theta_res, x_res, y_res] = self.fk.propagate(self.last_pose.theta, self.last_pose.x, self.last_pose.y, theta_delta, chord)

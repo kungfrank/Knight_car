@@ -4,8 +4,8 @@
   radius_l:     0.02
   radius_r:     0.02
   baseline_lr:  0.217
-  fi_theta_dot_function: Duty_fi_linear
-  fi_v_function: Duty_fi_linear
-  theta_dot_weights: [-0.01883726, 2.66072704, -1.69912217]
-  v_weights: [0.05363053, 1.68938573, 0.2379431]
+  fi_theta_dot_function_param: Duty_fi_linear
+  fi_v_function_param: Duty_fi_linear
+  theta_dot_weights_param: [-0.01883726, 2.66072704, -1.69912217]
+  v_weights_param: [0.05363053, 1.68938573, 0.2379431]
   learner_duty_threshold: 0.1

@@ -32,7 +32,7 @@ class WheelsDriverNode(object):
         self.msg_wheels_cmd.header.stamp = rospy.get_rostime()  
         self.msg_wheels_cmd.vel_left = msg.vel_left
         self.msg_wheels_cmd.vel_right = msg.vel_right
-        self.pub_wheels_cmd.publish(self.msg_wheels_cmd)
+        self.pub_wheels_cmd.publish(msg)
 
     def on_shutdown(self):
         self.driver.setWheelsSpeed(left=0.0,right=0.0)

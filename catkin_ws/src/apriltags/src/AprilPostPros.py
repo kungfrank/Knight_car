@@ -80,9 +80,9 @@ class AprilPostPros(object):
                     new_info.location = l
                     
             # Localization stuff
-            x = detection.transform.transform.x
-            y = detection.transform.transform.y
-            z = detection.transform.transform.z
+            x = detection.transform.translation.x
+            y = detection.transform.translation.y
+            z = detection.transform.translation.z
             t = np.array([x,y,z])
             
             rospy.loginfo("[%s] Position " %(self.node_name))

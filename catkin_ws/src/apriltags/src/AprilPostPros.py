@@ -79,15 +79,56 @@ class AprilPostPros(object):
                 l = (id_info['location_316'])
                 if l is not None:
                     new_info.location = l
-                    
+            
+            #######################
             # Localization stuff
+            ######################
+            
+            #Load translation
             x = detection.transform.translation.x
             y = detection.transform.translation.y
             z = detection.transform.translation.z
-            t_ct_Fc = k.Vector( x , y , z )
             
+            t_tc_Fc = k.Vector( x , y , z ) # translation tags(t) w/ camera(c) expressed in camera frame (Fc)
+            
+            # Scale for april tag size
+            scale = 0.3
+            t_tc_Fc = t_tc_Fc * scale
+            
+            #Load rotation
+            x = detection.transform.rotation.x
+            y = detection.transform.rotation.y
+            z = detection.transform.rotation.z
+            w = detection.transform.rotation.w
+            e = k.Vector( x , y , z )
+            Q_Ft_Fc = k.Quaternion( e , w ) # Rotation of tag frame (Ft) w/ to camera frame (Fc)
+            
+            # Camera localization
+            t_cv_Fv = k.Vector( 0.05 , 0 , 0.1 )    # translation of camera w/ vehicle origin in vehicle frame
+            C_Fc_Fv = k.euler2RotationMatrix(0,30,0)  # Rotation   of camera frame w/ vehicle frame
+            Q_Fc_Fv = C_Fc_Fv.toQuaternion()
+            
+            # Compute tag orientation in vehicle frame
+            Q_Ft_Fv = Q_Ft_Fc * Q_Fc_Fv  """ TODO check if order of multiplication is right ;)"""
+            
+            # Compute position of tag in vehicle frame expressed in vehicle frame
+            C_Fv_Fc = - C_Fc_Fv
+            t_tc_Fv = C_Fv_Fc * t_tc_Fc
+            t_tv_Fv = t_tc_Fv + t_cv_Fv
+            
+            # Overwrite transformed value
+            detection.transform.translation.x = t_tv_Fv.x
+            detection.transform.translation.y = t_tv_Fv.y
+            detection.transform.translation.z = t_tv_Fv.z
+            detection.transform.rotation.x    = Q_Ft_Fv.e.x
+            detection.transform.rotation.y    = Q_Ft_Fv.e.y
+            detection.transform.rotation.z    = Q_Ft_Fv.e.z
+            detection.transform.rotation.w    = Q_Ft_Fv.n
+            
+            t_tv_Fv()
+            Q_Ft_Fv()
             #rospy.loginfo("[%s] Position " %(self.node_name))
-            t_ct_Fc()
+            #t_tc_Fc()
 
             #new_location_info.x = 2
             #new_location_info.y = 3

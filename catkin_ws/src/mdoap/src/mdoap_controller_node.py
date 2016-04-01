@@ -39,10 +39,10 @@ class MDOAPControllerNode:
                     offset = 0.15 - projected.location.y
             #Hijack the param for seting offset of the lane
 
-            self.setupParameter("lane_controller/d_offset", offset)
+            self.setupParameter("lane_controller_node/d_offset", offset)
         else:
             #Reset offset of lane to 0
-            self.setupParameter("lane_controller/d_offset", 0.0)
+            self.setupParameter("lane_controller_node/d_offset", 0.0)
         # stop = WheelsCmdStamped()
         # stop.header = bool_msg.header
         # stop.vel_left = 0.0

@@ -39,7 +39,7 @@ int main(int argc, char **argv){
 
 pose2d_to_path_node::pose2d_to_path_node() : nh_("~"), node_name_("pose2d_to_path_node")
 {
-  //Setup the publishers and subscirbers
+  //Setup the publishers and subscribers
   pub_path_ = nh_.advertise<nav_msgs::Path>("path", 10);
   sub_pose_ = nh_.subscribe("pose", 10, &pose2d_to_path_node::poseCallback, this);
   ROS_INFO_STREAM("[" << node_name_ << "] has started.");

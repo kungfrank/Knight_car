@@ -52,11 +52,12 @@ kinematics_tester_node::kinematics_tester_node() : nh_("~"), node_name_("kinemat
   if(hz_ > 0)
   {
     duckietown_msgs::Twist2DStamped cmd_msg;
-    cmd_msg.header.stamp = ros::Time();
+
     cmd_msg.v = v_;
     cmd_msg.omega = omega_;
     ros::Rate rate(hz_);
     while(ros::ok()){
+      cmd_msg.header.stamp = ros::Time::now();
       pub_carCmdOut_.publish(cmd_msg);
       rate.sleep();
     }

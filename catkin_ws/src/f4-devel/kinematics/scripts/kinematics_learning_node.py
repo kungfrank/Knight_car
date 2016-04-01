@@ -12,10 +12,10 @@ class KinematicsLearningNode(object):
         self.node_name = 'kinematics_learning_node'
 
         # Read parameters
-        fi_theta_dot_function = self.setupParameter('~fi_theta_dot_function', 'Duty_fi_theta_dot_naive')
-        fi_v_function = self.setupParameter('~fi_v_function', 'Duty_fi_v_naive')
-        theta_dot_weights = self.setupParameter('~theta_dot_weights', [-1.0])
-        v_weights = self.setupParameter('~v_weights', [1.0])
+        fi_theta_dot_function = self.setupParameter('~fi_theta_dot_function_param', 'Duty_fi_theta_dot_naive')
+        fi_v_function = self.setupParameter('~fi_v_function_param', 'Duty_fi_v_naive')
+        theta_dot_weights = matrix(self.setupParameter('~theta_dot_weights_param', [-1.0]))
+        v_weights = matrix(self.setupParameter('~v_weights_param', [1.0]))
         self.noZeros = self.setupParameter('~learner_number_of_zero_entries', 10)
         self.noSamples = self.setupParameter('~learner_number_of_samples', 50)
         self.duty_threshold = self.setupParameter('~learner_duty_threshold', 0.4)
@@ -41,7 +41,7 @@ class KinematicsLearningNode(object):
         self.v_d_L = zeros((self.noZeros + self.noSamples,1))
         self.v_d_R = zeros((self.noZeros + self.noSamples,1))
         self.v_dt = zeros((self.noZeros + self.noSamples,1))
-        self.theta_dot_dt[:self.noZeros,:] = 1
+        self.v_dt[:self.noZeros,:] = 1
         self.v_theta_angle_pose_delta = zeros((self.noZeros + self.noSamples,1))
         self.v_x_axis_pose_delta = zeros((self.noZeros + self.noSamples,1))
         self.v_y_axis_pose_delta = zeros((self.noZeros + self.noSamples,1))

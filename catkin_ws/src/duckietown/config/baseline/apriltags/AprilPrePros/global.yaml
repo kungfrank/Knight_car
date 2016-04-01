@@ -1,5 +1,5 @@
 # Parameters for apriltags preprocessing
-fast_enabled: 1
+fast_enabled: 0
 fast_period: 0.25
 fast_v_crop: 150
 fast_v_off:  -25

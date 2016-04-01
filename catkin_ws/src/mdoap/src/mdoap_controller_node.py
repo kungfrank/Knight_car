@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from duckietown_msgs.msg import WheelsCmdStamped, BoolStamped, ObstacleProjectedDetectionList, ObstacleProjectedDetection
+from duckietown_msgs.msg import WheelsCmdStamped, Header, BoolStamped, ObstacleProjectedDetectionList, ObstacleProjectedDetection
 
 class MDOAPControllerNode:
     def __init__(self):
@@ -12,11 +12,14 @@ class MDOAPControllerNode:
         self.pub_wheels_cmd = rospy.Publisher("~control",WheelsCmdStamped,queue_size=1)
         self.too_close = False
         self.lane_control = WheelsCmdStamped()
+        self.lane_control.header = Header()
+        self.lane_control.vel_left = 0.0
+        self.lane_control.vel_right = 0.0
 
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
         rospy.set_param(param_name,value) #Write to parameter server for transparancy
-        rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
+        rospy.loginfo("[%s] %s = %s " %(self.name,param_name,value))
         return value
     def cbLaneControl(self, lane_control_msg):
         self.lane_control = lane_control_msg

@@ -13,7 +13,7 @@ import threading
 class Matcher:
     CONE = [np.array(x, np.uint8) for x in [[0,80,80], [22, 255,255]] ]
     DUCK = [np.array(x, np.uint8) for x in [[25,100,150], [35, 255, 255]] ]
-    terms = {0:"cone", 1:"duck"}
+    terms = {ObstacleType.CONE :"cone", ObstacleType.DUCKIE:"duck"}
     def __init__(self):
         self.cone_color_low = self.setupParam("~cone_low", [0,80,80])
         self.cone_color_high = self.setupParam("~cone_high", [22, 255,255])
@@ -94,7 +94,7 @@ class Matcher:
         cone_contours = self.get_filtered_contours(img, "CONE")
         duck_contours = self.get_filtered_contours(img, "DUCK_COLOR")
 
-        all_contours = [cone_contours, duck_contours]
+        all_contours = [duck_contours, cone_contours]
         for i, contours in enumerate(all_contours):
             for (cnt, box, ds, aspect_ratio, mean_color)  in contours:
                             

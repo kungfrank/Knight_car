@@ -26,7 +26,7 @@ class Forward_kinematics(object):
 
     def integrate(self, theta_dot, v, dt):
         theta_delta = theta_dot*dt
-        if (theta_dot < 0.000001): #to ensure no division by zero for radius calculation
+        if (abs(theta_dot) < 0.000001): #to ensure no division by zero for radius calculation
             # straight line
             x_delta = v * dt
             y_delta = 0

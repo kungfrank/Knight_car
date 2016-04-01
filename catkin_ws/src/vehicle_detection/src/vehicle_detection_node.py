@@ -5,7 +5,7 @@ from duckietown_msgs.msg import VehicleCorners
 from geometry_msgs.msg import Point32
 from mutex import mutex
 from sensor_msgs.msg import CompressedImage, Image
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, Float32
 import cv2
 import numpy as np
 import os
@@ -38,6 +38,8 @@ class VehicleDetectionNode(object):
 				VehicleCorners, queue_size=1)
 		self.pub_chessboard_image = rospy.Publisher("~chessboard_image", 
 				Image, queue_size=1)
+		self.pub_time_elapsed = rospy.Publisher("~detection_time",
+			Float32, queue_size=1)
 		self.lock = mutex()
 		rospy.loginfo("[%s] Initialization completed" % (self.node_name))
 	
@@ -73,8 +75,11 @@ class VehicleDetectionNode(object):
 						cv2.CV_LOAD_IMAGE_COLOR)
 				with stopit.ThreadingTimeout(self.detection_max_time) as \
 						ctx_mgr:
+					start = rospy.Time.now()
 					(detection, corners) = cv2.findChessboardCorners(image_cv, 
 						self.chessboard_dims)
+					elapsed_time = (rospy.Time.now() - start).to_sec()
+					self.pub_time_elapsed.publish(elapsed_time)
 				if not ctx_mgr:	
 					corners_msg_out.detection.data = False
 					self.pub_corners.publish(corners_msg_out)

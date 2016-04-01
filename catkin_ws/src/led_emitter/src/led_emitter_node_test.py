@@ -12,12 +12,14 @@ class LEDEmitterTest(object):
         self.pub_state = rospy.Publisher("~change_to_state",Float32,queue_size=10)
         self.sub_state = rospy.Subscriber("~current_led_state",Float32, self.changeState)
         self.pub_timer = rospy.Timer(rospy.Duration.from_sec(5.0),self.cycleTimer)
-        self.state_list = [1, 2, .5, .8] # From duckietown_lights.py
+        self.state_list = [3, 3.5, 4] # In hz
+        self.counter = 0
 
     def cycleTimer(self,event):
-        state = random.choice(self.state_list)
-        self.pub_state.publish(state)
-        rospy.loginfo("Testing state " + str(state))
+        self.pub_state.publish(self.state_list[self.counter])
+        rospy.loginfo("Testing state " + str(self.state_list[self.counter]))
+        self.counter = (self.counter+1) % len(self.state_list)
+
 
 
     def changeState(self,msg):

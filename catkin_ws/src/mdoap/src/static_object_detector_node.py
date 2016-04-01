@@ -101,8 +101,9 @@ class Matcher:
                 # plot box around contour
                 x,y,w,h = box
                 font = cv2.FONT_HERSHEY_SIMPLEX
-                cv2.putText(img,self.terms[i], (x,y), font, 0.5,mean_color,4)
-                cv2.rectangle(img,(x,y),(x+w,y+h), mean_color,2)
+                if t.type!=ObstacleType.DUCKIE:
+                    cv2.putText(img,self.terms[i], (x,y), font, 0.5,mean_color,4)
+                    cv2.rectangle(img,(x,y),(x+w,y+h), mean_color,2)
                 
                 r = Rect()
                 r.x = x

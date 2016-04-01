@@ -39,7 +39,7 @@ class PositionFilterNode(object):
     def velocityCallback(self, msg_velocity):
         if self.last_pose.header.stamp.to_sec() > 0:    # skip first frame
             delta_t = (msg_velocity.header.stamp - self.last_pose.header.stamp).to_sec()
-            [theta_res, x_res, y_res] = self.fk.integrate(self.last_pose.theta, self.last_pose.x, self.last_pose.y,self.last_theta_dot, self.last_v, delta_t)
+            [theta_res, x_res, y_res] = self.fk.integrate_propagate(self.last_pose.theta, self.last_pose.x, self.last_pose.y,self.last_theta_dot, self.last_v, delta_t)
             self.last_pose.x = x_res
             self.last_pose.y = y_res
             self.last_pose.theta = theta_res

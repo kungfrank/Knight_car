@@ -37,16 +37,16 @@ class Forward_kinematics(object):
             y_delta = radius * (1.0 - cos(theta_delta))
         return[theta_delta, x_delta, y_delta]
 
-    def propogate(self, theta, x, y, theta_delta, x_delta, y_delta):
+    def propagate(self, theta, x, y, theta_delta, x_delta, y_delta):
         theta_res = theta + theta_delta
         # arc of circle, see "Probabilitic robotics"
         x_res = x + x_delta * cos(theta) - y_delta * sin(theta)
         y_res = y + y_delta * cos(theta) + x_delta * sin(theta)
         return[theta_res, x_res, y_res]
 
-    def integrate_propogate(self, theta, x, y, theta_dot, v, dt):
+    def integrate_propagate(self, theta, x, y, theta_dot, v, dt):
         [theta_delta, x_delta, y_delta] = self.integrate(theta_dot, v, dt)
-        [theta_res, x_res, y_res] = self.propogate(theta, x, y,theta_delta, x_delta, y_delta)
+        [theta_res, x_res, y_res] = self.propagate(theta, x, y,theta_delta, x_delta, y_delta)
         # theta_delta = theta_dot*dt
         # theta_res = theta + theta_delta
         # if (theta_dot < 0.000001):

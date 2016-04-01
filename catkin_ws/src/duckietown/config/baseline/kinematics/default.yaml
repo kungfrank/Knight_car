@@ -13,3 +13,4 @@
 #  theta_dot_weights_param: [-1.0, 1.0]
 #  v_weights_param: [1.0, 1.0]
   learner_duty_threshold: 0.2
+  learner_number_of_zero_entries: 10

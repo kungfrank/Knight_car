@@ -24,16 +24,38 @@ class Forward_kinematics(object):
         fi_v = self.fi_v_function.computeFi(d_L, d_R)
         return [inner(fi_theta_dot, self.theta_dot_weights).flatten()[0], inner(fi_v, self.v_weights).flatten()[0]]
 
-    def integrate(self, theta, x, y, theta_dot, v, dt):
+    def integrate(self, theta_dot, v, dt):
         theta_delta = theta_dot*dt
-        theta_res = theta + theta_delta
-        if (theta_dot < 0.000001):
+        if (theta_dot < 0.000001): #to ensure no division by zero for radius calculation
             # straight line
-            x_res = x+ cos(theta) * v * dt
-            y_res = y+ sin(theta) * v * dt
+            x_delta = v * dt
+            y_delta = 0
         else:
             # arc of circle, see "Probabilitic robotics"
-            v_w_ratio = v / theta_dot
-            x_res = x + v_w_ratio * sin(theta_res) - v_w_ratio * sin(theta)
-            y_res = y + v_w_ratio * cos(theta) - v_w_ratio * cos(theta_res)
+            radius = v / theta_dot 
+            x_delta = radius * sin(theta_delta)
+            y_delta = radius * (1.0 - cos(theta_delta))
+        return[theta_delta, x_delta, y_delta]
+
+    def propogate(self, theta, x, y, theta_delta, x_delta, y_delta):
+        theta_res = theta + theta_delta
+        # arc of circle, see "Probabilitic robotics"
+        x_res = x + x_delta * cos(theta) - y_delta * sin(theta)
+        y_res = y + y_delta * cos(theta) + x_delta * sin(theta)
+        return[theta_res, x_res, y_res]
+
+    def integrate_propogate(self, theta, x, y, theta_dot, v, dt):
+        [theta_delta, x_delta, y_delta] = self.integrate(theta_dot, v, dt)
+        [theta_res, x_res, y_res] = self.propogate(theta, x, y,theta_delta, x_delta, y_delta)
+        # theta_delta = theta_dot*dt
+        # theta_res = theta + theta_delta
+        # if (theta_dot < 0.000001):
+        #     # straight line
+        #     x_res = x+ cos(theta) * v * dt
+        #     y_res = y+ sin(theta) * v * dt
+        # else:
+        #     # arc of circle, see "Probabilitic robotics"
+        #     v_w_ratio = v / theta_dot
+        #     x_res = x + v_w_ratio * sin(theta_res) - v_w_ratio * sin(theta)
+        #     y_res = y + v_w_ratio * cos(theta) - v_w_ratio * cos(theta_res)
         return[theta_res, x_res, y_res]

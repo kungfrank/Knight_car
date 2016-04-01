@@ -80,9 +80,18 @@ class AprilPostPros(object):
                 if l is not None:
                     new_info.location = l
             
+            
             #######################
             # Localization stuff
-            ######################
+            #######################
+            
+            #TO DO --> load those parameters
+            scale        = 0.3
+            camera_x     = 0.05  # x distance from wheel center
+            camera_y     = 0.0   #
+            camera_z     = 0.1   # height
+            camera_theta = 18    # degree of rotation arround y axis
+            
             
             #Load translation
             x = detection.transform.translation.x
@@ -92,7 +101,6 @@ class AprilPostPros(object):
             t_tc_Fc = k.Vector( x , y , z ) # translation tags(t) w/ camera(c) expressed in camera frame (Fc)
             
             # Scale for april tag size
-            scale = 0.3
             t_tc_Fc = t_tc_Fc * scale
             
             #Load rotation
@@ -104,8 +112,8 @@ class AprilPostPros(object):
             Q_Ft_Fc = k.Quaternion( e , w ) # Rotation of tag frame (Ft) w/ to camera frame (Fc)
             
             # Camera localization
-            t_cv_Fv = k.Vector( 0.05 , 0 , 0.1 )    # translation of camera w/ vehicle origin in vehicle frame
-            C_Fc_Fv = k.euler2RotationMatrix(0,18,0)  # Rotation   of camera frame w/ vehicle frame
+            t_cv_Fv = k.Vector( camera_x , camera_y , camera_z )    # translation of camera w/ vehicle origin in vehicle frame
+            C_Fc_Fv = k.euler2RotationMatrix(0,camera_theta,0)  # Rotation   of camera frame w/ vehicle frame
             Q_Fc_Fv = C_Fc_Fv.toQuaternion()
             
             # Compute tag orientation in vehicle frame
@@ -134,7 +142,6 @@ class AprilPostPros(object):
             #new_location_info.y = 3
             #new_info.location = new_location_info
 
-            # TODO: Add relative pose estimation
             tag_infos.append(new_info)
         
         new_tag_data = AprilTags()

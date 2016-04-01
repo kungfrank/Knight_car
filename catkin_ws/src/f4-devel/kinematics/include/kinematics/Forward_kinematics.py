@@ -27,7 +27,7 @@ class Forward_kinematics(object):
     def integrate(self, theta, x, y, theta_dot, v, dt):
         theta_delta = theta_dot*dt
         theta_res = theta + theta_delta
-        if (theta_delta%(2*pi)) < 0.000001:
+        if (theta_dot < 0.000001):
             # straight line
             x_res = x+ cos(theta) * v * dt
             y_res = y+ sin(theta) * v * dt

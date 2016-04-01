@@ -1,6 +1,6 @@
 <launch>
     <arg name="pkg_name" value="visual_odometry"/>
-    <arg name="node_name" default="odometry_training_pairs_node"/>
+    <arg name="node_name" value="odometry_training_pairs_node"/>
 
     <arg name="veh" doc="Name of vehicle. ex: megaman"/>
     <arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>

@@ -5,6 +5,7 @@ import sys
 
 from duckietown_utils import col_logging 
 from anti_instagram import logger
+from anti_instagram import AntiInstagram
 from anti_instagram.unit_tests import load_tests
 from duckietown_utils.wildcards import expand_string
 from duckietown_utils.wrap_main import wrap_main
@@ -43,7 +44,7 @@ For example, this runs all tests on all algorithms:
     filename = os.path.join(root, dirname, filename)
 
     alltests = load_tests(filename)
-    estimators = {'LEDDetector' : LEDDetector(True, True, True)}
+    estimators = {'anti_instagram' : AntiInstagram}
     
     which_tests = expand_string(which_tests0, list(alltests))
     which_estimators = expand_string(which_estimators0, list(estimators))
@@ -94,8 +95,8 @@ def find_match(detection, expected_set):
 def run_test(id_test, test, id_estimator, estimator):
     logger.info('     id_test: %s' % id_test)
     logger.info('id_estimator: %s' % id_estimator)
-    from led_detection.unit_tests import LEDDetectionUnitTest
-    assert isinstance(test, LEDDetectionUnitTest)
+    from anti_instagram.unit_tests import AntiInstagramUnitTest
+    assert isinstance(test, AntiInstagramUnitTest)
     query = test.get_query()
     result = estimator.detect_led(**query)
 

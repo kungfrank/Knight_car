@@ -12,7 +12,7 @@ import time
 
 NUM_COLORS = 3
 
-CENTERS = np.array([[50, 60, 60], [20, 240, 240], [240, 240, 240]])
+CENTERS = np.array([[60, 60, 60], [20, 240, 240], [240, 240, 240]])
 # print CENTERS 
 
 np.random.seed(5)
@@ -126,8 +126,12 @@ def getparameters2(mapping, trained, weights, true):
 		redX2=np.concatenate((redX,prior_redX),axis=0)
 		greenX2=np.concatenate((greenX,prior_greenX),axis=0)
 		blueX2=np.concatenate((blueX,prior_blueX),axis=0)
-		A1=np.concatenate((np.concatenate((redX,np.ones(np.shape(redX)),redX*0,redX*0,redX*0,redX*0),1),np.concatenate((greenX*0,greenX*0,greenX,np.ones(np.shape(greenX)),greenX*0,greenX*0),1),np.concatenate((blueX*0,blueX*0,blueX*0,blueX*0,blueX,np.ones(np.shape(blueX))),1)),0)
-		b1=np.concatenate((redY,greenY,blueY),0)
+		sumweights=np.double(np.sum([weights[0],weights[1],weights[2]]))
+		weightsMTX=np.double(np.diagflat([weights[0],weights[1],weights[2]]))
+		weightsMTX=weightsMTX/sumweights
+		A1=np.concatenate((np.dot(weightsMTX,np.concatenate((redX,np.ones(np.shape(redX)),redX*0,redX*0,redX*0,redX*0),1)),np.dot(weightsMTX,np.concatenate((greenX*0,greenX*0,greenX,np.ones(np.shape(greenX)),greenX*0,greenX*0),1)),np.dot(weightsMTX,np.concatenate((blueX*0,blueX*0,blueX*0,blueX*0,blueX,np.ones(np.shape(blueX))),1))),0)
+		b1=np.concatenate((np.dot(weightsMTX,redY),np.dot(weightsMTX,greenY),np.dot(weightsMTX,blueY)),0)
+		# IPython.embed()
 		A2=np.array([[1.,0.,-1.,0.,0.,0.],[0.,0.,1.,0.,-1.,0.],[1.,0.,0.,0.,-1.,0.]])*diagonal_prior_weight
 		A3=np.array([[1.,0.,0.,0.,0.,0.],[0.,0.,1.,0.,0.,0.],[0.,0.,0.,0.,1.,0.]])*a_prior_weight
 		b2=np.array([[0.0],[0.0],[0.0]])*diagonal_prior_weight

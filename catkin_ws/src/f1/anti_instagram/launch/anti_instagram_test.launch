@@ -9,5 +9,5 @@
 		<remap from="~compressed_image" to="$(arg veh)/camera_node/image/compressed"/>
 		<remap from="~image/raw" to="$(arg veh)/raw_image"/>
 	</node>
-	<node pkg="rosbag" type="play" name="player" args="$(arg bagin) -s 15"/>
+	<node pkg="rosbag" type="play" name="player" args="$(arg bagin) -l -s 15"/>
 </launch>

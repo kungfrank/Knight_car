@@ -11,9 +11,9 @@ def cycle_LEDs_fancy1(speed=5):
 	t0 = time.time()
 	def get_config(t):
 		t = t * speed
-		a = 0.5 + 0.5*cos(t)
-		b = 0.5 + 0.5*sin(t)
-		c = 0.5 + 0.5*cos(2*t)
+		a = 0.5 + 0.5 * cos(t)
+		b = 0.5 + 0.5 * sin(t)
+		c = 0.5 + 0.5 * cos(2 * t)
 
 		return {
 			TOP: [a,b,c],

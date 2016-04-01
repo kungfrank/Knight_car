@@ -23,6 +23,10 @@ class TestForwardKinematics(unittest.TestCase):
         self.assertAlmostEqual(theta_dot, 2)
         self.assertAlmostEqual(v, 0)
 
+        theta_dot, v = fk.evaluate(np.matrix([0]), np.matrix([2]))
+        self.assertAlmostEqual(theta_dot, 2)
+        self.assertAlmostEqual(v, 2)
+
     def test_with_naive_fi(self):
         fk = Forward_kinematics('Duty_fi_theta_dot_naive', 'Duty_fi_v_naive', np.matrix([-1]), np.matrix([1]))
 

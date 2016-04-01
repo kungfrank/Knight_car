@@ -105,7 +105,7 @@ class AprilPostPros(object):
             
             # Camera localization
             t_cv_Fv = k.Vector( 0.05 , 0 , 0.1 )    # translation of camera w/ vehicle origin in vehicle frame
-            C_Fc_Fv = k.euler2RotationMatrix(0,30,0)  # Rotation   of camera frame w/ vehicle frame
+            C_Fc_Fv = k.euler2RotationMatrix(0,18,0)  # Rotation   of camera frame w/ vehicle frame
             Q_Fc_Fv = C_Fc_Fv.toQuaternion()
             
             # Compute tag orientation in vehicle frame
@@ -125,8 +125,8 @@ class AprilPostPros(object):
             detection.transform.rotation.z    = Q_Ft_Fv.e.z
             detection.transform.rotation.w    = Q_Ft_Fv.n
             
-            t_tv_Fv()
-            Q_Ft_Fv()
+            #t_tv_Fv()
+            #Q_Ft_Fv()
             #rospy.loginfo("[%s] Position " %(self.node_name))
             #t_tc_Fc()
 

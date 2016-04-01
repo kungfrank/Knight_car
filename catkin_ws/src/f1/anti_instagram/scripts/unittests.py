@@ -4,8 +4,8 @@ import os
 import sys
 
 from duckietown_utils import col_logging 
-from led_detection import logger
-from led_detection.unit_tests import load_tests
+from anti_instagram import logger
+from anti_instagram.unit_tests import load_tests
 from duckietown_utils.wildcards import expand_string
 from duckietown_utils.wrap_main import wrap_main
 

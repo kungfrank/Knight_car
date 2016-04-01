@@ -2,7 +2,7 @@
 import rospy
 import time
 from led_detection.LEDDetector import LEDDetector
-from duckietown_msgs.msg import Vector2D, LEDDetection, LEDDetectionArray
+from duckietown_msgs.msg import Vector2D, LEDDetection, LEDDetectionArray, LEDDetectionDebugInfo
 from sensor_msgs.msg import CompressedImage
 from duckietown_utils.bag_logs import numpy_from_ros_compressed
 import numpy as np
@@ -18,8 +18,9 @@ class LEDDetectorNode(object):
         print('Constructing LEDDetector')
         self.node_name = rospy.get_name()
         self.pub_detections = rospy.Publisher("~raw_led_detection",LEDDetectionArray,queue_size=1)
+        self.pub_debug = rospy.Publisher("~debug_info",LEDDetectionDebugInfo,queue_size=1)
         # TODO get veh parameter
-        self.sub_cam = rospy.Subscriber("/maserati/camera_node/image/compressed",CompressedImage, self.camera_callback)
+        self.sub_cam = rospy.Subscriber("/argo/camera_node/image/compressed",CompressedImage, self.camera_callback)
 
     def camera_callback(self, msg):
         float_time = msg.header.stamp.to_sec()
@@ -30,16 +31,21 @@ class LEDDetectorNode(object):
         # TODO sanity check rel_time positive, restart otherwise 
         rel_time = float_time - self.first_timestamp
 
+        debug_msg = LEDDetectionDebugInfo()
         if rel_time < self.capture_time:
             rgb = numpy_from_ros_compressed(msg)
             print('Capturing frame %s' %rel_time)
             self.data.append({'timestamp': float_time, 'rgb': rgb})
+            debug_msg.capturing = True
+            debug_msg.capture_progress = 100.0*rel_time/self.capture_time
+            self.pub_debug.publish(debug_msg)
         elif not self.capture_finished:
             self.capture_finished = True
             self.process_and_publish()
             # TODO can also remove the subscriber
 
     def process_and_publish(self):
+        # TODO add check timestamps for dropped frames
         H, W, _ = self.data[0]['rgb'].shape
         n = len(self.data)
         dtype = [
@@ -51,7 +57,7 @@ class LEDDetectorNode(object):
             images[i]['timestamp'] = v['timestamp']
             images[i]['rgb'][:] = v['rgb']
         
-        det = LEDDetector()
+        det = LEDDetector(False, False, False, self.pub_debug)
         rgb0 = self.data[0]['rgb']
         mask = np.ones(dtype='bool', shape=rgb0.shape)
         tic = time.time()

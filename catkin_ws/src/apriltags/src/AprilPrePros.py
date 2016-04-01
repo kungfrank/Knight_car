@@ -53,9 +53,11 @@ class AprilPrePros(object):
         self.fast_h_crop     = rospy.get_param("~fast_h_crop")
         self.fast_v_crop     = rospy.get_param("~fast_v_crop")
         self.fast_v_off      = rospy.get_param("~fast_v_off")
+        self.fast_h_off      = rospy.get_param("~fast_h_off")
         self.global_h_crop   = rospy.get_param("~global_h_crop")
         self.global_v_crop   = rospy.get_param("~global_v_crop")
         self.global_v_off    = rospy.get_param("~global_v_off")
+        self.global_h_off    = rospy.get_param("~global_h_off")
         
         # Downsampling factors
         self.fast_x_down     = rospy.get_param("~fast_x_down")
@@ -101,10 +103,11 @@ class AprilPrePros(object):
             
                 # Crop
                 a = self.global_v_crop # up/down edge crop
-                c = self.global_v_off # horizontal offset
+                c = self.global_v_off # verticla offset
                 b = self.global_h_crop  # Side crop
+                d = self.global_h_off # horizontal offset
                 
-                crop_img = self.camera_IMG[0+a+c:480-a+c, 0+b:640-b]
+                crop_img = self.camera_IMG[0+a+c:480-a+c, 0+b+d:640-b+d]
                 #crop_img = self.camera_IMG
                 
                 # Downsample
@@ -142,8 +145,9 @@ class AprilPrePros(object):
                 a = self.fast_v_crop # up/down edge crop
                 c = self.fast_v_off # horizontal offset
                 b = self.fast_h_crop  # Side crop
+                d = self.fast_h_off # horizontal offset
                 
-                crop_img = self.camera_IMG[0+a+c:480-a+c, 0+b:640-b]
+                crop_img = self.camera_IMG[0+a+c:480-a+c, 0+b+d:640-b+d]
                 #crop_img = self.camera_IMG
                 
                 # Downsample

@@ -9,7 +9,7 @@
     <arg name="gui" default="true" doc="Show a gui automatically when running this test" />
 
     <!-- run forward_kinematics_node -->
-    <remap from="forward_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
+    <remap from="forward_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd_executed" />
     <include file="$(find kinematics)/launch/forward_kinematics_node.launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>
@@ -18,7 +18,7 @@
     </include>
 
     <!-- run inverse_kinematics_node -->
-    <remap from="inverse_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
+    <remap from="inverse_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd_executed" />
     <include file="$(find kinematics)/launch/inverse_kinematics_node.launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>

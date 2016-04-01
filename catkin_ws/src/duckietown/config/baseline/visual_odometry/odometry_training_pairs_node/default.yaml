@@ -1,0 +1,4 @@
+#visual_odometry/odometry_training_pairs_node
+stop_line_max_age: 1.0
+lane_pose_max_age: 1.0
+wheels_cmd_max_age: 3.0

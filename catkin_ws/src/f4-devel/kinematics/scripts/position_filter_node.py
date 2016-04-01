@@ -25,7 +25,7 @@ class PositionFilterNode(object):
         self.fk = Forward_kinematics.Forward_kinematics(fi_theta_dot_function, fi_v_function, matrix(theta_dot_weights), matrix(v_weights))
 
         #Setup the publisher and subscriber
-        self.sub_velocity = rospy.Subscriber("~velocity", Twist2DStamped, self.velocicyCallback)
+        self.sub_velocity = rospy.Subscriber("~velocity", Twist2DStamped, self.velocityCallback)
         self.pub_pose = rospy.Publisher("~pose", Pose2DStamped, queue_size=1)
 
         #Keep track of the last known pose
@@ -36,7 +36,7 @@ class PositionFilterNode(object):
         rospy.loginfo("[%s] has started", self.node_name)
 
 
-    def velocicyCallback(self, msg_velocity):
+    def velocityCallback(self, msg_velocity):
         if self.last_pose.header.stamp.to_sec() > 0:    # skip first frame
             delta_t = (msg_velocity.header.stamp - self.last_pose.header.stamp).to_sec()
             [theta_delta, chord] = self.fk.integrate(self.last_theta_dot, self.last_v, delta_t)
@@ -53,7 +53,7 @@ class PositionFilterNode(object):
             msg_pose.y = y_res
             msg_pose.theta = theta_res
             self.pub_pose.publish(msg_pose)
-        
+
         self.last_pose.header.stamp = msg_velocity.header.stamp
         self.last_theta_dot = msg_velocity.omega
         self.last_v = msg_velocity.v

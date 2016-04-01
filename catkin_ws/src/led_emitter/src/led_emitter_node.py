@@ -3,7 +3,7 @@ import rospy
 from rgb_led import *
 import sys
 import time
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, Int8
 from rgb_led import RGB_LED
 
 
@@ -12,8 +12,8 @@ class LEDEmitter(object):
         self.led = RGB_LED()
         self.node_name = rospy.get_name()
         self.pub_state = rospy.Publisher("~current_led_state",Float32,queue_size=1)
-        self.sub_cycle_state = rospy.Subscriber("~change_to_state",Float32, self.changeState)
-        self.sub_pattern_state = rospy.Subscriber("~change_color_pattern",Float32, self.changeState)
+        self.sub_cycle_state = rospy.Subscriber("~change_light_frequency",Float32, self.changeState)
+        self.sub_pattern_state = rospy.Subscriber("~change_color_pattern",Int8, self.changePattern)
         self.cycle = None
         self.pattern_index = 1
         self.is_on = False
@@ -31,6 +31,9 @@ class LEDEmitter(object):
             for items in ([0,1,2,3,4]):
                 self.led.setRGB(items, self.color_pattern_list[self.pattern_index][items])
                 self.is_on = True
+
+    def changePattern(self,msg):
+        self.pattern_index = msg.data
 
     def changeState(self,msg):
         if msg.data == self.cycle:

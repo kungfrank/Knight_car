@@ -3,14 +3,14 @@ import rospy
 from rgb_led import *
 import sys
 import time
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, Int8
 import random
 
 class LEDEmitterTest(object):
     def __init__(self):
         self.node_name = rospy.get_name()
-        self.pub_state = rospy.Publisher("~change_to_state",Float32,queue_size=10)
-        self.sub_state = rospy.Subscriber("~current_led_state",Float32, self.changeState)
+        self.pub_state = rospy.Publisher("~change_light_frequency",Float32,queue_size=10)
+        self.sub_state = rospy.Subscriber("~current_led_state",Int8, self.changeState)
         self.pub_timer = rospy.Timer(rospy.Duration.from_sec(5.0),self.cycleTimer)
         self.state_list = [3, 3.5, 4] # In hz
         self.counter = 0

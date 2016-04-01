@@ -60,9 +60,9 @@ class ObstacleSafetyNode:
             projected_point = self.ground_proj(p)
             projected_point2 = self.ground_proj(p2)
 
-            width = (projected_point2.gp.y - projected_point.gp.y)**2 + (projected_point2.gp.x - projected_point.gp.x)**2
-            width = width ** 0.5
-            rospy.loginfo("[%s]Width of object: %f" % (self.name,width))
+            obj_width = (projected_point2.gp.y - projected_point.gp.y)**2 + (projected_point2.gp.x - projected_point.gp.x)**2
+            obj_width = obj_width ** 0.5
+            rospy.loginfo("[%s]Width of object: %f" % (self.name,obj_width))
             projection = ObstacleProjectedDetection()
             projection.location = projected_point.gp
             projection.type = obstacle.type

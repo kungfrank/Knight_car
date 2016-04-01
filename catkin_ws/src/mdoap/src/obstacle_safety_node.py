@@ -36,6 +36,7 @@ class ObstacleSafetyNode:
         marker_array = MarkerArray()
 
         p = Vector2D()
+        p2 = Vector2D()
         count = 0;
 
         projection_list = ObstacleProjectedDetectionList()
@@ -52,8 +53,16 @@ class ObstacleSafetyNode:
             rect = obstacle.bounding_box
             p.x = float(rect.x)/float(width)
             p.y = float(rect.y)/float(height)
-            projected_point = self.ground_proj(p)
 
+            p2.x = float(rect.x + rect.w)/float(width)
+            p2.y = p.y
+
+            projected_point = self.ground_proj(p)
+            projected_point2 = self.ground_proj(p2)
+
+            width = (projected_point2.gp.y - projected_point.gp.y)**2 + (projected_point2.gp.x - projected_point.gp.x)**2
+            width = width ** 0.5
+            rospy.loginfo("[%s]Width of object: %f" % (self.name,width))
             projection = ObstacleProjectedDetection()
             projection.location = projected_point.gp
             projection.type = obstacle.type
@@ -65,8 +74,7 @@ class ObstacleSafetyNode:
                 minDist = dist
             if dist<self.closeness_threshold:
                 # Trying not to falsely detect the lane lines as duckies that are too close
-                # Cone width  = 0.065 (in projection, in real life, probably more like 0.3)
-                # Duckie width = 0.08
+                
                 if obstacle.type.type == ObstacleType.DUCKIE and projected_point.gp.y < 0.18:
                     # rospy.loginfo("Duckie too close y: %f dist: %f" %(projected_point.gp.y, minDist))
                     too_close = True

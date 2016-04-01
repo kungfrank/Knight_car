@@ -19,10 +19,6 @@ class AprilPostPros(object):
         tags_file.close()
         self.info = TagInfo()
  
-        
-        
-        
-        
         self.sign_types = {"StreetName": self.info.S_NAME,
             "TrafficSign": self.info.SIGN,
             "Light": self.info.LIGHT,

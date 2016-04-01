@@ -24,26 +24,16 @@ class Forward_kinematics(object):
         fi_v = self.fi_v_function.computeFi(d_L, d_R)
         return [inner(fi_theta_dot, self.theta_dot_weights).flatten()[0], inner(fi_v, self.v_weights).flatten()[0]]
 
-    # integrate for a dt long step. This function returns relative
-    # bearing (theta_delta) and distance (chord) from the starting point
-    def integrate(self, theta_dot, v, dt):
+    def integrate(self, theta, x, y, theta_dot, v, dt):
         theta_delta = theta_dot*dt
+        theta_res = theta + theta_delta
         if (theta_delta%(2*pi)) < 0.000001:
             # straight line
-            chord = v*dt
+            x_res = x+ cos(theta) * v * dt
+            y_res = y+ sin(theta) * v * dt
         else:
-            # find chord length
-            s = v*dt
-            r = s/theta_delta
-            chord = 2*r*sin(theta_delta/2.0)
-
-        return [theta_delta, chord]
-
-    # propagate forward kinematics. Find the new pose given current
-    # pose, as well as relative bearing (theta_delta) and distance (chord)
-    # x axis points forward. y axis points to the left for theta==0
-    def propagate(self, theta, x, y, theta_delta, chord):
-        theta_res = theta + theta_delta
-        x_res = x + cos(theta_res)*chord
-        y_res = y + sin(theta_res)*chord
+            # arc of circle, see "Probabilitic robotics"
+            v_w_ratio = v / theta_dot
+            x_res = x + v_w_ratio * sin(theta_res) - v_w_ratio * sin(theta)
+            y_res = y + v_w_ratio * cos(theta) - v_w_ratio * cos(theta_res)
         return[theta_res, x_res, y_res]

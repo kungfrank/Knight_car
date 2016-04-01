@@ -17,6 +17,7 @@
         <arg name="local" value="$(arg local)"/>
         <arg name="config" value="$(arg config)"/>
         <arg name="param_file_name" value="$(arg param_file_name)"/>
+        <arg name="learning_sensor_node" value="vicon_learning_node"/>
     </include>
 
     <!-- run the vicon_learning_node -->

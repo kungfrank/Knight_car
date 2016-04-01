@@ -43,10 +43,10 @@ class MDOAPControllerNode:
                         offset = (0.15 - y)*1.5
             #Hijack the param for seting offset of the lane
 
-            self.setupParameter("lane_controller_node/d_offset", offset)
+            rospy.set_param("lane_controller_node/d_offset", offset)
         else:
             #Reset offset of lane to 0
-            self.setupParameter("lane_controller_node/d_offset", 0.0)
+            rospy.set_param("lane_controller_node/d_offset", 0.0)
         # stop = WheelsCmdStamped()
         # stop.header = bool_msg.header
         # stop.vel_left = 0.0

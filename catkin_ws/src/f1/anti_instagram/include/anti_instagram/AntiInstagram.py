@@ -16,7 +16,7 @@ class AntiInstagram(object):
 		corrected_image = kmeans.scaleandshift(image,self.scale,self.shift)
 		return corrected_image
 
-	def calculateTransform(self,image):
+	def calculateTransform(self,image,testframe=False):
 
 		trained,counter = kmeans.runKMeans(image)
 		mapping = kmeans.identifyColors(trained, kmeans.CENTERS)
@@ -30,8 +30,14 @@ class AntiInstagram(object):
 		print("cost = %f, IIR_weight = %f"%(cost,IIR_weight))
 		# self.scale = [r[0][0][0],g[0][0][0],b[0][0][0]]
 		# self.shift = [r[1][0], g[1][0],b[1][0]]
-		self.scale = (self.scale+np.array([r[0][0][0],g[0][0][0],b[0][0][0]])*IIR_weight)/(1+IIR_weight)
-		self.shift = (self.shift+np.array([r[1][0], g[1][0],b[1][0]])*IIR_weight)/(1+IIR_weight)
+		deltascale = np.array([r[0][0][0],g[0][0][0],b[0][0][0]])
+		deltashift = np.array([r[1][0], g[1][0],b[1][0]])
+		if testframe:
+			self.scale = deltascale
+			self.shift = deltashift
+		else:
+			self.scale = (self.scale+deltascale*IIR_weight)/(1+IIR_weight)
+			self.shift = (self.shift+deltashift*IIR_weight)/(1+IIR_weight)
 		self.health=1/(cost+np.finfo('double').eps)
 		return 1
 

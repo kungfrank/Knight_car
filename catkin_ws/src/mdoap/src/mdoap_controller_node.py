@@ -38,9 +38,9 @@ class MDOAPControllerNode:
                     # + y -> obstacle to the left, drive right (set offset negative)
                     # - y -> obstacle to the right, drive left (set offset positive)
                     if y > 0:
-                        offset = -0.15 - y
+                        offset = (-0.15 - y)*1.5
                     else:
-                        offset = 0.15 - y
+                        offset = (0.15 - y)*1.5
             #Hijack the param for seting offset of the lane
 
             self.setupParameter("lane_controller_node/d_offset", offset)
@@ -51,6 +51,10 @@ class MDOAPControllerNode:
         # stop.header = bool_msg.header
         # stop.vel_left = 0.0
         # stop.vel_right = 0.0
+
+        # Slow it down so it's easier to see what's going on for now
+        self.lane_control.vel_left = self.lane_control.vel_left * 0.5
+        self.lane_control.vel_right = self.lane_control.vel_right * 0.5
         self.pub_wheels_cmd.publish(self.lane_control)
 
 if __name__=="__main__":

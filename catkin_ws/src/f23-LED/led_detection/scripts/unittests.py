@@ -45,7 +45,7 @@ For example, this runs all tests on all algorithms:
     filename = os.path.join(root, dirname, filename)
 
     alltests = load_tests(filename)
-    estimators = {'LEDDetector' : LEDDetector()}
+    estimators = {'LEDDetector' : LEDDetector(True, True, True)}
     
     which_tests = expand_string(which_tests0, list(alltests))
     which_estimators = expand_string(which_estimators0, list(estimators))

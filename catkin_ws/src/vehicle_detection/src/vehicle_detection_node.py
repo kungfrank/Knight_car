@@ -69,46 +69,32 @@ class VehicleDetectionNode(object):
 	
 	def processImage(self, image_msg):
 		if self.lock.testandset():
-			try:
-				corners_msg_out = VehicleCorners()
-				image_cv = cv2.imdecode(np.fromstring(image_msg.data, np.uint8), 
-						cv2.CV_LOAD_IMAGE_COLOR)
-				image_cv_gray = cv2.cvtColor(image_cv, cv2.COLOR_RGB2GRAY)
-				with stopit.ThreadingTimeout(self.detection_max_time) as \
-						ctx_mgr:
-					start = rospy.Time.now()
-					(detection, corners) = cv2.findChessboardCorners(image_cv_gray, 
-						self.chessboard_dims, flags=cv2.CALIB_CB_FAST_CHECK)
-					(detection, corners) = cv2.findChessboardCorners(image_cv, 
-						self.chessboard_dims)
-					elapsed_time = (rospy.Time.now() - start).to_sec()
-					self.pub_time_elapsed.publish(elapsed_time)
-				if not ctx_mgr:	
-					corners_msg_out.detection.data = False
-					self.pub_corners.publish(corners_msg_out)
-					self.lock.unlock()
-					return
-				cv2.drawChessboardCorners(image_cv, 
-						self.chessboard_dims, corners, detection)
-				image_msg_out = self.bridge.cv2_to_imgmsg(image_cv, "bgr8")
-				self.pub_chessboard_image.publish(image_msg_out)
-				if not detection:
-					corners_msg_out.detection.data = False
-					self.pub_corners.publish(corners_msg_out)
-					self.lock.unlock()
-					return
-				corners_msg_out.detection.data = True
-				(corners_msg_out.H, corners_msg_out.W) = self.chessboard_dims
-				for i in np.arange(corners.shape[0]):
-					p = Point32()
-					p.x, p.y = corners[i][0]
-					corners_msg_out.corners.append(deepcopy(p))
-				self.pub_corners.publish(corners_msg_out)
-			except stopit.TimeoutException:
+			corners_msg_out = VehicleCorners()
+			image_cv = cv2.imdecode(np.fromstring(image_msg.data, np.uint8), 
+					cv2.CV_LOAD_IMAGE_COLOR)
+			start = rospy.Time.now()
+			(detection, corners) = cv2.findCirclesGridDefault(image_cv,
+					self.chessboard_dims, flags=cv2.CALIB_CB_SYMMETRIC_GRID)
+			elapsed_time = (rospy.Time.now() - start).to_sec()
+			self.pub_time_elapsed.publish(elapsed_time)
+			cv2.drawChessboardCorners(image_cv, 
+					self.chessboard_dims, corners, detection)
+			image_msg_out = self.bridge.cv2_to_imgmsg(image_cv, "bgr8")
+			self.pub_chessboard_image.publish(image_msg_out)
+			if not detection:
 				corners_msg_out.detection.data = False
 				self.pub_corners.publish(corners_msg_out)
+				elapsed_time = (rospy.Time.now() - start).to_sec()
+				self.pub_time_elapsed.publish(elapsed_time)
 				self.lock.unlock()
 				return
+			corners_msg_out.detection.data = True
+			(corners_msg_out.H, corners_msg_out.W) = self.chessboard_dims
+			for i in np.arange(corners.shape[0]):
+				p = Point32()
+				p.x, p.y = corners[i][0]
+				corners_msg_out.corners.append(deepcopy(p))
+			self.pub_corners.publish(corners_msg_out)
 			self.lock.unlock()
 
 if __name__ == '__main__': 

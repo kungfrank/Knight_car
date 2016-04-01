@@ -67,10 +67,10 @@ class ObstacleSafetyNode:
                 # Trying not to falsely detect the lane lines as duckies that are too close
                 # Cone width  = 0.065 (in projection, in real life, probably more like 0.3)
                 # Duckie width = 0.08
-                if obstacle.type.type == ObstacleType.DUCKIE and -0.124< projected_point.gp.y < 0.23:
+                if obstacle.type.type == ObstacleType.DUCKIE and projected_point.gp.y < 0.18:
                     rospy.loginfo("Duckie too close y: %f dist: %f" %(projected_point.gp.y, minDist))
                     too_close = True
-                elif obstacle.type.type == ObstacleType.CONE and -0.0785< projected_point.gp.y < 0.21:
+                elif obstacle.type.type == ObstacleType.CONE and -0.0785< projected_point.gp.y < 0.18:
                     rospy.loginfo("Cone too close y: %f dist: %f" %(projected_point.gp.y, minDist))
                     too_close = True
             projection.distance = dist

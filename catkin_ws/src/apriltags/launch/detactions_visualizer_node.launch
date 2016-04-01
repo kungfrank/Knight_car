@@ -1,0 +1,10 @@
+<launch>
+	<arg name="veh"/>
+
+
+	<group ns="$(arg veh)">
+		<node pkg="apriltags"
+		type="detactions_visualizer_node.py" name="detactions_visualizer_node" output="screen">
+		</node>
+	</group>
+</launch>

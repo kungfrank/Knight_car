@@ -116,8 +116,8 @@ class Matcher:
                 d = ObstacleImageDetection()
                 d.bounding_box = r
                 d.type = t
-
-                object_list.list.append(d);
+                if t.type != ObstacleType.DUCKIE:
+                    object_list.list.append(d);
         return img, object_list
 
 class StaticObjectDetectorNode:

@@ -4,11 +4,12 @@
   radius_l:     0.02
   radius_r:     0.02
   baseline_lr:  0.217
-  fi_theta_dot_function_param: Duty_fi_linear
-  fi_v_function_param: Duty_fi_linear
-  theta_dot_weights_param: [0.0, -1.0, 1.0]
-  v_weights_param: [0.0, 1.0, 1.0]
-#  fi_theta_dot_function: Duty_fi_theta_dot_naive
-#  fi_v_function: Duty_fi_v_naive
-#  theta_dot_weights: [-1.0]
-#  v_weights: [1.0]
+  fi_theta_dot_function_param: Duty_fi_linear_no_constant
+  fi_v_function_param: Duty_fi_linear_no_constant
+  theta_dot_weights_param: [-2.289437875209187, 1.9536465446325462]
+  v_weights_param: [0.2394360686726689, 0.286525962623019]
+#  fi_theta_dot_function_param: Duty_fi_linear_no_constant
+#  fi_v_function_param: Duty_fi_linear_no_constant
+#  theta_dot_weights_param: [-1.0, 1.0]
+#  v_weights_param: [1.0, 1.0]
+  learner_duty_threshold: 0.2

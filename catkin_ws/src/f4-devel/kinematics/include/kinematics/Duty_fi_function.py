@@ -50,3 +50,11 @@ class Duty_fi_linear(Duty_fi_function):
 
 	def factorWeights(self, weights):
 		return [weights[0,0], weights[0,1], weights[0,2]]
+
+# constant feature, d_L, and d_R
+class Duty_fi_linear_no_constant(Duty_fi_function):
+	def computeFi(self, d_L, d_R):
+		return concatenate((d_L, d_R), axis=1)
+
+	def factorWeights(self, weights):
+		return [0.0, weights[0,0], weights[0,1]]

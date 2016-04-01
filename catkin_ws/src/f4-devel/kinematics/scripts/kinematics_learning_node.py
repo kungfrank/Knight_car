@@ -3,6 +3,7 @@ import rospy, rospkg
 from duckietown_msgs.msg import ThetaDotSample, Vsample, KinematicsWeights
 from kinematics import Linear_learner
 from numpy import *
+from threading import Thread, Lock
 
 # Inverse Kinematics Node
 # Author: Jason Pazis
@@ -11,12 +12,14 @@ class KinematicsLearningNode(object):
     def __init__(self):
         self.node_name = 'kinematics_learning_node'
 
+        self.mutex = Lock()
+
         # Read parameters
         fi_theta_dot_function = self.setupParameter('~fi_theta_dot_function_param', 'Duty_fi_theta_dot_naive')
         fi_v_function = self.setupParameter('~fi_v_function_param', 'Duty_fi_v_naive')
-        theta_dot_weights = matrix(self.setupParameter('~theta_dot_weights_param', [-1.0]))
-        v_weights = matrix(self.setupParameter('~v_weights_param', [1.0]))
-        self.noZeros = self.setupParameter('~learner_number_of_zero_entries', 10)
+        #theta_dot_weights = matrix(self.setupParameter('~theta_dot_weights_param', [-1.0]))
+        #v_weights = matrix(self.setupParameter('~v_weights_param', [1.0]))
+        self.noZeros = self.setupParameter('~learner_number_of_zero_entries', 0)
         self.noSamples = self.setupParameter('~learner_number_of_samples', 50)
         self.duty_threshold = self.setupParameter('~learner_duty_threshold', 0.4)
 
@@ -50,6 +53,7 @@ class KinematicsLearningNode(object):
     def thetaDotSampleCallback(self, theta_dot_sample):
         # Only use this sample if at least one of the motors is above the threshold
         if (abs(theta_dot_sample.d_L) > self.duty_threshold) or (abs(theta_dot_sample.d_R) > self.duty_threshold):
+            self.mutex.acquire()
             self.theta_dot_d_L[self.theta_dot_index] = theta_dot_sample.d_L
             self.theta_dot_d_R[self.theta_dot_index] = theta_dot_sample.d_R
             self.theta_dot_dt[self.theta_dot_index] = theta_dot_sample.dt
@@ -60,18 +64,22 @@ class KinematicsLearningNode(object):
             if self.theta_dot_index >= (self.noZeros+self.noSamples):
                 # Only fit if the set contains a sufficient number of samples with large absolute d_L and d_R values
                 if (average(abs(self.theta_dot_d_L)) > self.duty_threshold) and (average(abs(self.theta_dot_d_R)) > self.duty_threshold):
-                    weights = self.kl.fit_theta_dot(self.theta_dot_d_L, self.theta_dot_d_R, self.theta_dot_dt, self.theta_dot_theta_angle_pose_delta).flatten()
+                    weights = self.kl.fit_theta_dot(self.theta_dot_d_L, self.theta_dot_d_R, self.theta_dot_dt, self.theta_dot_theta_angle_pose_delta)
+                    weights = asarray(weights).flatten().tolist()
+                    print 'theta_dot weights', weights
                     # Put the weights in a message and publish
                     msg_kinematics_weights = KinematicsWeights()
                     msg_kinematics_weights.weights = weights
                     self.pub_theta_dot_kinematics_weights.publish(msg_kinematics_weights)
                 # reset index
                 self.theta_dot_index = self.noZeros
+            self.mutex.release()
 
 
     def vSampleCallback(self, v_sample):
         # Only use this sample if at least one of the motors is above the threshold
         if (abs(v_sample.d_L) > self.duty_threshold) or (abs(v_sample.d_R) > self.duty_threshold):
+            self.mutex.acquire()
             self.v_d_L[self.v_index] = v_sample.d_L
             self.v_d_R[self.v_index] = v_sample.d_R
             self.v_dt[self.v_index] = v_sample.dt
@@ -84,13 +92,16 @@ class KinematicsLearningNode(object):
             if self.v_index >= (self.noZeros+self.noSamples):
                 # Only fit if the set contains a sufficient number of samples with large absolute d_L and d_R values
                 if (average(abs(self.v_d_L)) > self.duty_threshold) and (average(abs(self.v_d_R)) > self.duty_threshold):
-                    weights = self.kl.fit_v(self.v_d_L, self.v_d_R, self.v_dt, self.v_theta_angle_pose_delta, self.v_x_axis_pose_delta, self.v_y_axis_pose_delta).flatten()
+                    weights = self.kl.fit_v(self.v_d_L, self.v_d_R, self.v_dt, self.v_theta_angle_pose_delta, self.v_x_axis_pose_delta, self.v_y_axis_pose_delta)
+                    weights = asarray(weights).flatten().tolist()
+                    print 'v weights', weights
                     # Put the weights in a message and publish
                     msg_kinematics_weights = KinematicsWeights()
                     msg_kinematics_weights.weights = weights
                     self.pub_v_kinematics_weights.publish(msg_kinematics_weights)
                 # reset index
                 self.v_index = self.noZeros
+            self.mutex.release()
 
 
     def setupParameter(self,param_name,default_value):

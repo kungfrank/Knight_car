@@ -48,7 +48,7 @@ class OdometryTrainingPairsNode(object):
         # append new cmd to the right of the deque
         self.cmd_buffer.append(wheels_cmd_msg)
         # throw away cmd_msgs older than 2 seconds to keep the buffer small
-        while wheels_cmd_msg.stamp.secs - self.cmd_buffer[0].header.stamp.secs > 1:
+        while wheels_cmd_msg.header.stamp.secs - self.cmd_buffer[0].header.stamp.secs > 1:
             self.cmd_buffer.popleft()
 
     def findMatchingDuties(self, new_stamp):
@@ -57,7 +57,7 @@ class OdometryTrainingPairsNode(object):
             return (0, 0)
         cmd = None
         # delete cmds in the buffer older than new_stamp
-        while (self.cmd_buffer[0].header.stamp.secs + self.cmd_buffer[0].header.stamp.nsecs/1e9) < (new_stamp.secs + new_stamp.nsecs/1e9):
+        while len(self.cmd_buffer) and (self.cmd_buffer[0].header.stamp.secs + self.cmd_buffer[0].header.stamp.nsecs/1e9) < (new_stamp.secs + new_stamp.nsecs/1e9):
             cmd = self.cmd_buffer.popleft()
         if cmd:
             # append last popped cmd back into buffer on the left to make sure we always have at least one cmd

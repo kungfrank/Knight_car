@@ -6,10 +6,10 @@
   baseline_lr:  0.217
   fi_theta_dot_function_param: Duty_fi_linear_no_constant
   fi_v_function_param: Duty_fi_linear_no_constant
-  theta_dot_weights_param: [-2.289437875209187, 1.9536465446325462]
-  v_weights_param: [0.2394360686726689, 0.286525962623019]
+#  theta_dot_weights_param: [-2.289437875209187, 1.9536465446325462]
+#  v_weights_param: [0.2394360686726689, 0.286525962623019]
 #  fi_theta_dot_function_param: Duty_fi_linear_no_constant
 #  fi_v_function_param: Duty_fi_linear_no_constant
-#  theta_dot_weights_param: [-1.0, 1.0]
-#  v_weights_param: [1.0, 1.0]
+  theta_dot_weights_param: [-1.0, 1.0]
+  v_weights_param: [1.0, 1.0]
   learner_duty_threshold: 0.2

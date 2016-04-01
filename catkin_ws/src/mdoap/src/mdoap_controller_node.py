@@ -7,7 +7,7 @@ class MDOAPControllerNode:
         self.name = 'mdoap_controller_node'
         rospy.loginfo('[%s] started', self.name)
         self.sub_close = rospy.Subscriber("~too_close", BoolStamped, self.cbBool, queue_size=1)
-        self.sub_close = rospy.Subscriber("~lane_control", WheelsCmdStamped, self.cbLaneControl, queue_size=1)
+        self.sub_control = rospy.Subscriber("~lane_control", WheelsCmdStamped, self.cbLaneControl, queue_size=1)
         self.sub_detections = rospy.Subscriber("~detection_list_proj", ObstacleProjectedDetectionList, self.cbDetections, queue_size=1)
         self.pub_wheels_cmd = rospy.Publisher("~control",WheelsCmdStamped,queue_size=1)
         self.too_close = False
@@ -45,7 +45,9 @@ class MDOAPControllerNode:
         # stop.header = bool_msg.header
         # stop.vel_left = 0.0
         # stop.vel_right = 0.0
-        self.pub_wheels_cmd.publish(self.lane_control)
+        msg = self.lane_control
+        msg.header = bool_msg.header
+        self.pub_wheels_cmd.publish(msg)
 
 if __name__=="__main__":
     rospy.init_node('mdoap_controller_node')

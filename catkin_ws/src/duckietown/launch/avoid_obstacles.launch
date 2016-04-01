@@ -79,7 +79,7 @@
     </include>
 
   <remap from="mdoap_controller_node/too_close" to="obstacle_safety_node/object_too_close"/>
-  <remap from="mdoap_controller_node/lane_control" to="lane_controller_node/wheels_control"/>
+  <remap from="mdoap_controller_node/control" to="lane_controller_node/wheels_control"/>
 	<include file="$(find mdoap)/launch/mdoap_controller_node.launch">
 	    <arg name="veh" value="$(arg veh)"/>
 	    <arg name="local" value="$(arg local)"/>

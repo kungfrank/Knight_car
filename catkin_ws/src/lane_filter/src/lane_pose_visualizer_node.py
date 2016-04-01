@@ -2,7 +2,7 @@
 import rospy
 import tf
 import numpy as np
-from duckietown_msgs.msg import LanePose, AprilTags
+from duckietown_msgs.msg import LanePose
 from geometry_msgs.msg import Point
 from visualization_msgs.msg import Marker, MarkerArray
 
@@ -21,7 +21,6 @@ class LanePoseVisualzer(object):
 
         # Setup subscriber
         self.sub_lane_pose = rospy.Subscriber("~lane_pose",LanePose,self.cbLanePose,queue_size=1)
-        self.sub_apriltags = rospy.Subscriber("~apriltags_out", AprilTags, self.processAprilTags)
 
         rospy.loginfo("[%s] Initialzed." %(self.node_name))
 
@@ -67,48 +66,6 @@ class LanePoseVisualzer(object):
             marker.color.a = 0.25
 
         return marker
-    
-    def processAprilTags(self, apriltags_msg):
-        marker_array = MarkerArray()
-        
-        for (i, detection) in enumerate(apriltags_msg.detections):
-            tag_info = apriltags_msg.infos[i]
-            
-            marker = Marker()
-            marker.header.frame_id = self.veh_name
-            marker.header.stamp = lane_pose_msg.header.stamp
-            marker.ns = self.veh_name + "/apriltag"
-            marker.id = 0
-            marker.action = Marker.ADD
-            marker.lifetime = rospy.Duration.from_sec(0.5)
-            marker.type = Marker.TEXT_VIEW_FACING
-            
-            # Get rotation in quaternion
-            # yaw_quat = tf.transformations.quaternion_about_axis(-lane_pose_msg.phi,[0,0,1])
-            # rospy.loginfo("[%s] quat: %s "%(self.node_name,yaw_quat))
-            # marker.pose.orientation.x = yaw_quat[0]
-            # marker.pose.orientation.y = yaw_quat[1]
-            # marker.pose.orientation.z = yaw_quat[2]
-            # marker.pose.orientation.w = yaw_quat[3]
-            
-            marker.pose.position.x = 0.0
-            marker.pose.position.y = 0.0
-            marker.pose.position.z = 0.0
-
-            marker.scale.x = 0.3
-            marker.scale.y = 0.05
-            marker.scale.z = 0.01
-
-            marker.color.r = 0.0
-            marker.color.g = 0.5
-            marker.color.b = 0.0
-
-            marker.color.a = 1.0
-            
-            marker.text = 'APRILTAG'
-            marker_array.markers.append(marker)
-            
-        self.pub_markers.publish(marker_array)
 
     def on_shutdown(self):
         rospy.loginfo("[%s] Shutting down." %(self.node_name))

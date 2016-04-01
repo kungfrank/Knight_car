@@ -53,8 +53,8 @@ class MDOAPControllerNode:
         # stop.vel_right = 0.0
 
         # Slow it down so it's easier to see what's going on for now
-        self.lane_control.vel_left = self.lane_control.vel_left * 0.5
-        self.lane_control.vel_right = self.lane_control.vel_right * 0.5
+        self.lane_control.vel_left = self.lane_control.vel_left
+        self.lane_control.vel_right = self.lane_control.vel_right
         self.pub_wheels_cmd.publish(self.lane_control)
 
 if __name__=="__main__":

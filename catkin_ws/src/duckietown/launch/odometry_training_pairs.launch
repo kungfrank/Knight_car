@@ -8,17 +8,17 @@
 
   <!-- lane filter -->
     <include file="$(find duckietown)/launch/lane_filter.launch">
-    	     <arg name="veh" value="$(arg veh)"/>
-	     <arg name="local" value="$(arg local)"/>
-	     <arg name="config" value="$(arg config)"/>
-	     <arg name="param_file_name" value="$(arg param_file_name)"/>
-	     <arg name="live" value="$(arg live)"/>
+		<arg name="veh" value="$(arg veh)"/>
+		<arg name="local" value="$(arg local)"/>
+		<arg name="config" value="$(arg config)"/>
+		<arg name="param_file_name" value="$(arg param_file_name)"/>
+		<arg name="live" value="$(arg live)"/>
     </include>
 
 	<!-- Trainings Pairs -->
 	<remap from="odometry_training_pairs_node/stop_line_reading" to="stop_line_filter_node/stop_line_reading"/>
 	<remap from="odometry_training_pairs_node/lane_pose" to="lane_filter_node/lane_pose"/>
-	<remap from="odometry_training_pairs_node/wheels_cmd_executed" to="wheels_driver_node/wheels_cmd_executed"/>
+	<remap from="odometry_training_pairs_node/wheels_cmd_executed" to="wheels_driver_node/wheels_cmd"/>
 	<include file="$(find visual_odometry)/launch/odometry_training_pairs_node.launch">
 	    <arg name="veh" value="$(arg veh)"/>
 	    <arg name="local" value="$(arg local)"/>
@@ -26,5 +26,15 @@
 	    <arg name="param_file_name" value="$(arg param_file_name)"/>
 	</include>
 
+	<!--lane controller-->
+	<!--<include file="$(find duckietown)/launch/lane_controller.launch">-->
+		<!--<arg name="veh" value="$(arg veh)"/>-->
+		<!--<arg name="local" value="$(arg local)"/>-->
+		<!--<arg name="config" value="$(arg config)"/>-->
+		<!--<arg name="param_file_name" value="$(arg param_file_name)"/>-->
+		<!--<arg name="live" value="$(arg live)"/>-->
+		<!--<arg name="drive" default="true"/>-->
+		<!--<arg name="use_vicon" default="false"/>-->
+	<!--</include>-->
 
 </launch>	

@@ -46,6 +46,6 @@ add_dependencies(pose2d_to_path_node ${catkin_EXPORTED_TARGETS})
 
 if (CATKIN_ENABLE_TESTING)
     find_package(rostest REQUIRED)
-    add_rostest(tests/all_tests.test)
+    add_rostest(tests/all_library_tests.test)
     add_rostest(tests/forward_kinematics_tester_node.test)
 endif()

@@ -20,4 +20,8 @@
 	        <rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
 	    </node>
     </group>
+
+    <!--test-->
+    <test test-name="test_odometry_training_pairs" pkg="visual_odometry" type="test_odometry_training_pairs.py"/>
 </launch>
+

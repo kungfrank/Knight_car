@@ -9,7 +9,7 @@ import math
 
 class OdometryTrainingPairsNode(object):
     def __init__(self):
-        self.node_name = "Odometry Training Pairs"
+        self.node_name = rospy.get_name()
 
         ## Parameters
         self.stop_line_max_age = self.setupParameter("~stop_line_max_age",1.0) # [sec] don't use stop_line_reading msg pairs more than this far apart
@@ -26,12 +26,12 @@ class OdometryTrainingPairsNode(object):
         self.v_sample_msg = Vsample() # global variable because different parts of this are set in different callbacks
 
         ## publishers and subscribers
-        self.sub_stop_lin_reading = rospy.Subscriber("~stop_line_reading", StopLineReading, self.stopLineCB)
+        self.sub_stop_line_reading = rospy.Subscriber("~stop_line_reading", StopLineReading, self.stopLineCB)
         self.sub_lane_pose = rospy.Subscriber("~lane_pose", LanePose, self.lanePoseCB)
         self.sub_wheels_cmd_executed = rospy.Subscriber("~wheels_cmd_executed", WheelsCmdStamped, self.wheelsCmdCB)
         self.pub_v_sample = rospy.Publisher("~v_sample", Vsample, queue_size=1)
         self.pub_theta_dot_sample = rospy.Publisher("~theta_dot_sample", ThetaDotSample, queue_size=1)
-        rospy.loginfo('[odometry_training_pairs_node] Initiated')
+        rospy.loginfo('[%s] Initialized' % self.node_name)
 
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -60,6 +60,7 @@ class OdometryTrainingPairsNode(object):
             self.cmd_buffer.popleft()
 
     def findMatchingDuties(self, new_stamp):
+        # rospy.loginfo("[%s]cmd_buffer length: %s"%(self.node_name, (len(self.cmd_buffer))))
         # if no cmds have been received, return (0, 0). This shouldn't happen unless there's no wheels_cmd publiser
         if not self.cmd_buffer:
             return (0, 0)
@@ -100,7 +101,7 @@ class OdometryTrainingPairsNode(object):
         self.old_lane_pose_msg = lane_pose_msg
 
     def onShutdown(self):
-        rospy.loginfo("[odometry_training_pairs_node] Shutdown.")
+        rospy.loginfo("[%s] Shutdown."%self.node_name)
 
 if __name__ == '__main__':
     rospy.init_node('odometry_training_pairs',anonymous=False)

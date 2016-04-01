@@ -19,5 +19,8 @@
         <node unless="$(arg local)" machine="$(arg veh)" name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen" >
             <rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/$(arg param_file_name).yaml"/>
         </node>
+
+        <!-- Run unit test -->
+        <test test-name="test_forward_kinematics_node" pkg="kinematics" type="test_forward_kinematics_node.py" />
     </group>
 </launch>

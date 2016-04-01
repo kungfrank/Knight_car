@@ -4,6 +4,7 @@ import rospy
 import yaml
 from duckietown_msgs.msg import AprilTags, TagDetection, TagInfo, Vector2D
 import numpy as np
+import kinematic as k
 
 class AprilPostPros(object):
     """ """
@@ -83,10 +84,10 @@ class AprilPostPros(object):
             x = detection.transform.translation.x
             y = detection.transform.translation.y
             z = detection.transform.translation.z
-            t = np.array([x,y,z])
+            t_ct_Fc = k.Vector( x , y , z )
             
-            rospy.loginfo("[%s] Position " %(self.node_name))
-            print t
+            #rospy.loginfo("[%s] Position " %(self.node_name))
+            t_ct_Fc()
 
             #new_location_info.x = 2
             #new_location_info.y = 3

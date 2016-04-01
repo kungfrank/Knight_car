@@ -116,7 +116,8 @@ def getparameters2(mapping, trained, weights, true):
 		redX[:,0]=trained[:,perm[0]]
 		greenX[:,0]=trained[:,perm[1]]
 		blueX[:,0]=trained[:,perm[2]]
-		# IPython.embed()
+		
+
 		prior_redX[:,0]=prior_trained[:,perm[0]]
 		prior_greenX[:,0]=prior_trained[:,perm[1]]
 		prior_blueX[:,0]=prior_trained[:,perm[2]]
@@ -129,15 +130,19 @@ def getparameters2(mapping, trained, weights, true):
 		sumweights=np.double(np.sum([weights[0],weights[1],weights[2]]))
 		weightsMTX=np.double(np.diagflat([weights[0],weights[1],weights[2]]))
 		weightsMTX=weightsMTX/sumweights
+		# color fitting terms
 		A1=np.concatenate((np.dot(weightsMTX,np.concatenate((redX,np.ones(np.shape(redX)),redX*0,redX*0,redX*0,redX*0),1)),np.dot(weightsMTX,np.concatenate((greenX*0,greenX*0,greenX,np.ones(np.shape(greenX)),greenX*0,greenX*0),1)),np.dot(weightsMTX,np.concatenate((blueX*0,blueX*0,blueX*0,blueX*0,blueX,np.ones(np.shape(blueX))),1))),0)
 		b1=np.concatenate((np.dot(weightsMTX,redY),np.dot(weightsMTX,greenY),np.dot(weightsMTX,blueY)),0)
-		# IPython.embed()
+		# favoring the scale of each color to be similar  
 		A2=np.array([[1.,0.,-1.,0.,0.,0.],[0.,0.,1.,0.,-1.,0.],[1.,0.,0.,0.,-1.,0.]])*diagonal_prior_weight
-		A3=np.array([[1.,0.,0.,0.,0.,0.],[0.,0.,1.,0.,0.,0.],[0.,0.,0.,0.,1.,0.]])*a_prior_weight
 		b2=np.array([[0.0],[0.0],[0.0]])*diagonal_prior_weight
+		# prior on scale,shift to be a,b
+		A3=np.array([[1.,0.,0.,0.,0.,0.],[0.,0.,1.,0.,0.,0.],[0.,0.,0.,0.,1.,0.]])*a_prior_weight
 		b3=np.array([[1.0],[1.0],[1.0]])*a_prior_weight
+		# build matrices
 		A=np.concatenate((A1,A2,A3),0)
 		b=np.concatenate((b1,b2,b3),0)
+		# solve equations
 		p,residuals,rank,s=np.linalg.lstsq(A,b);
 		fitting_cost=residuals
 		RED_a=p[0]
@@ -146,6 +151,7 @@ def getparameters2(mapping, trained, weights, true):
 		if (RED_a<0 or GREEN_a<0 or BLUE_a<0):
 				fitting_cost=fitting_cost+INFEASIBILITY_PENALTY
 
+		# Take the best solution if there were several permuations
 		if (fitting_cost<min_fitting_cost):
 			min_fitting_cost=fitting_cost
 			print("perm: %s, fitting cost: %s"% (perm,fitting_cost))

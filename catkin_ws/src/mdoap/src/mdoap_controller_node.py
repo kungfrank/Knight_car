@@ -45,9 +45,7 @@ class MDOAPControllerNode:
         # stop.header = bool_msg.header
         # stop.vel_left = 0.0
         # stop.vel_right = 0.0
-        msg = self.lane_control
-        msg.header = bool_msg.header
-        self.pub_wheels_cmd.publish(msg)
+        self.pub_wheels_cmd.publish(self.lane_control)
 
 if __name__=="__main__":
     rospy.init_node('mdoap_controller_node')

@@ -6,8 +6,8 @@ fast_v_off:  -25
 fast_h_crop: 110
 fast_x_down:  1.8
 global_enabled: 1
-global_period: 2.0
-global_v_off:   -115
+global_period: 2.5
+global_v_off:   -125
 global_v_crop:  150
-global_h_crop:  0
-global_x_down:  1.4
+global_h_crop:  75
+global_x_down:  1.0

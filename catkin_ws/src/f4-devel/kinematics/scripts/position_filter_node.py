@@ -5,9 +5,9 @@ from kinematics import Forward_kinematics
 from numpy import *
 
 # Position Filter Node
-# Authors: Jason Pazis
-# Inputs: 
-# Outputs: 
+# Authors: Jason Pazis, Robert Katzschmann
+# Inputs: velocity
+# Outputs: pose
 
 class PositionFilterNode(object):
     def __init__(self):

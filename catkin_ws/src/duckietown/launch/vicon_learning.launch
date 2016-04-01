@@ -23,7 +23,7 @@
     <!-- run the vicon_learning_node -->
     <group if="$(arg learn_online)">
         <remap from="vicon_learning_node/pose" to="/duckiecar/pose" />
-        <remap from="vicon_learning_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
+        <remap from="vicon_learning_node/wheels_cmd" to="wheels_driver_node/wheels_cmd_executed" />
         <include file="$(find kinematics)/launch/vicon_learning_node.launch">
             <arg name="veh" value="$(arg veh)"/>
             <arg name="local" value="$(arg local)"/>
@@ -56,7 +56,7 @@
     </group>
 
     <!-- Start the bags -->
-    <node pkg="rosbag" type="play" name="rosbag_play" args="$(arg bagin) --clock"/>
+    <node pkg="rosbag" type="play" name="rosbag_play" args="$(arg bagin) --clock /$(arg veh)/wheels_driver_node/wheels_cmd:=/$(arg veh)/wheels_driver_node/wheels_cmd_executed"/>
     <node if="$(arg log)" pkg="rosbag" type="record" name="rosbag_record" args="-a  -O $(arg bagout)"/>
 
 </launch>

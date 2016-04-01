@@ -1,8 +1,14 @@
+import numpy as np
+
 from api import LEDDetector
 from duckietown_msgs.msg import Vector2D, LEDDetection, LEDDetectionArray
 from led_detection import logger
 from math import floor, ceil
-import numpy as np
+
+# image filters
+from scipy.ndimage.filters import maximum_filter
+from scipy.ndimage.morphology import generate_binary_structure, binary_erosion
+
 import rospy
 import time
 
@@ -10,10 +16,6 @@ import time
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from matplotlib.patches import Rectangle
-
-# image filters
-from scipy.ndimage.filters import maximum_filter
-from scipy.ndimage.morphology import generate_binary_structure, binary_erosion
 
 # fft
 import scipy.fftpack
@@ -37,33 +39,22 @@ class LEDDetector():
 
         print('Original shape: {0}'.format(channel[0].shape))
 
-        # crop image around borders to get integer submultiples
-        ncells_x = floor(1.0*W/cell_width)
-        ncells_y = floor(1.0*H/cell_height)
+        # determine top-left offset to center the grid  
+        ncells_x = int(floor(1.0*W/cell_width))
+        ncells_y = int(floor(1.0*H/cell_height))
         rest_x = W%cell_width
         rest_y = H%cell_height
-        imgs_cropped = channel[:, ceil(.5*rest_y):H-floor(.5*rest_y), ceil(.5*rest_x):W-floor(.5*rest_x)]
-        print('ncells_x: %s, ncells_y: %s' % (ncells_x, ncells_y))
-        print('rest_x: %s, rest_y: %s' % (rest_x, rest_y))
-        print('Cropped shape: {0}'.format(imgs_cropped.shape))
-        assert imgs_cropped.shape[1]%cell_height == 0
-        assert imgs_cropped.shape[2]%cell_width == 0
 
-        # Split images into rectangles
-        cell_values = np.array(np.split(imgs_cropped,ncells_x, axis=2))
-        if(self.verbose):
-            print('First split: {0}'.format(cell_values.shape))
-        cell_values = np.mean(cell_values, axis=3)
-        if(self.verbose):
-            print('First reduction: {0}'.format(cell_values.shape))
-        cell_values = np.array(np.split(cell_values,ncells_y, axis=2))
-        if(self.verbose):
-            print('Second split: {0}'.format(cell_values.shape))
-        cell_values = np.mean(cell_values, axis=3)
-        if(self.verbose):
-            print('Second reduction: {0}'.format(cell_values.shape))
-        cell_values = np.swapaxes(cell_values, 2, 0)
-        cell_values = np.swapaxes(cell_values, 2, 1)
+        N = channel.shape[0]
+        cell_values = np.zeros((N,ncells_y, ncells_x))
+
+        # Compute values
+        for i in range(ncells_y):
+            for j in range(ncells_x):
+                tly = ceil(.5*rest_y)+i*cell_height
+                tlx = ceil(.5*rest_x)+j*cell_width
+                cell_values[:, i, j] = np.mean(channel[:,tly:tly+cell_height, tlx:tlx+cell_width], axis=tuple([1, 2]))
+
         return (cell_values, [ceil(.5*rest_y), ceil(.5*rest_x)])
 
     # ~~~~~~~~~~~~~~~~~~~ Find local maxima ~~~~~~~~~~~~~~~~~~~~
@@ -125,13 +116,22 @@ class LEDDetector():
             raise ValueError(min_distance_between_LEDs_pixels)
 
         channel = images['rgb'][:,:,:,0] # just using first channel
+        
+        # Go for the following lines if you want to use a grayscale image
+        # as an input instead of preferring one specific channel 
+        #channel = np.zeros(images['rgb'].shape[0:-1])
+        #for i in range(n):
+        #    channel[i,:,:] = cv2.cvtColor(images['rgb'][i,:,:,:], cv2.COLOR_BGR2GRAY)
+
+        print('channel.shape {0}'.format(channel.shape))
 
         cell_width = 15
         cell_height = 15
+        var_threshold = 100
 
         (cell_vals, crop_offset) = self.downsample(channel, cell_width, cell_height)
 
-        candidates_mask = self.get_candidate_cells(cell_vals, 100)
+        candidates_mask = self.get_candidate_cells(cell_vals, var_threshold)
         candidate_cells = [(i,j) for (i,j) in np.ndindex(candidates_mask.shape) if candidates_mask[i,j]]
 
         # Create result object
@@ -140,7 +140,7 @@ class LEDDetector():
         # Detect frequencies and discard non-periodic signals
         # ts_tolerance = 0.2 # unnecessary
         f_tolerance = 0.25
-        min_num_periods = 3
+        min_num_periods = 2
 
         for (i,j) in candidate_cells:
             signal = cell_vals[:,i,j]
@@ -161,16 +161,6 @@ class LEDDetector():
                 if(self.verbose):
                     logger.info('Not an LED, discarded\n')
                 continue
-
-            # Frequency estimation based on zero crossings - quite bad
-            #for f in frequencies_to_detect:
-            #    if(all(d-ts_tolerance <= 0.5/f <= d+ts_tolerance for d in diffs)):
-            #        if(self.verbose):
-            #            logger.info('Confirmed LED with frequency %s\n'%f)
-                   # recover coordinates of centroid
-            #        result.detections.append(LEDDetection(timestamps[0], timestamps[-1],
-            #        led_img_coords, f, '', -1)) # -1...confidence not implemented
-            #        break
 
             # Frequency estimation based on FFT
             T = 1.0/30 # TODO expecting 30 fps, but RESAMPLE to be sure

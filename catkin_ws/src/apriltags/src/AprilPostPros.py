@@ -3,6 +3,7 @@ import rospkg
 import rospy
 import yaml
 from duckietown_msgs.msg import AprilTags, TagDetection, TagInfo, Vector2D
+import numpy as np
 
 class AprilPostPros(object):
     """ """
@@ -77,6 +78,15 @@ class AprilPostPros(object):
                 l = (id_info['location_316'])
                 if l is not None:
                     new_info.location = l
+                    
+            # Localization stuff
+            x = detection.transform.transform.x
+            y = detection.transform.transform.y
+            z = detection.transform.transform.z
+            t = np.array([x,y,z])
+            
+            rospy.loginfo("[%s] Position " %(self.node_name))
+            print t
 
             #new_location_info.x = 2
             #new_location_info.y = 3

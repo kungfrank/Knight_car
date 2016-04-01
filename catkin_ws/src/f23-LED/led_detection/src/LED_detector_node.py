@@ -11,20 +11,22 @@ class LEDDetectorNode(object):
     def __init__(self):
         self.first_timestamp = None
         self.data = []
-        self.capture_time = 3 # capture time
+        self.capture_time = 2.3 # capture time
         self.capture_finished = False
+        self.tinit = None
         
         print('Constructing LEDDetector')
         self.node_name = rospy.get_name()
         self.pub_detections = rospy.Publisher("~raw_led_detection",LEDDetectionArray,queue_size=1)
         # TODO get veh parameter
-        self.sub_cam = rospy.Subscriber("/argo/camera_node/image/compressed",CompressedImage, self.camera_callback)
+        self.sub_cam = rospy.Subscriber("/maserati/camera_node/image/compressed",CompressedImage, self.camera_callback)
 
     def camera_callback(self, msg):
         float_time = msg.header.stamp.to_sec()
 
         if self.first_timestamp is None:
             self.first_timestamp = msg.header.stamp.to_sec()
+            self.tinit = time.time()
         # TODO sanity check rel_time positive, restart otherwise 
         rel_time = float_time - self.first_timestamp
 
@@ -38,7 +40,7 @@ class LEDDetectorNode(object):
             # TODO can also remove the subscriber
 
     def process_and_publish(self):
-    	H, W, _ = self.data[0]['rgb'].shape
+        H, W, _ = self.data[0]['rgb'].shape
         n = len(self.data)
         dtype = [
             ('timestamp', 'float'),
@@ -56,7 +58,9 @@ class LEDDetectorNode(object):
         result = det.detect_led(images, mask, [1.0, 1.5, 2.0], 5)
         self.pub_detections.publish(result)
         toc = time.time()-tic
-        print('Done. Time taken: %.2f'%toc)
+        tac = time.time()-self.tinit
+        print('Done. Processing Time: %.2f'%toc)
+        print('Total Time taken: %.2f'%tac)
 
 if __name__ == '__main__':
     rospy.init_node('LED_detector_node',anonymous=False)

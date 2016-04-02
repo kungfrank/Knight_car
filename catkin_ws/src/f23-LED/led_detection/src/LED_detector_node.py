@@ -62,7 +62,7 @@ class LEDDetectorNode(object):
         rgb0 = self.data[0]['rgb']
         mask = np.ones(dtype='bool', shape=rgb0.shape)
         tic = time.time()
-        result = det.detect_led(images, mask, [3.5, 4.1, 5.0], 5)
+        result = det.detect_led(images, mask, [2.8, 4.1, 5.0], 5)
         self.pub_detections.publish(result)
         toc = time.time()-tic
         tac = time.time()-self.tinit

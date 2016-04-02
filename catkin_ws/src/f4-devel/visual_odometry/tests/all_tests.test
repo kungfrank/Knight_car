@@ -1,3 +1,0 @@
-<launch>
-    <test test-name="test_odometry_training_pairs" pkg="visual_odometry" type="test_odometry_training_pairs.py"/>
-</launch>

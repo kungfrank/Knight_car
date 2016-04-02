@@ -22,9 +22,9 @@ class KinematicsLearningNode(object):
         self.noZeros = self.setupParameter('~learner_number_of_zero_entries', 25)
         self.noThetaDotSamples = 2*self.setupParameter('~learner_number_of_theta_dot_samples_per_direction', 25)
         self.noVsamples = self.setupParameter('~learner_number_of_v_samples', 25)
-        self.duty_threshold = self.setupParameter('~learner_duty_threshold', 0.4)
-        self.theta_dot_threshold = 0.2
-
+        self.theta_dot_threshold = self.setupParameter('~learner_theta_dot_threshold', 0.2)
+        self.v_disp_threshold = pow(self.setupParameter('~learner_v_disp_threshold', 0.05), 2)
+        
         # Setup the kinematics learning model
         self.kl = Linear_learner.Linear_learner(fi_theta_dot_function, fi_v_function)
 
@@ -54,8 +54,9 @@ class KinematicsLearningNode(object):
         rospy.loginfo("[%s] has started", self.node_name)
 
     def thetaDotSampleCallback(self, theta_dot_sample):
+        #print 'theta_dot_sample', theta_dot_sample
         self.mutex.acquire()
-        # Only use this sample if at least one of the motors is above the threshold
+        # Only use this sample if it is informative
         if (self.theta_dot_negative_index < self.noZeros+self.noThetaDotSamples/2) and (theta_dot_sample.theta_angle_pose_delta/theta_dot_sample.dt <= -self.theta_dot_threshold):
             self.theta_dot_d_L[self.theta_dot_negative_index] = theta_dot_sample.d_L
             self.theta_dot_d_R[self.theta_dot_negative_index] = theta_dot_sample.d_R
@@ -85,9 +86,9 @@ class KinematicsLearningNode(object):
 
 
     def vSampleCallback(self, v_sample):
-        print 'v_sample', v_sample
-        # Only use this sample if at least one of the motors is above the threshold
-        if (abs(v_sample.d_L) > self.duty_threshold) or (abs(v_sample.d_R) > self.duty_threshold):
+        # print 'v_sample', v_sample
+        # Only use this sample if it is informative
+        if (v_sample.x_axis_pose_delta*v_sample.x_axis_pose_delta + v_sample.y_axis_pose_delta*v_sample.y_axis_pose_delta)/v_sample.dt >= self.v_disp_threshold:
             self.mutex.acquire()
             self.v_d_L[self.v_index] = v_sample.d_L
             self.v_d_R[self.v_index] = v_sample.d_R
@@ -99,15 +100,13 @@ class KinematicsLearningNode(object):
 
             # Only fit when a sufficient number of samples has been gathered
             if self.v_index >= (self.noZeros+self.noVsamples):
-                # Only fit if the set contains a sufficient number of samples with large absolute d_L and d_R values
-                if (average(abs(self.v_d_L)) > self.duty_threshold) and (average(abs(self.v_d_R)) > self.duty_threshold):
-                    weights = self.kl.fit_v(self.v_d_L, self.v_d_R, self.v_dt, self.v_theta_angle_pose_delta, self.v_x_axis_pose_delta, self.v_y_axis_pose_delta)
-                    weights = asarray(weights).flatten().tolist()
-                    print 'v weights', weights
-                    # Put the weights in a message and publish
-                    msg_kinematics_weights = KinematicsWeights()
-                    msg_kinematics_weights.weights = weights
-                    #self.pub_v_kinematics_weights.publish(msg_kinematics_weights)
+                weights = self.kl.fit_v(self.v_d_L, self.v_d_R, self.v_dt, self.v_theta_angle_pose_delta, self.v_x_axis_pose_delta, self.v_y_axis_pose_delta)
+                weights = asarray(weights).flatten().tolist()
+                print 'v weights', weights
+                # Put the weights in a message and publish
+                msg_kinematics_weights = KinematicsWeights()
+                msg_kinematics_weights.weights = weights
+                self.pub_v_kinematics_weights.publish(msg_kinematics_weights)
                 # reset index
                 self.v_index = self.noZeros
             self.mutex.release()

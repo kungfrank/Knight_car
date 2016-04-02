@@ -87,6 +87,7 @@ class OdometryTrainingPairsNode(object):
             theta_dot_sample_msg.d_R = d_R
             # theta_dot_sample_msg.dt = (lane_pose_msg.header.stamp.secs + lane_pose_msg.header.stamp.nsecs/1e9) - (self.old_lane_pose_msg.header.stamp.secs + self.old_lane_pose_msg.header.stamp.nsecs/1e9)
             theta_dot_sample_msg.dt = (lane_pose_msg.header.stamp - self.old_lane_pose_msg.header.stamp).to_sec()
+            # rospy.loginfo("theta_dot_sample_msg.dt = %s"%theta_dot_sample_msg.dt)
             #new - old since measure robot angle
             theta_dot_sample_msg.theta_angle_pose_delta = lane_pose_msg.phi - self.old_lane_pose_msg.phi
             #is actually (delta d)*cos(phi), but is probably pretty noisy since we get error from both d and phi

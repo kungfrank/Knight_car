@@ -1,23 +1,24 @@
 #!/usr/bin/env python
 PKG = 'visual_odometry'
+import rostest
 import rospy
 import unittest
 import math
+import time
 from duckietown_msgs.msg import StopLineReading, LanePose, WheelsCmdStamped, Vsample, ThetaDotSample
 
 class TestOdometryTrainingPairsCommon(unittest.TestCase):
 
     def setUp(self):
-        rospy.init_node('test_odometry_training_pairs',anonymous=False)
 
         ## Publishers
-        self.pub_stop_lin_reading = rospy.Publisher("~stop_line_reading", StopLineReading, queue_size=1)
-        self.pub_wheels_cmd_executed = rospy.Publisher("~wheels_cmd_executed", WheelsCmdStamped, queue_size=1)
-        self.pub_lane_pose = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
+        self.pub_stop_line_reading = rospy.Publisher("odometry_training_pairs_node/stop_line_reading", StopLineReading, queue_size=1)
+        self.pub_wheels_cmd_executed = rospy.Publisher("odometry_training_pairs_node/wheels_cmd_executed", WheelsCmdStamped, queue_size=1)
+        self.pub_lane_pose = rospy.Publisher("odometry_training_pairs_node/lane_pose", LanePose, queue_size=1)
 
         ## Subscribers
-        self.sub_theta_dot_sample = rospy.Subscriber("~theta_dot_sample", ThetaDotSample, self.theta_dot_sample_CB)
-        self.v_sample = rospy.Subscriber("~v_sample", Vsample, self.v_sample_CB)
+        self.sub_theta_dot_sample = rospy.Subscriber("odometry_training_pairs_node/theta_dot_sample", ThetaDotSample, self.theta_dot_sample_CB)
+        self.v_sample = rospy.Subscriber("odometry_training_pairs_node/v_sample", Vsample, self.v_sample_CB)
 
         ## State variables
         self.theta_dot_received = ThetaDotSample()
@@ -35,19 +36,18 @@ class TestOdometryTrainingPairsCommon(unittest.TestCase):
 
         # publish lane_pose
         lane_pose = LanePose()
-        lane_pose.header.stamp = rospy.Time.now()
         lane_pose.d = 0
         lane_pose.sigma_d = 0
         lane_pose.phi = 0
         lane_pose.sigma_phi = 0
-        lane_pose.status = 'NORMAL'
+        lane_pose.status = 0
         lane_pose.in_lane = True
         for i in [1, 2]:
+            lane_pose.header.stamp = rospy.Time.now()
             self.pub_lane_pose.publish(lane_pose)
             rate.sleep()
-        # rospy.sleep(1)
+        rospy.sleep(1)
 
-    # assert that ~theta_dot_sample is correct
     def theta_dot_sample_CB(self, msg):
         rospy.loginfo("theta_dot_sample received")
         self.theta_dot_received = msg
@@ -58,18 +58,23 @@ class TestOdometryTrainingPairsCommon(unittest.TestCase):
 
 class TestOdometryTrainingPairsValid(TestOdometryTrainingPairsCommon):
 
-    def test_obvious(self):
-        self.assertEqual(True,True,'True = True')
-
     def test_theta_dot_sample(self):
+        # Wait for the odometry_training_pairs_node to finish starting up
+        timeout = time.time()+2.0
+        while not self.sub_theta_dot_sample.get_num_connections() and \
+                not rospy.is_shutdown() and not time.time() > timeout:
+            rospy.sleep(0.1)
+
+        self.sendMsgs()
         msg = self.theta_dot_received
-        self.assertEqual(msg.d_L,0.5,'d_L = 0.5')
-        self.assertEqual(msg.d_R,0.5,'d_R = 0.5')
-        self.assertEqual(msg.dt,0.1,'d_L = 0.1')
-        self.assertEqual(msg.theta_angle_pose_delta,0,'theta_angle_pose_delta = 0')
+        # self.assertEqual(hasattr(msg,'d_L'),True)
+        self.assertEqual(msg.d_L, 0.5, 'd_L = %s' % msg.d_L)
+        self.assertEqual(msg.d_R, 0.5, 'd_R = %s' % msg.d_R)
+        self.assertAlmostEqual(msg.dt, 0.1, 2,'dt = %s' % msg.dt)
+        self.assertEqual(msg.theta_angle_pose_delta, 0, 'theta_angle_pose_delta = %s' % msg.theta_angle_pose_delta)
 
 if __name__ == '__main__':
-    import rostest
+    rospy.init_node('test_odometry_training_pairs',anonymous=False)
     rostest.rosrun(PKG, 'test_odometry_training_pairs', TestOdometryTrainingPairsValid)
 
     # rosunit.unitrun('visual_odometry', 'test_odometry_training_pairs', TestOdometryTrainingPairs)

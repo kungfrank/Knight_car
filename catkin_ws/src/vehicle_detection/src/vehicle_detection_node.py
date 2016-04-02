@@ -11,7 +11,6 @@ import numpy as np
 import os
 import rospkg
 import rospy
-import stopit
 import threading
 import time
 import yaml

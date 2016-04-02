@@ -70,7 +70,7 @@ The default algorithm is called "baseline", and the tests are invoked using:
             test_results[(id_test, id_estimator)] = result
 
     nfailed = list(test_results.values()).count(False)
-    if nfailed:
+    if not nfailed:
         logger.info('All tests passed')
     else:
         which = [k for k, v in test_results.items() if not v]

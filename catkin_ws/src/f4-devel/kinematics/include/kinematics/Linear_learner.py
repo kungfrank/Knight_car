@@ -5,6 +5,7 @@ __author__ = 'jpazis'
 from numpy import *
 import csv
 from Duty_fi_function import *
+from scipy.linalg import solve
 
 
 class Linear_learner(object):
@@ -50,8 +51,11 @@ class Linear_learner(object):
         Fi_theta_dot = self.fi_theta_dot_function.computeFi(d_L, d_R)
 
         # Find the weights for theta_dot
-        # We use a simple least squares fit
-        theta_dot_weights = matrix(linalg.lstsq(Fi_theta_dot, theta_dot)[0].flatten())
+        # We use a simple least squares fit with l2 regularization
+        #theta_dot_weights = matrix(linalg.lstsq(Fi_theta_dot, theta_dot)[0].flatten())
+        gramian = dot(Fi_theta_dot.T,Fi_theta_dot) + 10.0*len(Fi_theta_dot.T)*eye(len(Fi_theta_dot.T))
+        y = dot(Fi_theta_dot.T,theta_dot)
+        theta_dot_weights = solve(gramian, y)
 
         return theta_dot_weights
 
@@ -76,7 +80,10 @@ class Linear_learner(object):
         Fi_v = self.fi_v_function.computeFi(d_L, d_R)
 
         # Find the weights for v
-        # We use a simple least squares fit
-        v_weights = matrix(linalg.lstsq(Fi_v, v)[0].flatten())
+        # We use a simple least squares fit with l2 regularization
+        #v_weights = matrix(linalg.lstsq(Fi_v, v)[0].flatten())
+        gramian = dot(Fi_v.T,Fi_v) + 10.0*len(Fi_v.T)*eye(len(Fi_v.T))
+        y = dot(Fi_v.T,v)
+        v_weights = solve(gramian, y)
 
         return v_weights

@@ -2,7 +2,7 @@ allblinking_test1-argo:
   # how to create the test data
   data:
     # change this path locally if needed (TODO more portable solution?)
-    bag: "~/Dropbox (MIT)/duckietown-data/logs/Phase_2/F23/Meeting_1_Logs/allblinking_test1/20160312-allblinking_test1-argo.bag"
+    bag: "${DUCKIETOWN_DATA}/logs/Phase_2/F23/Meeting_1_Logs/allblinking_test1/20160312-allblinking_test1-argo.bag"
     interval: [0, 3]
   # what to query for
   query:
@@ -42,7 +42,7 @@ allblinking_test1-argo:
 allblinking_test3-argo:
   data:
     # change this path locally if needed (TODO more portable solution?)
-    bag: "~/Dropbox (MIT)/duckietown-data/logs/Phase_2/F23/Meeting_1_Logs/allblinking_test3/20160312-allblinking_test3-argo.bag"
+    bag: "${DUCKIETOWN_DATA}/logs/Phase_2/F23/Meeting_1_Logs/allblinking_test3/20160312-allblinking_test3-argo.bag"
     interval: [0, 3]
   query:
     frequencies_to_detect: [2.5, 3.0, 4.0]
@@ -78,7 +78,7 @@ allblinking_test3-argo:
 
 allblinking_test4-argo:
   data:
-    bag: "~/Dropbox (MIT)/duckietown-data/logs/Phase_2/F23/Meeting_1_Logs/allblinking_test4/20160312-allblinking_test4-argo.bag"
+    bag: "${DUCKIETOWN_DATA}/logs/Phase_2/F23/Meeting_1_Logs/allblinking_test4/20160312-allblinking_test4-argo.bag"
     interval: [0, 3]
   query:
     frequencies_to_detect: [2, 2.5, 3.0]
@@ -115,7 +115,7 @@ allblinking_test4-argo:
 allblinking_test1-maserati:
   data:
     # change this path locally if needed (TODO more portable solution?)
-    bag: "~/Dropbox (MIT)/duckietown-data/logs/Phase_2/F23/Meeting_1_Logs/allblinking_test1/20160312-allblinking_test1-maserati.bag"
+    bag: "${DUCKIETOWN_DATA}/logs/Phase_2/F23/Meeting_1_Logs/allblinking_test1/20160312-allblinking_test1-maserati.bag"
     interval: [0, 3]
   # what to query for
   query:
@@ -154,7 +154,7 @@ allblinking_test1-maserati:
 
 allblinking_test2-maserati:
   data:
-    bag: "~/Dropbox (MIT)/duckietown-data/logs/Phase_2/F23/Meeting_1_Logs/allblinking_test2/20160312-allblinking_test2-maserati.bag"
+    bag: "${DUCKIETOWN_DATA}/logs/Phase_2/F23/Meeting_1_Logs/allblinking_test2/20160312-allblinking_test2-maserati.bag"
     interval: [0, 3]
   query:
     frequencies_to_detect: [1.0, 1.5, 2.0]
@@ -190,7 +190,7 @@ allblinking_test2-maserati:
 
 allblinking_test3-maserati:
   data:
-    bag: "~/Dropbox (MIT)/duckietown-data/logs/Phase_2/F23/Meeting_1_Logs/allblinking_test3/20160312-allblinking_test3-maserati.bag"
+    bag: "${DUCKIETOWN_DATA}/logs/Phase_2/F23/Meeting_1_Logs/allblinking_test3/20160312-allblinking_test3-maserati.bag"
     interval: [0, 3]
 
   query:

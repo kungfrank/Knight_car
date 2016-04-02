@@ -31,6 +31,11 @@ For example, this runs all tests on all algorithms:
 
     rosrun led_detection <script> '*' '*'
     
+The default algorithm is called "baseline", and the tests are invoked using:
+
+    rosrun led_detection <script> '*' 'baseline'
+
+    
 """
 
         msg = msg.replace('<script>', script_name)
@@ -46,7 +51,9 @@ For example, this runs all tests on all algorithms:
     filename = os.path.join(root, dirname, filename)
 
     alltests = load_tests(filename)
-    estimators = {'LEDDetector' : LEDDetector(True, True, True)}
+    estimators = {  'baseline' :
+                    LEDDetector(ploteverything=False, verbose=True, plotfinal=False),
+                    'LEDDetector_plots' : LEDDetector(True, True, True)}
                  #,'LEDDetector_forloops' : LEDDetector_forloops(True, True, True)}
     
     which_tests = expand_string(which_tests0, list(alltests))
@@ -56,16 +63,19 @@ For example, this runs all tests on all algorithms:
     logger.info('estimators: %r |-> %s' % (which_estimators0, which_estimators))
 
     # which tests to execute
-    test_results = []
+    test_results = {}
     for id_test in which_tests:
         for id_estimator in which_estimators:
-            test_results.append(run_test(id_test, alltests[id_test],
-                                    id_estimator, estimators[id_estimator]))
+            result = run_test(id_test, alltests[id_test], id_estimator, estimators[id_estimator])
+            test_results[(id_test, id_estimator)] = result
 
-    if(test_results.count(False)==0):
+    nfailed = list(test_results.values()).count(False)
+    if nfailed:
         logger.info('All tests passed')
     else:
-        logger.error('Some tests failed')
+        which = [k for k, v in test_results.items() if not v]
+        logger.error('These tests failed: %s ' % which)
+        sys.exit(3)
 
 def is_match(detection, expected):
     # Determines whether a detection matches with an expectation
@@ -116,6 +126,8 @@ def run_test(id_test, test, id_estimator, estimator):
     if(missedLEDs):
         logger.error('missed LED detections (%s): \n %s' % (len(missedLEDs),missedLEDs))
 
+    # Valerio: check this - sometimes the error above is thrown, but the test
+    # does not return False
     return not 0 in match_count
 
 if __name__ == '__main__':

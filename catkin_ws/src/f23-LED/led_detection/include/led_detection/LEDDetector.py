@@ -25,11 +25,10 @@ __all__ = ['LEDDetector']
 class LEDDetector():
     """ The LEDDetector class """
 
-    def __init__(self, ploteverything_=False, verbose_=False, plotfinal_=False):
-        self.ploteverything = ploteverything_
-        self.verbose = verbose_
-        self.plotfinal = plotfinal_
-        pass
+    def __init__(self, ploteverything=False, verbose=False, plotfinal=False):
+        self.ploteverything = ploteverything
+        self.verbose = verbose
+        self.plotfinal = plotfinal
 
     # ~~~~~~~~~~~~~~~~~~~ Downsample ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -189,17 +188,17 @@ class LEDDetector():
                 ax2.plot(f,y_f)
                 plt.show()
 
-        plt.imshow(rgb0)
-        ax = plt.gca()
-
-        font = {'family': 'serif',
-                'color':  'red',
-                'weight': 'bold',
-                'size': 16,
-                }
-
         # Plot all results
         if(self.plotfinal):
+            plt.imshow(rgb0)
+            ax = plt.gca()
+
+            font = {'family': 'serif',
+                    'color':  'red',
+                    'weight': 'bold',
+                    'size': 16,
+                    }
+
             for r in result.detections:
                 pos = r.pixels_normalized
                 ax.add_patch(Rectangle((pos.x-0.5*cell_width, pos.y-0.5*cell_height), cell_width, cell_height, edgecolor="red", linewidth=3, facecolor="none"))

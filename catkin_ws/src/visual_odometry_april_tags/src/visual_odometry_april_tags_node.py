@@ -1,101 +1,108 @@
 #!/usr/bin/env python
 import rospy
+import rospkg
 import numpy as np
-from cv_bridge import CvBridge, CvBridgeError
-from sensor_msgs.msg import Image
-from std_msgs.msg import Bool, Float32
 from duckietown_msgs.msg import AprilTags, WheelsCmdStamped
-from math import floor, atan2, pi, cos, sin
-import time
 import tf
+import tf.transformations as tr
 import os
 
-# Visual Odometry Line
+
+# Visual Odometry April Tags
 # Author: Wyatt Ubellacker
-# Inputs: SegmentList from line detector
-# Outputs: Calculated Linear and Angular Velocity and uncertanity
+# Inputs: april_tags, wheels_cmd
+# Outputs: A text file training set
 
 
 class VisualOdometryAprilTagsNode(object):
     def __init__(self):
-        self.node_name = "Visual Odometry April Tags"
+        self.node_name = "visual_odometry_april_tags_node"
         self.sub = rospy.Subscriber("~april_tags", AprilTags, self.processAprilTags)
         self.sub_wheels_cmd = rospy.Subscriber("~wheels_cmd", WheelsCmdStamped, self.processWheelsCmd)
-        self.old_odometry_info = {}
 
-        self.duty_L =0;
-        self.duty_R =0;
+        #Init the file
+        self.rpkg = rospkg.RosPack()
+        self.filename = self.setupParameter("~filename", self.rpkg.get_path('kinematics') + '/include/kinematics/training_data.txt')
+        try:
+            os.remove(self.filename)
+        except OSError:
+            pass
 
-    def setupParam(self,param_name,default_value):
-        value = rospy.get_param(param_name,default_value)
-        rospy.set_param(param_name,value) #Write to parameter server for transparancy
-        rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
+        # To store the wheels_cmd
+        self.wheels_cmd = WheelsCmdStamped()
+
+        # Initialize prev values
+        self.april_tags_prev = {}
+        self.timestamp_prev = rospy.Time()
+        self.wheels_cmd_prev = WheelsCmdStamped()
+
+        rospy.loginfo("[%s] has started", self.node_name)
+
+    def geometryTransformToMatrix(self, t):
+        # Convert a geometry_msgs.Transform into a 4x4 homogeneous matrix
+        tros = tf.TransformerROS()
+        trans = (t.translation.x, t.translation.y, t.translation.z)
+        rot = (t.rotation.x, t.rotation.y, t.rotation.z, t.rotation.w)
+        return tros.fromTranslationRotation(trans, rot)
+
+    def wheelsCmdAlmostEqual(self, x, y):
+        # Return true if the two WheelsCmdStamped messages are the same within tolerance
+        tol = 1e-6
+        return abs(x.vel_left-y.vel_left) < tol and abs(x.vel_right-y.vel_right) < tol
+
+    def setupParameter(self, param_name, default_value):
+        value = rospy.get_param(param_name, default_value)
+        rospy.set_param(param_name, value)  # Write to parameter server for transparancy
+        rospy.loginfo("[%s] %s = %s " % (self.node_name, param_name, value))
         return value
 
-    def processWheelsCmd(self,msg):
-    	self.duty_L = msg.vel_left
-    	self.duty_R = msg.vel_right
+    def processWheelsCmd(self, msg):
+        self.wheels_cmd = msg
 
-    def processAprilTags(self,msg):
-        t_start = rospy.get_time()
-        odometry_info = {}
-        odometry_deltas = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-        t = msg.header.stamp
-        odometry_info['duty_L'] = self.duty_L
-        odometry_info['duty_R'] = self.duty_R
-        odometry_info['t'] = t.nsecs/1e9; #nanoseconds to seconds
-        count = 0
-        for i in msg.detections:
-        	tag_id = i.id
-        	x = i.transform.translation.x
-        	y = i.transform.translation.y
-        	#convert quaternion to euler to get yaw
-        	quaternion =(i.transform.rotation.x,
-        	i.transform.rotation.y,
-        	i.transform.rotation.z,
-        	i.transform.rotation.w)
-        	euler = tf.transformations.euler_from_quaternion(quaternion)
-        	theta = euler[2] #yaw
-        	transform = [-theta, -x, -y] #transform of robot is opposite of transform of tag
-        	odometry_info[tag_id] = transform
+    def processAprilTags(self, msg):
 
-        	#compare with odometry data from last step, take average if multiple tags
+        # Only process if the wheels_cmd hasn't changed since last time and the last time < cur time
+        if self.wheelsCmdAlmostEqual(self.wheels_cmd, self.wheels_cmd_prev) and msg.header.stamp > self.timestamp_prev:
+            rospy.loginfo("Valid interval found")
+            deltas = []
+            for tag in msg.detections:
+                if tag.id in self.april_tags_prev:
+                    Ta_r1 = self.geometryTransformToMatrix(self.april_tags_prev[tag.id].transform)
+                    Ta_r2 = self.geometryTransformToMatrix(tag.transform)
+                    Tr2_r1 = np.dot(Ta_r1, tr.inverse_matrix(Ta_r2))
 
-        	if tag_id in self.old_odometry_info and odometry_info['t'] > self.old_odometry_info['t']:
-        		count += 1.0
-        		odometry_deltas[0] = self.old_odometry_info['duty_L'] #duty_L
-        		odometry_deltas[1] = self.old_odometry_info['duty_R'] #duty_R
-        		odometry_deltas[2] = odometry_info['t'] - self.old_odometry_info['t'] #dt
-        		odometry_deltas[3] = odometry_deltas[3] + odometry_info[tag_id][0]- self.old_odometry_info[tag_id][0] #theta_angle_pose_delta
-        		odometry_deltas[4] = odometry_deltas[4] + odometry_info[tag_id][1]- self.old_odometry_info[tag_id][1] #x_axis_pose_delta
-        		odometry_deltas[5] = odometry_deltas[5] + odometry_info[tag_id][2]- self.old_odometry_info[tag_id][2] #y_axis_pose_delta
-        		
-    	self.old_odometry_info = odometry_info
+                    # Get the angle, dx, and dy
+                    theta = tr.euler_from_matrix(Tr2_r1)[2]
+                    dx,dy = Tr2_r1[0:2,3]
+                    deltas.append([theta, dx, dy])
 
-    	#rospy.loginfo(odometry_info)
+            if deltas:
+                # We found some matches, average them, and print
+                deltas = np.mean(np.array(deltas),0).tolist()
+                cmd = [self.wheels_cmd_prev.vel_left, self.wheels_cmd_prev.vel_right, (msg.header.stamp - self.timestamp_prev).to_sec()]
+                sample = cmd+deltas
+                rospy.loginfo(sample)
 
-    	if count!=0:
-    		odometry_deltas[3] = odometry_deltas[3]/float(count)
-        	odometry_deltas[4] = odometry_deltas[4]/float(count)
-        	odometry_deltas[5] = odometry_deltas[5]/float(count)
-    		rospy.loginfo(odometry_deltas)
-        	dir = os.path.dirname(os.path.realpath('__file__'))
-        	filename = os.path.join(dir, '../duckietown/catkin_ws/src/visual_odometry_april_tags/training_data.txt')
-        	f=open(filename,'a+')
-        	np.savetxt(f,odometry_deltas, fmt='%-7.8f', newline=" ")
-        	f.write('\n')
-        	f.close()
-    		#np.savetxt('/home/wyatt/duckietown/training_data.txt', odometry_deltas)
-        #self.old_segment_list = segment_list_msg
-        # print "time to process segments:"
-        # print rospy.get_time() - t_start
-    
+                f = open(self.filename, 'a+')
+                np.savetxt(f, sample, fmt='%-7.8f', newline=" ")
+                f.write('\n')
+                f.close()
+        else:
+            err = "backwards time." if msg.header.stamp > self.pref_timestamp else "cmd changed"
+            rospy.logwarn("Invalid interval %s", err)
+
+        # Save the tags and wheels_cmd for next time
+        for tag in msg.detections:
+            self.april_tags_prev[tag.id] = tag
+        self.timestamp_prev = msg.header.stamp
+        self.wheels_cmd_prev = self.wheels_cmd
+
     def onShutdown(self):
-        rospy.loginfo("[VisualOdometryAprilTagsNode] Shutdown.")
+        rospy.loginfo("[%s] Shutdown.", self.node_name)
 
-if __name__ == '__main__': 
-    rospy.init_node('visual_odometry_april_tags',anonymous=False)
+
+if __name__ == '__main__':
+    rospy.init_node('visual_odometry_april_tags', anonymous=False)
     visual_odometry_april_tags_node = VisualOdometryAprilTagsNode()
     rospy.on_shutdown(visual_odometry_april_tags_node.onShutdown)
     rospy.spin()
-

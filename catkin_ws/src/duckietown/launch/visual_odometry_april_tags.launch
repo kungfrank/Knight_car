@@ -37,7 +37,7 @@
     <group if="$(arg raw)">
         <remap from="visual_odometry_april_tags_node/april_tags" to="apriltags/apriltags"/>
         <remap from="visual_odometry_april_tags_node/wheels_cmd" to="wheels_driver_node/wheels_cmd"/>
-        <include file="$(find visual_odometry_april_tags)/launch/visual_odometry_april_tags_node.launch">
+        <include file="$(find visual_odometry)/launch/visual_odometry_april_tags_node.launch">
             <arg name="veh" value="$(arg veh)"/>
             <arg name="local" value="$(arg local)"/>
             <arg name="config" value="$(arg config)"/>

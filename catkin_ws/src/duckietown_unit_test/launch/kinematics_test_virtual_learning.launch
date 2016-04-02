@@ -7,6 +7,8 @@
     <arg name="v" default="0.0" doc="The linear velocity for the test trajectory" />
     <arg name="omega" default="0.0" doc="The angular velocity for the test trajectory" />
     <arg name="gui" default="true" doc="Show a gui automatically when running this test" />
+    <arg name="learn_online" default="true" doc="True to update the weights from the vicon data online" />
+    <arg name="learning_sensor_node" default="virtual_learning_node" /> <!-- change this to visual odometry node when it's ready -->
 
 
     <!-- ground truth position_filter_node -->
@@ -24,6 +26,18 @@
         <arg name="veh" value="$(arg veh)"/>
     </include>
 
+    <!-- run the virtual_learning_node -->
+    <group if="$(arg learn_online)">
+        <remap from="virtual_learning_node/pose" to="position_filter_node/pose" />
+        <remap from="virtual_learning_node/wheels_cmd" to="wheels_driver_node/wheels_cmd_executed" />
+        <include file="$(find kinematics)/launch/virtual_learning_node.launch">
+            <arg name="veh" value="$(arg veh)"/>
+            <arg name="local" value="$(arg local)"/>
+            <arg name="config" value="$(arg config)"/>
+            <arg name="param_file_name" value="$(arg param_file_name)"/>
+        </include>
+    </group>
+
     <!-- run main kinematics -->
     <include file="$(find duckietown)/launch/kinematics.launch">
         <arg name="veh" value="$(arg veh)"/>
@@ -31,6 +45,7 @@
         <arg name="config" value="$(arg config)"/>
         <arg name="param_file_name" value="$(arg param_file_name)"/>
         <arg name="drive" value="false"/>
+        <arg name="learning_sensor_node" value="$(arg learning_sensor_node)"/>
     </include>
 
     <!-- run the pose2d_to_path_node -->

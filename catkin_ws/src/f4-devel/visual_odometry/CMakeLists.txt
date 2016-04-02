@@ -191,5 +191,5 @@ include_directories(
 if (CATKIN_ENABLE_TESTING)
     find_package(rostest REQUIRED)
     add_rostest(tests/odometry_training_pairs_tester_node.test)
-    # catkin_add_nosetests(tests/test_kinematics.py)
+    add_rostest(tests/visual_odometry_april_tags_tester_node.test)
 endif()

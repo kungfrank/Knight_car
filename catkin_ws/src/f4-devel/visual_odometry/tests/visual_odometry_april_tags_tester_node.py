@@ -39,7 +39,7 @@ class VisualOdometryAprilTagsTesterNode(unittest.TestCase):
         msg_wheels_cmd.vel_left = 1
         msg_wheels_cmd.vel_right = 1
         self.pub_wheels_cmd.publish(msg_wheels_cmd)
-
+        rospy.sleep(0.2)    #Wait so the tags come in the right order
         T1 = Transform()
         T2 = Transform()
         T1.translation.y = 2
@@ -52,7 +52,7 @@ class VisualOdometryAprilTagsTesterNode(unittest.TestCase):
         msg_tag1.detections.append(tag)
         msg_tag1.header.stamp = rospy.Duration(0)
         self.pub_april_tags.publish(msg_tag1)
-
+        rospy.sleep(0.2)    #Wait so the tags come in the right order
         msg_tag2 = AprilTags()
         msg_tag1.header.stamp = rospy.Duration(1)
         tag.transform = T2
@@ -60,7 +60,7 @@ class VisualOdometryAprilTagsTesterNode(unittest.TestCase):
         self.pub_april_tags.publish(msg_tag1)
 
         # Wait 1 second for the file to be output
-        rospy.sleep(1)
+        rospy.sleep(3)
         res = np.genfromtxt(rospy.get_param("visual_odometry_april_tags_node/filename", ''))
         assert_almost_equal(res, np.array([1,1,1,np.pi/2, 2, 2]))
 

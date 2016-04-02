@@ -87,7 +87,7 @@ class VisualOdometryAprilTagsNode(object):
                 f.write('\n')
                 f.close()
         else:
-            err = "backwards time." if msg.header.stamp > self.timestamp_prev else "cmd changed"
+            err = "backwards time." if msg.header.stamp < self.timestamp_prev else "cmd changed"
             rospy.logwarn("Invalid interval %s", err)
 
         # Save the tags and wheels_cmd for next time

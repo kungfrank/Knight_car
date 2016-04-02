@@ -19,7 +19,7 @@ class KinematicsLearningNode(object):
         fi_v_function = self.setupParameter('~fi_v_function_param', 'Duty_fi_v_naive')
         #theta_dot_weights = matrix(self.setupParameter('~theta_dot_weights_param', [-1.0]))
         #v_weights = matrix(self.setupParameter('~v_weights_param', [1.0]))
-        self.noZeros = self.setupParameter('~learner_number_of_zero_entries', 0)
+        self.noZeros = self.setupParameter('~learner_number_of_zero_entries', 25)
         self.noSamples = self.setupParameter('~learner_number_of_samples', 50)
         self.duty_threshold = self.setupParameter('~learner_duty_threshold', 0.4)
 

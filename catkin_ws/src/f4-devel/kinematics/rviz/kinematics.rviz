@@ -8,6 +8,7 @@ Panels:
         - /Status1
         - /Estimated Path1
         - /Vicon Path1
+        - /Ground Truth Path1
       Splitter Ratio: 0.620818
     Tree Height: 598
   - Class: rviz/Selection
@@ -85,10 +86,24 @@ Visualization Manager:
         Z: 0
       Topic: pose_to_path_node/path
       Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 25; 255; 0
+      Enabled: true
+      Line Style: Lines
+      Line Width: 0.03
+      Name: Ground Truth Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Topic: /ground_truth/ada/pose2d_to_path_node/path
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: vicon
+    Fixed Frame: ada
     Frame Rate: 30
   Name: root
   Tools:
@@ -142,5 +157,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1535
-  X: 65
-  Y: 24
+  X: 55
+  Y: 14

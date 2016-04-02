@@ -2,7 +2,7 @@
     <arg name="veh"/>
     <arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
     <arg name="config" default="baseline" doc="Specify a config."/>
-    <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman."/>
+    <arg name="param_file_name" default="test_default" doc="Specify a param file. ex:megaman."/>
     <arg name="hz" default="0.0" doc="The frequency of the test command topic" />
     <arg name="v" default="0.0" doc="The linear velocity for the test trajectory" />
     <arg name="omega" default="0.0" doc="The angular velocity for the test trajectory" />

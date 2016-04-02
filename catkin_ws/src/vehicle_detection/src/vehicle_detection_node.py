@@ -5,7 +5,7 @@ from duckietown_msgs.msg import VehicleCorners
 from geometry_msgs.msg import Point32
 from mutex import mutex
 from sensor_msgs.msg import CompressedImage, Image
-from std_msgs.msg import Bool, Float32
+from std_msgs.msg import Float32
 import cv2
 import numpy as np
 import os
@@ -36,7 +36,7 @@ class VehicleDetectionNode(object):
 				self.cbImage, queue_size=1)
 		self.pub_corners = rospy.Publisher("~corners", 
 				VehicleCorners, queue_size=1)
-		self.pub_chessboard_image = rospy.Publisher("~chessboard_image", 
+		self.pub_circlepattern_image = rospy.Publisher("~circlepattern_image", 
 				Image, queue_size=1)
 		self.pub_time_elapsed = rospy.Publisher("~detection_time",
 			Float32, queue_size=1)
@@ -53,12 +53,15 @@ class VehicleDetectionNode(object):
 		stream = file(filename, 'r')
 		data = yaml.load(stream)
 		stream.close()
-		self.chessboard_dims = tuple(data['chessboard_dims']['data'])
-		self.detection_max_time = data['detection_max_time']
-		rospy.loginfo('[%s] chessboard_dim : %s' % (self.node_name, 
-				self.chessboard_dims,))
-		rospy.loginfo('[%s] detection max time: %.4f' % (self.node_name, 
-				self.detection_max_time))
+		self.circlepattern_dims = tuple(data['circlepattern_dims']['data'])
+		self.blobdetector_min_area = data['blobdetector_min_area']
+		self.blobdetector_min_dist_between_blobs = data['blobdetector_min_dist_between_blobs']
+		rospy.loginfo('[%s] circlepattern_dim : %s' % (self.node_name, 
+				self.circlepattern_dims,))
+		rospy.loginfo('[%s] blobdetector_min_area: %.2f' % (self.node_name, 
+				self.blobdetector_min_area))
+		rospy.loginfo('[%s] blobdetector_min_dist_between_blobs: %.2f' % (self.node_name, 
+				self.blobdetector_min_dist_between_blobs))
 
 	def cbImage(self, image_msg):
 		# Start a daemon thread to process the image
@@ -74,19 +77,19 @@ class VehicleDetectionNode(object):
 					cv2.CV_LOAD_IMAGE_COLOR)
 			start = rospy.Time.now()
 			params = cv2.SimpleBlobDetector_Params()
-			params.minArea = 25
-			params.minDistBetweenBlobs = 2
+			params.minArea = self.blobdetector_min_area
+			params.minDistBetweenBlobs = self.blobdetector_min_dist_between_blobs
 			simple_blob_detector = cv2.SimpleBlobDetector(params)
 	
 			(detection, corners) = cv2.findCirclesGrid(image_cv,
-					self.chessboard_dims, flags=cv2.CALIB_CB_SYMMETRIC_GRID,
+					self.circlepattern_dims, flags=cv2.CALIB_CB_SYMMETRIC_GRID,
 					blobDetector=simple_blob_detector)
 			elapsed_time = (rospy.Time.now() - start).to_sec()
 			self.pub_time_elapsed.publish(elapsed_time)
 			cv2.drawChessboardCorners(image_cv, 
-					self.chessboard_dims, corners, detection)
+					self.circlepattern_dims, corners, detection)
 			image_msg_out = self.bridge.cv2_to_imgmsg(image_cv, "bgr8")
-			self.pub_chessboard_image.publish(image_msg_out)
+			self.pub_circlepattern_image.publish(image_msg_out)
 			if not detection:
 				corners_msg_out.detection.data = False
 				self.pub_corners.publish(corners_msg_out)
@@ -95,7 +98,7 @@ class VehicleDetectionNode(object):
 				self.lock.unlock()
 				return
 			corners_msg_out.detection.data = True
-			(corners_msg_out.H, corners_msg_out.W) = self.chessboard_dims
+			(corners_msg_out.H, corners_msg_out.W) = self.circlepattern_dims
 			for i in np.arange(corners.shape[0]):
 				p = Point32()
 				p.x, p.y = corners[i][0]

@@ -48,9 +48,9 @@ class VehicleFilterNode(object):
 		stream = file(filename, 'r')
 		data = yaml.load(stream)
 		stream.close()
-		self.square_side = data['square_side']
-		rospy.loginfo('[%s] square_side dim : %s' % (self.node_name, 
-				self.square_side))
+		self.distance_between_centers = data['distance_between_centers']
+		rospy.loginfo('[%s] distance_between_centers dim : %s' % (self.node_name, 
+				self.distance_between_centers))
 
 	def cbCameraInfo(self, camera_info_msg):
 		thread = threading.Thread(target=self.processCameraInfo,
@@ -84,7 +84,7 @@ class VehicleFilterNode(object):
 				return
 			height = vehicle_corners_msg.H 
 			width  = vehicle_corners_msg.W
-			unit_length = self.square_side
+			unit_length = self.distance_between_centers
 
 			object_corners = np.ones((height * width, 2), dtype=np.float32)
 			for i in np.arange(len(vehicle_corners_msg.corners)):

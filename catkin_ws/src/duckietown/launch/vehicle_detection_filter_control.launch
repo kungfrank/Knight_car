@@ -3,10 +3,10 @@
 	<arg name="local" default="false" />
 
 	<!-- Camera Node -->
-<!--	<include unless="$(arg local)" file="$(find duckietown)/launch/camera.launch">
+	<include unless="$(arg local)" file="$(find duckietown)/launch/camera.launch">
     		<arg name="veh" value="$(arg veh)"/> 
     	</include>
--->
+
 
 	<!-- Vehicle Detection Package -->
 	<remap from="vehicle_detection_node/image" to="camera_node/image/compressed" />

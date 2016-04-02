@@ -1,0 +1,11 @@
+<launch>
+ 	<arg name="veh"/>
+ 	<arg name="loc" default="1" doc="Physical room location of the duckietown map. E.g. 226 or 316"/>
+ 	<arg name="sub_node_name" default="global" doc="Specify if you want to add a subname to the name, e.g. global or fast"/>
+ 	
+ 	<group ns="$(arg veh)">
+         <node pkg="apriltags" type="AprilPostPros.py" name="apriltags_postprocessing_$(arg sub_node_name)_node" output="screen">
+         <param name="~loc" value="$(arg loc)" />
+         </node>
+ 	</group>
+ </launch>

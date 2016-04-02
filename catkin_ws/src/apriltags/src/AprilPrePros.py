@@ -8,7 +8,6 @@ from duckietown_msgs.msg import BoolStamped
 import time
 
 
-
 class AprilPrePros(object):
     """ """
     def __init__(self):    
@@ -18,14 +17,14 @@ class AprilPrePros(object):
         rospy.loginfo("[%s] Initializing " %(self.node_name))
         self.bridge = CvBridge()
 
-        self.pub_ToApril_global = rospy.Publisher( "apriltags_global/image_raw", Image, queue_size=1)
-        self.pub_ToApril_fast   = rospy.Publisher( "apriltags_fast/image_raw", Image, queue_size=1)
+        self.pub_ToApril_global = rospy.Publisher( "~global_image_raw", Image, queue_size=1)
+        self.pub_ToApril_fast   = rospy.Publisher( "~fast_image_raw", Image, queue_size=1)
         
         #self.sub_compressed_img = rospy.Subscriber( "camera_node/image/compressed" , CompressedImage , self.callback, queue_size=1 )
-        self.sub_img            = rospy.Subscriber( "camera_node/image/raw"  , Image           , self.callback )
+        self.sub_img            = rospy.Subscriber( "camera_node/image/raw", Image, self.callback)
         
-        self.sub_switch_global  = rospy.Subscriber("apriltags_global/switch", BoolStamped, self.global_switch, queue_size=1)
-        self.sub_switch_fast    = rospy.Subscriber("apriltags_fast/switch", BoolStamped, self.fast_switch, queue_size=1)
+        self.sub_switch_global  = rospy.Subscriber("~global_switch", BoolStamped, self.global_switch, queue_size=1)
+        self.sub_switch_fast    = rospy.Subscriber("~fast_switch", BoolStamped, self.fast_switch, queue_size=1)
         
         self.param_timer        = rospy.Timer(rospy.Duration.from_sec(1.0),    self.load_params  )
         

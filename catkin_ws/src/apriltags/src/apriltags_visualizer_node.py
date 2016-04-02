@@ -6,7 +6,7 @@ from duckietown_msgs.msg import AprilTags, TagDetection, TagInfo
 from geometry_msgs.msg import Point
 from visualization_msgs.msg import Marker, MarkerArray
 
-class detections_visualizer_node(object):
+class apriltags_visualizer_node(object):
     def __init__(self):
         # Save the name of the node
         self.node_name = rospy.get_name()
@@ -40,7 +40,7 @@ class detections_visualizer_node(object):
             "duck-crossing": self.info.DUCK_CROSSING}
 
         # Setup subscriber
-        self.sub_apriltags = rospy.Subscriber("/neptunus/apriltags_global/detections", AprilTags, self.processAprilTags,queue_size=1)
+        self.sub_apriltags = rospy.Subscriber("~apriltags_in", AprilTags, self.processAprilTags,queue_size=1)
 
         rospy.loginfo("[%s] Initialzed." %(self.node_name))
     
@@ -117,10 +117,10 @@ class detections_visualizer_node(object):
 
 if __name__ == '__main__':
     # Initialize the node with rospy
-    rospy.init_node('detections_visualizer_node', anonymous=False)
+    rospy.init_node('apriltags_visualizer_node', anonymous=False)
 
     # Create the NodeName object
-    node = detections_visualizer_node()
+    node = apriltags_visualizer_node()
 
     # Setup proper shutdown behavior 
     rospy.on_shutdown(node.on_shutdown)

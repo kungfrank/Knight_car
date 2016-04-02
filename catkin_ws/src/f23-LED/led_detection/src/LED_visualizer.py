@@ -1,9 +1,10 @@
 #!/usr/bin/env python
-import rospy, time, sys
+import rospy, sys
 from led_detection.LEDDetector import LEDDetector
 from duckietown_msgs.msg import Vector2D, LEDDetection, LEDDetectionArray, LEDDetectionDebugInfo
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+from math import sqrt
 
 from sensor_msgs.msg import CompressedImage 
 from duckietown_utils.bag_logs import numpy_from_ros_compressed
@@ -137,7 +138,7 @@ class LEDWindow(QWidget):
         if(self.unfiltered_leds):
             for d in self.unfiltered_leds.detections: 
                 dist = (d.pixels_normalized.x-click_img_coord.x())**2 + (d.pixels_normalized.y-click_img_coord.y())**2
-                if(dist < mindist and dist < 30):
+                if(dist < mindist and dist < sqrt(self.cell_size[0]**2+self.cell_size[1]**2)):
                     closest = d
                     mindist = dist
 

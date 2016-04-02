@@ -176,7 +176,7 @@ class LEDDetector():
 
         # Detect frequencies and discard non-periodic signals
         # ts_tolerance = 0.2 # unnecessary
-        f_tolerance = 0.25
+        f_tolerance = 0.3
 
         for (i,j) in candidate_cells:
             signal = cell_vals[:,i,j]

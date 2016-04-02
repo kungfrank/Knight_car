@@ -21,6 +21,8 @@ class LEDEmitter(object):
                                     ([0,1,0], [0,0,1], [0,0,1], [0,0,1], [0,1,0]),
                                     ([1,0,0], [1,0,0], [1,0,0], [1,0,0], [1,0,0])]
         self.cycle_timer = rospy.Timer(rospy.Duration.from_sec(.5),self.cycleTimer)
+        # take current time
+        # self.t0 = <time>
 
     def cycleTimer(self,event):
         if self.is_on:

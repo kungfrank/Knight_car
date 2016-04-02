@@ -63,7 +63,6 @@ class VisualOdometryAprilTagsNode(object):
 
         # Only process if the wheels_cmd hasn't changed since last time and the last time < cur time
         if self.wheelsCmdAlmostEqual(self.wheels_cmd, self.wheels_cmd_prev) and msg.header.stamp > self.timestamp_prev:
-            rospy.loginfo("Valid interval found")
             deltas = []
             for tag in msg.detections:
                 if tag.id in self.april_tags_prev:
@@ -88,7 +87,7 @@ class VisualOdometryAprilTagsNode(object):
                 f.write('\n')
                 f.close()
         else:
-            err = "backwards time." if msg.header.stamp > self.pref_timestamp else "cmd changed"
+            err = "backwards time." if msg.header.stamp > self.timestamp_prev else "cmd changed"
             rospy.logwarn("Invalid interval %s", err)
 
         # Save the tags and wheels_cmd for next time

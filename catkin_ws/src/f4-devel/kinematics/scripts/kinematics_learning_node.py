@@ -86,7 +86,7 @@ class KinematicsLearningNode(object):
 
 
     def vSampleCallback(self, v_sample):
-        print 'v_sample', v_sample
+        #print 'v_sample', v_sample
         # Only use this sample if it is informative
         if (v_sample.x_axis_pose_delta*v_sample.x_axis_pose_delta + v_sample.y_axis_pose_delta*v_sample.y_axis_pose_delta)/v_sample.dt >= self.v_disp_threshold:
             self.mutex.acquire()

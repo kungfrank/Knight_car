@@ -87,7 +87,7 @@ class LEDWindow(QWidget):
             self.stateLabel.setText("Processing...")
         else:
             self.triggerBtn.setVisible(True)
-            self.stateLabel.setText("Click on LEDs for details, click image to toggle camera/variance map...")
+            self.stateLabel.setText("Click on the squares for details or on image to toggle camera/variance map...")
 
         self.progress.emit(msg.state == 1, msg.capture_progress)
         self.unfiltered_leds = msg.led_all_unfiltered
@@ -103,7 +103,7 @@ class LEDWindow(QWidget):
     def createLayout(self):
         self.setWindowTitle("LED Detector Visualizer")
 
-        self.stateLabel = QLabel("Run led_detector on duckiebot")
+        self.stateLabel = QLabel("Press Detect to start")
         self.progressBar = QProgressBar()
         self.progressBar.setVisible(False)        
         self.triggerBtn = QPushButton("Detect")

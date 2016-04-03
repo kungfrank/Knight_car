@@ -6,7 +6,7 @@ import numpy
 
 
 # Virtual Learning Node
-# Author: Robert Katzschmann, Jason Pazis
+# Author: Robert Katzschmann
 # Inputs: pose, wheels_cmd
 # Outputs: theta_dot_sample, v_sample
 
@@ -20,44 +20,45 @@ class VirtualLearningNode(object):
         self.pub_theta_dot = rospy.Publisher("~theta_dot_sample", ThetaDotSample, queue_size=1)
         self.pub_v = rospy.Publisher("~v_sample", Vsample, queue_size=1)
 
+        # Initialize the pose to 0, and wheels_cmd to None
         self.pose_prev = None
-        self.wheels_cmd = None
+        self.pose_cur = None
+        self.wheels_cmd_prev = None
         self.msg_theta_dot = ThetaDotSample()
         self.msg_v = Vsample()
 
         rospy.loginfo("[%s] has started", self.node_name)
 
     def pose2DCallback(self, msg_pose):
-        if (self.pose_prev is not None) and (self.wheels_cmd is not None):
+        self.pose_prev = self.pose_cur
+        self.pose_cur = msg_pose
+
+    def wheelsCmdCallback(self, msg_wheels_cmd):
+        if (self.pose_prev is not None) and (self.pose_cur is not None):
             # Calculate the change in pose
-            dx = msg_pose.x - self.pose_prev.x
-            dy = msg_pose.y - self.pose_prev.y
-            dtheta = msg_pose.theta - self.pose_prev.theta
-            dt = (msg_pose.header.stamp - self.pose_prev.header.stamp).to_sec()
+            dx = self.pose_cur.x - self.pose_prev.x
+            dy = self.pose_cur.y - self.pose_prev.y
+            dtheta = self.pose_cur.theta - self.pose_prev.theta
+            dt = (pose_cur.header.stamp - self.pose_prev.header.stamp).to_sec() # poses not wheel commands!
 
             # Stuff the measurements into messages and publish
-            self.msg_theta_dot.d_L = self.wheels_cmd.vel_left
-            self.msg_theta_dot.d_R = self.wheels_cmd.vel_right
+            self.msg_theta_dot.d_L = self.wheels_cmd_prev.vel_left
+            self.msg_theta_dot.d_R = self.wheels_cmd_prev.vel_right
             self.msg_theta_dot.dt = dt
             self.msg_theta_dot.theta_angle_pose_delta = dtheta
             self.pub_theta_dot.publish(self.msg_theta_dot)
 
-            self.msg_v.d_L = self.wheels_cmd.vel_left
-            self.msg_v.d_R = self.wheels_cmd.vel_right
+            self.msg_v.d_L = self.wheels_cmd_prev.vel_left
+            self.msg_v.d_R = self.wheels_cmd_prev.vel_right
             self.msg_v.dt = dt
             self.msg_v.x_axis_pose_delta = dx
             self.msg_v.y_axis_pose_delta = dy
             self.msg_v.theta_angle_pose_delta = dtheta
             self.pub_v.publish(self.msg_v)
 
-        self.pose_prev = msg_pose
-
-    def wheelsCmdCallback(self, msg_wheels_cmd):
-        if (self.wheels_cmd is not None):
-            if (self.wheels_cmd.vel_left != msg_wheels_cmd.vel_left) or (self.wheels_cmd.vel_right != msg_wheels_cmd.vel_right):
-                self.pose_prev = None
-        self.wheels_cmd = msg_wheels_cmd
-        
+        # Update
+        self.wheels_cmd_prev = msg_wheels_cmd
+        self.pose_prev = self.pose_cur
 
     def setupParam(self, param_name, default_value):
         value = rospy.get_param(param_name, default_value)

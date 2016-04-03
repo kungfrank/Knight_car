@@ -63,16 +63,16 @@ class Duty_fi_linear_no_constant(Duty_fi_function):
 # constant feature and sum of d_L and d_R
 class Duty_fi_v_compound_linear(Duty_fi_function):
     def computeFi(self, d_L, d_R):
-        return concatenate((d_L, d_L+d_R), axis=1)
+        return concatenate((d_L+d_R, d_L), axis=1)
 
     def factorWeights(self, weights):
-        return [0.0, weights[0,0], weights[0,1]-weights[0,0]]
+        return [0.0, weights[0,0], weights[0,0]+weights[0,1]]
 
 # constant feature and difference between d_L and d_R
 class Duty_fi_theta_dot_compound_linear(Duty_fi_function):
     def computeFi(self, d_L, d_R):
         #print 'd_L', d_L, 'd_R', d_R
-        return concatenate((d_L, d_L-d_R), axis=1)
+        return concatenate((d_L-d_R, d_L), axis=1)
 
     def factorWeights(self, weights):
-        return [0.0, weights[0,0], -weights[0,1]-weights[0,0]]
+        return [0.0, weights[0,0], -weights[0,0]+weights[0,1]]

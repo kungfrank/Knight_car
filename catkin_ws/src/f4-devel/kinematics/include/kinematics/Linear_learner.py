@@ -9,9 +9,11 @@ from scipy.linalg import solve
 
 
 class Linear_learner(object):
-    def __init__(self, theta_dot_fi_function_name, v_fi_function_name):
+    def __init__(self, theta_dot_fi_function_name, v_fi_function_name, theta_dot_regularizer, v_regularizer):
         self.fi_theta_dot_function = globals()[theta_dot_fi_function_name]()
         self.fi_v_function = globals()[v_fi_function_name]()
+        self.theta_dot_regularizer = theta_dot_regularizer
+        self.v_regularizer = v_regularizer
 
     # fit theta_dot from a training set. file filename must contain a matrix whose
     # first four coloumns are the following:
@@ -53,9 +55,12 @@ class Linear_learner(object):
         # Find the weights for theta_dot
         # We use a simple least squares fit with l2 regularization
         #theta_dot_weights = matrix(linalg.lstsq(Fi_theta_dot, theta_dot)[0].flatten())
-        gramian = dot(Fi_theta_dot.T,Fi_theta_dot) + 10.0*len(Fi_theta_dot.T)*eye(len(Fi_theta_dot.T))
+        regularizer = self.theta_dot_regularizer*len(Fi_theta_dot.T)*eye(len(Fi_theta_dot.T))
+        regularizer[0,0] = 0.0
+        gramian = dot(Fi_theta_dot.T,Fi_theta_dot) + regularizer
         y = dot(Fi_theta_dot.T,theta_dot)
-        theta_dot_weights = solve(gramian, y)
+        #theta_dot_weights = solve(gramian, y)
+        theta_dot_weights = matrix(linalg.lstsq(gramian, y)[0].flatten())
 
         return theta_dot_weights
 
@@ -67,11 +72,9 @@ class Linear_learner(object):
         # a 0 angle (or one that is too close to 0) would cause a division
         # by 0 for r and cause problems in calculating s
         abs_theta_angle_pose_delta = maximum(abs(theta_angle_pose_delta),0.00001)
-        c = sqrt(pow(x_axis_pose_delta, 2) + pow(y_axis_pose_delta, 2))
+        # the sign is used to estimate if we're going forward on backwards
+        c = sign(d_L+d_R)*(sqrt(pow(x_axis_pose_delta, 2) + pow(y_axis_pose_delta, 2)))
 
-        # if (abs(theta_angle_pose_delta) < 0.000001)
-        #     v = c/dt
-        # else
         r = c/(2*sin(abs_theta_angle_pose_delta/2))
         s = abs_theta_angle_pose_delta*r
         v = s/dt
@@ -82,8 +85,11 @@ class Linear_learner(object):
         # Find the weights for v
         # We use a simple least squares fit with l2 regularization
         #v_weights = matrix(linalg.lstsq(Fi_v, v)[0].flatten())
-        gramian = dot(Fi_v.T,Fi_v) + 10.0*len(Fi_v.T)*eye(len(Fi_v.T))
+        regularizer = self.v_regularizer*len(Fi_v.T)*eye(len(Fi_v.T))
+        regularizer[0,0] = 0.0
+        gramian = dot(Fi_v.T,Fi_v) + regularizer
         y = dot(Fi_v.T,v)
-        v_weights = solve(gramian, y)
+        #v_weights = solve(gramian, y)
+        v_weights = matrix(linalg.lstsq(gramian, y)[0].flatten())
 
         return v_weights

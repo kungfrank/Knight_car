@@ -27,9 +27,13 @@ class Inverse_kinematics(object):
     def evaluate(self, theta_dot, v):
         self.b[1] = theta_dot
         self.b[2] = v
-        x = solve(self.A, self.b)
-        d_L = x[1,0]
-        d_R = x[2,0]
+        #x = solve(self.A, self.b)
+        #print x
+        #d_L = x[1,0]
+        #d_R = x[2,0]
+        x = linalg.lstsq(self.A, self.b)[0].flatten()
+        d_L = x[1]
+        d_R = x[2]
         # TODO: add clipping again to limit 
         #d_L = clip(x[1,0], -1.0, 1.0)
         #d_R = clip(x[2,0], -1.0, 1.0)

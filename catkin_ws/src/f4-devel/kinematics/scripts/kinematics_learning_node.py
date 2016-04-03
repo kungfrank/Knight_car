@@ -24,9 +24,11 @@ class KinematicsLearningNode(object):
         self.noVsamples = self.setupParameter('~learner_number_of_v_samples', 25)
         self.theta_dot_threshold = self.setupParameter('~learner_theta_dot_threshold', 0.2)
         self.v_disp_threshold = pow(self.setupParameter('~learner_v_disp_threshold', 0.05), 2)
+        theta_dot_regularizer = self.setupParameter('~learner_theta_dot_regularizer', 0.01)
+        v_regularizer = self.setupParameter('~learner_v_regularizer', 0.01)
         
         # Setup the kinematics learning model
-        self.kl = Linear_learner.Linear_learner(fi_theta_dot_function, fi_v_function)
+        self.kl = Linear_learner.Linear_learner(fi_theta_dot_function, fi_v_function, theta_dot_regularizer, v_regularizer)
 
         # Setup publishers and subscribers
         self.pub_theta_dot_kinematics_weights = rospy.Publisher("~theta_dot_kinematics_weights", KinematicsWeights, queue_size=1)

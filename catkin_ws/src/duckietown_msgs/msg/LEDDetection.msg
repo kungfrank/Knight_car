@@ -6,7 +6,7 @@ string color        # will be ‘r’, ‘g’ or ‘b’
 float32 confidence  # some value of confidence for the detection (TBD)
 
 # for debug/visualization
-float32[] signal_ts
+float64[] signal_ts
 float32[] signal
 float32[] fft_fs
 float32[] fft

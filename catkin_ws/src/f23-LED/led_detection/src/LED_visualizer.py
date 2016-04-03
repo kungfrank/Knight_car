@@ -12,8 +12,9 @@ import numpy as np
 
 # plotting 
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-from matplotlib.patches import Rectangle
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
+
 
 ## Aux
 gray_color_table = [qRgb(i, i, i) for i in range(256)]
@@ -41,8 +42,21 @@ def toQImage(im, copy=False):
 # For multithread-safe
 QCoreApplication.setAttribute(Qt.AA_X11InitThreads)
 
+class plotWin(QDialog):
+    def __init__(self, parent = None):
+        super(plotWin, self).__init__(parent)
+        self.figure = plt.figure()
+        self.canvas = FigureCanvas(self.figure)# set the layout
+        self.toolbar = NavigationToolbar(self.canvas, self)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.toolbar)
+        layout.addWidget(self.canvas)
+        self.setLayout(layout)
+
 class LEDWindow(QWidget):
     progress = pyqtSignal(bool, float)
+    
     def __init__(self, parent = None):
         super(LEDWindow, self).__init__(parent)
         self.createLayout()
@@ -53,7 +67,8 @@ class LEDWindow(QWidget):
         self.cell_size = None
         self.camtl = [0, 40] # top left
         self.progress.connect(self.updateBar)
-        
+        self.figDialogs = []
+
     def updateDebugInfo(self, msg):
         #try:
         #    self.variance_map = toQImage(numpy_from_ros_compressed(msg.variance_map))
@@ -61,7 +76,6 @@ class LEDWindow(QWidget):
         #    pass   
         self.progress.emit(msg.capturing, msg.capture_progress)
         self.unfiltered_leds = msg.led_all_unfiltered
-        print(msg.led_all_unfiltered.detections[0].fft_fs)
         self.cell_size = msg.cell_size
 
     def updateBar(self, active, progr):
@@ -141,17 +155,22 @@ class LEDWindow(QWidget):
                 if(dist < mindist and dist < sqrt(self.cell_size[0]**2+self.cell_size[1]**2)):
                     closest = d
                     mindist = dist
-
         if closest is not None:
-            fig, ax1 = plt.subplots()
-            ax1.plot(closest.signal_ts, closest.signal)
-            fig.suptitle('Signal @ ('+str(closest.pixels_normalized.x)+\
-                          ', ' + str(closest.pixels_normalized.y) + ')', fontsize=14, fontweight='bold')
-            fig, ax2 = plt.subplots()
-            ax2.plot(closest.fft_fs,closest.fft)
-            fig.suptitle('FFT @ ('+str(closest.pixels_normalized.x)+\
-                          ', ' + str(closest.pixels_normalized.y)+ ')', fontsize=14, fontweight='bold')
-            plt.show()
+            self.figDialogs.append(plotWin())
+            self.plot(closest, self.figDialogs[-1].figure)
+            self.figDialogs[-1].canvas.draw()
+            self.figDialogs[-1].show()
+
+    def plot(self, closest, figure):
+        ax = figure.add_subplot(211)
+        #print("Timestamps: {0}".format(closest.signal_ts))
+        ax.plot(closest.signal_ts, closest.signal)
+        ax.set_title('Signal @ ('+str(closest.pixels_normalized.x)+\
+                      ', ' + str(closest.pixels_normalized.y) + ')', fontsize=12)#, fontweight='bold')
+        ax2 = figure.add_subplot(212)
+        ax2.plot(closest.fft_fs,closest.fft)
+        ax2.set_title('FFT @ ('+str(closest.pixels_normalized.x)+\
+                      ', ' + str(closest.pixels_normalized.y)+ ')', fontsize=12)#, fontweight='bold')
 
 app = QApplication(sys.argv)
 win = LEDWindow(None)
@@ -184,7 +203,5 @@ class LEDVisualizerNode(object):
 rospy.init_node('LED_visualizer_node',anonymous=False)
 node = LEDVisualizerNode()
 #rospy.spin() # not quite needed for callbacks in python?
-# Start the event loop...
-
 win.show()
 sys.exit(app.exec_())

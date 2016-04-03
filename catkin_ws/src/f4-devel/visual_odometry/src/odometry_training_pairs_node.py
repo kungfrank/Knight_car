@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 import rospy
 from duckietown_msgs.msg import StopLineReading, LanePose, WheelsCmdStamped, Vsample, ThetaDotSample
-from std_msgs.msg import Float32
-from geometry_msgs.msg import Point
 from collections import deque
 import math
 

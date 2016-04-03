@@ -53,11 +53,12 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   CarControl.msg
+  DuckieSensor.msg
+  LanePose.msg
   LEDControl.msg
   LEDDetection.msg
   LEDDetectionArray.msg
-  DuckieSensor.msg
-  LanePose.msg
+  LEDDetectionDebugInfo.msg
   WheelsCmd.msg
   WheelsCmdStamped.msg
   TagDetection.msg

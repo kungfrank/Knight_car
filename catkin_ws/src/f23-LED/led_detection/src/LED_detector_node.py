@@ -2,44 +2,61 @@
 import rospy
 import time
 from led_detection.LEDDetector import LEDDetector
-from duckietown_msgs.msg import Vector2D, LEDDetection, LEDDetectionArray
+from std_msgs.msg import Byte
+from duckietown_msgs.msg import Vector2D, LEDDetection, LEDDetectionArray, LEDDetectionDebugInfo
 from sensor_msgs.msg import CompressedImage
 from duckietown_utils.bag_logs import numpy_from_ros_compressed
 import numpy as np
 
 class LEDDetectorNode(object):
     def __init__(self):
-        self.first_timestamp = None
+        self.first_timestamp = 0 # won't start unless it's None
         self.data = []
-        self.capture_time = 2.3 # capture time
+        self.capture_time = 1 # capture time
         self.capture_finished = False
         self.tinit = None
         
-        print('Constructing LEDDetector')
         self.node_name = rospy.get_name()
         self.pub_detections = rospy.Publisher("~raw_led_detection",LEDDetectionArray,queue_size=1)
-        # TODO get veh parameter
-        self.sub_cam = rospy.Subscriber("/maserati/camera_node/image/compressed",CompressedImage, self.camera_callback)
+        self.pub_debug = rospy.Publisher("~debug_info",LEDDetectionDebugInfo,queue_size=1)
+        self.veh_name = rospy.get_namespace().strip("/")
+        rospy.loginfo('Vehicle: %s'%self.veh_name)
+        self.sub_cam = rospy.Subscriber("camera_node/image/compressed",CompressedImage, self.camera_callback)
+        self.sub_cam = rospy.Subscriber("~trigger",Byte, self.trigger_callback)
+        print('Waiting for camera image...')
 
     def camera_callback(self, msg):
         float_time = msg.header.stamp.to_sec()
 
         if self.first_timestamp is None:
+            self.data = []
+            self.capture_finished = False
+            rospy.loginfo('Start capturing frames')
             self.first_timestamp = msg.header.stamp.to_sec()
             self.tinit = time.time()
         # TODO sanity check rel_time positive, restart otherwise 
         rel_time = float_time - self.first_timestamp
-
+        rospy.loginfo('Relative frame %s' %rel_time)
+        debug_msg = LEDDetectionDebugInfo()
         if rel_time < self.capture_time:
             rgb = numpy_from_ros_compressed(msg)
-            print('Capturing frame %s' %rel_time)
+            rospy.loginfo('Capturing frame %s' %rel_time)
             self.data.append({'timestamp': float_time, 'rgb': rgb})
+            debug_msg.state = 1
+            debug_msg.capture_progress = 100.0*rel_time/self.capture_time
+            self.pub_debug.publish(debug_msg)
+
         elif not self.capture_finished:
             self.capture_finished = True
+            debug_msg.state = 2
+            self.pub_debug.publish(debug_msg)
             self.process_and_publish()
-            # TODO can also remove the subscriber
+
+    def trigger_callback(self, msg):
+        self.first_timestamp = None
 
     def process_and_publish(self):
+        # TODO add check timestamps for dropped frames
         H, W, _ = self.data[0]['rgb'].shape
         n = len(self.data)
         dtype = [
@@ -51,11 +68,11 @@ class LEDDetectorNode(object):
             images[i]['timestamp'] = v['timestamp']
             images[i]['rgb'][:] = v['rgb']
         
-        det = LEDDetector()
+        det = LEDDetector(False, False, False, self.pub_debug)
         rgb0 = self.data[0]['rgb']
         mask = np.ones(dtype='bool', shape=rgb0.shape)
         tic = time.time()
-        result = det.detect_led(images, mask, [1.0, 1.5, 2.0], 5)
+        result = det.detect_led(images, mask, [2.8, 4.1, 5.0], 5)
         self.pub_detections.publish(result)
         toc = time.time()-tic
         tac = time.time()-self.tinit

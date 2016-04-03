@@ -22,7 +22,7 @@ class LEDJoyMapper(object):
         self.pub_color = rospy.Publisher("~change_color_pattern", Int8, queue_size=1)
         # Subscriptions
         self.sub_joy_ = rospy.Subscriber("joy", Joy, self.cbJoy, queue_size=1)
-        self.broadcast_patterns = [3.0, 3.5, 4.0]
+        self.broadcast_patterns = [2.8, 4.1, 5.0]
         self.color_index = [0,1,2]
 
     def cbJoy(self, joy_msg):

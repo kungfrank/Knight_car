@@ -73,7 +73,6 @@ class KinematicsLearningNode(object):
         if (self.theta_dot_negative_index >= (self.noZeros+self.noThetaDotSamples/2)) and (self.theta_dot_positive_index >= self.noZeros+self.noThetaDotSamples):
             weights = self.kl.fit_theta_dot(self.theta_dot_d_L, self.theta_dot_d_R, self.theta_dot_dt, self.theta_dot_theta_angle_pose_delta)
             weights = asarray(weights).flatten().tolist()
-            print 'theta_dot weights', weights
             # Put the weights in a message and publish
             msg_kinematics_weights = KinematicsWeights()
             msg_kinematics_weights.weights = weights
@@ -102,11 +101,10 @@ class KinematicsLearningNode(object):
                 if (average(abs(self.v_d_L)) > self.duty_threshold) and (average(abs(self.v_d_R)) > self.duty_threshold):
                     weights = self.kl.fit_v(self.v_d_L, self.v_d_R, self.v_dt, self.v_theta_angle_pose_delta, self.v_x_axis_pose_delta, self.v_y_axis_pose_delta)
                     weights = asarray(weights).flatten().tolist()
-                    print 'v weights', weights
                     # Put the weights in a message and publish
                     msg_kinematics_weights = KinematicsWeights()
                     msg_kinematics_weights.weights = weights
-                    #self.pub_v_kinematics_weights.publish(msg_kinematics_weights)
+                    self.pub_v_kinematics_weights.publish(msg_kinematics_weights)
                 # reset index
                 self.v_index = self.noZeros
             self.mutex.release()

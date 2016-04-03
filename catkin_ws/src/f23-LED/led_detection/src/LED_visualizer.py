@@ -2,6 +2,7 @@
 import rospy, sys
 from led_detection.LEDDetector import LEDDetector
 from duckietown_msgs.msg import Vector2D, LEDDetection, LEDDetectionArray, LEDDetectionDebugInfo
+from std_msgs.msg import Byte
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from math import sqrt
@@ -71,15 +72,21 @@ class LEDWindow(QWidget):
         self.imagescale = 0.0
         self.camtl = [0, 40] # top left
 
+    def set_trigger_pub(self, trig):
+        self.pub_trigger = trig
+
     def updateDebugInfo(self, msg):
         if(len(msg.variance_map.data)):
             self.variance_map = toQImage(numpy_from_ros_compressed(msg.variance_map))
 
         if msg.state == 1:
+            self.triggerBtn.setVisible(False)
             self.stateLabel.setText("Capture: ")  
         elif msg.state == 2:
+            self.triggerBtn.setVisible(False)
             self.stateLabel.setText("Processing...")
         else:
+            self.triggerBtn.setVisible(True)
             self.stateLabel.setText("Click on LEDs for details, click image to toggle camera/variance map...")
 
         self.progress.emit(msg.state == 1, msg.capture_progress)
@@ -98,7 +105,10 @@ class LEDWindow(QWidget):
 
         self.stateLabel = QLabel("Run led_detector on duckiebot")
         self.progressBar = QProgressBar()
-        self.progressBar.setVisible(False)
+        self.progressBar.setVisible(False)        
+        self.triggerBtn = QPushButton("Detect")
+        self.triggerBtn.clicked.connect(self.sendTrigger)  
+
         self.canvas = QWidget()
         addressEdit = QTextEdit()
 
@@ -106,12 +116,17 @@ class LEDWindow(QWidget):
         layout = QGridLayout()
         layout.addWidget(self.stateLabel, 0, 0)
         layout.addWidget(self.progressBar, 0, 1)
+        layout.addWidget(self.triggerBtn, 0, 1)
         layout.addWidget(self.canvas, 1, 0)
 
         layout.setRowStretch(2, 1)
         self.setLayout(layout)
 
         self.resize(640, 540)
+
+    def sendTrigger(self):
+        b = Byte(1)
+        self.pub_trigger.publish(b)
 
     def paintEvent(self, event):
         qp = QPainter()
@@ -217,9 +232,16 @@ class LEDVisualizerNode(object):
         self.capture_finished = False
         self.tinit = None
 
-        self.sub_info = rospy.Subscriber("/LED_detector_node/debug_info", LEDDetectionDebugInfo, self.info_callback)
-        self.sub_info = rospy.Subscriber("/maserati/camera_node/image/compressed", CompressedImage, self.cam_callback)
-        self.sub_info = rospy.Subscriber("/LED_detector_node/raw_led_detection", LEDDetectionArray, self.result_callback)
+        self.veh_name = rospy.get_namespace().strip("/")
+        if not self.veh_name:
+            self.veh_name = 'maserati' 
+
+        self.sub_info = rospy.Subscriber("/"+self.veh_name+"/LED_detector_node/debug_info", LEDDetectionDebugInfo, self.info_callback)
+        self.sub_info = rospy.Subscriber("camera_node/image/compressed", CompressedImage, self.cam_callback)
+        self.sub_info = rospy.Subscriber("/"+self.veh_name+"/LED_detector_node/raw_led_detection", LEDDetectionArray, self.result_callback)
+        self.pub_trigger = rospy.Publisher("/"+self.veh_name+"/LED_detector_node/trigger",Byte,queue_size=1)
+
+        win.set_trigger_pub(self.pub_trigger)
 
     def info_callback(self, msg):
         #print('Received info')

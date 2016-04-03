@@ -21,6 +21,7 @@ You can then publish to the topic manually by running the following command in a
 	rostopic pub /${VEHICLE_NAME}/led_emitter_node/change_to_state std_msgs/Float32 <float-value>
 
 Where <float-value> is the desired blinking frequency, e.g. 1.0, .5, 3.0, etc. If you wish to run the LED emitter test, run the following:
+
 	roslaunch led_emitter led_emitter_node_test.launch veh:=${VEHICLE_NAME}
 
 This will cycle through frequencies of 3.0hz, 3.5hz, and 4hz every 5 seconds. Once done, kill everything and make sure you have joystick control as described above. 
@@ -33,11 +34,13 @@ Pick your favourite duckiebot as the observer-bot. Refer to it as ${VEHICLE_NAME
 	roslaunch duckietown camera.launch veh:=${VEHICLE_NAME}
 
 In a separate terminal, fire up the LED detector and the custom GUI by running:
+
 	roslaunch led_detector LED_detector_with_gui.launch veh:=${VEHICLE_NAME} 
 
-(NOTE: to operate without a GUI:
-	laptop $ roslaunch led_detector LED_detector.launch veh:=${VEHICLE_NAME} )
+NOTE: to operate without a GUI:
 
+	laptop $ roslaunch led_detector LED_detector.launch veh:=${VEHICLE_NAME} 
+	
 The LED_detector_node will be launched on the robot, while LED_visualizer (a simple GUI) will be started on your laptop. Make sure the camera image from the observer-bot is visualized and updated in the visualizer (tip: check that your camera cap is off).
 
 Hit on Detect and wait to trigger a detection. This will not have any effect if LED_detector_node is not running on the duckiebot (it is included in the above launch file). After the capture and processing phases, the outcome will look like: 

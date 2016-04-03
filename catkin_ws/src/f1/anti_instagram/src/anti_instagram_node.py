@@ -58,6 +58,7 @@ class AntiInstagramNode():
 
 		# self.pub_health.publish(self.health)
 		self.pub_image.publish(self.corrected_image)
+		rospy.loginfo('Published Image')
 		self.numFramesSeen += 1
 		return
 

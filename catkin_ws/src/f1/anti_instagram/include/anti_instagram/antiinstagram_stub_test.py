@@ -10,7 +10,10 @@ def testImages(ai, imageset, gtimageset):
 		print ai.health
 		transimage = ai.applyTransform(image)
 		cv2.imwrite("testimage"+str(i)+".jpg",transimage)
-		print(np.mean(np.square(transimage-gtimageset[i])))
+		# uncorrected is > 500
+		error = np.mean(np.square(transimage-gtimageset[i]))
+		if error > 500:
+			print("Correction seemed to fail for image # "+str(i))
 
 
 

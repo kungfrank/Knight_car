@@ -36,12 +36,14 @@ class LEDDetectorNode(object):
             rgb = numpy_from_ros_compressed(msg)
             print('Capturing frame %s' %rel_time)
             self.data.append({'timestamp': float_time, 'rgb': rgb})
-            debug_msg.capturing = True
+            debug_msg.state = 1
             debug_msg.capture_progress = 100.0*rel_time/self.capture_time
             self.pub_debug.publish(debug_msg)
 
         elif not self.capture_finished:
             self.capture_finished = True
+            debug_msg.state = 2
+            self.pub_debug.publish(debug_msg)
             self.process_and_publish()
             # TODO can also remove the subscriber
 

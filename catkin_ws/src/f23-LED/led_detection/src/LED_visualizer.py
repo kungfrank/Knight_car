@@ -65,37 +65,46 @@ class LEDWindow(QWidget):
         self.unfiltered_leds = None
         self.filtered_leds = None
         self.cell_size = None
-        self.camtl = [0, 40] # top left
         self.progress.connect(self.updateBar)
         self.figDialogs = []
         self.plotCamImage = True
         self.imagescale = 0.0
+        self.camtl = [0, 40] # top left
 
     def updateDebugInfo(self, msg):
         if(len(msg.variance_map.data)):
             self.variance_map = toQImage(numpy_from_ros_compressed(msg.variance_map))
-        self.progress.emit(msg.capturing, msg.capture_progress)
+
+        if msg.state == 1:
+            self.stateLabel.setText("Capture: ")  
+        elif msg.state == 2:
+            self.stateLabel.setText("Processing...")
+        else:
+            self.stateLabel.setText("Click on LEDs for details, click image to toggle camera/variance map...")
+
+        self.progress.emit(msg.state == 1, msg.capture_progress)
         self.unfiltered_leds = msg.led_all_unfiltered
         self.cell_size = msg.cell_size
 
     def updateBar(self, active, progr):
-        self.progressBar.setEnabled(active)
+        self.progressBar.setVisible(active)
         self.progressBar.setValue(progr)
 
     def updateResults(self, msg):
         self.filtered_leds = msg
 
     def createLayout(self):
-        self.setWindowTitle("LED Detector Debug Visualizer")
+        self.setWindowTitle("LED Detector Visualizer")
 
-        progressLabel = QLabel("Capture:")
+        self.stateLabel = QLabel("Run led_detector on duckiebot")
         self.progressBar = QProgressBar()
+        self.progressBar.setVisible(False)
         self.canvas = QWidget()
         addressEdit = QTextEdit()
 
         # Put the widgets in a layout (now they start to appear):
         layout = QGridLayout()
-        layout.addWidget(progressLabel, 0, 0)
+        layout.addWidget(self.stateLabel, 0, 0)
         layout.addWidget(self.progressBar, 0, 1)
         layout.addWidget(self.canvas, 1, 0)
 

@@ -230,6 +230,7 @@ class LEDDetector():
             plt.show()
         if(self.publisher is not None):
             self.debug_msg.led_all_unfiltered = unfiltered
+            self.debug_msg.state = 0
             self.republish()
 
         return result

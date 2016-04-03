@@ -1,4 +1,4 @@
-bool capturing
+uint8 state # 0: idle, 1: capturing, 2: processing
 float32 capture_progress
 
 uint32[2] cell_size

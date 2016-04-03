@@ -53,13 +53,14 @@ class Linear_learner(object):
         Fi_theta_dot = self.fi_theta_dot_function.computeFi(d_L, d_R)
 
         # Find the weights for theta_dot
-        # We use a simple least squares fit with l2 regularization
-        #theta_dot_weights = matrix(linalg.lstsq(Fi_theta_dot, theta_dot)[0].flatten())
+        # Least squares fit
+        # l2 regularization. Penalize all but the first weight
         regularizer = self.theta_dot_regularizer*len(Fi_theta_dot.T)*eye(len(Fi_theta_dot.T))
         regularizer[0,0] = 0.0
-        gramian = dot(Fi_theta_dot.T,Fi_theta_dot) + regularizer
-        y = dot(Fi_theta_dot.T,theta_dot)
-        #theta_dot_weights = solve(gramian, y)
+        # Weighted least squares. Each sample is weighted by its dt
+        Fi_theta_dot_T_dt = Fi_theta_dot.T*dt.T
+        gramian = dot(Fi_theta_dot_T_dt,Fi_theta_dot) + regularizer
+        y = dot(Fi_theta_dot_T_dt,theta_dot)
         theta_dot_weights = matrix(linalg.lstsq(gramian, y)[0].flatten())
 
         return theta_dot_weights
@@ -83,13 +84,14 @@ class Linear_learner(object):
         Fi_v = self.fi_v_function.computeFi(d_L, d_R)
 
         # Find the weights for v
-        # We use a simple least squares fit with l2 regularization
-        #v_weights = matrix(linalg.lstsq(Fi_v, v)[0].flatten())
+        # Least squares fit
+        # l2 regularization. Penalize all but the first weight
         regularizer = self.v_regularizer*len(Fi_v.T)*eye(len(Fi_v.T))
         regularizer[0,0] = 0.0
-        gramian = dot(Fi_v.T,Fi_v) + regularizer
-        y = dot(Fi_v.T,v)
-        #v_weights = solve(gramian, y)
+        # Weighted least squares. Each sample is weighted by its dt
+        Fi_v_T_dt = Fi_v.T*dt.T
+        gramian = dot(Fi_v_T_dt,Fi_v) + regularizer
+        y = dot(Fi_v_T_dt,v)
         v_weights = matrix(linalg.lstsq(gramian, y)[0].flatten())
 
         return v_weights

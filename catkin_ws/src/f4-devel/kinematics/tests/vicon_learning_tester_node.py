@@ -60,7 +60,7 @@ class TestViconLearningNode(unittest.TestCase):
         self.pub_wheels_cmd.publish(msg_wheels_cmd)
 
         # Wait for the samples to come back
-        timeout = time.time()+5.0
+        timeout = time.time()+10.0
         while not (self.msg_v_received and self.msg_theta_dot_received) and not rospy.is_shutdown() and not time.time()>timeout:
             rospy.sleep(0.1)
 

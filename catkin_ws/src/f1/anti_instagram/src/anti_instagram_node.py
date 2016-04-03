@@ -15,7 +15,7 @@ class AntiInstagramNode():
 		# Initialize publishers and subscribers
 		self.pub_image = rospy.Publisher("~corrected_image",Image,queue_size=1)
 		self.pub_health = rospy.Publisher("~health",AntiInstagramHealth,queue_size=1)
-		self.sub_image = rospy.Subscriber("~uncorrected_image",Image,self.cbNewImage)
+		self.sub_image = rospy.Subscriber("~uncorrected_image",Image,self.cbNewImage,queue_size=1)
 
 		# Get all params from launch file
 		self.xyz = rospy.get_param("~xyz",1)

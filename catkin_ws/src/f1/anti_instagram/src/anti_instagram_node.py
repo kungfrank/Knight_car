@@ -44,7 +44,7 @@ class AntiInstagramNode():
 		cv_image = self.bridge.imgmsg_to_cv2(msg,"bgr8")
 		# cv_image=cv_image*0.3 # for testing only
 		# changes this to update on-line, with IIR, and not just in the beginning
-		if self.numFramesSeen < 5e6:
+		if self.numFramesSeen <= 1: #baseline param
 			# only calculate transform for the first few frames
 			# then apply the same transform indefintely
 			rospy.loginfo('Calculating new transform...')

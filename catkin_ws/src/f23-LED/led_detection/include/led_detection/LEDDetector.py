@@ -24,24 +24,19 @@ import cv2
 
 __all__ = ['LEDDetector']
 
-
-def ros_compressed_from_numpyrgb(np_arr):
-    msg = CompressedImage()
-    msg.header.stamp = rospy.Time.now()
-    msg.format = "jpeg"
-    msg.data = np.array(cv2.imencode('.jpg', np_arr)[1]).tostring()
-    return msg
-
 def ros_compressed_from_numpygray(np_arr):
     msg = CompressedImage()
     msg.header.stamp = rospy.Time.now()
     msg.format = "jpeg"
-    msg.data = np.array(cv2.imencode('.jpg', np_arr)[1]).tostring()
+    np_arr = 255*(1.0*np_arr/np.max(np_arr))
+    msg.data = np.array(cv2.imencode('.jpg', np.array(np_arr, dtype = np.uint8))[1]).tostring()
     return msg
-
 
 class LEDDetector():
     """ The LEDDetector class 
+    __init__ inputs: 
+        verbdict: {ploteverything: False, verbose: False, plotfinal: False}
+
     """
 
     def __init__(self, ploteverything_=False, verbose_=False, plotfinal_=False, publisher_=None):
@@ -131,6 +126,7 @@ class LEDDetector():
             raise ValueError('No images provided')
 
         timestamps = images['timestamp']
+        print('timestamps: {0}'.format(timestamps))
         rgb = images['rgb']
 
         rgb0 = rgb[0]
@@ -215,17 +211,17 @@ class LEDDetector():
                 ax2.plot(f,y_f)
                 plt.show()
 
+        plt.imshow(rgb0)
+        ax = plt.gca()
+
+        font = {'family': 'serif',
+                'color':  'red',
+                'weight': 'bold',
+                'size': 16,
+                }
+
         # Plot all results
         if(self.plotfinal):
-            plt.imshow(rgb0)
-            ax = plt.gca()
-
-            font = {'family': 'serif',
-                    'color':  'red',
-                    'weight': 'bold',
-                    'size': 16,
-                    }
-
             for r in result.detections:
                 pos = r.pixels_normalized
                 ax.add_patch(Rectangle((pos.x-0.5*cell_width, pos.y-0.5*cell_height), cell_width, cell_height, edgecolor="red", linewidth=3, facecolor="none"))

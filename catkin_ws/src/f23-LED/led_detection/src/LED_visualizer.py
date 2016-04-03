@@ -68,12 +68,12 @@ class LEDWindow(QWidget):
         self.camtl = [0, 40] # top left
         self.progress.connect(self.updateBar)
         self.figDialogs = []
+        self.plotCamImage = True
+        self.imagescale = 0.0
 
     def updateDebugInfo(self, msg):
-        #try:
-        #    self.variance_map = toQImage(numpy_from_ros_compressed(msg.variance_map))
-        #catch:
-        #    pass   
+        if(len(msg.variance_map.data)):
+            self.variance_map = toQImage(numpy_from_ros_compressed(msg.variance_map))
         self.progress.emit(msg.capturing, msg.capture_progress)
         self.unfiltered_leds = msg.led_all_unfiltered
         self.cell_size = msg.cell_size
@@ -115,9 +115,26 @@ class LEDWindow(QWidget):
         font.setPixelSize(16)
         qp.setFont(font)
 
-        qp.translate(self.camtl[0], self.camtl[1])
+        win_size = [self.frameGeometry().width()-self.camtl[0]-20,
+                    self.frameGeometry().height()-self.camtl[1]-50]
+
+        image = self.camera_image if self.plotCamImage else self.variance_map
+
+        
         if(self.camera_image is not None):
-            qp.drawImage(0,0,self.camera_image)
+            self.imagescale = min(1.0*win_size[0]/self.camera_image.width(),
+                        1.0*win_size[1]/self.camera_image.height())
+            qp.translate(self.camtl[0]+0.5*(win_size[0]-self.imagescale*self.camera_image.width())
+                         , self.camtl[1]+0.5*(win_size[1]-self.imagescale*self.camera_image.height()))
+
+        if(image is not None):
+            #print('scale:%s'%imagescale)
+            qp.scale(self.imagescale,self.imagescale)
+            k = 1.0*self.camera_image.width()/image.width()
+            qp.scale(k,k)
+            qp.drawImage(0,0,image)
+            qp.scale(1.0/k,1.0/k)
+
         if(self.unfiltered_leds is not None):
             for led in self.unfiltered_leds.detections:
                 led_rect = QRect(led.pixels_normalized.x-0.5*self.cell_size[0],
@@ -147,12 +164,14 @@ class LEDWindow(QWidget):
 
     def mousePressEvent(self, event):
         click_img_coord = event.pos()-QPoint(self.camtl[0], self.camtl[1])
+        click_img_coord = 1.0*click_img_coord/self.imagescale
         mindist = float("inf")
         closest = None
         if(self.unfiltered_leds):
             for d in self.unfiltered_leds.detections: 
                 dist = (d.pixels_normalized.x-click_img_coord.x())**2 + (d.pixels_normalized.y-click_img_coord.y())**2
-                if(dist < mindist and dist < sqrt(self.cell_size[0]**2+self.cell_size[1]**2)):
+                if(dist < mindist and 
+                   dist < self.imagescale**2*self.cell_size[0]**2+self.cell_size[1]**2):
                     closest = d
                     mindist = dist
         if closest is not None:
@@ -160,6 +179,12 @@ class LEDWindow(QWidget):
             self.plot(closest, self.figDialogs[-1].figure)
             self.figDialogs[-1].canvas.draw()
             self.figDialogs[-1].show()
+        else:
+            # Switch from camera image to variance map
+            self.plotCamImage = not self.plotCamImage 
+            if(not self.plotCamImage and self.variance_map is None):
+                self.plotCamImage = True
+
 
     def plot(self, closest, figure):
         ax = figure.add_subplot(211)
@@ -188,7 +213,7 @@ class LEDVisualizerNode(object):
         self.sub_info = rospy.Subscriber("/LED_detector_node/raw_led_detection", LEDDetectionArray, self.result_callback)
 
     def info_callback(self, msg):
-        print('Received info')
+        #print('Received info')
         win.updateDebugInfo(msg)
 
     def result_callback(self, msg):

@@ -125,7 +125,7 @@ class AprilPostPros(object):
             Q_Fc_Fv = C_Fc_Fv.toQuaternion()
             
             # Compute tag orientation in vehicle frame
-            Q_Ft_Fv =  Q_Ft_Fc * ( - Q_Fc_Fv )  #""" TODO check if order of multiplication is right ;)"""
+            Q_Ft_Fv =  ( - Q_Fc_Fv ) * Q_Ft_Fc   #""" TODO check if order of multiplication is right ;)"""
             
             # Compute position of tag in vehicle frame expressed in vehicle frame
             C_Fv_Fc = - C_Fc_Fv

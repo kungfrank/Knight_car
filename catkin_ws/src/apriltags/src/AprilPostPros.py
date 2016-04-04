@@ -113,9 +113,9 @@ class AprilPostPros(object):
             
             # Correct tag orientation
             # subtract 180 deg, so facing the camera is zero angle
-            A_180x = k.AngleAxis( np.pi , k.Vector(-1,0,0) )
+            A_180x = k.AngleAxis( np.pi , k.Vector(1,0,0) )
             Q_180x = A_180x.toQuaternion()
-            Q_corr = Q_read * Q_180x
+            Q_corr = Q_read * ( - Q_180x )
             # reassign axis to match translation coordinates
             Q_Ft_Fc = k.Quaternion( k.Vector( -Q_corr.e.z , -Q_corr.e.x , Q_corr.e.y ) , Q_corr.n )  # Rotation of tag frame (Ft) w/ to camera frame (Fc)
             
@@ -125,7 +125,7 @@ class AprilPostPros(object):
             Q_Fc_Fv = C_Fc_Fv.toQuaternion()
             
             # Compute tag orientation in vehicle frame
-            Q_Ft_Fv = ( - Q_Fc_Fv ) * Q_Ft_Fc #""" TODO check if order of multiplication is right ;)"""
+            Q_Ft_Fv =  Q_Ft_Fc * ( - Q_Fc_Fv )  #""" TODO check if order of multiplication is right ;)"""
             
             # Compute position of tag in vehicle frame expressed in vehicle frame
             C_Fv_Fc = - C_Fc_Fv

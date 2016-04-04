@@ -133,6 +133,16 @@ class AprilPostPros(object):
             detection.transform.rotation.z    = Q_Ft_Fv.e.z
             detection.transform.rotation.w    = Q_Ft_Fv.n
             
+            
+            # Debug Print
+            A_Ft_Fc = Q_Ft_Fc.toAngleAxis()
+            A_Ft_Fv = Q_Ft_Fv.toAngleAxis()
+            print 'Rotation in Camera Frame'
+            A_Ft_Fc()
+            print 'Rotation in Vehicle Frame'
+            A_Ft_Fv()
+            
+            
             #t_tv_Fv()
             #Q_Ft_Fv()
             #rospy.loginfo("[%s] Position " %(self.node_name))

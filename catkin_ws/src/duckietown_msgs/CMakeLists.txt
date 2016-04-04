@@ -71,9 +71,9 @@ add_message_files(
   Rects.msg
   SceneSegments.msg
   CoordinationClearance.msg
-#  IntersectionDetection.msg
-#  CoordinationSignal.msg
-#  TrafficLightDetection.msg
+  IntersectionDetection.msg
+  CoordinationSignal.msg
+  TrafficLightDetection.msg
   VehicleDetection.msg
   FSMState.msg
   BoolStamped.msg

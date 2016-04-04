@@ -155,16 +155,6 @@ class AprilPostPros(object):
             A_Ft_Fc()
             print 'Rotation in Vehicle Frame'
             A_Ft_Fv()
-            
-            
-            #t_tv_Fv()
-            #Q_Ft_Fv()
-            #rospy.loginfo("[%s] Position " %(self.node_name))
-            #t_tc_Fc()
-
-            #new_location_info.x = 2
-            #new_location_info.y = 3
-            #new_info.location = new_location_info
 
             tag_infos.append(new_info)
         

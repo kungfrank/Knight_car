@@ -57,12 +57,14 @@
  		<arg name="sub_node_name" value="fast"/>
  		<arg name="loc" value="$(arg loc)"/>
 		<arg name="param_file_name" value="$(arg pos_param_file_name)"/>
+		<arg name="config" value="$(arg config)"/>
  	</include>
  	<include file="$(find apriltags)/launch/apriltags_postprocessing_node.launch">
  		<arg name="veh" value="$(arg veh)"/>
  		<arg name="sub_node_name" value="global"/>
  		<arg name="loc" value="$(arg loc)"/>
 		<arg name="param_file_name" value="$(arg pos_param_file_name)"/>
+		<arg name="config" value="$(arg config)"/>
  	</include>
 
  	<!-- Visualizer node -->

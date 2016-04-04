@@ -105,7 +105,7 @@ class AprilPostPros(object):
             
             #Load rotation
             x = detection.transform.rotation.x
-            y = detection.transform.rotation.y
+            y = - detection.transform.rotation.y # mirror ?
             z = detection.transform.rotation.z
             w = detection.transform.rotation.w
             e = k.Vector( x , y , z )
@@ -149,8 +149,9 @@ class AprilPostPros(object):
             print 'Rotation in Camera Frame'
             A_Ft_Fc_read()
             Q_Ft_Fc_read()
-            #print 'Rotation in Camera Frame Corrected'
-            #A_Ft_Fc()
+            print 'Rotation in Camera Frame Corrected'
+            A_Ft_Fc()
+            Q_Ft_Fc()
             #print 'Rotation in Vehicle Frame'
             #A_Ft_Fv()
             

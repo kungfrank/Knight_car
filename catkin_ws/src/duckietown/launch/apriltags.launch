@@ -4,7 +4,9 @@
  	<!-- <arg name="camera" default="true" doc="If set to false, won't launch the camera."/> -->
  	<arg name="local" default="false" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
  	<arg name="config" default="baseline" doc="Specify a config."/>
- 	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+ 	<arg name="pre_param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+	<arg name="pos_param_file_name" default="default" doc="Specify a param file. ex:megaman." />
  	<arg name="raw" default="true" doc="If set to true, also publish raw image using decoder."/>
  	<arg name="live" default="true" doc="live set to false means we don't run the actual camera (i.e. running from a log file" />
  
@@ -24,7 +26,7 @@
  	<include file="$(find apriltags)/launch/apriltags_preprocessing_node.launch">
  		<arg name="veh" value="$(arg veh)"/>
  		<arg name="config" value="$(arg config)"/>
- 		<arg name="param_file_name" value="$(arg param_file_name)"/>
+ 		<arg name="param_file_name" value="$(arg pre_param_file_name)"/>
  	</include>
 
  	<!-- AprilTags Detections -->
@@ -54,11 +56,13 @@
  		<arg name="veh" value="$(arg veh)"/>
  		<arg name="sub_node_name" value="fast"/>
  		<arg name="loc" value="$(arg loc)"/>
+		<arg name="param_file_name" value="$(arg pos_param_file_name)"/>
  	</include>
  	<include file="$(find apriltags)/launch/apriltags_postprocessing_node.launch">
  		<arg name="veh" value="$(arg veh)"/>
  		<arg name="sub_node_name" value="global"/>
  		<arg name="loc" value="$(arg loc)"/>
+		<arg name="param_file_name" value="$(arg pos_param_file_name)"/>
  	</include>
 
  	<!-- Visualizer node -->

@@ -85,12 +85,19 @@ class AprilPostPros(object):
             # Localization stuff
             #######################
             
-            #TO DO --> load those parameters
-            scale        = 0.326
+            
+            """
+            scale        = 0.31
             camera_x     = 0.05  # x distance from wheel center
             camera_y     = 0.0   #
             camera_z     = 0.1   # height of camera from ground
-            camera_theta = 18    # degree of rotation arround y axis
+            camera_theta = 15    # degree of rotation arround y axis
+            """
+            scale        = rospy.get_param("~scale")
+            camera_x     = rospy.get_param("~camera_x")
+            camera_y     = rospy.get_param("~camera_y")
+            camera_z     = rospy.get_param("~camera_z")
+            camera_theta = rospy.get_param("~camera_theta")
             
             
             #Load translation
@@ -111,7 +118,7 @@ class AprilPostPros(object):
             e = k.Vector( x , y , z )
             Q_Ftag_Fold = k.Quaternion( e , w )
             
-            # New tag orientation reference (zero when facing camera) w/ to old tag ref fram from lib
+            # New tag orientation reference (zero when facing camera) w/ to old tag ref used by the lib
             C_Ft_Ftag = k.RotationMatrix( np.matrix([[0,0,-1],[-1,0,0],[0,1,0]]) )
             Q_Ft_Ftag = C_Ft_Ftag.toQuaternion()
             

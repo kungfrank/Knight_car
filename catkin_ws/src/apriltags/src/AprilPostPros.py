@@ -116,7 +116,7 @@ class AprilPostPros(object):
             # 180 arround x ??
             A_corr = k.AngleAxis( np.pi , k.Vector(-1,0,0) )
             Q_corr = A_corr.toQuaternion()
-            Q_Ft_Fc = Q_corr * Q_Ft_Fc_read
+            Q_Ft_Fc = Q_Ft_Fc_read * Q_corr
             
             
             # Camera localization

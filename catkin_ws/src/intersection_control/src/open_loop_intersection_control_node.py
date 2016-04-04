@@ -17,19 +17,20 @@ class OpenLoopIntersectionNode(object):
 
         # Construct maneuvers
         self.maneuvers = dict()
-        forward_cmd = WheelsCmdStamped(vel_left=0.4,vel_right=0.4)
-        left_cmd = WheelsCmdStamped(vel_left=-0.25,vel_right=0.25)
-        right_cmd = WheelsCmdStamped(vel_left=0.25,vel_right=-0.25)
-        stop_cmd = WheelsCmdStamped(vel_left=0.0,vel_right=0.0)
+        # forward_cmd = WheelsCmdStamped(vel_left=0.4,vel_right=0.4)
+        # left_cmd = WheelsCmdStamped(vel_left=-0.25,vel_right=0.25)
+        # right_cmd = WheelsCmdStamped(vel_left=0.25,vel_right=-0.25)
+        # stop_cmd = WheelsCmdStamped(vel_left=0.0,vel_right=0.0)
 
-        turn_left = [(2.3,forward_cmd),(0.6,left_cmd),(2.0,forward_cmd)]
-        turn_right = [(2,forward_cmd),(0.6,right_cmd),(2.0,forward_cmd)]
-        turn_forward = [(3.0,forward_cmd),(0.0,forward_cmd),(3.0,forward_cmd)]
-        turn_stop = [(5.0,stop_cmd)]
-        self.maneuvers[0] = turn_right
-        self.maneuvers[1] = turn_forward
-        self.maneuvers[2] = turn_left
-        self.maneuvers[-1] = turn_stop
+        # turn_left = [(2.3,forward_cmd),(0.6,left_cmd),(2.0,forward_cmd)]
+        # turn_right = [(2,forward_cmd),(0.6,right_cmd),(2.0,forward_cmd)]
+        # turn_forward = [(3.0,forward_cmd),(0.0,forward_cmd),(3.0,forward_cmd)]
+        # turn_stop = [(5.0,stop_cmd)]
+
+        self.maneuvers[0] = self.getManeuver("turn_left")
+        self.maneuvers[1] = self.getManeuver("turn_forward")
+        self.maneuvers[2] = self.getManeuver("turn_left")
+        self.maneuvers[-1] = self.getManeuver("turn_stop")
 
         self.rate = rospy.Rate(30)
 
@@ -37,6 +38,15 @@ class OpenLoopIntersectionNode(object):
         self.sub_in_lane = rospy.Subscriber("~in_lane", BoolStamped, self.cbInLane, queue_size=1)
         self.sub_turn_type = rospy.Subscriber("~turn_type", Int16, self.cbTurnType, queue_size=1)
         self.sub_mode = rospy.Subscriber("~mode", FSMState, self.cbFSMState, queue_size=1)
+
+    def getManeuver(self,param_name):
+        param_list = rospy.get_param("~%s"%(param_name))
+        # rospy.loginfo("PARAM_LIST:%s" %param_list)        
+        maneuver = list()
+        for param in param_list:
+            maneuver.append((param[0],WheelsCmdStamped(vel_left=param[1],vel_right=param[2])))
+        # rospy.loginfo("MANEUVER:%s" %maneuver)
+        return maneuver
 
     def cbTurnType(self,msg):
         self.turn_type = msg.data

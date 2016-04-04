@@ -109,7 +109,15 @@ class AprilPostPros(object):
             z = detection.transform.rotation.z
             w = detection.transform.rotation.w
             e = k.Vector( x , y , z )
-            Q_Ft_Fc = k.Quaternion( e , w ) # Rotation of tag frame (Ft) w/ to camera frame (Fc)
+            Q_Ft_Fc_read = k.Quaternion( e , w ) # Rotation of tag frame (Ft) w/ to camera frame (Fc)
+            
+            
+            # Correct tag orientation
+            # 180 arround x ??
+            A_corr = k.AngleAxis( np.pi , k.Vector(-1,0,0) )
+            Q_corr = A_corr.toQuaternion()
+            Q_Ft_Fc = Q_Ft_Fc_read * Q_corr
+            
             
             # Camera localization
             t_cv_Fv = k.Vector( camera_x , camera_y , camera_z )    # translation of camera w/ vehicle origin in vehicle frame
@@ -135,9 +143,12 @@ class AprilPostPros(object):
             
             
             # Debug Print
-            A_Ft_Fc = Q_Ft_Fc.toAngleAxis()
-            A_Ft_Fv = Q_Ft_Fv.toAngleAxis()
+            A_Ft_Fc_read = Q_Ft_Fc_read.toAngleAxis()
+            A_Ft_Fc      = Q_Ft_Fc.toAngleAxis()
+            A_Ft_Fv      = Q_Ft_Fv.toAngleAxis()
             print 'Rotation in Camera Frame'
+            A_Ft_Fc_read()
+            print 'Rotation in Camera Frame Corrected'
             A_Ft_Fc()
             print 'Rotation in Vehicle Frame'
             A_Ft_Fv()

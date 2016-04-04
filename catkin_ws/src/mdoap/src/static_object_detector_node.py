@@ -61,6 +61,8 @@ class Matcher:
             if not(h>15 and w >15 and d  < 120000):
                     continue
             if contour_type =="DUCK_COLOR": # extra filtering to remove lines
+                if cv2.contourArea(cnt)==0:
+                    continue
                 val = cv2.arcLength(cnt,True)**2/ cv2.contourArea(cnt)
                 if val > 35: continue
                 rect = cv2.minAreaRect(cnt)

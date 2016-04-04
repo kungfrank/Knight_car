@@ -34,6 +34,8 @@
 
     <!-- run the pose2d_to_path_node -->
     <remap from="pose2d_to_path_node/pose" to="position_filter_node/pose" />
+    <remap from="pose2d_to_path_node/vicon_pose" to="/duckiecar/pose" />
+    <remap from="pose2d_to_path_node/weights" to="kinematics_learning_node/v_kinematics_weights" />
     <include file="$(find kinematics)/launch/pose2d_to_path_node.launch">
         <arg name="veh" value="$(arg veh)"/>
     </include>
@@ -44,10 +46,8 @@
         <arg name="veh" value="$(arg veh)"/>
     </include>
 
-        <!-- TODO
-        must figure out how to best deal with the issue that it is hard to figure out this transform automatically -->
-        <node pkg="tf" type="static_transform_publisher" name="initial_pos_pub"
-              args="-0.083041 0.217900 0.090066 -0.0289928 0.0027761 -0.733276 0.679307 vicon $(arg veh) 100" />
+    <!-- Link the veh frame to the vicon frame -->
+    <node pkg="tf" type="static_transform_publisher" name="link_vicon_veh" args="0 0 0 0 0 0 1 vicon $(arg veh) 100"/>
 
     <group if="$(arg gui)">
         <!-- run rviz -->

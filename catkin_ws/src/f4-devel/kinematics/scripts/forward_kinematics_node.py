@@ -19,7 +19,7 @@ class ForwardKinematicsNode(object):
         fi_v_function = self.setupParameter('~fi_v_function_param', 'Duty_fi_v_naive')
         theta_dot_weights = matrix(self.setupParameter('~theta_dot_weights_param', [-1.0]))
         v_weights = matrix(self.setupParameter('~v_weights_param', [1.0]))
-        #print 'theta_dot_weights', type(theta_dot_weights), theta_dot_weights.shape, theta_dot_weights
+        self.filename = self.setupParameter("~FIfile","FIfile")
 
         #Setup the forward kinematics model
         self.fk = Forward_kinematics.Forward_kinematics(fi_theta_dot_function, fi_v_function, theta_dot_weights, v_weights)
@@ -58,7 +58,7 @@ class ForwardKinematicsNode(object):
         rospy.set_param(param_name,value) #Write to parameter server for transparancy
         rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
         return value
-        
+
 
 if __name__ == '__main__':
     rospy.init_node('forward_kinematics_node', anonymous=False)

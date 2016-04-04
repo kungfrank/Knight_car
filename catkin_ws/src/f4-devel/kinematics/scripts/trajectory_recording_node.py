@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import rospy, rospkg
 from duckietown_msgs.msg import WheelsCmdStamped
-from kinematics import Duty_fi_function
 from numpy import *
 import csv
+from kinematics.Duty_fi_function import *
 
 # Trajectory Recording Node
 # Authors: Jason Pazis
@@ -17,8 +17,8 @@ class TrajectoryRecordingNode(object):
 
         # Read parameters
         self.filename = self.setupParameter("~FIfile","FIfile")
-        self.fi_theta_dot_function = self.setupParameter('~fi_theta_dot_function_param', 'Duty_fi_theta_dot_compound_linear')
-        self.fi_v_function = self.setupParameter('~fi_v_function_param', 'Duty_fi_v_compound_linear')
+        self.fi_theta_dot_function = globals()[self.setupParameter('~fi_theta_dot_function_param', 'Duty_fi_theta_dot_compound_linear')]()
+        self.fi_v_function = globals()[self.setupParameter('~fi_v_function_param', 'Duty_fi_v_compound_linear')]()
 
         #Setup the subscriber
         self.sub_wheels_cmd = rospy.Subscriber("~wheels_cmd", WheelsCmdStamped, self.wheelsCmdCallback)
@@ -30,8 +30,8 @@ class TrajectoryRecordingNode(object):
         # We can't compute dt when we receive the first message
         if self.prev_wheels_cmd is not None:
             dt = msg_wheels_cmd.header.stamp.to_sec() - self.prev_wheels_cmd.header.stamp.to_sec()
-            theta_dot_fi = self.fi_theta_dot_function.computeFi(msg_wheels_cmd.vel_left, msg_wheels_cmd.vel_right)
-            v_fi = self.fi_v_function.computeFi(msg_wheels_cmd.vel_left, msg_wheels_cmd.vel_right)
+            theta_dot_fi = self.fi_theta_dot_function.computeFi(matrix(msg_wheels_cmd.vel_left), matrix(msg_wheels_cmd.vel_right))
+            v_fi = self.fi_v_function.computeFi(matrix(msg_wheels_cmd.vel_left), matrix(msg_wheels_cmd.vel_right))
 
             self.FI[0,:] = self.FI[0,:] + dt*theta_dot_fi
             self.FI[1,:] = self.FI[1,:] + dt*v_fi

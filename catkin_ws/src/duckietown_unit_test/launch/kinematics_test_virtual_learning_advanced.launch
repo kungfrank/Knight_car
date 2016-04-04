@@ -76,6 +76,16 @@
         <arg name="omega" value="$(arg omega)" doc="The angular velocity for the test trajectory" />
     </include>
 
+    <!-- run trajectory_recording_node -->
+    <remap from="trajectory_recording_node/wheels_cmd" to="wheels_driver_node/wheels_cmd_executed" />
+    <include file="$(find kinematics)/launch/trajectory_recording_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="local" value="$(arg local)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+        <arg name="FIfile" value="fi_file_aeou"/>
+    </include>
+
     <group if="$(arg gui)">
         <!-- run the rqt_robot_steering plugin -->
         <node pkg="rqt_robot_steering" type="rqt_robot_steering" name="rqt_robot_steering">

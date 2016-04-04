@@ -148,10 +148,11 @@ class AprilPostPros(object):
             A_Ft_Fv      = Q_Ft_Fv.toAngleAxis()
             print 'Rotation in Camera Frame'
             A_Ft_Fc_read()
-            print 'Rotation in Camera Frame Corrected'
-            A_Ft_Fc()
-            print 'Rotation in Vehicle Frame'
-            A_Ft_Fv()
+            Q_Ft_Fc_read()
+            #print 'Rotation in Camera Frame Corrected'
+            #A_Ft_Fc()
+            #print 'Rotation in Vehicle Frame'
+            #A_Ft_Fv()
             
             
             #t_tv_Fv()

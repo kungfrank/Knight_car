@@ -29,7 +29,7 @@ class OpenLoopIntersectionNode(object):
 
         self.maneuvers[0] = self.getManeuver("turn_left")
         self.maneuvers[1] = self.getManeuver("turn_forward")
-        self.maneuvers[2] = self.getManeuver("turn_left")
+        self.maneuvers[2] = self.getManeuver("turn_right")
         self.maneuvers[-1] = self.getManeuver("turn_stop")
 
         self.rate = rospy.Rate(30)

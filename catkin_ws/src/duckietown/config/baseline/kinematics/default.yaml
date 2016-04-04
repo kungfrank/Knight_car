@@ -5,5 +5,5 @@
   v_weights_param: [0.2673846771, 0.2396944977]
   learner_duty_threshold: 0.1
   learner_number_of_zero_entries: 10
-  learner_number_of_v_samples: 300
+  learner_number_of_v_samples: 150
   learner_number_of_theta_dot_samples_per_direction: 100

@@ -106,7 +106,7 @@ class AprilPostPros(object):
             #Load rotation
             x = detection.transform.rotation.x
             y = - detection.transform.rotation.y # mirror ?
-            z = detection.transform.rotation.z
+            z = - detection.transform.rotation.z
             w = detection.transform.rotation.w
             e = k.Vector( x , y , z )
             Q_Ft_Fc_read = k.Quaternion( e , w ) # Rotation of tag frame (Ft) w/ to camera frame (Fc)

@@ -103,6 +103,8 @@ class AprilPostPros(object):
             # Scale for april tag size
             t_tc_Fc = t_tc_Fc * scale
             
+            """
+            #OLD WORKING
             #Load rotation
             x = detection.transform.rotation.x
             y = - detection.transform.rotation.y # mirror ?
@@ -127,6 +129,46 @@ class AprilPostPros(object):
             # Compute tag orientation in vehicle frame
             Q_Ft_Fv =   Q_Ft_Fc  *  Q_Fc_Fv 
             
+            # Debug Print
+            A_read       = Q_read.toAngleAxis()
+            A_corr       = Q_corr.toAngleAxis()
+            A_Ft_Fc      = Q_Ft_Fc.toAngleAxis()
+            A_Ft_Fv      = Q_Ft_Fv.toAngleAxis()
+            print 'Rotation Read'
+            A_read()
+            print 'Rotation Corrected'
+            A_corr()
+            print 'Rotation in Camera Frame'
+            A_Ft_Fc()
+            print 'Rotation in Vehicle Frame'
+            A_Ft_Fv()
+            
+            """
+            
+            #Load rotation
+            x = detection.transform.rotation.x
+            y = detection.transform.rotation.y 
+            z = detection.transform.rotation.z
+            w = detection.transform.rotation.w
+            e = k.Vector( x , y , z )
+            Q_Ftag_Fold = k.Quaternion( e , w ) 
+            
+            # New tag orientation reference (zero when facing camera)
+            C_Ft_Ftag = k.RotationMatrix( np.matrix([[0,0,-1],[-1,0,0],[0,1,0]]) )
+            Q_Ft_Ftag = C_Ft_Ftag.toQuaternion()
+            
+            # Camera ref w/ to old ref frame used by the lib
+            C_Fold_Fc = k.RotationMatrix( np.matrix([[0,-1,0],[0,0,-1],[1,0,0]]) )
+            Q_Fold_Fc = C_Fold_Fc.toQuaternion()
+            
+            # Camera localization
+            t_cv_Fv = k.Vector( camera_x , camera_y , camera_z )    # translation of camera w/ vehicle origin in vehicle frame
+            C_Fc_Fv = k.euler2RotationMatrix(0,camera_theta,0)  # Rotation   of camera frame w/ vehicle frame
+            Q_Fc_Fv = C_Fc_Fv.toQuaternion()
+            
+            # Compute tag orientation in vehicle frame
+            Q_Ft_Fv =  Q_Fc_Fv * Q_Fold_Fc * Q_Ftag_Fold * Q_Ft_Ftag
+            
             # Compute position of tag in vehicle frame expressed in vehicle frame
             C_Fv_Fc = - C_Fc_Fv
             t_tc_Fv = C_Fv_Fc * t_tc_Fc
@@ -141,18 +183,11 @@ class AprilPostPros(object):
             detection.transform.rotation.z    = Q_Ft_Fv.e.z
             detection.transform.rotation.w    = Q_Ft_Fv.n
             
-            
             # Debug Print
-            A_read       = Q_read.toAngleAxis()
-            A_corr       = Q_corr.toAngleAxis()
-            A_Ft_Fc      = Q_Ft_Fc.toAngleAxis()
+            A_read       = Q_Ftag_Fold.toAngleAxis()
             A_Ft_Fv      = Q_Ft_Fv.toAngleAxis()
             print 'Rotation Read'
             A_read()
-            print 'Rotation Corrected'
-            A_corr()
-            print 'Rotation in Camera Frame'
-            A_Ft_Fc()
             print 'Rotation in Vehicle Frame'
             A_Ft_Fv()
 

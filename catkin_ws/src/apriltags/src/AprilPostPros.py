@@ -146,12 +146,15 @@ class AprilPostPros(object):
             A_read       = Q_read.toAngleAxis()
             A_corr       = Q_corr.toAngleAxis()
             A_Ft_Fc      = Q_Ft_Fc.toAngleAxis()
+            A_Ft_Fv      = Q_Ft_Fv.toAngleAxis()
             print 'Rotation Read'
             A_read()
             print 'Rotation Corrected'
             A_corr()
             print 'Rotation in Camera Frame'
             A_Ft_Fc()
+            print 'Rotation in Vehicle Frame'
+            A_Ft_Fv()
             
             
             #t_tv_Fv()

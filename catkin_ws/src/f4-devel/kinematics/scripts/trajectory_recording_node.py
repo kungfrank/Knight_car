@@ -16,7 +16,6 @@ class TrajectoryRecordingNode(object):
         self.FI = zeros((2,2))
 
         # Read parameters
-        self.veh_name = self.setupParameter("~veh_name","megaman")
         self.filename = self.setupParameter("~FIfile","FIfile")
         self.fi_theta_dot_function = self.setupParameter('~fi_theta_dot_function_param', 'Duty_fi_theta_dot_compound_linear')
         self.fi_v_function = self.setupParameter('~fi_v_function_param', 'Duty_fi_v_compound_linear')
@@ -40,6 +39,7 @@ class TrajectoryRecordingNode(object):
         
     # Save accumulated FI
     def saveFI(self):
+        print 'saving FI'
         savetxt(self.filename, self.FI)
 
 
@@ -53,5 +53,7 @@ class TrajectoryRecordingNode(object):
 if __name__ == '__main__':
     rospy.init_node('trajectory_recording_node', anonymous=False)
     trajectory_recording_node = TrajectoryRecordingNode()
-    rospy.on_shutdown(trajectory_recording_node.saveFI)
+    def shutdownFunction():
+        trajectory_recording_node.saveFI()
+    rospy.on_shutdown(shutdownFunction)
     rospy.spin()

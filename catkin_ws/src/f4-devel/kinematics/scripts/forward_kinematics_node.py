@@ -58,7 +58,7 @@ class ForwardKinematicsNode(object):
         rospy.set_param(param_name,value) #Write to parameter server for transparancy
         rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
         return value
-
+        
 
 if __name__ == '__main__':
     rospy.init_node('forward_kinematics_node', anonymous=False)

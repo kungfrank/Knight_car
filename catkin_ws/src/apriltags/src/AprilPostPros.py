@@ -116,7 +116,7 @@ class AprilPostPros(object):
             # 180 arround x ??
             A_corr = k.AngleAxis( np.pi , k.Vector(-1,0,0) )
             Q_corr = A_corr.toQuaternion()
-            Q_Ft_Fc = Q_Ft_Fc_read * Q_corr
+            Q_Ft_Fc = Q_corr * Q_Ft_Fc_read
             
             
             # Camera localization
@@ -125,7 +125,7 @@ class AprilPostPros(object):
             Q_Fc_Fv = C_Fc_Fv.toQuaternion()
             
             # Compute tag orientation in vehicle frame
-            Q_Ft_Fv = Q_Ft_Fc * Q_Fc_Fv  #""" TODO check if order of multiplication is right ;)"""
+            Q_Ft_Fv = Q_Fc_Fv *  Q_Ft_Fc #""" TODO check if order of multiplication is right ;)"""
             
             # Compute position of tag in vehicle frame expressed in vehicle frame
             C_Fv_Fc = - C_Fc_Fv

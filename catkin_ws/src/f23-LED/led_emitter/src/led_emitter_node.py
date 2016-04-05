@@ -17,10 +17,10 @@ class LEDEmitter(object):
         self.cycle = None
         self.pattern_index = 1
         self.is_on = False
-        self.color_pattern_list = [([1,1,1], [1,1,1], [1,1,1], [1,1,1], [1,1,1]),
-                                    ([0,1,0], [0,0,1], [0,0,1], [0,0,1], [0,1,0]),
-                                    ([1,0,0], [1,0,0], [1,0,0], [1,0,0], [1,0,0])]
-        self.cycle_timer = rospy.Timer(rospy.Duration.from_sec(.5),self.cycleTimer)
+        self.color_pattern_list = [([0,0,0], [0,0,0], [1,1,1], [0,0,0], [0,0,0]),
+                                    ([0,0,0], [0,0,0], [0,0,1], [0,0,0], [0,0,0]),
+                                    ([0,0,0], [0,0,0], [1,0,0], [0,0,0], [0,0,0])]
+        self.cycle_timer = rospy.Timer(rospy.Duration.from_sec(2.8),self.cycleTimer)
         # take current time
         # self.t0 = <time>
 
@@ -49,7 +49,7 @@ class LEDEmitter(object):
                 self.cycle_timer = rospy.Timer(rospy.Duration.from_sec(1.0/(2.0*self.cycle)),self.cycleTimer)
             except ValueError as e:
                 self.cycle = None
-        self.pub_state.publish(self.cycle)
+        self.pub_state.publish(float(self.cycle))
 
 if __name__ == '__main__':
     rospy.init_node('led_emitter',anonymous=False)

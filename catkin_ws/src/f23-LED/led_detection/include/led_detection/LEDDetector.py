@@ -39,11 +39,11 @@ class LEDDetector():
 
     """
 
-    def __init__(self, ploteverything_=False, verbose_=False, plotfinal_=False, publisher_=None):
-        self.ploteverything = ploteverything_
-        self.verbose = verbose_
-        self.plotfinal = plotfinal_
-        self.publisher = publisher_
+    def __init__(self, ploteverything=False, verbose=False, plotfinal=False, publisher=None):
+        self.ploteverything = ploteverything
+        self.verbose = verbose
+        self.plotfinal = plotfinal
+        self.publisher = publisher
         self.debug_msg = LEDDetectionDebugInfo()
         pass
 
@@ -126,7 +126,7 @@ class LEDDetector():
             raise ValueError('No images provided')
 
         timestamps = images['timestamp']
-        print('timestamps: {0}'.format(timestamps))
+        # print('timestamps: {0}'.format(timestamps))
         rgb = images['rgb']
 
         rgb0 = rgb[0]

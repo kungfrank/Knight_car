@@ -144,12 +144,13 @@ class LEDWindow(QWidget):
 
         image = self.camera_image if self.plotCamImage else self.variance_map
 
-        
         if(self.camera_image is not None):
             self.imagescale = min(1.0*win_size[0]/self.camera_image.width(),
                         1.0*win_size[1]/self.camera_image.height())
-            qp.translate(self.camtl[0]+0.5*(win_size[0]-self.imagescale*self.camera_image.width())
-                         , self.camtl[1]+0.5*(win_size[1]-self.imagescale*self.camera_image.height()))
+            self.frametl = [self.camtl[0]+0.5*(win_size[0]-self.imagescale*self.camera_image.width()),
+                        self.camtl[1]+0.5*(win_size[1]-self.imagescale*self.camera_image.height())]
+        
+            qp.translate(self.frametl[0], self.frametl[1])
 
         if(image is not None):
             #print('scale:%s'%imagescale)
@@ -187,7 +188,7 @@ class LEDWindow(QWidget):
         qp.end()
 
     def mousePressEvent(self, event):
-        click_img_coord = event.pos()-QPoint(self.camtl[0], self.camtl[1])
+        click_img_coord = event.pos()-QPoint(self.frametl[0], self.frametl[1])
         click_img_coord = 1.0*click_img_coord/self.imagescale
         mindist = float("inf")
         closest = None

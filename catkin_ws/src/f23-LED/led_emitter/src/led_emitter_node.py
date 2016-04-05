@@ -15,12 +15,12 @@ class LEDEmitter(object):
         self.sub_cycle_state = rospy.Subscriber("~change_light_frequency",Float32, self.changeState)
         self.sub_pattern_state = rospy.Subscriber("~change_color_pattern",Int8, self.changePattern)
         self.cycle = None
-        self.pattern_index = 1
+        self.pattern_index = 0
         self.is_on = False
         self.color_pattern_list = [([0,0,0], [0,0,0], [1,1,1], [0,0,0], [0,0,0]),
                                     ([0,0,0], [0,0,0], [0,0,1], [0,0,0], [0,0,0]),
                                     ([0,0,0], [0,0,0], [1,0,0], [0,0,0], [0,0,0])]
-        self.cycle_timer = rospy.Timer(rospy.Duration.from_sec(2.8),self.cycleTimer)
+        self.cycle_timer = rospy.Timer(rospy.Duration.from_sec(.1),self.cycleTimer)
         # take current time
         # self.t0 = <time>
 

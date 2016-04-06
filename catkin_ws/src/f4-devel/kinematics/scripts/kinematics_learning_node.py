@@ -22,10 +22,10 @@ class KinematicsLearningNode(object):
         self.noZeros = self.setupParameter('~learner_number_of_zero_entries', 25)
         self.noThetaDotSamples = 2*self.setupParameter('~learner_number_of_theta_dot_samples_per_direction', 25)
         self.noVsamples = self.setupParameter('~learner_number_of_v_samples', 25)
-        self.theta_dot_threshold = self.setupParameter('~learner_theta_dot_threshold', 0.2)
-        self.v_disp_threshold = pow(self.setupParameter('~learner_v_disp_threshold', 0.05), 2)
-        theta_dot_regularizer = self.setupParameter('~learner_theta_dot_regularizer', 0.01)
-        v_regularizer = self.setupParameter('~learner_v_regularizer', 0.01)
+        self.theta_dot_threshold = self.setupParameter('~learner_theta_dot_threshold', 0.5)
+        self.v_disp_threshold = pow(self.setupParameter('~learner_v_disp_threshold', 0.1), 2)
+        theta_dot_regularizer = self.setupParameter('~learner_theta_dot_regularizer', 1.0)
+        v_regularizer = self.setupParameter('~learner_v_regularizer', 1.0)
         
         # Setup the kinematics learning model
         self.kl = Linear_learner.Linear_learner(fi_theta_dot_function, fi_v_function, theta_dot_regularizer, v_regularizer)
@@ -60,18 +60,21 @@ class KinematicsLearningNode(object):
         self.mutex.acquire()
         # Only use this sample if it is informative
         if (self.theta_dot_negative_index < self.noZeros+self.noThetaDotSamples/2) and (theta_dot_sample.theta_angle_pose_delta/theta_dot_sample.dt <= -self.theta_dot_threshold):
+            #print 'adding negative'
             self.theta_dot_d_L[self.theta_dot_negative_index] = theta_dot_sample.d_L
             self.theta_dot_d_R[self.theta_dot_negative_index] = theta_dot_sample.d_R
             self.theta_dot_dt[self.theta_dot_negative_index] = theta_dot_sample.dt
             self.theta_dot_theta_angle_pose_delta[self.theta_dot_negative_index] = theta_dot_sample.theta_angle_pose_delta
             self.theta_dot_negative_index += 1
         elif (self.theta_dot_positive_index < self.noZeros+self.noThetaDotSamples) and (theta_dot_sample.theta_angle_pose_delta/theta_dot_sample.dt >= self.theta_dot_threshold):
+            #print 'adding positive'
             self.theta_dot_d_L[self.theta_dot_positive_index] = theta_dot_sample.d_L
             self.theta_dot_d_R[self.theta_dot_positive_index] = theta_dot_sample.d_R
             self.theta_dot_dt[self.theta_dot_positive_index] = theta_dot_sample.dt
             self.theta_dot_theta_angle_pose_delta[self.theta_dot_positive_index] = theta_dot_sample.theta_angle_pose_delta
             self.theta_dot_positive_index += 1
 
+        print 'theta_dot_negative_index', self.theta_dot_negative_index, 'theta_dot_positive_index', self.theta_dot_positive_index
         # Only fit when a sufficient number of informative samples has been gathered
         if (self.theta_dot_negative_index >= (self.noZeros+self.noThetaDotSamples/2)) and (self.theta_dot_positive_index >= self.noZeros+self.noThetaDotSamples):
             weights = self.kl.fit_theta_dot(self.theta_dot_d_L, self.theta_dot_d_R, self.theta_dot_dt, self.theta_dot_theta_angle_pose_delta)

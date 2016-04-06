@@ -8,6 +8,8 @@
     <arg name="cam_info" default="true" doc="If set to true, use cam_info_reader_node to pusblish CameraInfo."/>
     <arg name="live" default="true" doc="live set to false means we don't run the actual camera (i.e. running from a log file" />
     <arg name="bagin"/>
+    <arg name="log" default="false" doc="True if a bag should be saved to bagout"/>
+    <arg name="bagout"/>
 
     <!-- decoder_node -->
     <group if="$(arg raw)">
@@ -56,4 +58,5 @@
 
     <!-- Start the bags -->
     <node pkg="rosbag" type="play" name="rosbag_play" args="$(arg bagin) -r 0.02"/>
+    <node if="$(arg log)" pkg="rosbag" type="record" name="rosbag_record" args="/ferrari/apriltags/apriltags /ferrari/apriltags/tags_image   -O $(arg bagout)"/>
 </launch>	

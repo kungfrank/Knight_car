@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import rospy, sys
+import rospy, sys, time
 from led_detection.LEDDetector import LEDDetector
 from duckietown_msgs.msg import Vector2D, LEDDetection, LEDDetectionArray, LEDDetectionDebugInfo
 from std_msgs.msg import Byte
@@ -74,23 +74,35 @@ class LEDWindow(QWidget):
     def set_trigger_pub(self, trig):
         self.pub_trigger = trig
 
-    def updateDebugInfo(self, msg):
+    def updateState(self, msg, alive):
         if(len(msg.variance_map.data)):
             self.variance_map = toQImage(numpy_from_ros_compressed(msg.variance_map))
 
+        if not alive:
+            self.stateLabel.setText("Waiting for node heartbeat...")
+            self.triggerBtn.setEnabled(False)
+            return
+        else:
+            self.triggerBtn.setEnabled(True)
+
+        self.progress.emit(msg.state == 1, msg.capture_progress)
+        if len(msg.led_all_unfiltered.detections):
+            self.unfiltered_leds = msg.led_all_unfiltered 
+            self.cell_size = msg.cell_size
+
         if msg.state == 1:
             self.triggerBtn.setVisible(False)
-            self.stateLabel.setText("Capture: ")  
+            self.stateLabel.setText("Capture: ")    
+            self.unfiltered_leds = None
         elif msg.state == 2:
             self.triggerBtn.setVisible(False)
             self.stateLabel.setText("Processing...")
-        else:
+        elif msg.state == 0:
             self.triggerBtn.setVisible(True)
-            self.stateLabel.setText("Click on the squares for details or on image to toggle camera/variance map...")
-
-        self.progress.emit(msg.state == 1, msg.capture_progress)
-        self.unfiltered_leds = msg.led_all_unfiltered
-        self.cell_size = msg.cell_size
+            if self.unfiltered_leds is not None:
+                self.stateLabel.setText("Click on the squares for details or on image to toggle camera/variance map...")
+            else:
+                self.stateLabel.setText("No detections, press Detect to start.")
 
     def updateBar(self, active, progr):
         self.progressBar.setVisible(active)
@@ -102,10 +114,11 @@ class LEDWindow(QWidget):
     def createLayout(self):
         self.setWindowTitle("LED Detector Visualizer")
 
-        self.stateLabel = QLabel("Press Detect to start")
+        self.stateLabel = QLabel("Initializing...")
         self.progressBar = QProgressBar()
         self.progressBar.setVisible(False)        
         self.triggerBtn = QPushButton("Detect")
+        self.triggerBtn.setEnabled(False)
         self.triggerBtn.clicked.connect(self.sendTrigger)  
 
         self.canvas = QWidget()
@@ -160,7 +173,9 @@ class LEDWindow(QWidget):
             qp.scale(1.0/k,1.0/k)
 
         if(self.unfiltered_leds is not None):
+            tmp = 0
             for led in self.unfiltered_leds.detections:
+                tmp +=1 
                 led_rect = QRect(led.pixels_normalized.x-0.5*self.cell_size[0],
                                  led.pixels_normalized.y-0.5*self.cell_size[1], 
                                  self.cell_size[0],
@@ -182,7 +197,7 @@ class LEDWindow(QWidget):
                 qp.drawText(led.pixels_normalized.x+0.5*self.cell_size[0]+10,
                             led.pixels_normalized.y-0.5*self.cell_size[1],
                             QString.number(led.frequency, 'g', 2))
-                            #1.0*led.frequency)
+
                 qp.drawRect(led_rect)
         qp.end()
 
@@ -232,9 +247,12 @@ class LEDVisualizerNode(object):
         self.capture_finished = False
         self.tinit = None
 
+        self.node_last_seen = -1
+
         self.veh_name = rospy.get_namespace().strip("/")
         if not self.veh_name:
             # fall back on private param passed thru rosrun
+            # syntax is: rosrun <pkg> <node> _veh:=<bot-id>
             if rospy.has_param('~veh'):
                 self.veh_name = rospy.get_param('~veh')
               
@@ -245,12 +263,13 @@ class LEDVisualizerNode(object):
         self.sub_info = rospy.Subscriber("/"+self.veh_name+"/camera_node/image/compressed", CompressedImage, self.cam_callback)
         self.sub_info = rospy.Subscriber("/"+self.veh_name+"/LED_detector_node/raw_led_detection", LEDDetectionArray, self.result_callback)
         self.pub_trigger = rospy.Publisher("/"+self.veh_name+"/LED_detector_node/trigger",Byte,queue_size=1)
+        self.hbtimer = rospy.Timer(rospy.Duration.from_sec(.2), self.heartbeat_timer)
 
         win.set_trigger_pub(self.pub_trigger)
 
     def info_callback(self, msg):
-        #print('Received info')
-        win.updateDebugInfo(msg)
+        self.node_last_seen = time.time()
+        win.updateState(msg, True)
 
     def result_callback(self, msg):
         win.updateResults(msg)
@@ -260,7 +279,11 @@ class LEDVisualizerNode(object):
         npimg = numpy_from_ros_compressed(msg)
         win.camera_image = toQImage(npimg)
         win.update()
-        
+
+    def heartbeat_timer(self, event):
+        if(time.time()-self.node_last_seen>1.5):
+            win.updateState(LEDDetectionDebugInfo(), False)
+
 rospy.init_node('LED_visualizer_node',anonymous=False)
 node = LEDVisualizerNode()
 #rospy.spin() # not quite needed for callbacks in python?

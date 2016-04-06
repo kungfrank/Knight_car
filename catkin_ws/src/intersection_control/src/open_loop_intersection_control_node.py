@@ -30,7 +30,7 @@ class OpenLoopIntersectionNode(object):
         self.maneuvers[0] = self.getManeuver("turn_left")
         self.maneuvers[1] = self.getManeuver("turn_forward")
         self.maneuvers[2] = self.getManeuver("turn_right")
-        self.maneuvers[-1] = self.getManeuver("turn_stop")
+        # self.maneuvers[-1] = self.getManeuver("turn_stop")
 
         self.rate = rospy.Rate(30)
 
@@ -49,18 +49,19 @@ class OpenLoopIntersectionNode(object):
         return maneuver
 
     def cbTurnType(self,msg):
-        self.turn_type = msg.data
+        if self.mode == "INTERSECTION_CONTROL":
+            self.turn_type = msg.data #Only listen if in INTERSECTION_CONTROL mode
+            self.trigger(self.turn_type)
 
     def cbInLane(self,msg):
         self.in_lane = msg.data
 
     def cbFSMState(self,msg):
         if (not self.mode == "INTERSECTION_CONTROL") and msg.state == "INTERSECTION_CONTROL":
-            self.mode = msg.state
-            rospy.loginfo("[%s] %s triggered. turn_type: %s" %(self.node_name,self.mode,self.turn_type))
-            self.trigger(self.turn_type)
-        
+            # Switch into INTERSECTION_CONTROL mode
+            rospy.loginfo("[%s] %s triggered." %(self.node_name,self.mode))
         self.mode = msg.state
+        self.turn_type = -1 #Reset turn_type at mode change
 
     def publishDoneMsg(self):
         msg = BoolStamped()
@@ -70,6 +71,12 @@ class OpenLoopIntersectionNode(object):
         rospy.loginfo("[%s] interesction_done!" %(self.node_name))
     
     def trigger(self,turn_type):
+        if turn_type == -1: #Wait. Publish stop command. Does not publish done.
+            cmd = WheelsCmdStamped(vel_left=0.0,vel_right=0.0)
+            cmd.header.stamp = rospy.Time.now()
+            self.pub_cmd.publish(cmd)
+            return
+
         published_already = False
         for index, pair in enumerate(self.maneuvers[turn_type]):
             cmd = copy.deepcopy(pair[1])

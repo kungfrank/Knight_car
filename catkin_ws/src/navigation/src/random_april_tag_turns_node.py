@@ -29,7 +29,7 @@ class RandomAprilTagTurnsNode(object):
         if(self.fsm_mode != "INTERSECTION_CONTROL"):
             self.turn_type = -1
             self.pub_turn_type.publish(self.turn_type)
-            rospy.loginfo("Turn type now: %i" %(self.turn_type))
+            rospy.loginfo("[%s] Turn type: %i" %(self.node_name, self.turn_type))
             
     def cbTag(self, tag_msgs):
         if(self.fsm_mode == "INTERSECTION_CONTROL"):
@@ -50,14 +50,14 @@ class RandomAprilTagTurnsNode(object):
                     elif (signType == taginfo.T_INTERSECTION):
                         availableTurns = [0,2]
 
-                        #now randomly choose a possible direction
+                    #now randomly choose a possible direction
                     if(len(availableTurns)>0):
                         randomIndex = numpy.random.randint(len(availableTurns))
                         chosenTurn = availableTurns[randomIndex]
                         self.turn_type = chosenTurn
                         self.pub_turn_type.publish(self.turn_type)
-                        rospy.loginfo("possible turns %s." %(availableTurns))
-                        rospy.loginfo("Turn type now: %i" %(self.turn_type))
+                        rospy.loginfo("[%s] possible turns %s." %(self.node_name,availableTurns))
+                        rospy.loginfo("[%s] Turn type now: %i" %(self.node_name,self.turn_type))
 
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

@@ -56,7 +56,7 @@ class AprilPrePros(object):
         self.fast_x_down     = rospy.get_param("~fast_x_down")
         self.global_x_down   = rospy.get_param("~global_x_down")
         
-        rospy.loginfo("[%s] Parameters Loaded " %(self.node_name))
+        # rospy.loginfo("[%s] Parameters Loaded " %(self.node_name))
         
         
     def init_timers(self):
@@ -67,6 +67,10 @@ class AprilPrePros(object):
         
 
     def cbSwitch(self,msg):
+        switch_src = "OFF"
+        if msg.data:
+            switch_src = "ON"
+        rospy.loginfo("[%s] is switched %s" %(self.node_name,switch_src))
         self.switch = msg.data
 
     def callback(self,msg):

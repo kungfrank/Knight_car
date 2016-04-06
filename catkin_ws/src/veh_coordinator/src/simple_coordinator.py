@@ -41,6 +41,9 @@ class VehicleCoordinator():
         self.last_state_transition = time()
         self.random_delay = 0
 
+        self.intersection_go_published = False
+
+
         self.node = rospy.init_node('veh_coordinator', anonymous=True)
 
         # Subscriptions

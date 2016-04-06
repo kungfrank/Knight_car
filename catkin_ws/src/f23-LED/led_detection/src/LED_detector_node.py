@@ -10,16 +10,28 @@ import numpy as np
 
 class LEDDetectorNode(object):
     def __init__(self):
-        self.first_timestamp = 0 # won't start unless it's None
+        self.first_timestamp = -1 # won't start unless it's None
         self.data = []
-        self.capture_time = 1 # capture time
-        self.capture_finished = False
+        self.capture_time = 1.0 # capture time
+        self.capture_finished = True
         self.tinit = None
+        self.trigger = False
+        self.node_state = 0
         
         self.node_name = rospy.get_name()
         self.pub_detections = rospy.Publisher("~raw_led_detection",LEDDetectionArray,queue_size=1)
         self.pub_debug = rospy.Publisher("~debug_info",LEDDetectionDebugInfo,queue_size=1)
         self.veh_name = rospy.get_namespace().strip("/")
+
+        if not self.veh_name:
+            # fall back on private param passed thru rosrun
+            # syntax is: rosrun <pkg> <node> _veh:=<bot-id>
+            if rospy.has_param('~veh'):
+                self.veh_name = rospy.get_param('~veh')
+              
+        if not self.veh_name:
+            raise ValueError('Vehicle name is not set.')
+
         rospy.loginfo('Vehicle: %s'%self.veh_name)
         self.sub_cam = rospy.Subscriber("camera_node/image/compressed",CompressedImage, self.camera_callback)
         self.sub_cam = rospy.Subscriber("~trigger",Byte, self.trigger_callback)
@@ -27,33 +39,44 @@ class LEDDetectorNode(object):
 
     def camera_callback(self, msg):
         float_time = msg.header.stamp.to_sec()
+        debug_msg = LEDDetectionDebugInfo()
 
-        if self.first_timestamp is None:
+        if self.trigger:
+            self.trigger = False
             self.data = []
             self.capture_finished = False
             rospy.loginfo('Start capturing frames')
             self.first_timestamp = msg.header.stamp.to_sec()
             self.tinit = time.time()
-        # TODO sanity check rel_time positive, restart otherwise 
-        rel_time = float_time - self.first_timestamp
-        rospy.loginfo('Relative frame %s' %rel_time)
-        debug_msg = LEDDetectionDebugInfo()
-        if rel_time < self.capture_time:
-            rgb = numpy_from_ros_compressed(msg)
-            rospy.loginfo('Capturing frame %s' %rel_time)
-            self.data.append({'timestamp': float_time, 'rgb': rgb})
-            debug_msg.state = 1
-            debug_msg.capture_progress = 100.0*rel_time/self.capture_time
-            self.pub_debug.publish(debug_msg)
 
-        elif not self.capture_finished:
-            self.capture_finished = True
-            debug_msg.state = 2
-            self.pub_debug.publish(debug_msg)
-            self.process_and_publish()
+        elif self.capture_finished:
+            self.node_state = 0
+            print('Waiting for trigger signal...')
+
+        if self.first_timestamp > 0:
+            # TODO sanity check rel_time positive, restart otherwise 
+            rel_time = float_time - self.first_timestamp
+
+            # Capturing
+            if rel_time < self.capture_time:
+                rgb = numpy_from_ros_compressed(msg)
+                rospy.loginfo('Capturing frame %s' %rel_time)
+                self.data.append({'timestamp': float_time, 'rgb': rgb})
+                self.node_state = 1
+                debug_msg.capture_progress = 100.0*rel_time/self.capture_time
+
+            # Start processing
+            elif not self.capture_finished and self.first_timestamp > 0:
+                self.capture_finished = True
+                self.first_timestamp = 0
+                self.node_state = 2
+                self.send_state(debug_msg)
+                self.process_and_publish()
+            
+        self.send_state(debug_msg) # TODO move heartbeat to dedicated thread
 
     def trigger_callback(self, msg):
-        self.first_timestamp = None
+        self.trigger = True
 
     def process_and_publish(self):
         # TODO add check timestamps for dropped frames
@@ -78,6 +101,10 @@ class LEDDetectorNode(object):
         tac = time.time()-self.tinit
         print('Done. Processing Time: %.2f'%toc)
         print('Total Time taken: %.2f'%tac)
+
+    def send_state(self, msg):
+        msg.state = self.node_state
+        self.pub_debug.publish(msg) 
 
 if __name__ == '__main__':
     rospy.init_node('LED_detector_node',anonymous=False)

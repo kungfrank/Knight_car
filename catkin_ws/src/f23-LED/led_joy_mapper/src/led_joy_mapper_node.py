@@ -28,6 +28,8 @@ class LEDJoyMapper(object):
             1: 'CAR_SIGNAL_B',
             # 'Y' is pressed
             3: 'CAR_SIGNAL_C',
+            # 'X' is pressed
+            2: 'off',
             # lb is pressed
             4: 'traffic_light_go',
             # rb is pressed

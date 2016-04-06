@@ -48,6 +48,7 @@ class LEDEmitter(object):
             'yellow': [1,1,0],
             'purple': [1,0,1], 
             'cyan': [0,1,1],
+            'black': [0,0,0],
         }
 
         scale = 0.5
@@ -60,11 +61,12 @@ class LEDEmitter(object):
         f2 = 4.1
         f3 = 5.0 
 
-        if pattern_name  in ['CAR_SIGNAL_A', 'CAR_SIGNAL_B',   'CAR_SIGNAL_C']:
+        if pattern_name  in ['off', 'CAR_SIGNAL_A', 'CAR_SIGNAL_B',   'CAR_SIGNAL_C']:
             m = {
               'CAR_SIGNAL_A': ('green', f1),
               'CAR_SIGNAL_B': ('purple', f2),
               'CAR_SIGNAL_C': ('yellow', f3),
+              'off': ('black', f3),
             }
             color, self.cycle = m[pattern_name]
 

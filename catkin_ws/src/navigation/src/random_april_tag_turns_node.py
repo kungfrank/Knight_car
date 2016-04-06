@@ -13,20 +13,12 @@ class RandomAprilTagTurnsNode(object):
         rospy.loginfo("[%s] Initialzing." %(self.node_name))
 
         # Setup publishers
-        # self.pub_topic_a = rospy.Publisher("~topic_a",String, queue_size=1)
         self.pub_turn_type = rospy.Publisher("~turn_type",Int16, queue_size=1, latch=True)
 
         # Setup subscribers
-        # self.sub_topic_b = rospy.Subscriber("~topic_b", String, self.cbTopic)
         self.sub_topic_mode = rospy.Subscriber("~mode", FSMState, self.cbMode, queue_size=1)
         self.sub_topic_tag = rospy.Subscriber("~tag", AprilTags, self.cbTag, queue_size=1)
        
-
-        # Read parameters
-        self.pub_timestep = self.setupParameter("~pub_timestep",1.0)
-        # Create a timer that calls the cbTimer function every 1.0 second
-        #self.timer = rospy.Timer(rospy.Duration.from_sec(self.pub_timestep),self.cbTimer)
-
         rospy.loginfo("[%s] Initialzed." %(self.node_name))
 
         self.rate = rospy.Rate(30) # 10hz
@@ -34,13 +26,13 @@ class RandomAprilTagTurnsNode(object):
     def cbMode(self, mode_msg):
         #print mode_msg
         self.fsm_mode = mode_msg.state
-        if(self.fsm_mode != mode_msg.INTERSECTION_CONTROL):
+        if(self.fsm_mode != "INTERSECTION_CONTROL"):
             self.turn_type = -1
             self.pub_turn_type.publish(self.turn_type)
             rospy.loginfo("Turn type now: %i" %(self.turn_type))
             
     def cbTag(self, tag_msgs):
-        if(self.fsm_mode == FSMState.INTERSECTION_CONTROL):
+        if(self.fsm_mode == "INTERSECTION_CONTROL"):
             #loop through list of april tags
             for taginfo in tag_msgs.infos:
                 print taginfo

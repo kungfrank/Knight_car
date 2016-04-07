@@ -189,4 +189,5 @@ include_directories(
 if (CATKIN_ENABLE_TESTING)
     find_package(rostest REQUIRED)
     add_rostest(tests/quacker_tester.test)
+    add_rostest(tests/average_quacks_tester_node.test)
 endif()

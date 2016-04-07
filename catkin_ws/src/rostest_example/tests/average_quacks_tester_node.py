@@ -33,6 +33,25 @@ class AverageQuacksTesterNode(unittest.TestCase):
         self.assertGreaterEqual(self.pub_list.get_num_connections(), 1, "No connections found on list topic")
         self.assertGreaterEqual(self.sub_quacks.get_num_connections(), 1, "No connections found on number_of_quacks topic")
 
+    def test_average_quacks_output(self):
+        self.setup()    # Setup the node
+
+        # Send a message to the list topic
+        msg_list = Float32MultiArray()
+        msg_list.data = [1,2,3]
+        self.pub_list.publish(msg_list)
+
+        # Wait for the message to be received
+        timeout = rospy.Time.now() + rospy.Duration(5) # Wait at most 5 seconds for the node to reply
+        while not self.msg_received and not rospy.is_shutdown() and rospy.Time.now() < timeout:
+            rospy.sleep(0.1)
+
+        # Send an error if the timeout was hit
+        self.assertLess(rospy.Time.now(), timeout, "The test timed out with no response from the average_quacks_node")
+
+        # Test the response
+        response = self.msg_quacks.data
+        self.assertEqual(response, 2)   # The average of 1,2, and 3 is 2
 
 if __name__ == '__main__':
     rostest.rosrun('rostest_example', 'average_quacks_tester_node', AverageQuacksTesterNode)

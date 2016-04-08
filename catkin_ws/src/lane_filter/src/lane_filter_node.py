@@ -54,7 +54,7 @@ class LaneFilterNode(object):
         self.dwc = -(self.zero_val*self.l_peak**3 + 2*self.zero_val*self.l_max**3 - 2*self.l_max**3*self.peak_val - 3*self.zero_val*self.l_peak*self.l_max**2 + 3*self.l_peak*self.l_max**2*self.peak_val)/(self.l_peak*self.l_max*(self.l_peak - self.l_max)**2)
 
         # For use of maximum segment distance
-        self.use_maximum_segment_dist = self.setupParam("~use_max_segment_dist",False)
+        self.use_max_segment_dist = self.setupParam("~use_max_segment_dist",False)
         self.max_segment_dist = self.setupParam("~max_segment_dist",1.0)
 
         # For use of minimum segment count

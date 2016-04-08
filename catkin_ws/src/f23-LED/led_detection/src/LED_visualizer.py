@@ -7,11 +7,11 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from math import sqrt
 
-from sensor_msgs.msg import CompressedImage 
+from sensor_msgs.msg import CompressedImage
 from duckietown_utils.bag_logs import numpy_from_ros_compressed
 import numpy as np
 
-# plotting 
+# plotting
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
@@ -56,7 +56,7 @@ class plotWin(QDialog):
 
 class LEDWindow(QWidget):
     progress = pyqtSignal(bool, float)
-    
+
     def __init__(self, parent = None):
         super(LEDWindow, self).__init__(parent)
         self.createLayout()
@@ -69,7 +69,7 @@ class LEDWindow(QWidget):
         self.figDialogs = []
         self.plotCamImage = True
         self.imagescale = 0.0
-        self.camtl = [0, 40] # top left
+        self.camtl = [0, 50] # top left
 
     def set_trigger_pub(self, trig):
         self.pub_trigger = trig
@@ -87,12 +87,12 @@ class LEDWindow(QWidget):
 
         self.progress.emit(msg.state == 1, msg.capture_progress)
         if len(msg.led_all_unfiltered.detections):
-            self.unfiltered_leds = msg.led_all_unfiltered 
+            self.unfiltered_leds = msg.led_all_unfiltered
             self.cell_size = msg.cell_size
 
         if msg.state == 1:
             self.triggerBtn.setVisible(False)
-            self.stateLabel.setText("Capture: ")    
+            self.stateLabel.setText("Capture: ")
             self.unfiltered_leds = None
         elif msg.state == 2:
             self.triggerBtn.setVisible(False)
@@ -116,10 +116,10 @@ class LEDWindow(QWidget):
 
         self.stateLabel = QLabel("Initializing...")
         self.progressBar = QProgressBar()
-        self.progressBar.setVisible(False)        
+        self.progressBar.setVisible(False)
         self.triggerBtn = QPushButton("Detect")
         self.triggerBtn.setEnabled(False)
-        self.triggerBtn.clicked.connect(self.sendTrigger)  
+        self.triggerBtn.clicked.connect(self.sendTrigger)
 
         self.canvas = QWidget()
         addressEdit = QTextEdit()
@@ -155,19 +155,23 @@ class LEDWindow(QWidget):
                     self.frameGeometry().height()-self.camtl[1]-50]
 
         image = self.camera_image if self.plotCamImage else self.variance_map
-
+        W = 0
+        H = 0
         if(self.camera_image is not None):
-            self.imagescale = min(1.0*win_size[0]/self.camera_image.width(),
-                        1.0*win_size[1]/self.camera_image.height())
-            self.frametl = [self.camtl[0]+0.5*(win_size[0]-self.imagescale*self.camera_image.width()),
-                        self.camtl[1]+0.5*(win_size[1]-self.imagescale*self.camera_image.height())]
-        
+            W = self.camera_image.width()
+            H = self.camera_image.height()
+
+            self.imagescale = min(1.0*win_size[0]/W,
+                        1.0*win_size[1]/H)
+            self.frametl = [self.camtl[0]+0.5*(win_size[0]-self.imagescale*W),
+                        self.camtl[1]+0.5*(win_size[1]-self.imagescale*H)]
+
             qp.translate(self.frametl[0], self.frametl[1])
 
         if(image is not None):
             #print('scale:%s'%imagescale)
             qp.scale(self.imagescale,self.imagescale)
-            k = 1.0*self.camera_image.width()/image.width()
+            k = 1.0*W/image.width()
             qp.scale(k,k)
             qp.drawImage(0,0,image)
             qp.scale(1.0/k,1.0/k)
@@ -175,27 +179,27 @@ class LEDWindow(QWidget):
         if(self.unfiltered_leds is not None):
             tmp = 0
             for led in self.unfiltered_leds.detections:
-                tmp +=1 
-                led_rect = QRect(led.pixels_normalized.x-0.5*self.cell_size[0],
-                                 led.pixels_normalized.y-0.5*self.cell_size[1], 
+                tmp +=1
+                led_rect = QRect(led.pixels_normalized.x*W-0.5*self.cell_size[0],
+                                 led.pixels_normalized.y*H-0.5*self.cell_size[1],
                                  self.cell_size[0],
                                  self.cell_size[1])
-                qp.drawText(led.pixels_normalized.x-0.5*self.cell_size[0],
-                            led.pixels_normalized.y-0.5*self.cell_size[1]-10,
+                qp.drawText(led.pixels_normalized.x*W-0.5*self.cell_size[0],
+                            led.pixels_normalized.y*H-0.5*self.cell_size[1]-10,
                             QString.number(led.frequency, 'g', 2))
                 qp.drawRect(led_rect)
 
         pen.setBrush(QColor(0, 255, 0));
         qp.setPen(pen)
 
-        if(self.filtered_leds is not None):
+        if(self.filtered_leds is not None and W is not 0):
             for led in self.filtered_leds.detections:
-                led_rect = QRect(led.pixels_normalized.x-0.5*self.cell_size[0],
-                                 led.pixels_normalized.y-0.5*self.cell_size[1], 
+                led_rect = QRect(led.pixels_normalized.x*W-0.5*self.cell_size[0],
+                                 led.pixels_normalized.y*H-0.5*self.cell_size[1],
                                  self.cell_size[0],
                                  self.cell_size[1])
-                qp.drawText(led.pixels_normalized.x+0.5*self.cell_size[0]+10,
-                            led.pixels_normalized.y-0.5*self.cell_size[1],
+                qp.drawText(led.pixels_normalized.x*W+0.5*self.cell_size[0]+10,
+                            led.pixels_normalized.y*H-0.5*self.cell_size[1],
                             QString.number(led.frequency, 'g', 2))
 
                 qp.drawRect(led_rect)
@@ -206,10 +210,12 @@ class LEDWindow(QWidget):
         click_img_coord = 1.0*click_img_coord/self.imagescale
         mindist = float("inf")
         closest = None
+        W = self.camera_image.width()
+        H = self.camera_image.height()
         if(self.unfiltered_leds):
-            for d in self.unfiltered_leds.detections: 
-                dist = (d.pixels_normalized.x-click_img_coord.x())**2 + (d.pixels_normalized.y-click_img_coord.y())**2
-                if(dist < mindist and 
+            for d in self.unfiltered_leds.detections:
+                dist = (d.pixels_normalized.x*W-click_img_coord.x())**2 + (d.pixels_normalized.y*H-click_img_coord.y())**2
+                if(dist < mindist and
                    dist < self.imagescale**2*self.cell_size[0]**2+self.cell_size[1]**2):
                     closest = d
                     mindist = dist
@@ -220,21 +226,23 @@ class LEDWindow(QWidget):
             self.figDialogs[-1].show()
         else:
             # Switch from camera image to variance map
-            self.plotCamImage = not self.plotCamImage 
+            self.plotCamImage = not self.plotCamImage
             if(not self.plotCamImage and self.variance_map is None):
                 self.plotCamImage = True
 
 
     def plot(self, closest, figure):
+        W = self.camera_image.width()
+        H = self.camera_image.height()
         ax = figure.add_subplot(211)
         #print("Timestamps: {0}".format(closest.signal_ts))
         ax.plot(closest.signal_ts, closest.signal)
-        ax.set_title('Signal @ ('+str(closest.pixels_normalized.x)+\
-                      ', ' + str(closest.pixels_normalized.y) + ')', fontsize=12)#, fontweight='bold')
+        ax.set_title('Signal @ ('+str(closest.pixels_normalized.x*W)+\
+                      ', ' + str(closest.pixels_normalized.y*H) + ')', fontsize=12)#, fontweight='bold')
         ax2 = figure.add_subplot(212)
         ax2.plot(closest.fft_fs,closest.fft)
-        ax2.set_title('FFT @ ('+str(closest.pixels_normalized.x)+\
-                      ', ' + str(closest.pixels_normalized.y)+ ')', fontsize=12)#, fontweight='bold')
+        ax2.set_title('FFT @ ('+str(closest.pixels_normalized.x*W)+\
+                      ', ' + str(closest.pixels_normalized.y*H)+ ')', fontsize=12)#, fontweight='bold')
 
 app = QApplication(sys.argv)
 win = LEDWindow(None)
@@ -255,7 +263,7 @@ class LEDVisualizerNode(object):
             # syntax is: rosrun <pkg> <node> _veh:=<bot-id>
             if rospy.has_param('~veh'):
                 self.veh_name = rospy.get_param('~veh')
-              
+
         if not self.veh_name:
             raise ValueError('Vehicle name is not set.')
 

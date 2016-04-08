@@ -2,7 +2,7 @@
 import rospy
 import numpy as np
 from sensor_msgs.msg import Joy
-from std_msgs.msg import Float32, Int8
+from std_msgs.msg import Float32, Int8, String
 import time
 
 
@@ -17,37 +17,37 @@ class LEDJoyMapper(object):
         self.last_pub_msg = None
         self.last_pub_time = rospy.Time.now()
 
-        # Publications
-        self.pub_lights = rospy.Publisher("~change_light_frequency", Float32, queue_size=1)
-        self.pub_color = rospy.Publisher("~change_color_pattern", Int8, queue_size=1)
-        # Subscriptions
+        self.pub_pattern= rospy.Publisher("~change_color_pattern", String, queue_size=1)
+        
         self.sub_joy_ = rospy.Subscriber("joy", Joy, self.cbJoy, queue_size=1)
-        self.broadcast_patterns = [2.8, 4.1, 5.0]
-        self.color_index = [0,1,2]
+
+        self.button2patterns = {
+             # 'a' is pressed
+            0: 'CAR_SIGNAL_A',
+            # 'b' is pressed
+            1: 'CAR_SIGNAL_B',
+            # 'Y' is pressed
+            3: 'CAR_SIGNAL_C',
+            # 'X' is pressed
+            2: 'off',
+            # lb is pressed
+            4: 'traffic_light_go',
+            # rb is pressed
+            5: 'traffic_light_stop',
+            # logitek button is pressed
+            # 8: 'test_all_1',
+        }
 
     def cbJoy(self, joy_msg):
         self.joy = joy_msg
         self.publishControl()
 
     def publishControl(self):
-        if self.joy.buttons[0] == 1:
-            self.pub_lights.publish(self.broadcast_patterns[0]) # 'a' is pressed
-            rospy.loginfo("Publishing pattern A")
-        elif self.joy.buttons[1] == 1:
-            self.pub_lights.publish(self.broadcast_patterns[1]) # 'b' is pressed
-            rospy.loginfo("Publishing pattern B")
-        elif self.joy.buttons[3] == 1:
-            rospy.loginfo("Publishing pattern C")
-            self.pub_lights.publish(self.broadcast_patterns[2]) # 'c' is pressed
-        elif self.joy.buttons[4] == 1:
-            rospy.loginfo("Publishing color pattern 0")
-            self.pub_color.publish(self.color_index[0]) # lb is pressed
-        elif self.joy.buttons[5] == 1 :
-            rospy.loginfo("Publishing color pattern 1")
-            self.pub_color.publish(self.color_index[1]) # rb is pressed
-        elif self.joy.buttons[8] == 1:
-            rospy.loginfo("Publishing color pattern 2")
-            self.pub_color.publish(self.color_index[2]) # logitek button is pressed
+
+        for b, pattern in self.button2patterns.items():
+            if self.joy.buttons[b] == 1:
+                self.pub_pattern.publish(pattern)
+                rospy.loginfo("Publishing pattern %s" % (pattern))
 
 if __name__ == "__main__":
     rospy.init_node("led_joy_mapper",anonymous=False)

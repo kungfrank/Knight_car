@@ -3,7 +3,7 @@
 import os
 import sys
 
-from duckietown_utils import col_logging 
+from duckietown_utils import col_logging
 from led_detection import logger
 from led_detection.dummy import DummyLEDDetector
 from led_detection.LEDDetector import LEDDetector
@@ -11,6 +11,9 @@ from led_detection.LEDDetector_forloops import LEDDetector_forloops
 from led_detection.unit_tests import load_tests
 from duckietown_utils.wildcards import expand_string
 from duckietown_utils.wrap_main import wrap_main
+
+W = 0
+H = 0
 
 def main():
     script_name = os.path.basename(sys.argv[0])
@@ -20,22 +23,22 @@ def main():
 Usage:
 
     rosrun led_detection <script> <tests> <algorithms>
-    
+
 where:
 
     <tests> = comma separated list of algorithms. May use "*".
     <algorithms> = comma separated list of algorithms. May use  "*".
-    
+
 For example, this runs all tests on all algorithms:
 
 
     rosrun led_detection <script> '*' '*'
-    
+
 The default algorithm is called "baseline", and the tests are invoked using:
 
     rosrun led_detection <script> '*' 'baseline'
 
-    
+
 """
 
         msg = msg.replace('<script>', script_name)
@@ -55,7 +58,7 @@ The default algorithm is called "baseline", and the tests are invoked using:
                     LEDDetector(ploteverything=False, verbose=True, plotfinal=False),
                     'LEDDetector_plots' : LEDDetector(True, True, True)}
                  #,'LEDDetector_forloops' : LEDDetector_forloops(True, True, True)}
-    
+
     which_tests = expand_string(which_tests0, list(alltests))
     which_estimators = expand_string(which_estimators0, list(estimators))
 
@@ -81,9 +84,12 @@ def is_match(detection, expected):
     # Determines whether a detection matches with an expectation
     # if either the frequency or the position match but something
     # else doesn't, it warns about what it is
+    global W, H
+
+    print('shape is %s, %s'% (W, H) )
     predicates = dict({
-    'position': abs(detection.pixels_normalized.x-expected['image_coordinates'][0])<expected['image_coordinates_margin']
-    and abs(detection.pixels_normalized.y-expected['image_coordinates'][1])<expected['image_coordinates_margin'],
+    'position': abs(1.0*detection.pixels_normalized.x*W-expected['image_coordinates'][0])<expected['image_coordinates_margin']
+    and abs(1.0*detection.pixels_normalized.y*H-expected['image_coordinates'][1])<expected['image_coordinates_margin'],
     'frequency': detection.frequency == expected['frequency'],
     #'timestamps': abs(detection.timestamp1-expected['timestamp1'])<0.1 and
     #              abs(detection.timestamp2-expected['timestamp2'])<0.1
@@ -106,22 +112,27 @@ def find_match(detection, expected_set):
         return -1
 
 def run_test(id_test, test, id_estimator, estimator):
+    global W, H
+
     logger.info('     id_test: %s' % id_test)
     logger.info('id_estimator: %s' % id_estimator)
     from led_detection.unit_tests import LEDDetectionUnitTest
     assert isinstance(test, LEDDetectionUnitTest)
     query = test.get_query()
+    print( query['images']['rgb'][0].shape)
+    H, W, _ = query['images']['rgb'][0].shape
+    print('shape is %s, %s'%(W, H))
     result = estimator.detect_led(**query)
 
-    # We are testing whether the expected detections are a subset of 
+    # We are testing whether the expected detections are a subset of
     # the returned ones, we will accept duplicate detections of the
-    # same LED 
+    # same LED
     match_count = [0]*len(test.expected)
     for r in result.detections:
-        m = find_match(r, test.expected) 
+        m = find_match(r, test.expected)
         if(m != -1):
             match_count[m]+=1
-   
+
     missedLEDs = [test.expected[i] for i in range(0,  len(match_count)) if match_count[i]==0]
     if(missedLEDs):
         logger.error('missed LED detections (%s): \n %s' % (len(missedLEDs),missedLEDs))
@@ -132,4 +143,3 @@ def run_test(id_test, test, id_estimator, estimator):
 
 if __name__ == '__main__':
     wrap_main(main)
-

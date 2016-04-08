@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from intersection_control.util import HelloGoodbye #Imports module. Not limited to modules in this pkg. 
-from duckietown_msgs.msg import FSMState
+from duckietown_msgs.msg import LanePose, StopLineReading
 
 from std_msgs.msg import String #Imports msg
 from std_msgs.msg import Bool #Imports msg
@@ -15,18 +15,38 @@ class IndefNavigationNode(object):
         
         rospy.loginfo("[%s] Initialzing." %(self.node_name))
 	veh_name= rospy.get_param("veh")['duckiebot_visualizer']['veh_name']
-	topic = veh_name + "/wheels_driver_node/wheels_cmd"
+	wheel_topic = veh_name + "/wheels_driver_node/wheels_cmd"
+        lane_topic = veh_name + "/lane_filter_node/lane_pose"
+        stop_topic = veh_name + "/stop_line_filter_node/stop_line_reading"
 
-        # Setup publishers
-        self.pub_wheels_cmd = rospy.Publisher(topic,WheelsCmdStamped, queue_size=1)
-        # Create a timer that calls the cbTimer function every 1.0 second
+        self.lane = None
+        self.stop = None
+
+        self.pub_wheels_cmd = rospy.Publisher(wheel_topic,WheelsCmdStamped, queue_size=1)
+        self.sub_lane = rospy.Subscriber(lane_topic, LanePose, self.cbLane, queue_size=1) 
+        self.sub_stop = rospy.Subscriber(stop_topic, StopLineReading, self.cbStop, queue_size=1) 
 
         rospy.loginfo("[%s] Initialzed." %(self.node_name))
 
         self.rate = rospy.Rate(30) # 10hz
 
+    def cbLane(self, data):
+        self.lane = data
+
+    def cbStop(self, data):
+        self.stop = data
+
     def driveForward(self):
         #move forward
+        for i in range(3):
+            if self.lane == None or self.stop == None:
+                rospy.loginfo("still waiting for lane and stop line")
+                rospy.sleep(1)
+        if self.lane==None or self.stop == None:
+            rospy.loginfo("could not subscribe to lane and stop line")
+            return
+        
+        self.init = self.lane, self.stop
         forward_for_time = 3
         starting_time = rospy.Time.now()
         while((rospy.Time.now() - starting_time) < rospy.Duration(forward_for_time)):
@@ -37,7 +57,18 @@ class IndefNavigationNode(object):
             self.pub_wheels_cmd.publish(wheels_cmd_msg)    
             rospy.loginfo("Moving?.")
             self.rate.sleep()
-    
+        self.final = self.lane, self.stop
+        self.calculate()
+
+    def calculate(self):
+        print "initial"
+        print self.init
+
+        print "final"
+        print self.final
+
+
+
 
 if __name__ == '__main__':
     # Initialize the node with rospy

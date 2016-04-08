@@ -1,0 +1,28 @@
+LED_protocol:
+  # The three frequencies
+  frequencies: [2.8, 4.1, 5.0]
+
+  # Color and frequencies aof all signaling states
+  CAR_SIGNAL_A:
+    frequency_idx: 0
+    color: 'green'
+
+  CAR_SIGNAL_B:
+    frequency_idx: 1
+    color: 'purple'
+
+  CAR_SIGNAL_C:
+    frequency_idx: 2
+    color: 'yelllow'
+
+  off:
+    frequency_idx: -1
+    color: 'black'
+
+  traffic_light_go:
+    frequency_idx: 1
+    color: 'green'
+
+  traffic_light_stop:
+    frequency_idx: 2
+    color: 'red'

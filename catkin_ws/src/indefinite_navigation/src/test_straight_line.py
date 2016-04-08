@@ -21,6 +21,7 @@ class IndefNavigationNode(object):
 
         self.lane = None
         self.stop = None
+        self.forward_time = 3.0
 
         self.pub_wheels_cmd = rospy.Publisher(wheel_topic,WheelsCmdStamped, queue_size=1)
         self.sub_lane = rospy.Subscriber(lane_topic, LanePose, self.cbLane, queue_size=1) 
@@ -47,7 +48,7 @@ class IndefNavigationNode(object):
             return
         
         self.init = self.lane, self.stop
-        forward_for_time = 3
+        forward_for_time = self.forward_time
         starting_time = rospy.Time.now()
         while((rospy.Time.now() - starting_time) < rospy.Duration(forward_for_time)):
             wheels_cmd_msg = WheelsCmdStamped()
@@ -55,17 +56,53 @@ class IndefNavigationNode(object):
             wheels_cmd_msg.vel_left = 0.4
             wheels_cmd_msg.vel_right = 0.4
             self.pub_wheels_cmd.publish(wheels_cmd_msg)    
-            rospy.loginfo("Moving?.")
+            #rospy.loginfo("Moving?.")
             self.rate.sleep()
         self.final = self.lane, self.stop
         self.calculate()
 
     def calculate(self):
-        print "initial"
-        print self.init
+        
+        init_d = self.init[0].d
+        init_phi = self.init[0].phi
 
-        print "final"
-        print self.final
+        final_d = self.final[0].d
+        final_phi = self.final[0].phi
+
+        off_d = abs(init_d - final_d)
+        off_phi = abs(init_phi - final_phi)
+
+        result_trim = "PASSED/NOT PASSED "
+
+        init_stop_y = self.init[1].stop_line_point.y
+        final_stop_y = self.final[1].stop_line_point.y
+
+        velocity = abs(init_stop_y - final_stop_y) / self.forward_time
+        result_vel = "PASSED/NOT PASSED"
+        
+        info = """
+        LANE OFFSET SUMMARY
+        ===================
+        initial location is (%.2f, %.2f), 
+        final location is (%.2f, %.2f).
+
+        distance offset = %.2f
+        distance angle offset = %.2f
+        TRIM TEST % s
+
+
+        VELOCITY OFFSET SUMMARY
+        ======================
+        initial stop sign y offset: %.2f
+        final stop sign y offset: %.2f
+        velocity computed: %.2f
+        VELOCITY TEST: %s
+
+        """ % ( init_d, init_phi, final_d, final_phi, \
+                off_d, off_phi, result_trim,\
+                init_stop_y, final_stop_y, velocity, result_vel
+                )
+        print info
 
 
 

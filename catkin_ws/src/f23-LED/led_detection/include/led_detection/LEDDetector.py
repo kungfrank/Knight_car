@@ -13,7 +13,7 @@ from scipy.ndimage.morphology import generate_binary_structure, binary_erosion
 import rospy
 import time
 
-# plotting 
+# plotting
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from matplotlib.patches import Rectangle
@@ -33,8 +33,8 @@ def ros_compressed_from_numpygray(np_arr):
     return msg
 
 class LEDDetector():
-    """ The LEDDetector class 
-    __init__ inputs: 
+    """ The LEDDetector class
+    __init__ inputs:
         verbdict: {ploteverything: False, verbose: False, plotfinal: False}
 
     """
@@ -55,7 +55,7 @@ class LEDDetector():
 
         print('Original shape: {0}'.format(channel[0].shape))
 
-        # determine top-left offset to center the grid  
+        # determine top-left offset to center the grid
         ncells_x = int(floor(1.0*W/cell_width))
         ncells_y = int(floor(1.0*H/cell_height))
         rest_x = W%cell_width
@@ -70,7 +70,7 @@ class LEDDetector():
                 tly = ceil(.5*rest_y)+i*cell_height
                 tlx = ceil(.5*rest_x)+j*cell_width
                 cell_values[:, i, j] = np.mean(channel[:,tly:tly+cell_height, tlx:tlx+cell_width], axis=tuple([1, 2]))
-        
+
         if(self.publisher is not None):
             self.debug_msg.cell_size = [cell_width, cell_height]
             #self.republish()
@@ -109,7 +109,7 @@ class LEDDetector():
             plt.imshow(peaks_mask*threshold_mask)
             plt.title('Peaks')
             plt.show()
-    
+
         return peaks_mask*threshold_mask
 
     # ~~~~~~~~~~~~~~~~~~~ Detect LEDs ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -140,14 +140,16 @@ class LEDDetector():
             raise ValueError(min_distance_between_LEDs_pixels)
 
         #channel = images['rgb'][:,:,:,0] # just using first channel
-        
+
         # Go for the following lines if you want to use a grayscale image
-        # as an input instead of preferring one specific channel 
+        # as an input instead of preferring one specific channel
         channel = np.zeros(images['rgb'].shape[0:-1])
         for i in range(n):
             channel[i,:,:] = cv2.cvtColor(images['rgb'][i,:,:,:], cv2.COLOR_BGR2GRAY)
 
         print('channel.shape {0}'.format(channel.shape))
+        W = channel.shape[2]
+        H = channel.shape[1]
 
         cell_width = 15
         cell_height = 15
@@ -162,7 +164,7 @@ class LEDDetector():
             for idx in candidate_cells:
                 self.debug_msg.candidates.append(Vector2D(idx[0], idx[1]))
             #self.republish()
-        
+
         # Create result object
         result = LEDDetectionArray()
         unfiltered = LEDDetectionArray()
@@ -175,8 +177,9 @@ class LEDDetector():
             signal = cell_vals[:,i,j]
             signal = signal-np.mean(signal)
 
-            led_img_coords = Vector2D((0.5+j)*cell_width+crop_offset[1], (0.5+i)*cell_height+crop_offset[0])       
-            
+            led_img_coords = Vector2D((0.5+j)*cell_width+crop_offset[1], (0.5+i)*cell_height+crop_offset[0])
+            led_img_coords_norm = Vector2D(1.0*led_img_coords.x/W, 1.0*led_img_coords.y/H)
+
             if(self.verbose):
                 logger.info('Coords: %s, %s'% (led_img_coords.x,led_img_coords.y))
 
@@ -188,8 +191,8 @@ class LEDDetector():
             fft_peak_freq = 1.0*np.argmax(y_f)/T/n
 
             unfiltered.detections.append(LEDDetection(rospy.Time.from_sec(timestamps[0]),
-                rospy.Time.from_sec(timestamps[-1]), led_img_coords, fft_peak_freq, '', -1, timestamps, signal, f, y_f)) # -1...confidence not implemented
-                
+                rospy.Time.from_sec(timestamps[-1]), led_img_coords_norm, fft_peak_freq, '', -1, timestamps, signal, f, y_f)) # -1...confidence not implemented
+
             if(self.verbose):
                 logger.info('FFT peak frequency: %s'% fft_peak_freq)
 
@@ -197,7 +200,7 @@ class LEDDetector():
             freq = [x for x in frequencies_to_detect if abs(x-fft_peak_freq)<f_tolerance]
             if(freq):
                 result.detections.append(LEDDetection(rospy.Time.from_sec(timestamps[0]),
-                rospy.Time.from_sec(timestamps[-1]), led_img_coords, freq[0], '', -1, [], [], [], [])) # -1...confidence not implemented
+                rospy.Time.from_sec(timestamps[-1]), led_img_coords_norm, freq[0], '', -1, [], [], [], [])) # -1...confidence not implemented
                 if(self.verbose):
                     logger.info('LED confirmed, frequency: %s'% freq)
             else:
@@ -223,7 +226,8 @@ class LEDDetector():
         # Plot all results
         if(self.plotfinal):
             for r in result.detections:
-                pos = r.pixels_normalized
+                pos_n = r.pixels_normalized
+                pos = Vector2D(1.0*pos_n.x*W, 1.0*pos_n.y*H)
                 ax.add_patch(Rectangle((pos.x-0.5*cell_width, pos.y-0.5*cell_height), cell_width, cell_height, edgecolor="red", linewidth=3, facecolor="none"))
                 plt.text(pos.x-0.5*cell_width, pos.y-cell_height, str(r.frequency), fontdict=font)
 

@@ -27,9 +27,9 @@ uint8 traffic_sign_type
 
 
 uint8 tag_id
-string tag_type
+#string tag_type
 # (StreetName, TrafficSign, Localization, Vehicle…)
-uint8 traffic_sign_type
+#uint8 traffic_sign_type
 # (12 possible traffic sign types)
 string vehicle_name
 

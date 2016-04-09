@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import numpy as np
 from anti_instagram.AntiInstagram import *
 import cv2

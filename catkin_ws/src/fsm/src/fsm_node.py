@@ -13,6 +13,7 @@ class FSMNode(object):
         self.intersection_go = False
         self.intersection_done = False
         self.vehicle_detected = False
+        self.obstacle_found = False
 
         # Save the name of the node
         self.node_name = rospy.get_name()
@@ -31,9 +32,14 @@ class FSMNode(object):
         self.sub_topic_intersection_go = rospy.Subscriber("~clearance_to_go", CoordinationClearance, self.cbIntersectionGo, queue_size=1)
         self.sub_topic_intersection_done = rospy.Subscriber("~intersection_done", BoolStamped, self.cbIntersectionDone, queue_size=1)
         self.sub_topic_vehicle_detected = rospy.Subscriber("~vehicle_detected",Bool,self.cbVehicleDetected, queue_size=1)
+        self.sub_topic_obstacle_found = rospy.Subscriber("~object_too_close", BoolStamped, self.cbObstacleFound, queue_size=1)
 
         # Read parameters
         rospy.loginfo("[%s] Initialzed." %(self.node_name))
+
+    def cbObstacleFound(self, obs_msg):
+        self.obstacle_found = obs_msg.data
+        self.updateState(obs_msg.header.stamp)
 
     def cbIntersectionDone(self, done_msg):
         #print done_msg
@@ -67,6 +73,8 @@ class FSMNode(object):
                 self.actual.state = self.actual.COORDINATION
             elif(self.vehicle_detected == True):
                 self.actual.state = self.actual.VEHICLE_AVOIDANCE
+            elif(self.obstacle_found):
+                self.actual.state = self.actual.OBSTACLE_AVOID
         elif(self.actual.state == self.actual.COORDINATION):
             self.actual.state = self.actual.LANE_FOLLOWING
             #if(self.intersection_go == True):
@@ -78,6 +86,10 @@ class FSMNode(object):
                 self.intersection_done = False
         elif(self.actual.state == self.actual.VEHICLE_AVOIDANCE):
             if(self.vehicle_detected == False and self.in_lane):
+        elif(self.actual.state == self.actual.OBSTACLE_AVOID):
+            if(self.obstacle_found == True):
+                self.actual.state = self.actual.OBSTACLE_AVOID
+            else:
                 self.actual.state = self.actual.LANE_FOLLOWING
 
     def setAprilTagSwitch(self,state):

@@ -88,6 +88,11 @@ add_message_files(
   ThetaDotSample.msg
   Vsample.msg
   Trajectory.msg
+  ObstacleType.msg
+  ObstacleImageDetection.msg
+  ObstacleImageDetectionList.msg
+  ObstacleProjectedDetection.msg
+  ObstacleProjectedDetectionList.msg
 )
 
 ## Generate services in the 'srv' folder

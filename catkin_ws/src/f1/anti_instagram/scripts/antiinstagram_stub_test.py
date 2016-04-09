@@ -7,19 +7,23 @@ import timeit
 
 from duckietown_utils.expand_variables import expand_environment
 
+def compute_error(a, b):
+	return np.mean(np.square(a * 1.0 - b * 1.0))
+
 # calculate transform for each image set
 def testImages(ai, imageset, gtimageset):
 	error = []
-	for i,image in enumerate(imageset):
+	for i, image in enumerate(imageset):
 		#print(image.shape)
 		ai.calculateTransform(image,True)
-		print ai.health
+		print('health: %s' % ai.health)
 		transimage = ai.applyTransform(image)
-		testimgf = "testimage"+str(i)+".jpg"
+		testimgf = "testimage%d.jpg" % i
 		cv2.imwrite(testimgf,transimage)
 		testimg = cv2.imread(testimgf)
 		# uncorrected is > 500
-		error.append(np.mean(np.square(testimg-gtimageset[i])))
+		error = compute_error(testimg, gtimageset[i])
+		error.append(error)
 		if error[i] > 1:
 			print("Correction seemed to fail for image # "+str(i))
 	return error

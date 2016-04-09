@@ -2,6 +2,7 @@
 from anti_instagram.AntiInstagram import *
 import numpy as np
 import cv2
+from duckietown_utils.expand_variables import expand_environment
 
 
 # calculate transform for each image set
@@ -17,30 +18,29 @@ def testImages(ai, imageset, gtimageset):
 			print("Correction seemed to fail for image # "+str(i))
 
 
+def read_file(filename):
+	filename = expand_environment(filename)
+	img = cv2.imread(filename)
+	if not img:
+		msg = 'Cannot read filename %r.' % filename
+		raise ValueError(msg)
+	return img
 
 if __name__ == '__main__':
 	ai = AntiInstagram()
 
 	# load test images
 	imagesetf = [
-	"/home/tristan/Dropbox/duckietown-data/phase_2/f1-illum-robust/tristan_manual_dataset1/tristan/frame0001.jpg",
-	"/home/tristan/Dropbox/duckietown-data/phase_2/f1-illum-robust/tristan_manual_dataset1/lapentab/frame0002.jpg"
+		"${DUCKIETOWN_DATA}/phase_2/f1-illum-robust/tristan_manual_dataset1/tristan/frame0001.jpg",
+		"${DUCKIETOWN_DATA}/phase_2/f1-illum-robust/tristan_manual_dataset1/lapentab/frame0002.jpg"
 	]
 
 	gtimagesetf = [
-	"groundtruthimage0.jpg",
-	"groundtruthimage1.jpg"
+		"groundtruthimage0.jpg",
+		"groundtruthimage1.jpg"
 	]
 	
+	imageset = filter(read_file, imagesetf)
+	gtimageset = filter(read_file, gtimagesetf)
 
-	imageset = []
-	for imgf in imagesetf:
-		img = cv2.imread(imgf)
-		imageset.append(img)
-
-	gtimageset = []
-	for imgf in gtimagesetf:
-		img = cv2.imread(imgf)
-		gtimageset.append(img)
-
-	testImages(ai,imageset,gtimageset)
+	testImages(ai, imageset, gtimageset)

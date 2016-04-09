@@ -1,0 +1,15 @@
+<launch>
+ 	<arg name="veh"/>
+	<arg name="config" default="baseline"/>
+ 	<arg name="pkg_name" default="apriltags"/>
+ 	<arg name="loc" default="1" doc="Physical room location of the duckietown map. E.g. 226 or 316"/>
+ 	<arg name="sub_node_name" default="global" doc="Specify if you want to add a subname to the name, e.g. global or fast"/>
+	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman"/>
+ 	
+ 	<group ns="$(arg veh)">
+         <node pkg="apriltags" type="AprilPostPros.py" name="apriltags_postprocessing_$(arg sub_node_name)_node" output="screen">
+         <param name="~loc" value="$(arg loc)" />
+	 <rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/apriltags_postprocessing_node/$(arg param_file_name).yaml"/>
+         </node>
+ 	</group>
+ </launch>

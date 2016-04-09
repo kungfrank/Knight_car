@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from anti_instagram.AntiInstagram import *
-import numpy as np
 import cv2
 from duckietown_utils.expand_variables import expand_environment
 

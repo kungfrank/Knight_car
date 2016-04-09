@@ -1,5 +1,4 @@
-from __future__ import print_function
-
+from . import logger
 import numpy as np
 import cv2
 
@@ -22,11 +21,11 @@ def refPatchScale(image_fname, cref):
 	# m_mean = np.zeros(3)
 	m_mean = np.mean(np.reshape(img_patch,[wp*hp,3]),0)
 
-	print(m_mean)
+	logger.info('m_mean: %s' % m_mean)
 
 	mscale = np.array(cref) / np.array(m_mean)
 
-	print(mscale)
+	logger.info('mscale: %s' % mscale)
 
 	# reshape to do fast multiply
 	img_scale = np.reshape(img_orig,[h*w,3])
@@ -60,16 +59,15 @@ def refPatchShift(image_fname,cref):
 	# m_mean = np.zeros(3)
 	m_mean = np.mean(np.reshape(img_patch,[wp*hp,3]),0)
 
-	print(m_mean)
+	logger.info('m_mean: %s' % m_mean)
 
 	mshift = np.array(cref) - np.array(m_mean)
 
-	print(mshift)
+
+	logger.info('mshift: %s' % mshift)
 
 	img_shift = np.reshape(img_orig,[h*w,3])
 	img_shift = np.reshape(img_shift+mshift,[h,w,3])
 
 	return img_shift
 
-
-# cv2.imwrite("fname_out.jpg",img_scale_n_shift)

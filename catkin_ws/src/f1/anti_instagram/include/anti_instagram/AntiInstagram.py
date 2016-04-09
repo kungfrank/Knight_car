@@ -9,8 +9,8 @@ class AntiInstagram():
 		self.num_colors = 3
 		self.ideal_colors = [[0, 0, 0], [0, 255, 255], [255, 255, 255]]
 		self.transformation = [0,0,0]
-		self.scale = [0.999,0.999,0.999]
-		self.shift = [0.0001,0.0001,0.0001]
+		self.scale = [1.0,1.0,1.0]
+		self.shift = [0.0,0.0,0.0]
 		self.health = 0
 
 	def applyTransform(self,image):

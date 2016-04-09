@@ -15,8 +15,10 @@
 
   fi_theta_dot_function_param: Duty_fi_theta_dot_compound_linear
   fi_v_function_param: Duty_fi_v_compound_linear
-  theta_dot_weights_param: [-1.0, 0.0]
-  v_weights_param: [1.0, 0.0]
+  theta_dot_weights_param: [-2.61, -0.54]
+  v_weights_param: [0.3, -0.01]
+#  theta_dot_weights_param: [-1.0, 0.0]
+#  v_weights_param: [1.0, 0.0]
 
 #  fi_theta_dot_function_param: Duty_fi_theta_dot_naive
 #  fi_v_function_param: Duty_fi_v_naive

@@ -151,7 +151,7 @@ def getparameters2(mapping, trained, weights, true):
 		# Take the best solution if there were several permuations
 		if (fitting_cost<min_fitting_cost):
 			min_fitting_cost=fitting_cost
-			print("perm: %s, fitting cost: %s"% (perm,fitting_cost))
+			#print("perm: %s, fitting cost: %s"% (perm,fitting_cost))
 			MIN_RED_a=p[0]
 			MIN_GREEN_a=p[2]
 			MIN_BLUE_a=p[4]
@@ -163,10 +163,10 @@ def getparameters2(mapping, trained, weights, true):
 	t2=time.time()
 
 
-	print MIN_RED_a, MIN_RED_b
-	print MIN_BLUE_a, MIN_BLUE_b
-	print MIN_GREEN_a, MIN_GREEN_b
-	print("time: %f"%(t2-t1))
+	#print MIN_RED_a, MIN_RED_b
+	#print MIN_BLUE_a, MIN_BLUE_b
+	#print MIN_GREEN_a, MIN_GREEN_b
+	#print("time: %f"%(t2-t1))
 	return ([MIN_RED_a], MIN_RED_b), ([MIN_BLUE_a], MIN_BLUE_b), ([MIN_GREEN_a], MIN_GREEN_b),fitting_cost
 
 def getparameters(mapping, trained, true):

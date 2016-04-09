@@ -78,6 +78,7 @@ add_message_files(
   FSMState.msg
   BoolStamped.msg
   StopLineReading.msg
+  AntiInstagramHealth.msg
 )
 
 ## Generate services in the 'srv' folder

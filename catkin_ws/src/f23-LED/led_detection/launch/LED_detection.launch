@@ -1,0 +1,14 @@
+<launch>
+	<include file="$(find duckietown)/machines"/>
+	<arg name="pkg_name" value="led_detection"/>
+		
+	<arg name="veh" doc="Name of vehicle. ex: megaman"/>
+	<arg name="local" default="false" doc="true for running on laptop. false for running on vehicle."/>
+	<arg name="config" default="baseline" doc="Specify a config."/>
+	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman"/>
+
+	<!-- Run detector on remote (vehicle) -->
+	<node ns="$(arg veh)" machine="$(arg veh)" pkg="$(arg pkg_name)" type="LED_detector_node.py" name="LED_detector_node" output="screen">
+	</node>	
+
+</launch>

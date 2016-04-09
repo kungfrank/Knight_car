@@ -79,8 +79,12 @@ for i = 1:numel(ud.files_list)
 end
 ud.file_idx=1;
 ud.filename=ud.files_list{ud.file_idx};
+
+%
+% Set detection categories
 ud.colors={[0 0 0],[1 0 0],[1 1 1],[1 1 0]};
-ud.listbox1.String={'road','red','white','yellow'}
+ud.listbox1.String={'road','red','white','yellow'};
+
 ud=update_image(ud);
 
 guidata(hObject,ud);

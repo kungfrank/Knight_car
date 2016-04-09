@@ -212,7 +212,17 @@ def getparameters(mapping, trained, true):
 	# print GREEN_a_, GREEN_b
 	return (RED.coef_, RED.intercept_), (BLUE.coef_, BLUE.intercept_), (GREEN.coef_, GREEN.intercept_),fitting_cost
 
-def scaleandshift(img,scale,shift):
+def scaleandshift(img, scale, shift):
+	return scaleandshift2(img, scale, shift)
+
+def scaleandshift2(img, scale, shift):
+	img_shift = np.empty_like(img)
+	for i in range(3):
+		img_shift[:, :, i] = scale[i] * img[:, :, i] + shift[i]
+
+	return img_shift
+
+def scaleandshift1(img, scale, shift):
 	h = img.shape[0]
 	w = img.shape[1]
 

@@ -212,8 +212,22 @@ def getparameters(mapping, trained, true):
 	# print GREEN_a_, GREEN_b
 	return (RED.coef_, RED.intercept_), (BLUE.coef_, BLUE.intercept_), (GREEN.coef_, GREEN.intercept_),fitting_cost
 
+from . import logger
+
+class SASParams:
+	algorithm = 2
+
 def scaleandshift(img, scale, shift):
-	return scaleandshift2(img, scale, shift)
+	logger.info('scale: %s' % scale)
+	logger.info('shift: %s' % shift)
+
+	if SASParams.algorithm == 1:
+		return scaleandshift1(img, scale, shift)
+
+	if SASParams.algorithm == 2:
+		return scaleandshift2(img, scale, shift)
+
+	assert False
 
 def scaleandshift2(img, scale, shift):
 	img_shift = np.empty_like(img)

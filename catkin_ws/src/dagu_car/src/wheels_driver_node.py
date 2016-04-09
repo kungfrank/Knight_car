@@ -15,6 +15,7 @@ class WheelsDriverNode(object):
         self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd_executed",WheelsCmdStamped, queue_size=1)
 
         # Setup subscribers
+        self.control_constant = 1.0
         self.sub_topic = rospy.Subscriber("~wheels_cmd", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1)
 
     def setupParam(self,param_name,default_value):

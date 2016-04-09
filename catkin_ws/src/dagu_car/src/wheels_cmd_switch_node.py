@@ -14,11 +14,13 @@ class WheelsCmdSwitchNode(object):
         self.cmd_dict[FSMState.LANE_FOLLOWING] = None
         self.cmd_dict[FSMState.INTERSECTION_CONTROL] = None
         self.cmd_dict[FSMState.COORDINATION] = None
+        self.cmd_dict[FSMState.VEHICLE_AVOIDANCE] = None
 
         self.mode_name_dict = {}
         self.mode_name_dict[FSMState.LANE_FOLLOWING] = "LANE_FOLLOWING"
         self.mode_name_dict[FSMState.INTERSECTION_CONTROL] = "INTERSECTION_CONTROL"
         self.mode_name_dict[FSMState.COORDINATION] = "COORDINATION_CONTROL"
+        self.mode_name_dict[FSMState.VEHICLE_AVOIDANCE] = "VEHICLE_AVOIDANCE"
 
         # Setup publishers
         self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd", WheelsCmdStamped, queue_size=1)
@@ -28,6 +30,7 @@ class WheelsCmdSwitchNode(object):
         self.sub_lane = rospy.Subscriber("~wheels_cmd_lane", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=FSMState.LANE_FOLLOWING)
         self.sub_interestion = rospy.Subscriber("~wheels_cmd_intersection", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=FSMState.INTERSECTION_CONTROL)
         self.sub_coordination = rospy.Subscriber("~wheels_cmd_coordination", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=FSMState.COORDINATION)
+        self.sub_vehicle_avoidance = rospy.Subscriber("~wheels_cmd_avoidance", WheelsCmdStamped, self.cbWheelsCmd, queue_size=1, callback_args=FSMState.VEHICLE_AVOIDANCE)
 
     def pubWheelsCmd(self):
         cmd_msg = self.cmd_dict[self.mode_msg.state]
@@ -41,14 +44,16 @@ class WheelsCmdSwitchNode(object):
     def cbMode(self,mode_msg):
         if not self.mode_msg.state == mode_msg.state:
             rospy.loginfo("[%s] Switching to %s" %(self.node_name,self.mode_name_dict[mode_msg.state]))
-        self.mode_msg = mode_msg
-        # Always publish a cmd when changing mode.
-        self.pubWheelsCmd()
+            #THESE LINES WERE NOT IN THE IF STATEMENT ORIGINALLY!!!!!
+            self.mode_msg = mode_msg
+            # Always publish a cmd when changing mode.
+            self.pubWheelsCmd()
 
     def cbWheelsCmd(self,cmd_msg,cb_args):
         # Save the cmd_msg 
         self.cmd_dict[cb_args] = cmd_msg
         # Publish if the received cmd channel matches the current mode
+        #rospy.loginfo("cb_args is [%d]. Mode is [%d]." %(cb_args, self.mode_msg.state))
         if cb_args == self.mode_msg.state:
             self.pubWheelsCmd()
 

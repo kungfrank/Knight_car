@@ -61,6 +61,9 @@ def calcuateTransformOnRandomImg():
 if __name__ == '__main__':
 	ai = AntiInstagram()
 
+	# set to non-zero if test failed
+	exit_code = 0
+
 	#### TEST SINGLE TRANSFORM ####
 	# load test images
 	imagesetf = [
@@ -81,9 +84,16 @@ if __name__ == '__main__':
 		img = cv2.imread(imgf)
 		gtimageset.append(img)
 	errors = testImages(ai,imageset,gtimageset)
-	print("Test Image Errors (errors > 1 indicate a problem): ")
+	print("Test Image Errors (errors >> 1 indicate a problem): ")
 	print(errors)
+
+	if max(errors) > 3:
+		exit_code = 1
 
 	#### TEST CALC TIMING ####
 	calcuateTransformOnRandomImg()
 	applyTransformOnRandomImg()
+
+	if exit_code != 0:
+		raise Exception("Tests not passed!")
+	print("All tests passed!")

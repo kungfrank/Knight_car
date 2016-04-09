@@ -1,0 +1,10 @@
+sub_name: #Name of the subscribing topics and their ids
+ "0": "~cmd_lane_following"
+ "1": "~cmd_coordination"
+ "2": "~cmd_interestion"
+ "3": "~cmd_joystick"
+mode_table: #Maps from FSMState.mode to subscribing topic ids
+ "0": 0 #LANE_FOLLOWING
+ "1": 1 #COORDINATION
+ "2": 2 #INTERSECTION_CONTROL
+ "3": 3 #JOYSTICK_CONTROL

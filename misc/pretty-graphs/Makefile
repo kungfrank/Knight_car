@@ -11,12 +11,22 @@ clean:
 	
 environment:
 	bash -c "source ~/duckietown/environment.sh && virtualenv --system-site-packages $(root)"	
+	bash -c "virtualenv --system-site-packages $(root)"	
 	bash -c "source environment.sh && easy_install pip" 
 	bash -c "source environment.sh && pip install SystemCmd==1.2 ros_node_utils==1.0 ConfTools==1.8 QuickApp==1.2.2 Procgraph==1.10"	
 
-videos:
-	bash -c "source environment.sh && ./make_videos.py --dir ~/duckietown-data/logs/Phase_2/ -c 'clean; rparmake n=2'"
+environment2:
+	pip install SystemCmd==1.2 ros_node_utils==1.0 ConfTools==1.8 QuickApp==1.2.2 Procgraph==1.10
 
+videos-clean:
+	rm -rf out-make_videos.py
+	
+videos:
+	bash -c "source environment.sh && ./make_videos.py --dir ~/duckietown-data/logs/ -c 'clean; rparmake n=2'"
+
+videos-console:
+	# bash -c "source environment.sh && ./make_videos.py --dir ~/duckietown-data/logs/ --console"
+	./make_videos.py --dir ~/duckietown-data/logs/ --console
 
 #bash -c "source environment.sh && cd procgraph && python setup.py develop"
 # bash -c "source environment.sh && pip install https://github.com/AndreaCensi/procgraph/archive/env_fault.zip"

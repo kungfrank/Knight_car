@@ -22,10 +22,10 @@ def testImages(ai, imageset, gtimageset):
 		cv2.imwrite(testimgf,transimage)
 		testimg = cv2.imread(testimgf)
 		# uncorrected is > 500
-		error = compute_error(testimg, gtimageset[i])
-		errors.append(error)
-		if error[i] > 1:
-			print("Correction seemed to fail for image # "+str(i))
+		e = compute_error(testimg, gtimageset[i])
+		if e > 1:
+			print("Correction seemed to fail for image %s" % i)
+		error.append(e)
 	return error
 
 def read_file(filename):

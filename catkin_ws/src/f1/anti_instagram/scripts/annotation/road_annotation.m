@@ -1,22 +1,11 @@
 function varargout = road_annotation(varargin)
 % ROAD_ANNOTATION MATLAB code for road_annotation.fig
-%      ROAD_ANNOTATION, by itself, creates a new ROAD_ANNOTATION or raises the existing
+%      ROAD_ANNOTATION(image_file_list), where image_file_list is a cell array of string, creates a new ROAD_ANNOTATION or raises the existing
 %      singleton*.
 %
-%      H = ROAD_ANNOTATION returns the handle to a new ROAD_ANNOTATION or the handle to
+%      H = ROAD_ANNOTATION(image_file_list) returns the handle to a new ROAD_ANNOTATION or the handle to
 %      the existing singleton*.
 %
-%      ROAD_ANNOTATION('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in ROAD_ANNOTATION.M with the given input arguments.
-%
-%      ROAD_ANNOTATION('Property','Value',...) creates a new ROAD_ANNOTATION or raises the
-%      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before road_annotation_OpeningFcn gets called.  An
-%      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to road_annotation_OpeningFcn via varargin.
-%
-%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
-%      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
@@ -56,7 +45,6 @@ for i = 1:numel(annotations)
 end
 ud.filename_text.String=ud.filename;
 drawnow;
-% imshow(imresize(ud.display_image,pos(3:4)),[])
 
 % --- Executes just before road_annotation is made visible.
 function road_annotation_OpeningFcn(hObject, eventdata, handles, varargin)
@@ -81,9 +69,23 @@ ud.file_idx=1;
 ud.filename=ud.files_list{ud.file_idx};
 
 %
-% Set detection categories
-ud.colors={[0 0 0],[1 0 0],[1 1 1],[1 1 0]};
-ud.listbox1.String={'road','red','white','yellow'};
+% Set detection categories - TODO: make this
+iparser = inputParser;
+iparser.CaseSensitive=false;
+default_classes={};
+default_classes{end+1}=struct('name','road','color',[0 0 0]);
+default_classes{end+1}=struct('name','red','color',[1 0 0]);
+default_classes{end+1}=struct('name','white','color',[1 1 1]);
+default_classes{end+1}=struct('name','yellow','color',[1 1 0]);
+iparser.addParameter('classes',default_classes);
+iparser.parse(varargin{2:end});
+
+ud.colors={};
+ud.listbox1.String={};
+for i = 1:numel(iparser.Results.classes)
+    ud.colors{end+1}=iparser.Results.classes{i}.color;
+    ud.listbox1.String{end+1}=iparser.Results.classes{i}.name;
+end
 
 ud=update_image(ud);
 

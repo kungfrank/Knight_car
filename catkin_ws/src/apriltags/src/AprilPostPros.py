@@ -3,6 +3,8 @@ import rospkg
 import rospy
 import yaml
 from duckietown_msgs.msg import AprilTags, TagDetection, TagInfo, Vector2D
+import numpy as np
+import kinematic as k
 
 class AprilPostPros(object):
     """ """
@@ -19,10 +21,6 @@ class AprilPostPros(object):
         tags_file.close()
         self.info = TagInfo()
  
-        
-        
-        
-        
         self.sign_types = {"StreetName": self.info.S_NAME,
             "TrafficSign": self.info.SIGN,
             "Light": self.info.LIGHT,
@@ -81,12 +79,83 @@ class AprilPostPros(object):
                 l = (id_info['location_316'])
                 if l is not None:
                     new_info.location = l
+            
+            
+            #######################
+            # Localization stuff
+            #######################
+            
+            
+            """
+            scale        = 0.31
+            camera_x     = 0.05  # x distance from wheel center
+            camera_y     = 0.0   #
+            camera_z     = 0.1   # height of camera from ground
+            camera_theta = 15    # degree of rotation arround y axis
+            """
+            scale        = rospy.get_param("~scale")
+            camera_x     = rospy.get_param("~camera_x")
+            camera_y     = rospy.get_param("~camera_y")
+            camera_z     = rospy.get_param("~camera_z")
+            camera_theta = rospy.get_param("~camera_theta")
+            
+            
+            #Load translation
+            x = detection.transform.translation.x
+            y = detection.transform.translation.y
+            z = detection.transform.translation.z
+            
+            t_tc_Fc = k.Vector( x , y , z ) # translation tags(t) w/ camera(c) expressed in camera frame (Fc)
+            
+            # Scale for april tag size
+            t_tc_Fc = t_tc_Fc * scale
+            
+            #Load rotation
+            x = detection.transform.rotation.x
+            y = detection.transform.rotation.y 
+            z = detection.transform.rotation.z
+            w = detection.transform.rotation.w
+            e = k.Vector( x , y , z )
+            Q_Ftag_Fold = k.Quaternion( e , w )
+            
+            # New tag orientation reference (zero when facing camera) w/ to old tag ref used by the lib
+            C_Ft_Ftag = k.RotationMatrix( np.matrix([[0,0,-1],[-1,0,0],[0,1,0]]) )
+            Q_Ft_Ftag = C_Ft_Ftag.toQuaternion()
+            
+            # Rotation of old ref frame used by the lib w/ to camera frame
+            C_Fold_Fc = k.RotationMatrix( np.matrix([[0,-1,0],[0,0,-1],[1,0,0]]) )
+            Q_Fold_Fc = C_Fold_Fc.toQuaternion()
+            
+            # Camera localization
+            t_cv_Fv = k.Vector( camera_x , camera_y , camera_z ) # translation of camera w/ vehicle origin in vehicle frame
+            C_Fc_Fv = k.euler2RotationMatrix(0,camera_theta,0)   # Rotation   of camera frame w/ vehicle frame
+            Q_Fc_Fv = C_Fc_Fv.toQuaternion()
+            
+            # Compute tag orientation in vehicle frame
+            Q_Ft_Fv =  Q_Fc_Fv * Q_Fold_Fc * Q_Ftag_Fold * Q_Ft_Ftag
+            
+            # Compute position of tag in vehicle frame expressed in vehicle frame
+            C_Fv_Fc = - C_Fc_Fv # inverse transform
+            t_tc_Fv = C_Fv_Fc * t_tc_Fc
+            t_tv_Fv = t_tc_Fv + t_cv_Fv
+            
+            # Overwrite transformed value
+            detection.transform.translation.x = t_tv_Fv.x
+            detection.transform.translation.y = t_tv_Fv.y
+            detection.transform.translation.z = t_tv_Fv.z
+            detection.transform.rotation.x    = Q_Ft_Fv.e.x
+            detection.transform.rotation.y    = Q_Ft_Fv.e.y
+            detection.transform.rotation.z    = Q_Ft_Fv.e.z
+            detection.transform.rotation.w    = Q_Ft_Fv.n
+            
+            # Debug Print
+            #A_read       = Q_Ftag_Fold.toAngleAxis()
+            #A_Ft_Fv      = Q_Ft_Fv.toAngleAxis()
+            #print 'Rotation Read'
+            #A_read()
+            #print 'Rotation in Vehicle Frame'
+            #A_Ft_Fv()
 
-            #new_location_info.x = 2
-            #new_location_info.y = 3
-            #new_info.location = new_location_info
-
-            # TODO: Add relative pose estimation
             tag_infos.append(new_info)
         
         new_tag_data = AprilTags()

@@ -1,13 +1,10 @@
 import cv2
 import numpy as np
-import argparse, sys
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+import sys
 from collections import Counter
 from sklearn.cluster import KMeans
 from sklearn import linear_model
-import IPython
-import itertools
+
 import time
 
 NUM_COLORS = 3

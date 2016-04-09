@@ -15,3 +15,4 @@ linewidth_yellow: 0.025
 lanewidth: 0.20
 min_max: 0.3
 min_segs: 10
+max_segment_dist: 0.3

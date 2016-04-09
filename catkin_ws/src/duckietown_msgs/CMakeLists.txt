@@ -85,6 +85,7 @@ add_message_files(
   KinematicsWeights.msg
   ThetaDotSample.msg
   Vsample.msg
+  Trajectory.msg
 )
 
 ## Generate services in the 'srv' folder

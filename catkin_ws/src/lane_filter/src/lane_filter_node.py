@@ -6,7 +6,7 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import Float32
 from duckietown_msgs.msg import SegmentList, Segment, Pixel, LanePose, BoolStamped
 from scipy.stats import multivariate_normal, entropy
-from math import floor, atan2, pi, cos, sin
+from math import floor, atan2, pi, cos, sin, sqrt
 import time
 
 # Lane Filter Node
@@ -20,13 +20,26 @@ class LaneFilterNode(object):
     def __init__(self):
         self.node_name = "Lane Filter"
         self.mean_0 = [self.setupParam("~mean_d_0",0) , self.setupParam("~mean_phi_0",0)]
-        self.cov_0  = [ [self.setupParam("~sigma_d_0",0.1) , 0] , [0, self.setupParam("~sigma_phi_0",0.01)] ] 
+        self.cov_0  = [ [self.setupParam("~sigma_d_0",0.1) , 0] , [0, self.setupParam("~sigma_phi_0",0.01)] ]
         self.delta_d     = self.setupParam("~delta_d",0.02) # in meters
         self.delta_phi   = self.setupParam("~delta_phi",0.02) # in radians
         self.d_max       = self.setupParam("~d_max",0.5)
         self.d_min       = self.setupParam("~d_min",-0.7)
         self.phi_min     = self.setupParam("~phi_min",-pi/2)
         self.phi_max     = self.setupParam("~phi_max",pi/2)
+
+        #For distance weighting (dw) function
+        self.zero_val    = self.setupParam("~zero_val",1)
+        self.l_peak      = self.setupParam("~l_peak",1)
+        self.peak_val    = self.setupParam("~peak_val",10)
+        self.l_max       = self.setupParam("~l_max",2)
+        self.dwa = -(self.zero_val*self.l_peak**2 + self.zero_val*self.l_max**2 - self.l_max**2*self.peak_val - 2*self.zero_val*self.l_peak*self.l_max + 2*self.l_peak*self.l_max*self.peak_val)/(self.l_peak**2*self.l_max*(self.l_peak - self.l_max)**2)
+        self.dwb = (2*self.zero_val*self.l_peak**3 + self.zero_val*self.l_max**3 - self.l_max**3*self.peak_val - 3*self.zero_val*self.l_peak**2*self.l_max + 3*self.l_peak**2*self.l_max*self.peak_val)/(self.l_peak**2*self.l_max*(self.l_peak - self.l_max)**2)
+        self.dwc = -(self.zero_val*self.l_peak**3 + 2*self.zero_val*self.l_max**3 - 2*self.l_max**3*self.peak_val - 3*self.zero_val*self.l_peak*self.l_max**2 + 3*self.l_peak*self.l_max**2*self.peak_val)/(self.l_peak*self.l_max*(self.l_peak - self.l_max)**2)
+        # self.dwa = 0
+        # self.dwb = 0
+        # self.dwc = 0
+
         self.cov_v       = self.setupParam("~cov_v",0.5) # linear velocity "input"
         self.cov_omega   = self.setupParam("~cov_omega",0.01) # angular velocity "input"
         self.linewidth_white = self.setupParam("~linewidth_white",0.04)
@@ -34,6 +47,7 @@ class LaneFilterNode(object):
         self.lanewidth        = self.setupParam("~lanewidth",0.4)
         self.min_max = self.setupParam("~min_max", 0.3) # nats
         self.min_segs = self.setupParam("~min_segs", 10)
+        self.max_segment_dist = self.setupParam("~max_segment_dist",1.0)
 
         self.d,self.phi = np.mgrid[self.d_min:self.d_max:self.delta_d,self.phi_min:self.phi_max:self.delta_phi]
         self.beliefRV=np.empty(self.d.shape)
@@ -63,20 +77,27 @@ class LaneFilterNode(object):
                 continue
             if segment.points[0].x < 0 or segment.points[1].x < 0:
                 continue
-            # todo eliminate the white segments that are on the other side of the road
+            if self.getSegmentDistance(segment) > self.max_segment_dist:
+                continue
+
             d_i,phi_i,l_i = self.generateVote(segment)
             if d_i > self.d_max or d_i < self.d_min or phi_i < self.phi_min or phi_i>self.phi_max:
                 continue
             i = floor((d_i - self.d_min)/self.delta_d)
             j = floor((phi_i - self.phi_min)/self.delta_phi)
-            measurement_likelihood[i,j] = measurement_likelihood[i,j] +  1/(l_i)
 
+            dist_weight = self.dwa*l_i**3+self.dwb*l_i**2+self.dwc*l_i+self.zero_val # should be tested 
+            if dist_weight < 0:
+                continue
+            measurement_likelihood[i,j] = measurement_likelihood[i,j] + dist_weight
+        if np.linalg.norm(measurement_likelihood) == 0:
+            return
         measurement_likelihood = measurement_likelihood/np.linalg.norm(measurement_likelihood)
         #self.updateBelief(measurement_likelihood)
         self.beliefRV = measurement_likelihood
         # TODO entropy test:
         #print self.beliefRV.argmax()
-        
+
         maxids = np.unravel_index(self.beliefRV.argmax(),self.beliefRV.shape)
         self.lanePose.header.stamp = segment_list_msg.header.stamp
         self.lanePose.d = self.d_min + maxids[0]*self.delta_d
@@ -122,7 +143,7 @@ class LaneFilterNode(object):
         self.beliefRV=self.beliefRV/np.linalg.norm(self.beliefRV)
 
     def generateVote(self,segment):
-        p1 = np.array([segment.points[0].x, segment.points[0].y]) 
+        p1 = np.array([segment.points[0].x, segment.points[0].y])
         p2 = np.array([segment.points[1].x, segment.points[1].y])
         t_hat = (p2-p1)/np.linalg.norm(p2-p1)
         n_hat = np.array([-t_hat[1],t_hat[0]])
@@ -154,13 +175,19 @@ class LaneFilterNode(object):
             d_i =  self.lanewidth/2 - d_i
 
         return d_i, phi_i, l_i
-    
+
+    def getSegmentDistance(self, segment):
+        x_c = (segment.points[0].x + segment.points[1].x)/2
+        y_c = (segment.points[0].y + segment.points[1].y)/2
+
+        return sqrt(x_c**2 + y_c**2)
+
     def onShutdown(self):
         rospy.loginfo("[LaneFilterNode] Shutdown.")
 
-if __name__ == '__main__': 
+
+if __name__ == '__main__':
     rospy.init_node('lane_filter',anonymous=False)
     lane_filter_node = LaneFilterNode()
     rospy.on_shutdown(lane_filter_node.onShutdown)
     rospy.spin()
-

@@ -23,7 +23,7 @@ def testImages(ai, imageset, gtimageset):
 		testimg = cv2.imread(testimgf)
 		# uncorrected is > 500
 		error = compute_error(testimg, gtimageset[i])
-		error.append(error)
+		errors.append(error)
 		if error[i] > 1:
 			print("Correction seemed to fail for image # "+str(i))
 	return error

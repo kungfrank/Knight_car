@@ -1,8 +1,8 @@
 import kmeans
-import IPython
 import numpy as np
 
-class AntiInstagram(object):
+class AntiInstagram():
+
 	def __init__(self):
 		self.num_colors = 3
 		self.ideal_colors = [[0, 0, 0], [0, 255, 255], [255, 255, 255]]
@@ -57,16 +57,16 @@ class AntiInstagram(object):
 
 		return self.calibration_parameters
 
-	def getSample(self, img):
-		'''code to sample from entire img a part that contains lanes and floor'''
-
-		return sample 
-
-	def histEqual(self, img):
-		'''https://en.wikipedia.org/wiki/Normalization_(image_processing)'''
-
-		return equalParam
-
-	def kMeans(self, img):
-
-		return kMeansParam
+# 	def getSample(self, img):
+# 		'''code to sample from entire img a part that contains lanes and floor'''
+#
+# 		return sample
+#
+# 	def histEqual(self, img):
+# 		'''https://en.wikipedia.org/wiki/Normalization_(image_processing)'''
+#
+# 		return equalParam
+#
+# 	def kMeans(self, img):
+#
+# 		return kMeansParam

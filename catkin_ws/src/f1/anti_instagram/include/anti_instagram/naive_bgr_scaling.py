@@ -2,7 +2,6 @@ from __future__ import print_function
 
 import numpy as np
 import cv2
-import kmeans
 
 # Load an color image in grayscale
 #cref = [50.0,50.0,50.0]
@@ -20,7 +19,7 @@ def refPatchScale(image_fname, cref):
 	# just for testing
 	cv2.imwrite("img_patch.jpg",img_patch)
 
-	m_mean = np.zeros(3)
+	# m_mean = np.zeros(3)
 	m_mean = np.mean(np.reshape(img_patch,[wp*hp,3]),0)
 
 	print(m_mean)
@@ -58,7 +57,7 @@ def refPatchShift(image_fname,cref):
 	hp = img_patch.shape[0]
 	wp = img_patch.shape[1]
 
-	m_mean = np.zeros(3)
+	# m_mean = np.zeros(3)
 	m_mean = np.mean(np.reshape(img_patch,[wp*hp,3]),0)
 
 	print(m_mean)

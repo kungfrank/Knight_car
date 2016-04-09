@@ -1,0 +1,16 @@
+<launch>
+    <arg name="pkg_name" value="kinematics"/>
+    <arg name="node_name" default="vicon_learning_tester_node"/>
+
+    <arg name="veh" default="testbot" doc="Name of vehicle. ex: megaman"/>
+    <arg name="param_file_name" default="test_default" doc="Specify a param file. ex:megaman."/>
+
+    <!-- Run the node -->
+    <include file="$(find kinematics)/launch/vicon_learning_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+    </include>
+
+    <!-- Run unit test -->
+    <test test-name="vicon_learning_tester_node" pkg="kinematics" type="vicon_learning_tester_node.py" ns="$(arg veh)"/>
+</launch>

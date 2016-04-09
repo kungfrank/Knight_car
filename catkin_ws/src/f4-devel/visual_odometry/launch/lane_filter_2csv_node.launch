@@ -1,0 +1,19 @@
+<launch>
+    <arg name="pkg_name" value="visual_odometry"/>
+    <arg name="node_name" value="lane_filter_2csv_node"/>
+
+    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
+    <arg name="bag_in"/>
+    <!--<arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>-->
+    <!--<arg name="config" default="baseline" doc="Specify a config."/>-->
+    <!--<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />-->
+
+    <group ns="$(arg veh)">
+        <node name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen"/>
+    </group>
+
+    <!--play bag-->
+    <node  pkg="rosbag" type="play" name="rosbag_play" args="$(arg bag_in)" required="true"/>
+
+</launch>
+

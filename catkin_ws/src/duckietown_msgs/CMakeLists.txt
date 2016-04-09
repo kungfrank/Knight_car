@@ -82,6 +82,9 @@ add_message_files(
   BoolStamped.msg
   StopLineReading.msg
   AntiInstagramHealth.msg
+  KinematicsWeights.msg
+  ThetaDotSample.msg
+  Vsample.msg
 )
 
 ## Generate services in the 'srv' folder

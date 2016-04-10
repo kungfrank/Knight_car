@@ -39,7 +39,7 @@ digraph D {
 		label = "Actuators";
 		wheels_command[!TOPIC!, label="wheels_driver_node/wheels_cmd\nduckietown_msgs/WheelsCmdStamped.msg"];
 		
-		desired_signaling_state [!TOPIC!, label="~desired_signaling_state\nduckietown_msgs/CoordinationSignal.msg"];
+		change_color_pattern [!TOPIC!, label="~change_color_pattern\nString"];
 
 		LED_emitter_node     [!NODE:development!, label="led_emitter\nled_emitter_node"    ];
 		wheels_driver_node[!NODE:compiled!, label="dagu_car\nwheels_driver_node (DY,SY)"];
@@ -208,12 +208,12 @@ digraph D {
 		object_too_close[!TOPIC!, label="~object_too_close\nduckietown_msgs/BoolStamped.msg"];
 		object_projected_detection_list[!TOPIC!, label="~detection_list_proj\nduckietown_msgs/ObjectProjectedDetectionList.msg"];
 		simple_stop_control[!TOPIC!, label="~control\nduckietown_msgs/Twist2DStamped.msg"];
-		mdoap_control[!TOPIC!, label="~control\nduckietown_msgs/Twist2DStamped.msg"];
+		//mdoap_control[!TOPIC!, label="~control\nduckietown_msgs/Twist2DStamped.msg"];
 
 		static_object_detector_node[!NODE:development!,  label="mdoap\nstatic_object_detector_node (F9)"];
 		obstacle_safety_node       [!NODE:development!,  label="mdoap\nobstacle_safety_node (F9)"];
 		simple_stop_controller_node[!NODE:development!,  label="mdoap\nsimple_stop_controller_node (F9)"];
-		mdoap_controller_node      [!NODE:development!,  label="mdoap\nmdoap_controller_node (F9)"];
+		//mdoap_controller_node      [!NODE:development!,  label="mdoap\nmdoap_controller_node (F9)"];
 	}
 
 
@@ -243,7 +243,7 @@ digraph D {
 		
 	// == line_detector_node == //
 	line_detector_node -> {segment_list, image_with_lines};
-	corrected_image -> line_detector_node;
+	image_compressed -> line_detector_node;
 
 	// == global_localizer == //
 	//{obj_detection, street_name_detection, apriltag_detection, map_representation} -> global_localizer;
@@ -269,10 +269,10 @@ digraph D {
 	// == veh_coordinator_node == //
 	{signals_detection,mode} -> veh_coordinator_node;
 	veh_coordinator_node->intersection_go;
-	veh_coordinator_node->desired_signaling_state;
+	veh_coordinator_node->change_color_pattern;
 
 	// == wheels_cmd_switch_node == //
-	{mode, lane_control, intersection_control, veh_avoidance_control, simple_stop_control, mdoap_control, joy_control, lane_control_sup}->wheels_cmd_switch_node;	
+	{mode, lane_control, intersection_control, veh_avoidance_control, simple_stop_control, joy_control, lane_control_sup}->wheels_cmd_switch_node;	
 	wheels_cmd_switch_node->car_command_switch;
 	
 	//// == wheels_trimmer_node == //	
@@ -299,8 +299,8 @@ digraph D {
 	joy->LED_joy_mapper_node;
 	LED_joy_mapper_node->desired_signaling_state[style="dashed"]; // dashed = only for testing
 
-	// LED_emitter_node reads desired_signaling_state and activates the LED
-	desired_signaling_state->LED_emitter_node;
+	// LED_emitter_node reads change_color_pattern and activates the LED
+	change_color_pattern->LED_emitter_node;
 
 	// Image goes to LED_detector_node which produces "raw" led detections
 	image_compressed->LED_detector_node->raw_led_detection;
@@ -312,7 +312,8 @@ digraph D {
  
 	// == F4 == //
 	// == odometry_training_pairs_node == //
-	{image_compressed, apriltags_global_tags_detection_processed ,segment_list_proj, car_command_switch} -> odometry_training_pairs_node;
+	{apriltags_global_tags_detection_processed ,segment_list_proj, car_command_switch} -> odometry_training_pairs_node;
+	image_compressed -> odometry_training_pairs_node[color="red",label="Not sure if this should still be here"];
 	odometry_training_pairs_node -> odometry_training_pairs_file[style="dotted"];
 
 	// == kinematics_learning_node == //
@@ -340,14 +341,14 @@ digraph D {
 	lane_filter_node -> {lane_pose};
 
 	// == ref_traj_gen_node == //
-	segment_list_proj -> ref_traj_gen_node;
-	ref_traj_gen_node -> ref_traj;
+	//segment_list_proj -> ref_traj_gen_node;
+	//ref_traj_gen_node -> ref_traj;
 
 
 /////////// F6 //
 
 	// == vehicle_detector_node == //
-	corrected_image -> vehicle_detector_node;
+	image_raw -> vehicle_detector_node;
 	vehicle_detector_node -> veh_corners;
 	// == vehicle_filter_node == //
 	{veh_corners, camera_info} -> vehicle_filter_node;
@@ -364,7 +365,7 @@ digraph D {
 	//tags_map_file -> apriltag_info_node[style="dotted"];
 	//apriltag_detection -> apriltag_info_node;
 	//apriltag_info_node -> apriltag_detection_with_info;
-	image_compressed -> april_pre_pros_node;
+	image_raw -> april_pre_pros_node;
 	april_pre_pros_node -> {april_pre_pros_global_image, april_pre_pros_fast_image};
 	april_pre_pros_fast_image -> apriltags_fast_node;
 	{april_pre_pros_global_image, camera_info} -> apriltags_global_node;
@@ -380,7 +381,7 @@ digraph D {
 
 	// == F9 == //
 	// == static_object_detector_node ==//
-	image_compressed->static_object_detector_node;
+	image_raw->static_object_detector_node;
 	static_object_detector_node->object_image_detection_list;
 	// == obstacle_safety_node == //
 	object_image_detection_list -> obstacle_safety_node;
@@ -391,8 +392,8 @@ digraph D {
 	//TODO: publish to the wheels cmd swtich
 
 	// == mdoap_controller_node == //
-	{object_projected_detection_list, object_too_close} -> mdoap_controller_node;
-	mdoap_controller_node -> mdoap_control;
+	//{object_projected_detection_list, object_too_close} -> mdoap_controller_node;
+	//mdoap_controller_node -> mdoap_control;
 
 }
 

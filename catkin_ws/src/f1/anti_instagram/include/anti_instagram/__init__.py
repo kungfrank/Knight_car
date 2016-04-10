@@ -1,5 +1,5 @@
 import logging
 logging.basicConfig()
 
-logger = logging.getLogger('led_detection')
+logger = logging.getLogger('anti_instagram')
 logger.setLevel(logging.DEBUG)

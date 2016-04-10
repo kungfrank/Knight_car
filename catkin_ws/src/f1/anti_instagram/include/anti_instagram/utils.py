@@ -40,3 +40,9 @@ def wrap_test_main(f):
         logger.info('Success.')
         sys.exit(0)
 
+
+def get_rospkg_root(package_name):
+    import rospkg  # @UnresolvedImport
+    rospack = rospkg.RosPack()
+    package_root = rospack.get_path(package_name)
+    return package_root

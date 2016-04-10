@@ -1,11 +1,12 @@
+from . import logger
+from collections import Counter
+from sklearn import linear_model
+from sklearn.cluster import KMeans
 import cv2
 import numpy as np
 import sys
-from collections import Counter
-from sklearn.cluster import KMeans
-from sklearn import linear_model
-
 import time
+
 
 NUM_COLORS = 3
 
@@ -16,11 +17,6 @@ np.random.seed(5)
 
 IMG_PATH = '''IMG PATH'''
 
-#cv_img = cv2.imread("test2.jpg")
-# print cv_img.shape
-
-# class GetKMeansModel(object):
-# 	def __init__(self, img)
 def getimgdatapts(cv2img):
 
 	x, y, p = cv2img.shape
@@ -212,7 +208,6 @@ def getparameters(mapping, trained, true):
 	# print GREEN_a_, GREEN_b
 	return (RED.coef_, RED.intercept_), (BLUE.coef_, BLUE.intercept_), (GREEN.coef_, GREEN.intercept_),fitting_cost
 
-from . import logger
 
 class SASParams:
 	algorithm = 2
@@ -254,9 +249,9 @@ if __name__ == '__main__':
 		img_filename=sys.argv[1]
 		print(img_filename)
 	cv_img = cv2.imread(img_filename)
-	t1=time.clock();
+	t1 = time.clock()
 	testdata = getimgdatapts(cv_img)
-	t2=time.clock();
+	t2 = time.clock()
 	print("Time taken:")
 	print(t2-t1)
 	

@@ -1,7 +1,7 @@
+from . import logger
 import kmeans
 import numpy as np
 
-from . import logger
 
 class AntiInstagram():
 
@@ -14,17 +14,17 @@ class AntiInstagram():
 		self.health = 0
 
 	def applyTransform(self,image):
-		# IPython.embed()
-		corrected_image = kmeans.scaleandshift(image,self.scale,self.shift)
+		corrected_image = kmeans.scaleandshift(image, self.scale, self.shift)
 		return corrected_image
 
 	def calculateTransform(self,image,testframe=False):
 		trained,counter = kmeans.runKMeans(image)
 		mapping = kmeans.identifyColors(trained, kmeans.CENTERS)
-		# IPython.embed()
+
 		r,g,b,cost = kmeans.getparameters2(mapping, trained, counter, kmeans.CENTERS)
 
-		if r[0][0] == 0.0: return
+		if r[0][0] == 0.0:
+			return
 
 		# Estimates the scale and shift over multiple frame via an IIR filter with preference towards low-cost frames
 		IIR_weight=1000/(10000+cost)
@@ -39,7 +39,9 @@ class AntiInstagram():
 		else:
 			self.scale = (self.scale+deltascale*IIR_weight)/(1+IIR_weight)
 			self.shift = (self.shift+deltashift*IIR_weight)/(1+IIR_weight)
-		self.health=1/(cost+np.finfo('double').eps)
+
+		eps = np.finfo('double').eps
+		self.health = 1 / (cost + eps)
 		return 1
 
 	def calculateHealth(self):

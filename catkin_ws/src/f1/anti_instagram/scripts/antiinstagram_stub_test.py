@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 from anti_instagram import AntiInstagram, L2_image_distance, load_image, logger
-from anti_instagram.utils import wrap_test_main
+from anti_instagram.utils import wrap_test_main, get_rospkg_root
 from duckietown_utils import col_logging  # @UnusedImport
 import cv2
+import os
 
 # calculate transform for each image set
 def testImages(ai, imageset, gtimageset, error_threshold):
@@ -30,15 +31,26 @@ def anti_instagram_test():
 	error_threshold = 500
 	# load test images
 	failure = False
+
+
+
 	imagesetf = [
 		"inputimage0.jpg",
-		"inputimage1.jpg"
+		"inputimage1.jpg",
 	]
 	gtimagesetf = [
 		"groundtruthimage0.jpg",
-		"groundtruthimage1.jpg"
+		"groundtruthimage1.jpg",
 	]
-	#
+
+	package_root = get_rospkg_root('anti_instagram')
+	def add_dir(x):
+		return os.path.join(package_root, 'scripts', x)
+
+	imagesetf = map(add_dir, imagesetf)
+	gtimagesetf = map(add_dir, gtimagesetf)
+
+
 	imageset = map(load_image, imagesetf)
 	gtimageset = map(load_image, gtimagesetf)
 	errors = testImages(ai, imageset, gtimageset, error_threshold)

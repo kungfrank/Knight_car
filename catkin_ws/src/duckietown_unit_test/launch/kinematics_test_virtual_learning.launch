@@ -3,6 +3,7 @@
     <arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
     <arg name="config" default="baseline" doc="Specify a config."/>
     <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman."/>
+    <arg name="ground_truth_param_file_name" default="ground_truth_default" doc="Specify a param file."/>
     <arg name="hz" default="0.0" doc="The frequency of the test command topic" />
     <arg name="v" default="0.0" doc="The linear velocity for the test trajectory" />
     <arg name="omega" default="0.0" doc="The angular velocity for the test trajectory" />
@@ -11,13 +12,22 @@
     <arg name="learning_sensor_node" default="virtual_learning_node" /> <!-- change this to visual odometry node when it's ready -->
 
 
+    <!-- ground truth forward_kinematics_node -->
+    <remap from="/ground_truth/$(arg veh)/forward_kinematics_node/wheels_cmd" to="/$(arg veh)/wheels_driver_node/wheels_cmd_executed" />
+    <include ns="ground_truth" file="$(find kinematics)/launch/forward_kinematics_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="local" value="$(arg local)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg ground_truth_param_file_name)"/>
+    </include>
+
     <!-- ground truth position_filter_node -->
-    <remap from="/ground_truth/$(arg veh)/position_filter_node/velocity" to="/$(arg veh)/inverse_kinematics_node/car_cmd" />
+    <remap from="/ground_truth/$(arg veh)/position_filter_node/velocity" to="/ground_truth/$(arg veh)/forward_kinematics_node/velocity" />
     <include ns="ground_truth" file="$(find kinematics)/launch/position_filter_node.launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>
         <arg name="config" value="$(arg config)"/>
-        <arg name="param_file_name" value="$(arg param_file_name)"/>
+        <arg name="param_file_name" value="$(arg ground_truth_param_file_name)"/>
     </include>
 
     <!-- ground truth pose2d_to_path_node -->
@@ -28,7 +38,7 @@
 
     <!-- run the virtual_learning_node -->
     <group if="$(arg learn_online)">
-        <remap from="virtual_learning_node/pose" to="position_filter_node/pose" />
+        <remap from="virtual_learning_node/pose" to="/ground_truth/$(arg veh)/position_filter_node/pose" />
         <remap from="virtual_learning_node/wheels_cmd" to="wheels_driver_node/wheels_cmd_executed" />
         <include file="$(find kinematics)/launch/virtual_learning_node.launch">
             <arg name="veh" value="$(arg veh)"/>
@@ -64,6 +74,16 @@
         <arg name="hz" value="$(arg hz)" doc="The frequency of the test command topic" />
         <arg name="v" value="$(arg v)" doc="The linear velocity for the test trajectory" />
         <arg name="omega" value="$(arg omega)" doc="The angular velocity for the test trajectory" />
+    </include>
+
+    <!-- run trajectory_recording_node -->
+    <remap from="trajectory_recording_node/wheels_cmd" to="wheels_driver_node/wheels_cmd_executed" />
+    <include file="$(find kinematics)/launch/trajectory_recording_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="local" value="$(arg local)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+        <arg name="FIfile" value="fi_file_aeou"/>
     </include>
 
     <group if="$(arg gui)">

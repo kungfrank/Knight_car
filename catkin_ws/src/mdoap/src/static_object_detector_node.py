@@ -127,7 +127,7 @@ class StaticObjectDetectorNode:
         
         self.tm = Matcher()
         self.thread_lock = threading.Lock()
-        self.sub_image = rospy.Subscriber("~image_compressed", CompressedImage, self.cbImage, queue_size=1)
+        self.sub_image = rospy.Subscriber("~image_raw", Image, self.cbImage, queue_size=1)
         self.pub_image = rospy.Publisher("~cone_detection_image", Image, queue_size=1)
         self.pub_detections_list = rospy.Publisher("~detection_list", ObstacleImageDetectionList, queue_size=1)
         self.bridge = CvBridge()
@@ -142,9 +142,10 @@ class StaticObjectDetectorNode:
     def processImage(self, image_msg):
         if not self.thread_lock.acquire(False):
             return
-        np_arr = np.fromstring(image_msg.data, np.uint8)
-        
-        image_cv = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+        try:
+            image_cv=self.bridge.imgmsg_to_cv2(image_msg,"bgr8")
+        except CvBridgeErrer as e:
+            print e
         img, detections = self.tm.contour_match(image_cv)
         detections.header.stamp = image_msg.header.stamp
         detections.header.frame_id = image_msg.header.frame_id

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<robot name="macros" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:property name="pi" value="3.14159265359" />
+    <xacro:macro name="tile" params="x y type rotation">
+        <link name="tile_${x}_${y}">
+            <visual>
+                <origin xyz="${tile_width/2} ${tile_width/2} ${-tile_thickness}" rpy="0 0 ${rotation * pi/180}"/>
+                <geometry>
+                    <box size="${tile_width} ${tile_width} ${tile_thickness}"/>
+                </geometry>
+                <material name="tile">
+                    <texture filename="package://duckietown_description/urdf/${type}.png" />
+                </material>
+            </visual>
+        </link>
+
+        <joint name="world_to_tile_${x}_${y}" type="fixed">
+            <parent link="world" />
+            <child link="tile_${x}_${y}" />
+            <origin xyz="${tile_width * x} ${tile_width * y} 0" />
+        </joint>
+    </xacro:macro>
+</robot>

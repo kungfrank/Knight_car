@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<robot name="duckietown" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <!-- Parameters -->
+    <xacro:property name="tile_width" value="0.6096" />
+    <xacro:property name="tile_thickness" value="0.01" />
+
+    <!-- Include the tile and tag macros -->
+    <xacro:include filename="$(find duckietown_description)/urdf/macros.urdf.xacro" />
+
+    <!-- The world frame is at the lower left corner of duckietown-->
+    <link name="world" />
+
+    <!-- Describe the tiles -->
+    <xacro:tile x="0" y="0" type="tile" rotation="0" />
+    <xacro:tile x="0" y="1" type="tile" rotation="0" />
+    <xacro:tile x="0" y="2" type="tile" rotation="0" />
+    <xacro:tile x="1" y="0" type="tile" rotation="90" />
+    <xacro:tile x="1" y="1" type="tile" rotation="0" />
+    <xacro:tile x="1" y="2" type="tile" rotation="270" />
+
+</robot>

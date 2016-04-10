@@ -1,46 +1,28 @@
+from collections import Counter
+from sklearn import linear_model
+from sklearn.cluster import KMeans
 import cv2
 import numpy as np
-import argparse, sys
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from collections import Counter
-from sklearn.cluster import KMeans
-from sklearn import linear_model
-import IPython
-import itertools
+import sys
 import time
 
-NUM_COLORS = 3
-
 CENTERS = np.array([[60, 60, 60], [20, 240, 240], [240, 240, 240]])
-# print CENTERS 
 
-np.random.seed(5)
 
-IMG_PATH = '''IMG PATH'''
-
-#cv_img = cv2.imread("test2.jpg")
-# print cv_img.shape
-
-# class GetKMeansModel(object):
-# 	def __init__(self, img)
 def getimgdatapts(cv2img):
-
 	x, y, p = cv2img.shape
 	cv2_tpose=cv2img.transpose()
 	cv2_arr_tpose=np.reshape(cv2_tpose,[p,x*y])
 	npdata=np.transpose(cv2_arr_tpose);
-
 	return npdata
 
 #priors
-def runKMeans(cv_img):
+def runKMeans(cv_img, num_colors, init):
 	imgdata = getimgdatapts(cv_img[-100:,:,:])
-	kmc = KMeans(n_clusters = NUM_COLORS, max_iter = 100, n_init = 10, init = CENTERS)
+	kmc = KMeans(n_clusters=num_colors, max_iter=100, n_init=10, init=init)
 	kmc.fit_predict(imgdata)
 	trained_centers = kmc.cluster_centers_
 	# print trained_centers
-	# print CENTERS
 	labels = kmc.labels_
 	labelcount = Counter()
 	for pixel in labels:
@@ -154,7 +136,7 @@ def getparameters2(mapping, trained, weights, true):
 		# Take the best solution if there were several permuations
 		if (fitting_cost<min_fitting_cost):
 			min_fitting_cost=fitting_cost
-			print("perm: %s, fitting cost: %s"% (perm,fitting_cost))
+			#print("perm: %s, fitting cost: %s"% (perm,fitting_cost))
 			MIN_RED_a=p[0]
 			MIN_GREEN_a=p[2]
 			MIN_BLUE_a=p[4]
@@ -166,10 +148,10 @@ def getparameters2(mapping, trained, weights, true):
 	t2=time.time()
 
 
-	print MIN_RED_a, MIN_RED_b
-	print MIN_BLUE_a, MIN_BLUE_b
-	print MIN_GREEN_a, MIN_GREEN_b
-	print("time: %f"%(t2-t1))
+	#print MIN_RED_a, MIN_RED_b
+	#print MIN_BLUE_a, MIN_BLUE_b
+	#print MIN_GREEN_a, MIN_GREEN_b
+	#print("time: %f"%(t2-t1))
 	return ([MIN_RED_a], MIN_RED_b), ([MIN_BLUE_a], MIN_BLUE_b), ([MIN_GREEN_a], MIN_GREEN_b),fitting_cost
 
 def getparameters(mapping, trained, true):
@@ -215,17 +197,6 @@ def getparameters(mapping, trained, true):
 	# print GREEN_a_, GREEN_b
 	return (RED.coef_, RED.intercept_), (BLUE.coef_, BLUE.intercept_), (GREEN.coef_, GREEN.intercept_),fitting_cost
 
-def scaleandshift(img,scale,shift):
-	h = img.shape[0]
-	w = img.shape[1]
-
-	img_scale = np.reshape(img,[h*w,3])
-	img_scale = np.reshape(img_scale*np.array(scale),[h,w,3])
-
-	img_shift = np.reshape(img_scale,[h*w,3])
-	img_shift = np.reshape(img_shift+np.array(shift),[h,w,3])
-
-	return img_shift
 
 if __name__ == '__main__':
 	img_filename="test2.jpg"
@@ -233,12 +204,13 @@ if __name__ == '__main__':
 		img_filename=sys.argv[1]
 		print(img_filename)
 	cv_img = cv2.imread(img_filename)
-	t1=time.clock();
+	t1 = time.clock()
 	testdata = getimgdatapts(cv_img)
-	t2=time.clock();
+	t2 = time.clock()
 	print("Time taken:")
 	print(t2-t1)
 	
 	trained = runKMeans(testdata)
+	from anti_instagram import AntiInstagram
 	mapping = identifyColors(trained[0], CENTERS)
 	getparameters(mapping, trained[0], CENTERS)

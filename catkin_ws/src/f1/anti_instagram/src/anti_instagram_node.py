@@ -86,7 +86,7 @@ class AntiInstagramNode():
 			toc = rospy.get_time()
 
 		# corrected_image_cv2 = cv_image
-		corrected_image_cv2 = np.clip(corrected_image_cv2,0,255).astype(np.uint8)
+		corrected_image_cv2 = np.clip(corrected_image_cv2, 0, 255).astype(np.uint8)
 		self.corrected_image = self.bridge.cv2_to_imgmsg(corrected_image_cv2,"bgr8")
 
 		if self.verbose:  

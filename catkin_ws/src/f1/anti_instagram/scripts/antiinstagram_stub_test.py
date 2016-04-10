@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 
-from anti_instagram import (
-	AntiInstagram, L2_image_distance, load_image, logger, random_image)
+from anti_instagram import AntiInstagram, L2_image_distance, load_image, logger
+from anti_instagram.utils import wrap_test_main
 from duckietown_utils import col_logging  # @UnusedImport
 import cv2
-import sys
-import timeit
-import traceback
-from anti_instagram.utils import wrap_test_main
 
 # calculate transform for each image set
 def testImages(ai, imageset, gtimageset, error_threshold):

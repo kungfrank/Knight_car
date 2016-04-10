@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from anti_instagram import wrap_test_main, logger
 
 

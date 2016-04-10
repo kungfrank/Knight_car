@@ -1,8 +1,8 @@
 from . import logger
-from .kmeans import identifyColors, getparameters2, runKMeans
-import numpy as np
+from .kmeans import getparameters2, identifyColors, runKMeans
 from .scale_and_shift import scaleandshift
 from anti_instagram.kmeans import CENTERS
+import numpy as np
 
 class AntiInstagram():
 

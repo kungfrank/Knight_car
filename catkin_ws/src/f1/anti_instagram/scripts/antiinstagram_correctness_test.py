@@ -24,6 +24,27 @@ def anti_instagram_test_correctness():
     b = scaleandshift2(img, id_scale, id_shift)
     assert_L1_small(img, b)
 
+    logger.info('algo 1 and 2 give the same output with random shift')
+
+    scale = id_scale
+    shift = np.random.rand(3)
+
+    img1 = scaleandshift1(img, scale, shift)
+    img2 = scaleandshift2(img, scale, shift)
+    assert_L1_small(img1, img2)
+
+
+    logger.info('algo 1 and 2 give the same output with random scale')
+
+    scale = np.random.rand(3)
+    shift = id_shift  # 0 shift
+
+    img1 = scaleandshift1(img, scale, shift)
+    img2 = scaleandshift2(img, scale, shift)
+    assert_L1_small(img1, img2)
+
+
+
     logger.info('algo 1 and 2 give the same output with random inputs')
 
     scale = np.random.rand(3)

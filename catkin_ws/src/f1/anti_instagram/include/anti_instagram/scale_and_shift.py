@@ -5,6 +5,7 @@ class SASParams:
     algorithm = 2
 
 def scaleandshift(img, scale, shift):
+    """ Returns a float image, which might be outside of [0,255]"""
     logger.info('scale: %s' % scale)
     logger.info('shift: %s' % shift)
 
@@ -13,15 +14,16 @@ def scaleandshift(img, scale, shift):
     assert len(shift) == 3, shift
 
     if SASParams.algorithm == 1:
-        return scaleandshift1(img, scale, shift)
-
-    if SASParams.algorithm == 2:
-        return scaleandshift2(img, scale, shift)
-
-    assert False
+        res =  scaleandshift1(img, scale, shift)
+    elif SASParams.algorithm == 2:
+        res = scaleandshift2(img, scale, shift)
+    else:
+        assert False
+        
+    return res
 
 def scaleandshift2(img, scale, shift):
-    img_shift = np.empty_like(img)
+    img_shift = np.zeros(img.shape, dtype='float32')
     for i in range(3):
         img_shift[:, :, i] = scale[i] * img[:, :, i] + shift[i]
 

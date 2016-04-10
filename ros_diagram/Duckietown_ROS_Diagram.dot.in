@@ -41,7 +41,7 @@ digraph D {
 		
 		desired_signaling_state [!TOPIC!, label="~desired_signaling_state\nduckietown_msgs/CoordinationSignal.msg"];
 
-		LED_emitter_node     [!NODE:development!, label="LED\nLED_emitter_node"    ];
+		LED_emitter_node     [!NODE:development!, label="led_emitter\nled_emitter_node"    ];
 		wheels_driver_node[!NODE:compiled!, label="dagu_car\nwheels_driver_node (DY,SY)"];
 	}
 
@@ -121,9 +121,9 @@ digraph D {
 		label="F2-3: LED Detection";
 		
 		
-		LED_detector_node    [!NODE:development!, label="LED\nLED_detector_node"   ];
-		LED_interpreter_node [!NODE:development!, label="LED\nLED_interpreter_node"];
-		LED_joystick_node    [!NODE:development!, label="LED\nLED_joystick_node"   ];
+		LED_detector_node    [!NODE:development!, label="led_detection\nLED_detector_node"   ];
+		LED_interpreter_node [!NODE:missing!, label="led_interpreter\nLED_interpreter_node"];
+		LED_joy_mapper_node    [!NODE:development!, label="led_joy_mapper\nled_joy_mapper_node"   ];
 		
 		raw_led_detection       [!TOPIC!, label="~raw_led_detection\nled_detection/LEDDetectionArray.msg"];
 		signals_detection       [!TOPIC!, label="~signals_detection\nled_detection/SignalsDetection.msg"];
@@ -295,9 +295,9 @@ digraph D {
 	anti_instagram_node->{corrected_image,image_health};
 
 	// == F2-3 == //
-	// the joystick is connected to LED_joystick_node, which produces a desired_signaling_state
-	joy->LED_joystick_node;
-	LED_joystick_node->desired_signaling_state[style="dashed"]; // dashed = only for testing
+	// the joystick is connected to LED_joy_mapper_node, which produces a desired_signaling_state
+	joy->LED_joy_mapper_node;
+	LED_joy_mapper_node->desired_signaling_state[style="dashed"]; // dashed = only for testing
 
 	// LED_emitter_node reads desired_signaling_state and activates the LED
 	desired_signaling_state->LED_emitter_node;

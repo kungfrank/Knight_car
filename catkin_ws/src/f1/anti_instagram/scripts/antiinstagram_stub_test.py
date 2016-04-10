@@ -89,7 +89,7 @@ def anti_instagram_test():
 	logger.info("Test Image Errors (errors >> 1 indicate a problem): ")
 	logger.info(errors)
 
-	if max(errors) > 3:
+	if max(errors) > 500:
 		exit_code = 1
 
 	#### TEST CALC TIMING ####

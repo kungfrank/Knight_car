@@ -72,9 +72,11 @@ class VehicleDetectionNode(object):
 	def processImage(self, image_msg):
 		if self.lock.testandset():
 			corners_msg_out = VehicleCorners()
-			image_cv = cv2.imdecode(np.fromstring(image_msg.data, np.uint8), 
-					cv2.CV_LOAD_IMAGE_COLOR)
-			start = rospy.Time.now()
+                        try:
+                                image_cv=self.bridge.imgmsg_to_cv2(image_msg,"bgr8")
+                        except CvBridgeErrer as e:
+                                print e
+   			start = rospy.Time.now()
 			params = cv2.SimpleBlobDetector_Params()
 			params.minArea = self.blobdetector_min_area
 			params.minDistBetweenBlobs = self.blobdetector_min_dist_between_blobs

@@ -39,7 +39,7 @@ digraph D {
 		label = "Actuators";
 		wheels_command[!TOPIC!, label="wheels_driver_node/wheels_cmd\nduckietown_msgs/WheelsCmdStamped.msg"];
 		
-		desired_signaling_state [!TOPIC!, label="~desired_signaling_state\nduckietown_msgs/CoordinationSignal.msg"];
+		change_color_pattern [!TOPIC!, label="~change_color_pattern\nString"];
 
 		LED_emitter_node     [!NODE:development!, label="LED\nLED_emitter_node"    ];
 		wheels_driver_node[!NODE:compiled!, label="dagu_car\nwheels_driver_node (DY,SY)"];
@@ -269,7 +269,7 @@ digraph D {
 	// == veh_coordinator_node == //
 	{signals_detection,mode} -> veh_coordinator_node;
 	veh_coordinator_node->intersection_go;
-	veh_coordinator_node->desired_signaling_state;
+	veh_coordinator_node->change_color_pattern;
 
 	// == wheels_cmd_switch_node == //
 	{mode, lane_control, intersection_control, veh_avoidance_control, simple_stop_control, joy_control, lane_control_sup}->wheels_cmd_switch_node;	
@@ -295,12 +295,12 @@ digraph D {
 	anti_instagram_node->{corrected_image,image_health};
 
 	// == F2-3 == //
-	// the joystick is connected to LED_joystick_node, which produces a desired_signaling_state
+	// the joystick is connected to LED_joystick_node, which produces a change_color_pattern
 	joy->LED_joystick_node;
-	LED_joystick_node->desired_signaling_state[style="dashed"]; // dashed = only for testing
+	LED_joystick_node->change_color_pattern[style="dashed"]; // dashed = only for testing
 
-	// LED_emitter_node reads desired_signaling_state and activates the LED
-	desired_signaling_state->LED_emitter_node;
+	// LED_emitter_node reads change_color_pattern and activates the LED
+	change_color_pattern->LED_emitter_node;
 
 	// Image goes to LED_detector_node which produces "raw" led detections
 	image_compressed->LED_detector_node->raw_led_detection;

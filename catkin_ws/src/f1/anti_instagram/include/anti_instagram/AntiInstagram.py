@@ -1,7 +1,7 @@
 from . import logger
 import kmeans
 import numpy as np
-
+from .scale_and_shift import scaleandshift
 
 class AntiInstagram():
 
@@ -14,7 +14,7 @@ class AntiInstagram():
 		self.health = 0
 
 	def applyTransform(self,image):
-		corrected_image = kmeans.scaleandshift(image, self.scale, self.shift)
+		corrected_image = scaleandshift(image, self.scale, self.shift)
 		return corrected_image
 
 	def calculateTransform(self,image,testframe=False):

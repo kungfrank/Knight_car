@@ -33,17 +33,6 @@ def refPatchScale(image_fname, cref):
 
 	return img_scale
 
-def scaleandshift(img,scale,shift):
-	h = img.shape[0]
-	w = img.shape[1]
-
-	img_scale = np.reshape(img,[h*w,3])
-	img_scale = np.reshape(img_scale*np.array(scale),[h,w,3])
-
-	img_shift = np.reshape(img_scale,[h*w,3])
-	img_shift = np.reshape(img_shift+np.array(shift),[h,w,3])
-
-	return img_shift
 
 def refPatchShift(image_fname,cref):
 	img_orig = cv2.imread(image_fname)

@@ -7,3 +7,4 @@ logger.setLevel(logging.DEBUG)
 from .AntiInstagram import *
 from .kmeans import *
 from .utils import *
+from .scale_and_shift import *

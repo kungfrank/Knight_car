@@ -1,8 +1,6 @@
 #!/usr/bin/env python
-from anti_instagram import logger, wrap_test_main
-from anti_instagram.kmeans import scaleandshift1, scaleandshift2
-from anti_instagram.utils import (L1_image_distance, L2_image_distance,
-    random_image)
+from anti_instagram import (L1_image_distance, L2_image_distance, logger,
+    random_image, scaleandshift1, scaleandshift2, wrap_test_main)
 import numpy as np
 
 def assert_L1_small(img1, img2, threshold=0.1):

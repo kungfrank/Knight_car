@@ -1,14 +1,12 @@
 from . import logger
-import kmeans
+from .kmeans import identifyColors, getparameters2, runKMeans
 import numpy as np
 from .scale_and_shift import scaleandshift
+from anti_instagram.kmeans import CENTERS
 
 class AntiInstagram():
 
 	def __init__(self):
-		self.num_colors = 3
-		self.ideal_colors = [[0, 0, 0], [0, 255, 255], [255, 255, 255]]
-		self.transformation = [0,0,0]
 		self.scale = [1.0,1.0,1.0]
 		self.shift = [0.0,0.0,0.0]
 		self.health = 0
@@ -18,10 +16,10 @@ class AntiInstagram():
 		return corrected_image
 
 	def calculateTransform(self,image,testframe=False):
-		trained,counter = kmeans.runKMeans(image)
-		mapping = kmeans.identifyColors(trained, kmeans.CENTERS)
-
-		r,g,b,cost = kmeans.getparameters2(mapping, trained, counter, kmeans.CENTERS)
+		centers = CENTERS
+		trained, counter = runKMeans(image, num_colors=3, init=centers)
+		mapping = identifyColors(trained, centers)
+		r, g, b, cost = getparameters2(mapping, trained, counter, centers)
 
 		if r[0][0] == 0.0:
 			return
@@ -50,7 +48,6 @@ class AntiInstagram():
 			http://stackoverflow.com/questions/189943/how-can-i-quantify-difference-between-two-images
 		'''
 
-	
 		return self.health
 		
 

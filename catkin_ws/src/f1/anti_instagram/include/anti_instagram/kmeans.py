@@ -1,4 +1,3 @@
-from . import logger
 from collections import Counter
 from sklearn import linear_model
 from sklearn.cluster import KMeans
@@ -7,33 +6,23 @@ import numpy as np
 import sys
 import time
 
-
-NUM_COLORS = 3
-
 CENTERS = np.array([[60, 60, 60], [20, 240, 240], [240, 240, 240]])
-# print CENTERS 
 
-np.random.seed(5)
-
-IMG_PATH = '''IMG PATH'''
 
 def getimgdatapts(cv2img):
-
 	x, y, p = cv2img.shape
 	cv2_tpose=cv2img.transpose()
 	cv2_arr_tpose=np.reshape(cv2_tpose,[p,x*y])
 	npdata=np.transpose(cv2_arr_tpose);
-
 	return npdata
 
 #priors
-def runKMeans(cv_img):
+def runKMeans(cv_img, num_colors, init):
 	imgdata = getimgdatapts(cv_img[-100:,:,:])
-	kmc = KMeans(n_clusters = NUM_COLORS, max_iter = 100, n_init = 10, init = CENTERS)
+	kmc = KMeans(n_clusters=num_colors, max_iter=100, n_init=10, init=init)
 	kmc.fit_predict(imgdata)
 	trained_centers = kmc.cluster_centers_
 	# print trained_centers
-	# print CENTERS
 	labels = kmc.labels_
 	labelcount = Counter()
 	for pixel in labels:
@@ -209,44 +198,6 @@ def getparameters(mapping, trained, true):
 	return (RED.coef_, RED.intercept_), (BLUE.coef_, BLUE.intercept_), (GREEN.coef_, GREEN.intercept_),fitting_cost
 
 
-class SASParams:
-	algorithm = 2
-
-def scaleandshift(img, scale, shift):
-	logger.info('scale: %s' % scale)
-	logger.info('shift: %s' % shift)
-	
-	assert img.shape[2] == 3
-	assert len(scale) == 3, scale
-	assert len(shift) == 3, shift
-
-	if SASParams.algorithm == 1:
-		return scaleandshift1(img, scale, shift)
-
-	if SASParams.algorithm == 2:
-		return scaleandshift2(img, scale, shift)
-
-	assert False
-
-def scaleandshift2(img, scale, shift):
-	img_shift = np.empty_like(img)
-	for i in range(3):
-		img_shift[:, :, i] = scale[i] * img[:, :, i] + shift[i]
-
-	return img_shift
-
-def scaleandshift1(img, scale, shift):
-	h = img.shape[0]
-	w = img.shape[1]
-
-	img_scale = np.reshape(img,[h*w,3])
-	img_scale = np.reshape(img_scale*np.array(scale),[h,w,3])
-
-	img_shift = np.reshape(img_scale,[h*w,3])
-	img_shift = np.reshape(img_shift+np.array(shift),[h,w,3])
-
-	return img_shift
-
 if __name__ == '__main__':
 	img_filename="test2.jpg"
 	if (len(sys.argv)>1):
@@ -260,5 +211,6 @@ if __name__ == '__main__':
 	print(t2-t1)
 	
 	trained = runKMeans(testdata)
+	from anti_instagram import AntiInstagram
 	mapping = identifyColors(trained[0], CENTERS)
 	getparameters(mapping, trained[0], CENTERS)

@@ -2,12 +2,12 @@ from . import logger
 import numpy as np
 
 class SASParams:
-    algorithm = 2
+    algorithm = 2 
 
 def scaleandshift(img, scale, shift):
     """ Returns a float image, which might be outside of [0,255]"""
-    logger.info('scale: %s' % scale)
-    logger.info('shift: %s' % shift)
+    #logger.info('scale: %s' % scale)
+    #logger.info('shift: %s' % shift)
 
     assert img.shape[2] == 3
     assert len(scale) == 3, scale

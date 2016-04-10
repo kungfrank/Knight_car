@@ -1,14 +1,19 @@
 Header header
 int32 id
 
+# (StreetName, TrafficSign, Localization, Vehicle…)
+uint8 tag_type
+
 uint8 S_NAME=0
 uint8 SIGN=1	
 uint8 LIGHT=2
 uint8 LOCALIZE=3
 uint8 VEHICLE=4
-uint8 tag_type
 
 string street_name
+
+uint8 traffic_sign_type
+# (12 possible traffic sign types)
 
 uint8 STOP=5
 uint8 YIELD=6
@@ -23,14 +28,9 @@ uint8 T_INTERSECTION=14
 uint8 DO_NOT_ENTER=15
 uint8 PEDESTRIAN=16
 uint8 DUCK_CROSSING=17
-uint8 traffic_sign_type
-
 
 uint8 tag_id
-#string tag_type
-# (StreetName, TrafficSign, Localization, Vehicle…)
-#uint8 traffic_sign_type
-# (12 possible traffic sign types)
+
 string vehicle_name
 
 # Just added a single number for location. Probably want to use Vector2D.msg, but I get errors when I try to add it.

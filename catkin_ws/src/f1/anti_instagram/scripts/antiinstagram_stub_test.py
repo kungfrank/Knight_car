@@ -1,16 +1,14 @@
 #!/usr/bin/env python
-
-from anti_instagram import logger
-import traceback, sys
-from anti_instagram.AntiInstagram import *
+from anti_instagram import (AntiInstagram, L2_image_distance, logger,
+	random_image, wrap_test_main)
+from anti_instagram.utils import load_image
 from duckietown_utils import col_logging  # @UnusedImport
-from duckietown_utils.expand_variables import expand_environment
 import cv2
+import sys
 import timeit
+import traceback
 
 
-def compute_error(a, b):
-	return np.mean(np.square(a * 1.0 - b * 1.0))
 
 # calculate transform for each image set
 def testImages(ai, imageset, gtimageset):
@@ -24,22 +22,11 @@ def testImages(ai, imageset, gtimageset):
 		cv2.imwrite(testimgf,transimage)
 		testimg = cv2.imread(testimgf)
 		# uncorrected is > 500
-		e = compute_error(testimg, gtimageset[i])
+		e = L2_image_distance(testimg, gtimageset[i])
 		if e > 1:
 			logger.error("Correction seemed to fail for image %s" % i)
 		error.append(e)
 	return error
-
-def read_file(filename):
-	filename = expand_environment(filename)
-	img = cv2.imread(filename)
-	if not img:
-		msg = 'Cannot read filename %r.' % filename
-		raise ValueError(msg)
-	return img
-
-def random_image(h, w):
-	return np.array(np.random.random((h,w,3))*255, dtype=np.uint8)
 
 def setup():
 	img = random_image(480, 640)
@@ -61,18 +48,9 @@ def calcuateTransformOnRandomImg():
 					number=n)
 	logger.info("Average Calculate Transform Took: %.1f ms" % (t / n * 1000))
 
-
-def load_image(f):
-	""" Loads an image using cv2.imread and raise exception if not found """
-	img = cv2.imread(f)
-	if  img is None:
-		msg = 'Could not read %r' % f
-		raise ValueError(msg)
-	return img
-
 def anti_instagram_test():
 	ai = AntiInstagram()
-
+	failure = False
 	#### TEST SINGLE TRANSFORM ####
 	# load test images
 	imagesetf = [
@@ -91,29 +69,17 @@ def anti_instagram_test():
 	logger.info(errors)
 
 	if max(errors) > 3:
-		exit_code = 1
+		failure = True
 
 	#### TEST CALC TIMING ####
 	calcuateTransformOnRandomImg()
 	applyTransformOnRandomImg()
 
-	if exit_code != 0:
+	if failure:
 		logger.error("Tests not passed!")
 		raise Exception("Tests not passed!")
 
 	logger.info("All tests passed!")
 	
 if __name__ == '__main__':
-	try:
-		anti_instagram_test()
-	except Exception as e:
-		logger.error(traceback.format_exc(e))
-		logger.error('Exiting with error code 1')
-		sys.exit(1)
-	except: # another weird exception
-		logger.error('Exiting with error code 2')
-		sys.exit(2)
-	else:
-		logger.info('Success.')
-		sys.exit(0)
-		
+	wrap_test_main(anti_instagram_test)

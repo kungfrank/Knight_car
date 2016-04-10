@@ -3,3 +3,7 @@ logging.basicConfig()
 
 logger = logging.getLogger('anti_instagram')
 logger.setLevel(logging.DEBUG)
+
+from .AntiInstagram import *
+from .kmeans import *
+from .utils import *

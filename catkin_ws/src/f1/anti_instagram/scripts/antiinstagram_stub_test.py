@@ -38,27 +38,26 @@ def read_file(filename):
 		raise ValueError(msg)
 	return img
 
-def genRandImg():
-	# determine size of image
-	size = 480, 640, 3
-	# add uniform noise
-	img = np.array(np.random.random(size)*255, dtype= np.uint8)
-	# return random image
-	return img
+def random_image(h, w):
+	return np.array(np.random.random((h,w,3))*255, dtype=np.uint8)
+
+def setup():
+	img = random_image(480, 640)
+	ai = AntiInstagram()
+	return ai, img
 
 def applyTransformOnRandomImg():
 	t = timeit.timeit(stmt='ai.applyTransform(img)', 
-		setup='import numpy as np; import anti_instagram.AntiInstagram as AntiInstagram; img = np.array(np.random.random((480,640,3))*255, dtype= np.uint8); ai = AntiInstagram.AntiInstagram()', 
+		setup='from __main__ import setup; ai,img=setup()', 
 		number=3
 		)
-	logger.info("Averge Apply Transform Took: " + str(t / 3.0 * 1000) + " milliseconds")
-
+	logger.info("Average Apply Transform Took: %d ms "  % (t / 3.0 * 1000))
+	
 def calcuateTransformOnRandomImg():
 	t = timeit.timeit(stmt='ai.calculateTransform(img,True)', 
-		setup='import numpy as np; import anti_instagram.AntiInstagram as AntiInstagram; img = np.array(np.random.random((480,640,3))*255, dtype= np.uint8); ai = AntiInstagram.AntiInstagram()', 
-		number=3
-		)
-	logger.info("Average Calculate Transform Took: " + str(t / 3.0 * 1000) + " milliseconds")
+					setup='from __main__ import setup; ai,img=setup()',
+					number=3)
+	logger.info("Average Calculate Transform Took: %s ms" % (t / 3.0 * 1000))
 
 
 def load_image(f):

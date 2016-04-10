@@ -1,38 +1,35 @@
 #!/usr/bin/env python
 import rospy
-#from duckietown_msgs.msg import WheelsCmdStamped, ControlMode
 from duckietown_msgs.msg import Twist2DStamped, FSMState
 
 class CarCmdSwitchNode(object):
     def __init__(self):
         self.node_name = rospy.get_name()
-        mode_table = rospy.get_param("~mode_table")
-        self.mode_table = dict()
-        for key in mode_table:
-            self.mode_table[int(key)] = mode_table[key] 
+        # rospy.loginfo("[%s] Initializing " %(self.node_name))
+        # Read parameters
+        self.mappings = rospy.get_param("~mappings")
+        source_topic_dict = rospy.get_param("~source_topics")
+        self.current_src_name = None
 
-        self.fsm_state = FSMState()
-        # publisher
+        # Construct publisher
         self.pub_cmd = rospy.Publisher("~cmd",Twist2DStamped,queue_size=1)
-        # subscribe to mode
-        self.sub_mode = rospy.Subscriber("~mode",FSMState,self.cbFSMState,queue_size=1)
-        # Read subscription id and topic names
-        sub_table = rospy.get_param("~sub_name")
+        
+        # Construct subscribers
+        self.sub_fsm_state = rospy.Subscriber(rospy.get_param("~mode_topic"),FSMState,self.cbFSMState)
+
         self.sub_dict = dict()
-        for key in sub_table.keys():
-            # TODO: confirm queue_size effectiveness
-            self.sub_dict[int(key)] = rospy.Subscriber(sub_table[key],Twist2DStamped,self.cbTwist2DStamped,callback_args=int(key),queue_size=1)
+        for src_name, topic_name in source_topic_dict.items():
+            self.sub_dict[src_name] = rospy.Subscriber(topic_name,Twist2DStamped,self.cbWheelsCmd,callback_args=src_name)
 
-    def cbTwist2DStamped(self,msg,cb_arg):
-        # Only publish if it's from the source specifed by the current mode
-        if cb_arg == self.mode_table[self.fsm_state.state]:
+        rospy.loginfo("[%s] Initialized. " %(self.node_name))
+    def cbFSMState(self,fsm_state_msg):
+        self.current_src_name = self.mappings.get(fsm_state_msg.state)
+        if self.current_src_name is None:
+            rospy.logwarn("[%s] FSMState %s not handled. No msg pass through the switch." %(self.node_name,fsm_state_msg.state))
+
+    def cbWheelsCmd(self,msg,src_name):
+        if src_name == self.current_src_name:
             self.pub_cmd.publish(msg)
-
-    def cbFSMState(self,msg):
-        if msg.state not in self.mode_table.keys():
-            rospy.logerr("[%s] Mode not recognized. Using previous mode." %(self.node_name))
-        else:
-            self.fsm_state = msg
 
     def on_shutdown(self):
         rospy.loginfo("[%s] Shutting down." %(self.node_name))

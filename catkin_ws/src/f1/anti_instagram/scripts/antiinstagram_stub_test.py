@@ -32,8 +32,6 @@ def anti_instagram_test():
 	# load test images
 	failure = False
 
-
-
 	imagesetf = [
 		"inputimage0.jpg",
 		"inputimage1.jpg",

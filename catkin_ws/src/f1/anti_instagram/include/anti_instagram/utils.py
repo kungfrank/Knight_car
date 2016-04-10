@@ -4,6 +4,9 @@ def L2_image_distance(a, b):
     import numpy as np
     return np.mean(np.square(a * 1.0 - b * 1.0))
 
+def L1_image_distance(a, b):
+    import numpy as np
+    return np.max(np.abs(a * 1.0 - b * 1.0))
 
 def random_image(h, w):
     import numpy as np
@@ -29,7 +32,7 @@ def wrap_test_main(f):
     import traceback, sys
     try:
         f()
-    except Exception as e:
+    except (AssertionError, Exception) as e:
         logger.error(traceback.format_exc(e))
         logger.error('Exiting with error code 1')
         sys.exit(1)

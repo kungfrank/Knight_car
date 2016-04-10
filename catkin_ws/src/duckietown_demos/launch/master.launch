@@ -127,6 +127,23 @@
   </group>
   <!-- End Wheels -->
 
+  <!-- Start Joystick -->
+  <group if="$(arg joystick)">
+    <!-- joy -->
+    <include file="$(find joy_mapper)/launch/joy_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+    </include>
+
+    <!-- joy_mapper -->
+    <include file="$(find joy_mapper)/launch/joy_mapper_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+    </include>
+  <!-- End Joystick -->
+
   <!-- Start FSM -->
   <group if="$(arg fsm)">
     <!-- FSM -->

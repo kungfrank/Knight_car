@@ -47,17 +47,19 @@ def setup():
 	return ai, img
 
 def applyTransformOnRandomImg():
+	n = 3
 	t = timeit.timeit(stmt='ai.applyTransform(img)', 
 		setup='from __main__ import setup; ai,img=setup()', 
-		number=3
+		number=n
 		)
-	logger.info("Average Apply Transform Took: %d ms "  % (t / 3.0 * 1000))
+	logger.info("Average Apply Transform Took: %.1f ms "  % (t / n * 1000))
 	
 def calcuateTransformOnRandomImg():
+	n = 3
 	t = timeit.timeit(stmt='ai.calculateTransform(img,True)', 
 					setup='from __main__ import setup; ai,img=setup()',
-					number=3)
-	logger.info("Average Calculate Transform Took: %s ms" % (t / 3.0 * 1000))
+					number=n)
+	logger.info("Average Calculate Transform Took: %.1f ms" % (t / n * 1000))
 
 
 def load_image(f):

@@ -81,9 +81,16 @@ digraph D {
 	subgraph cluster_intersection_nav{
 		label="Intersection Navigation"; 
 		open_loop_intersection_control_node[!NODE:development!,  label="intersection_control\nopen_loop_intersection_control_node (MN)"];
-		
+		random_april_tag_turns_node[!NODE:development!,  label="navigation\nrandom_april_tag_turns_node (MN)"];
+		graph_planner_node[!NODE:development!, label="navigation\ngraph_planner_node (MN)"];
+		action_dispatcher_node[!NODE:development!, label="navigation\naction_dispatcher_node (MN)"];
+		//graph_planner_path[!TOPIC!, label="~navigation\n???.msg"];
+		//action_dispatcher_turn_type[!TOPIC!, label="~turn_type\nstd_msgs/Int16.msg"];
+
 		intersection_control[!TOPIC!, label="~intersection_control\nduckietown_msgs/Twist2DStamped.msg"];
 		intersection_done[!TOPIC!, label="~intersection_done\nduckietown_msgs/BoolStamped.msg"];
+		random_turn_type[!TOPIC!, label="~turn_type\nstd_msgs/Int16.msg"];
+		graph_turn_type[!TOPIC!, label="~turn_type\nstd_msgs/Int16.msg"];
 	}
 
 	subgraph cluster_coordination{
@@ -142,6 +149,7 @@ digraph D {
 		lane_control[!TOPIC!, label="~lane_control\nduckietown_msgs/Twist2DStamped.msg"];
 		at_stop_line[!TOPIC!, label="~at_stop_line\nduckietown_msgs/BoolStamped.msg"];
 		stop_line_dist[!TOPIC!, label="~stop_line_dist\nstd_msgs/Float32.msg"];
+		in_lane[!TOPIC!, label="~in_lane\nduckietown_msgs/BoolStamped.msg"];
 	}
 
 
@@ -203,12 +211,18 @@ digraph D {
 	
 	// == open_loop_intersection_control_node == //
 	open_loop_intersection_control_node->{intersection_control, intersection_done};
-	mode->open_loop_intersection_control_node;	
+	{mode,in_lane,graph_turn_type}->open_loop_intersection_control_node;
+	random_turn_type -> open_loop_intersection_control_node[style="dashed"];
+	apriltags_global_tags_detection_processed -> random_april_tag_turns_node;
+	random_april_tag_turns_node -> random_turn_type;
+
+	graph_planner_node -> action_dispatcher_node[style="dashed",label="navigation/GraphSearch.srv"];
+	action_dispatcher_node -> graph_turn_type;
+
 
 	// == stop_line_filter_node == //
 	stop_line_filter_node -> {at_stop_line, stop_line_dist};
 	segment_list_proj->stop_line_filter_node;
-	
 
 	// == cam_info_reader_node == //
 	intrinsic_calibration_file->cam_info_reader_node[style="dotted"];
@@ -301,7 +315,7 @@ digraph D {
 
 	// == lane_filter_node == //
 	{segment_list_proj, car_command_switch} -> lane_filter_node;
-	lane_filter_node -> {lane_pose};
+	lane_filter_node -> {lane_pose, in_lane};
 
 	// == F6 == //
 	// == vehicle_detector_node == //

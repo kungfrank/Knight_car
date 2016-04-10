@@ -2,7 +2,6 @@
 
 from anti_instagram import AntiInstagram, L2_image_distance, load_image, logger
 from anti_instagram.utils import wrap_test_main, get_rospkg_root
-from duckietown_utils import col_logging  # @UnusedImport
 import cv2
 import os
 

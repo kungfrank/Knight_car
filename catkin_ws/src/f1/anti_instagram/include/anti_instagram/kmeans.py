@@ -215,6 +215,10 @@ class SASParams:
 def scaleandshift(img, scale, shift):
 	logger.info('scale: %s' % scale)
 	logger.info('shift: %s' % shift)
+	
+	assert img.shape[2] == 3
+	assert len(scale) == 3, scale
+	assert len(shift) == 3, shift
 
 	if SASParams.algorithm == 1:
 		return scaleandshift1(img, scale, shift)

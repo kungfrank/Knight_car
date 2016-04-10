@@ -28,6 +28,7 @@ def read_file(filename):
 
 
 def wrap_test_main(f):
+    from duckietown_utils import col_logging  # @UnusedImport
     from . import logger
     import traceback, sys
     try:

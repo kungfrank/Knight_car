@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-from duckietown_msgs.msg import WheelsCmdStamped, VehiclePose
-from std_msgs.msg import Bool
+from duckietown_msgs.msg import Twist2DStamped, VehiclePose, BoolStamped
 
 import os
 import rospkg
@@ -22,10 +21,10 @@ class VehicleAvoidanceControlNode(object):
 			rospy.logwarn("[%s] Can't find calibration file: %s.\n" 
 					% (self.node_name, self.cali_file))
 		self.loadConfig(self.cali_file)
-		self.wheels_cmd_pub = rospy.Publisher("~wheels_cmd",
-				WheelsCmdStamped, queue_size = 1)
-		self.vehicle_detected_pub = rospy.Publisher("~flag",
-				Bool, queue_size=1)
+		self.car_cmd_pub = rospy.Publisher("~car_cmd",
+				Twist2DStamped, queue_size = 1)
+		self.vehicle_detected_pub = rospy.Publisher("~vehicle_detected",
+				BoolStamped, queue_size=1)
 		self.subscriber = rospy.Subscriber("~vehicle_pose",
 				VehiclePose, self.callback,  queue_size = 1)
 
@@ -45,22 +44,25 @@ class VehicleAvoidanceControlNode(object):
 				self.distance_threshold)
 
 	def callback(self, data):
+                vehicle_too_close = BoolStamped()
+                vehicle_too_close.header.stamp = data.header.stamp
 		if not data.detection.data:
-			vehicle_too_close = False
+			vehicle_too_close.data = False
 		else:
 			distance = data.rho.data
 			min_distance = self.distance_threshold
-			vehicle_too_close = False
+			vehicle_too_close.data = False
 			if distance < min_distance:
-				vehicle_too_close = True
-		self.publishCmd()
+				vehicle_too_close.data = True
+		self.publishCmd(data.header.stamp)
 		self.vehicle_detected_pub.publish(vehicle_too_close)
 
-	def publishCmd(self): 
-		wheels_cmd_msg = WheelsCmdStamped()
-		wheels_cmd_msg.vel_left = 0.0
-		wheels_cmd_msg.vel_right = 0.0
-		self.wheels_cmd_pub.publish(wheels_cmd_msg)
+	def publishCmd(self,stamp): 
+		cmd_msg = Twisted2DStamped()
+                cmd_msg.header.stamp = stamp
+		cmd_msg.v = 0.0
+		cmd_msg.omega = 0.0
+		self.car_cmd_pub.publish(car_cmd_msg)
    
 if __name__ == '__main__':
 	rospy.init_node('vehicle_avoidance_control_node', anonymous=False)

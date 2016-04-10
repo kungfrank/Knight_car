@@ -43,12 +43,14 @@ class lane_controller(object):
         k_d = - (k_theta ** 2) / ( 4.0 * v_bar)
         theta_thres = math.pi / 6
         d_thres = math.fabs(k_theta / k_d) * theta_thres
+        d_offset = 0.0
 
         self.v_bar = self.setupParameter("~v_bar",v_bar) # Linear velocity
         self.k_d = self.setupParameter("~k_d",k_theta) # P gain for theta
         self.k_theta = self.setupParameter("~k_theta",k_d) # P gain for d
         self.d_thres = self.setupParameter("~d_thres",theta_thres) # Cap for error in d
         self.theta_thres = self.setupParameter("~theta_thres",d_thres) # Maximum desire theta
+        self.d_offset = self.setupParameter("~d_offset",d_offset) # a configurable offset from the lane position
 
     def getGains_event(self, event):
         v_bar = rospy.get_param("~v_bar")
@@ -56,19 +58,22 @@ class lane_controller(object):
         k_theta = rospy.get_param("~k_theta")
         d_thres = rospy.get_param("~d_thres")
         theta_thres = rospy.get_param("~theta_thres")
+        theta_thres = rospy.get_param("~theta_thres")
+        d_offset = rospy.get_param("~d_offset")
 
-        params_old = (self.v_bar,self.k_d,self.k_theta,self.d_thres,self.theta_thres)
-        params_new = (v_bar,k_d,k_theta,d_thres,theta_thres)
+        params_old = (self.v_bar,self.k_d,self.k_theta,self.d_thres,self.theta_thres, self.d_offset)
+        params_new = (v_bar,k_d,k_theta,d_thres,theta_thres, d_offset)
 
         if params_old != params_new:
             rospy.loginfo("[%s] Gains changed." %(self.node_name))
-            rospy.loginfo("old gains, v_var %f, k_d %f, k_theta %f, theta_thres %f, d_thres %f" %(params_old))
-            rospy.loginfo("new gains, v_var %f, k_d %f, k_theta %f, theta_thres %f, d_thres %f" %(params_new))
+            rospy.loginfo("old gains, v_var %f, k_d %f, k_theta %f, theta_thres %f, d_thres %f, d_offset %f" %(params_old))
+            rospy.loginfo("new gains, v_var %f, k_d %f, k_theta %f, theta_thres %f, d_thres %f, d_offset %f" %(params_new))
             self.v_bar = v_bar
             self.k_d = k_d
             self.k_theta = k_theta
             self.d_thres = d_thres
             self.theta_thres = theta_thres
+            self.d_offset = d_offset
 
     
     def custom_shutdown(self):
@@ -109,7 +114,7 @@ class lane_controller(object):
     def cbPose(self,lane_pose_msg):
         self.lane_reading = lane_pose_msg 
 
-        cross_track_err = lane_pose_msg.d
+        cross_track_err = lane_pose_msg.d - self.d_offset
         heading_err = lane_pose_msg.phi
 
         car_control_msg = CarControl()

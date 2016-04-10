@@ -1,29 +1,82 @@
 <launch>
-    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
-    <arg name="local" default="false" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
-    <arg name="config" default="baseline" doc="Specify a config."/>
-    <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
-    <arg name="raw" default="true" doc="If set to true, also publish raw image using decoder."/> 
-    <arg name="camera" default="true" doc="If set to false, won't launch the camera. This is for easier relaunching of the line_detector_node only "/>
-    <arg name="live" default="true" doc="live set to false means we don't run the actual camera (i.e. running from a log file" />
+ 	<arg name="veh"/>
+ 	<arg name="loc" default="-1" doc="Physical room location of the duckietown map. E.g. 226 or 316"/>
+ 	<!-- <arg name="camera" default="true" doc="If set to false, won't launch the camera."/> -->
+ 	<arg name="local" default="false" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+ 	<arg name="config" default="baseline" doc="Specify a config."/>
+ 	<arg name="pre_param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+	<arg name="pos_param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+ 	<arg name="raw" default="true" doc="If set to true, also publish raw image using decoder."/>
+ 	<arg name="live" default="true" doc="live set to false means we don't run the actual camera (i.e. running from a log file" />
+ 
+ 
+ 	<!-- <!- - Camera - ->
+ 	<include if="$(arg camera)" file="$(find duckietown)/launch/camera.launch">
+ 		<arg name="veh" value="$(arg veh)"/>
+ 		<arg name="local" value="$(arg local)"/>
+ 		<arg name="config" value="$(arg config)"/>
+ 		<arg name="param_file_name" value="$(arg param_file_name)"/>
+ 		<arg name="raw" value="$(arg raw)"/>
+ 		<arg name="cam_info" value="true"/> <!- - this should possible change later when we take logs without camera info but let's leave for now - ->
+ 		<arg name="live" value="$(arg live)"/>
+ 	</include> -->
+ 
+ 	<!-- Preprocessing -->
+ 	<include file="$(find apriltags)/launch/apriltags_preprocessing_node.launch">
+ 		<arg name="veh" value="$(arg veh)"/>
+ 		<arg name="config" value="$(arg config)"/>
+ 		<arg name="param_file_name" value="$(arg pre_param_file_name)"/>
+ 	</include>
 
-	<!-- Camera -->
-	<include if="$(arg camera)" file="$(find duckietown)/launch/camera.launch">
-		<arg name="veh" value="$(arg veh)"/>
-		<arg name="local" value="$(arg local)"/>
+ 	<!-- AprilTags Detections -->
+ 	<remap from="apriltags_global_node/image_raw" to="apriltags_preprocessing_node/global_image_raw"/>
+ 	<remap from="apriltags_fast_node/image_raw" to="apriltags_preprocessing_node/fast_image_raw"/>
+ 	<remap from="apriltags_global_node/camera_info" to="camera_node/camera_info"/>
+ 	<remap from="apriltags_fast_node/camera_info" to="camera_node/camera_info"/>
+ 	<include file="$(find apriltags)/launch/apriltags_node.launch">
+ 		<arg name="veh" value="$(arg veh)"/>
+ 		<arg name="sub_node_name" value="fast"/>
+ 		<arg name="local" value="$(arg local)"/>
+ 		<arg name="config" value="$(arg config)"/>
+ 		<arg name="param_file_name" value="$(arg param_file_name)"/>
+ 	</include>
+ 	<include file="$(find apriltags)/launch/apriltags_node.launch">
+ 		<arg name="veh" value="$(arg veh)"/>
+ 		<arg name="sub_node_name" value="global"/>
+ 		<arg name="local" value="$(arg local)"/>
+ 		<arg name="config" value="$(arg config)"/>
+ 		<arg name="param_file_name" value="$(arg param_file_name)"/>
+ 	</include>
+ 
+ 	<!-- Postprocessing nodes -->
+ 	<remap from="apriltags_postprocessing_fast_node/apriltags_in" to="apriltags_fast_node/apriltags"/>
+ 	<remap from="apriltags_postprocessing_global_node/apriltags_in" to="apriltags_global_node/apriltags"/>
+ 	<include file="$(find apriltags)/launch/apriltags_postprocessing_node.launch">
+ 		<arg name="veh" value="$(arg veh)"/>
+ 		<arg name="sub_node_name" value="fast"/>
+ 		<arg name="loc" value="$(arg loc)"/>
+		<arg name="param_file_name" value="$(arg pos_param_file_name)"/>
 		<arg name="config" value="$(arg config)"/>
-		<arg name="param_file_name" value="$(arg param_file_name)"/>
-		<arg name="raw" value="$(arg raw)"/>
-		<arg name="cam_info" value="true"/> <!-- this should possible change later when we take logs without camera info but let's leave for now -->
-		<arg name="live" value="$(arg live)"/>
-	</include>
+ 	</include>
+ 	<include file="$(find apriltags)/launch/apriltags_postprocessing_node.launch">
+ 		<arg name="veh" value="$(arg veh)"/>
+ 		<arg name="sub_node_name" value="global"/>
+ 		<arg name="loc" value="$(arg loc)"/>
+		<arg name="param_file_name" value="$(arg pos_param_file_name)"/>
+		<arg name="config" value="$(arg config)"/>
+ 	</include>
 
-	<remap from="apriltags/image_raw" to="camera_node/image/raw"/>
-	<remap from="apriltags/camera_info" to="camera_node/camera_info"/>
-	<include file="$(find apriltags)/launch/apriltags_node.launch">
-	    <arg name="veh" value="$(arg veh)"/>
-	    <arg name="local" value="$(arg local)"/>
-	    <arg name="config" value="$(arg config)"/>
-	    <arg name="param_file_name" value="$(arg param_file_name)"/>
-	</include>
-</launch>	
+ 	<!-- Visualizer node -->
+ 	<remap from="apriltags_visualizer_fast_node/apriltags_in" to="apriltags_postprocessing_fast_node/apriltags_out"/>
+ 	<remap from="apriltags_visualizer_global_node/apriltags_in" to="apriltags_postprocessing_global_node/apriltags_out"/>
+	<include file="$(find apriltags)/launch/apriltags_visualizer_node.launch">
+ 		<arg name="veh" value="$(arg veh)"/>
+ 		<arg name="sub_node_name" value="fast"/>
+ 	</include>
+ 	<include file="$(find apriltags)/launch/apriltags_visualizer_node.launch">
+ 		<arg name="veh" value="$(arg veh)"/>
+ 		<arg name="sub_node_name" value="global"/>
+ 	</include>
+
+</launch>

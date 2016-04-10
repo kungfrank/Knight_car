@@ -25,7 +25,7 @@ def testImages(ai, imageset, gtimageset):
 		testimg = cv2.imread(testimgf)
 		# uncorrected is > 500
 		e = compute_error(testimg, gtimageset[i])
-		if e > 1:
+		if e > 500:
 			logger.error("Correction seemed to fail for image %s" % i)
 		error.append(e)
 	return error
@@ -71,7 +71,7 @@ def load_image(f):
 
 def anti_instagram_test():
 	ai = AntiInstagram()
-
+	exit_code = 0
 	#### TEST SINGLE TRANSFORM ####
 	# load test images
 	imagesetf = [
@@ -86,7 +86,7 @@ def anti_instagram_test():
 	imageset = map(load_image, imagesetf)
 	gtimageset = map(load_image, gtimagesetf)
 	errors = testImages(ai, imageset, gtimageset)
-	logger.info("Test Image Errors (errors >> 1 indicate a problem): ")
+	logger.info("Test Image Errors (errors >> 100 indicate a problem): ")
 	logger.info(errors)
 
 	if max(errors) > 500:

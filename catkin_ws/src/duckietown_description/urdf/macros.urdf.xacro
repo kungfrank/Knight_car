@@ -1,16 +1,15 @@
 <?xml version="1.0"?>
 <robot name="macros" xmlns:xacro="http://www.ros.org/wiki/xacro">
     <xacro:property name="pi" value="3.14159265359" />
+
+    <!-- Defines a tile link and joint-->
     <xacro:macro name="tile" params="x y type rotation">
         <link name="tile_${x}_${y}">
             <visual>
-                <origin xyz="${tile_width/2} ${tile_width/2} ${-tile_thickness}" rpy="0 0 ${rotation * pi/180}"/>
+                <origin xyz="${tile_width/2} ${tile_width/2} ${-tile_thickness/2}" rpy="0 0 ${rotation * pi/180}"/>
                 <geometry>
-                    <box size="${tile_width} ${tile_width} ${tile_thickness}"/>
+                    <mesh filename="package://duckietown_description/urdf/meshes/${type}.dae" />
                 </geometry>
-                <material name="tile">
-                    <texture filename="package://duckietown_description/urdf/${type}.png" />
-                </material>
             </visual>
         </link>
 
@@ -18,6 +17,23 @@
             <parent link="world" />
             <child link="tile_${x}_${y}" />
             <origin xyz="${tile_width * x} ${tile_width * y} 0" />
+        </joint>
+    </xacro:macro>
+
+    <!-- Defines an april tag link and joint-->
+    <xacro:macro name="tag" params="id x y pos rotation">
+        <link name="tag_${id}">
+            <visual>
+                <geometry>
+                    <mesh filename="package://duckietown_description/urdf/meshes/sign_stop.dae" />
+                </geometry>
+            </visual>
+        </link>
+
+        <joint name="world_to_tag_${id}" type="fixed">
+            <parent link="tile_${x}_${y}" />
+            <child link="tag_${id}" />
+            <origin xyz="${pos_1} 0" rpy="0 0 ${rotation * pi/180}"/>
         </joint>
     </xacro:macro>
 </robot>

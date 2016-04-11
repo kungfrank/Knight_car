@@ -80,8 +80,8 @@ class lane_controller(object):
 
         # Send stop command
         car_control_msg = Twist2DStamped()
-        car_control_msg.speed = 0.0
-        car_control_msg.steering = 0.0
+        car_control_msg.v = 0.0
+        car_control_msg.omega = 0.0
         self.publishCmd(car_control_msg)
         rospy.sleep(0.5) #To make sure that it gets published.
         rospy.loginfo("[%s] Shutdown" %self.node_name)

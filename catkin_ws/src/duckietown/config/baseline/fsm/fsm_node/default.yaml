@@ -1,17 +1,22 @@
 # Initail state of the FSM
-initial_state: "LANE_FOLLOWING"
+initial_state: "JOYSTICK_CONTROL"
 
 events: #Maps from subscribing topic to singal ids
+  joystick_override
   at_stop_line: "stop_line_filter_node/at_stop_line"
   intersection_go: "veh_coordinator_node/intersection_go"
   intersection_done: "open_loop_intersection_control_node/intersection_done"
 
 # Define nodes 
 nodes:
-  apriltag_node: "apriltags/switch"
+  apriltag_node: "apriltags/global_switch"
+  apriltag_node: "apriltags/fast_switch"
+
 
 # Define state transitions
 states:
+  JOYSTICK_CONTROL:
+    transistions:
   LANE_FOLLOWING:
     transitions:
       at_stop_line: "COORDINATION"

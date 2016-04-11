@@ -21,8 +21,7 @@ class AprilPrePros(object):
         self.pub_ToApril_fast   = rospy.Publisher( "~fast_image_raw", Image, queue_size=1)
         
         #self.sub_compressed_img = rospy.Subscriber( "camera_node/image/compressed" , CompressedImage , self.callback, queue_size=1 )
-        self.sub_img            = rospy.Subscriber( "camera_node/image/raw", Image, self.callback)
-        
+        self.sub_img            = rospy.Subscriber( "~image_in", Image, self.callback)
         self.sub_switch_global  = rospy.Subscriber("~global_switch", BoolStamped, self.global_switch, queue_size=1)
         self.sub_switch_fast    = rospy.Subscriber("~fast_switch", BoolStamped, self.fast_switch, queue_size=1)
         

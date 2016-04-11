@@ -12,11 +12,8 @@ make
 #Duckietown_ROS_Diagram.pdf
 
 echo "Copying Duckietown_ROS_Diagram.dot.pdf to $GRIVE_ROOT/$SUB_FOLDER"
-<<<<<<< HEAD
+
 cp Duckietown_ROS_Diagram.pdf $GRIVE_ROOT/$SUB_FOLDER/Duckietown_ROS_Diagram.pdf
-=======
-cp Duckietown_ROS_Diagram.pdf $GRIVE_ROOT/$SUB_FOLDER/Duckietown_ROS_Diagram.pdf\ \:bird\:
->>>>>>> origin/f8-dev
 
 echo "Removing Duckietown_ROS_Diagram.dot.pdf..."
 rm Duckietown_ROS_Diagram.pdf

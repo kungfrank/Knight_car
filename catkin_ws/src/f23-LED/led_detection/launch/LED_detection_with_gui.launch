@@ -7,12 +7,14 @@
 	<arg name="config" default="baseline" doc="Specify a config."/>
 	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman"/>
 
-	<!-- Run visualizer on local (laptop) -->
-	<node ns="$(arg veh)" pkg="$(arg pkg_name)" type="LED_visualizer.py" name="LED_visualizer" output="screen">
-	</node>
+	<group ns="$(arg veh)">
+	  <!-- Run visualizer on local (laptop) -->
+	  <node pkg="$(arg pkg_name)" type="LED_visualizer.py" name="LED_visualizer" output="screen">
+	  </node>
 
-	<!-- Run detector on remote (vehicle) -->
-	<node ns="$(arg veh)" machine="$(arg veh)" pkg="$(arg pkg_name)" type="LED_detector_node.py" name="LED_detector_node" output="screen">
-	</node>	
+	  <!-- Run detector on remote (vehicle) -->
+	  <node  machine="$(arg veh)" pkg="$(arg pkg_name)" type="LED_detector_node.py" name="LED_detector_node" output="screen">
+	  </node>
+	</group>	
 
 </launch>

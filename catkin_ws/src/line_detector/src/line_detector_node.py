@@ -27,7 +27,7 @@ class LineDetectorNode(object):
         self.flag_wb_ref = False
        
         # Parameters
-        self.flag_wb = rospy.get_param('~white_balance')
+        self.flag_wb = False
         
         self.image_size = rospy.get_param('~img_size')
         self.top_cutoff = rospy.get_param('~top_cutoff')

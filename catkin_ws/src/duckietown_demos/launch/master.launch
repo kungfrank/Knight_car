@@ -449,7 +449,7 @@
   <group if="$(arg coordination)">
     <!-- Vehicle Coordinator-->
     <remap from="simple_coordinator_node/mode" to="fsm_node/mode" />
-    <include file="$(find veh_coordinator)/launch/veh_coordinator_node.launch">
+    <include file="$(find veh_coordinator)/launch/simple_coordinator_node.launch">
       <arg name="veh" value="$(arg veh)"/>        
       <arg name="config" value="$(arg config)"/>        
       <arg name="param_file_name" value="$(arg param_file_name)"/>        

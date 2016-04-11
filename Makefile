@@ -5,8 +5,6 @@ machines := $(catkin_ws)/src/duckietown/machines
 
 all: $(machines)
 
-fix-time:
-	sudo ntpdate -u us.pool.ntp.org 
 
 $(machines): $(scuderia)
 	python setup/create-machines-file.py $(scuderia) > $(machines)

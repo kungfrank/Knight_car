@@ -2,10 +2,10 @@
 import cv2
 import numpy as np
 import rospy
-from sensor_msgs.msg import CompressedImage, Image
+from sensor_msgs.msg import Image
 from std_msgs.msg import Float32
 from cv_bridge import CvBridge, CvBridgeError
-from duckietown_msgs.msg import ObstacleImageDetection, ObstacleImageDetectionList, ObstacleType, Rect
+from duckietown_msgs.msg import ObstacleImageDetection, ObstacleImageDetectionList, ObstacleType, Rect, BoolStamped
 import sys
 import threading
 
@@ -126,15 +126,22 @@ class StaticObjectDetectorNode:
         self.name = 'static_object_detector_node'
         
         self.tm = Matcher()
+        self.active = False
         self.thread_lock = threading.Lock()
-        self.sub_image = rospy.Subscriber("~image_compressed", CompressedImage, self.cbImage, queue_size=1)
+        self.sub_image = rospy.Subscriber("~image_raw", Image, self.cbImage, queue_size=1)
+        self.sub_switch = rospy.Subscriber("~switch",BoolStamped, self.cbSwitch, queue_size=1)
         self.pub_image = rospy.Publisher("~cone_detection_image", Image, queue_size=1)
         self.pub_detections_list = rospy.Publisher("~detection_list", ObstacleImageDetectionList, queue_size=1)
         self.bridge = CvBridge()
 
         rospy.loginfo("[%s] Initialized." %(self.name))
 
+    def cbSwitch(self,switch_msg):
+        self.active = switch_msg.data
+
     def cbImage(self,image_msg):
+        if not self.active:
+            return
         thread = threading.Thread(target=self.processImage,args=(image_msg,))
         thread.setDaemon(True)
         thread.start()
@@ -142,9 +149,10 @@ class StaticObjectDetectorNode:
     def processImage(self, image_msg):
         if not self.thread_lock.acquire(False):
             return
-        np_arr = np.fromstring(image_msg.data, np.uint8)
-        
-        image_cv = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+        try:
+            image_cv=self.bridge.imgmsg_to_cv2(image_msg,"bgr8")
+        except CvBridgeErrer as e:
+            print e
         img, detections = self.tm.contour_match(image_cv)
         detections.header.stamp = image_msg.header.stamp
         detections.header.frame_id = image_msg.header.frame_id

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from duckietown_msgs.msg import FSMState, BoolStamped, WheelsCmdStamped
+from duckietown_msgs.msg import FSMState, BoolStamped, Twist2DStamped
 from std_msgs.msg import String, Int16 #Imports msg
 import copy
 
@@ -12,20 +12,11 @@ class OpenLoopIntersectionNode(object):
         self.turn_type = -1
         self.in_lane = False
 
-        self.pub_cmd = rospy.Publisher("~wheels_cmd",WheelsCmdStamped,queue_size=1)
+        self.pub_cmd = rospy.Publisher("~car_cmd",Twist2DStamped,queue_size=1)
         self.pub_done = rospy.Publisher("~intersection_done",BoolStamped,queue_size=1)
 
         # Construct maneuvers
         self.maneuvers = dict()
-        # forward_cmd = WheelsCmdStamped(vel_left=0.4,vel_right=0.4)
-        # left_cmd = WheelsCmdStamped(vel_left=-0.25,vel_right=0.25)
-        # right_cmd = WheelsCmdStamped(vel_left=0.25,vel_right=-0.25)
-        # stop_cmd = WheelsCmdStamped(vel_left=0.0,vel_right=0.0)
-
-        # turn_left = [(2.3,forward_cmd),(0.6,left_cmd),(2.0,forward_cmd)]
-        # turn_right = [(2,forward_cmd),(0.6,right_cmd),(2.0,forward_cmd)]
-        # turn_forward = [(3.0,forward_cmd),(0.0,forward_cmd),(3.0,forward_cmd)]
-        # turn_stop = [(5.0,stop_cmd)]
 
         self.maneuvers[0] = self.getManeuver("turn_left")
         self.maneuvers[1] = self.getManeuver("turn_forward")
@@ -44,7 +35,7 @@ class OpenLoopIntersectionNode(object):
         # rospy.loginfo("PARAM_LIST:%s" %param_list)        
         maneuver = list()
         for param in param_list:
-            maneuver.append((param[0],WheelsCmdStamped(vel_left=param[1],vel_right=param[2])))
+            maneuver.append((param[0],Twist2DStamped(v=param[0],omega=param[1])))
         # rospy.loginfo("MANEUVER:%s" %maneuver)
         return maneuver
 
@@ -72,7 +63,7 @@ class OpenLoopIntersectionNode(object):
     
     def trigger(self,turn_type):
         if turn_type == -1: #Wait. Publish stop command. Does not publish done.
-            cmd = WheelsCmdStamped(vel_left=0.0,vel_right=0.0)
+            cmd = Twist2DStamped(v=0.0,omega=0.0)
             cmd.header.stamp = rospy.Time.now()
             self.pub_cmd.publish(cmd)
             return

@@ -1,0 +1,5 @@
+initial_state: "JOYSTICK_CONTROL"
+
+states:
+  JOYSTICK_CONTROL
+    active_nodes: []

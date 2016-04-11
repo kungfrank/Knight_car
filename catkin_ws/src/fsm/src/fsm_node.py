@@ -34,17 +34,37 @@ class FSMNode(object):
         for node_name, topic_name in nodes.items():
             self.pub_dict[node_name] = rospy.Publisher(topic_name, BoolStamped, queue_size=1, latch=True)
 
-        # Construct subscribers
+        # Process events definition
         param_events_dict = rospy.get_param("~events")
+        # Validate events definition
+        if not self.validateEvents(param_events_dict):
+            rospy.signal_shutdown("[%s] Invalid event definition." %self.node_name)
+            return          
+
         self.sub_list = list()
-        for event_name, topic_name in param_events_dict.items():
+        self.event_trigger_dict = dict()
+        for event_name, event_dict in param_events_dict.items():
+            topic_name = event_dict["topic"]
+            self.event_trigger_dict[event_name] = event_dict["trigger"]
             self.sub_list.append(rospy.Subscriber("%s"%(topic_name), BoolStamped, self.cbEvent, callback_args=event_name))
 
         rospy.loginfo("[%s] Initialized." %self.node_name)
         # Publish initial state
         self.publish()
 
+    def validateEvents(self,events_dict):
+        pass_flag = True
+        for event_name, event_dict in events_dict.items():
+            if "topic" not in event_dict:
+                rospy.logerr("[%s] Event %s missing topic definition." %(self.node_name,event_name))
+                pass_flag = False
+            if "trigger" not in events_dict:
+                rospy.logerr("[%s] Event %s missing trigger definition." %(self.node_name,event_name))
+                pass_flag = False
+        return pass_flag
+
     def validateStates(self,states_dict):
+        pass_flag = True
         valid_states = states_dict.keys()
         for state, state_dict in states_dict.items():        
             # Validate the existence of all reachable states
@@ -55,8 +75,8 @@ class FSMNode(object):
                 for transition, next_state in transitions_dict.items():
                     if next_state not in valid_states:
                         rospy.logerr("[%s] %s not a valide state. (From %s with event %s)" %(self.node_name,next_state,state,transition))
-                        return False
-        return True
+                        pass_flag = False
+        return pass_flag 
 
     def _getNextState(self, state_name, event_name):
         state_dict = self.states_dict.get(state_name)
@@ -109,7 +129,7 @@ class FSMNode(object):
         self.active_nodes = copy.deepcopy(active_nodes)
 
     def cbEvent(self,msg,event_name):
-        if (msg.data):
+        if (msg.data == self.event_trigger_dict[event_name]):
             # Update timestamp
             rospy.loginfo("[%s] Event: %s" %(self.node_name,event_name))
             self.state_msg.header.stamp = msg.header.stamp

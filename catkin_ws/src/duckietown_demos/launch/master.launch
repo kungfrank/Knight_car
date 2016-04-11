@@ -71,6 +71,8 @@
   <arg name="/navigation/graph_planner" default="false"/>
   <!-- NOTE: either apriltags_random or graph_planner but not both -->
 
+  <arg name="parallel_autonomy" default="false"/>
+
   <arg name="global_localizer" default="false"/>
 
   <arg name="SLAM" default="false"/>
@@ -498,6 +500,19 @@
   </group>
   <!-- End Navigation -->
 
+  <!-- Start Parallel Autonomy -->
+  <group if="$(arg parallel_autonomy)">
+    <remap from="lane_supervisor_node/lane_pose" to="lane_filter_node/lane_pose"/>
+    <remap from="lane_supervisor_node/wheels_control_joy" to="joy_mapper_node/car_cmd"/>
+    <remap from="lane_supervisor_node/wheels_control_lane" to="lane_controller_node/car_cmd"/>
+    <remap from="lane_supervisor_node/stop_line_reading" to="stop_line_filter_node/stop_line_reading"/>
+    <include file="$(find lane_control)/launch/lane_supervisor_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>        
+    </include>
+  </group>
+  <!-- End Parallel Autonomy -->
 
   <!-- Start Global Localization -->
   <group if="$(arg global_localizer)">
@@ -510,10 +525,13 @@
   <group if="$(arg SLAM)">
     <!-- TODO -->
   </group>
+  <!-- End SLAM -->
+
 
   <!-- Start anti-instagram -->
   <group if="$(arg anti_instagram)">
     <!-- TODO -->
   </group>
+  <!-- End anti-instagram -->
 
 </launch>

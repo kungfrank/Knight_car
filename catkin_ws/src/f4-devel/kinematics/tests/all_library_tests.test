@@ -1,0 +1,7 @@
+<launch>
+    <test test-name="test_linear_learner" pkg="kinematics" type="test_linear_learner.py" />
+    <test test-name="test_forward_kinematics" pkg="kinematics" type="test_forward_kinematics.py" />
+    <test test-name="test_inverse_kinematics" pkg="kinematics" type="test_inverse_kinematics.py" />
+    <!--test test-name="test_virtual_learning" pkg="kinematics" type="test_virtual_learning.py" /-->
+
+</launch>

@@ -1,0 +1,11 @@
+initial_state: "JOYSTICK_CONTROL"
+
+events:
+  joystick_override: "joy_mapper_node/joystick_override"
+
+nodes: 
+  line_detection_node: "line_detection/switch"
+
+states:
+  JOYSTICK_CONTROL:
+    active_nodes: []

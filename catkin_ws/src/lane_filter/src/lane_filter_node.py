@@ -20,6 +20,7 @@ import time
 class LaneFilterNode(object):
     def __init__(self):
         self.node_name = "Lane Filter"
+        self.active = False
         self.mean_0 = [self.setupParam("~mean_d_0",0) , self.setupParam("~mean_phi_0",0)]
         self.cov_0  = [ [self.setupParam("~sigma_d_0",0.1) , 0] , [0, self.setupParam("~sigma_phi_0",0.01)] ]
         self.delta_d     = self.setupParam("~delta_d",0.02) # in meters
@@ -75,13 +76,15 @@ class LaneFilterNode(object):
         # Subscribers
         if self.use_propagation:
             self.sub_velocity = rospy.Subscriber("~velocity", Twist2DStamped, self.updateVelocity)
-        self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments)
+        self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments, queue_size=1)
 
         # Publishers
         self.pub_lane_pose  = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
         self.pub_belief_img = rospy.Publisher("~belief_img", Image, queue_size=1)
         self.pub_entropy    = rospy.Publisher("~entropy",Float32, queue_size=1)
     	#self.pub_prop_img = rospy.Publisher("~prop_img", Image, queue_size=1)
+        self.pub_in_lane    = rospy.Publisher("~in_lane",BoolStamped, queue_size=1)
+        self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -89,7 +92,12 @@ class LaneFilterNode(object):
         rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
         return value
 
+    def cbSwitch(self, switch_msg):
+        self.active = switch_msg.data
+
     def processSegments(self,segment_list_msg):
+        if not self.active:
+            return
         t_start = rospy.get_time()
 
         if self.use_propagation:
@@ -104,8 +112,6 @@ class LaneFilterNode(object):
                 continue
             if segment.points[0].x < 0 or segment.points[1].x < 0:
                 continue
-
-            # todo eliminate the white segments that are on the other side of the road
 
             d_i,phi_i,l_i = self.generateVote(segment)
             if d_i > self.d_max or d_i < self.d_min or phi_i < self.phi_min or phi_i>self.phi_max:
@@ -125,9 +131,7 @@ class LaneFilterNode(object):
                 measurement_likelihood[i,j] = measurement_likelihood[i,j] +  1/(l_i)
 
 
-	    #s_measurement_likelihood = np.empty(measurement_likelihood.shape)
-        #gaussian_filter(measurement_likelihood, self.cov_mask, output=s_measurement_likelihood, mode='constant')
-        if np.sum(measurement_likelihood) == 0: #np.linalg.norm(measurement_likelihood) == 0:
+        if np.linalg.norm(measurement_likelihood) == 0:
             return
         measurement_likelihood = measurement_likelihood/np.sum(measurement_likelihood)
 
@@ -149,28 +153,25 @@ class LaneFilterNode(object):
         bridge = CvBridge()
         belief_img = bridge.cv2_to_imgmsg((255*self.beliefRV).astype('uint8'), "mono8")
         belief_img.header.stamp = segment_list_msg.header.stamp
+        
+        max_val = self.beliefRV.max()
+        self.lanePose.in_lane = max_val > self.min_max and len(segment_list_msg.segments) > self.min_segs and np.linalg.norm(self.measurement_likelihood) != 0
         self.pub_lane_pose.publish(self.lanePose)
         self.pub_belief_img.publish(belief_img)
 
         # print "time to process segments:"
         # print rospy.get_time() - t_start
-        
-#        self.lanePose.in_lane = max_val > self.min_max and len(segment_list_msg.segments) > self.min_segs and np.linalg.norm(self.beliefRV) != 0
 
-        max_val = self.beliefRV.max()
-        #print max_val
-        #if (max_val > self.min_max):
-        #    self.pub_in_lane.publish(True)
-        #else:
-        #    self.pub_in_lane.publish(False)
-
-
-#        ent = entropy(self.beliefRV)
-#        print ent
-#        if (ent < self.max_entropy):
-#            self.pub_in_lane.publish(True)
-#        else:
-#            self.pub_in_lane.publish(False)
+        # Publish in_lane according to the ent
+        in_lane_msg = BoolStamped()
+        in_lane_msg.header.stamp = segment_list_msg.header.stamp
+        in_lane_msg.data = self.lanePose.in_lane
+        # ent = entropy(self.beliefRV)
+        # if (ent < self.max_entropy):
+        #     in_lane_msg.data = True
+        # else:
+        #     in_lane_msg.data = False
+        self.pub_in_lane.publish(in_lane_msg)
 
     def updateVelocity(self,twist_msg):
         self.v_current = twist_msg.v

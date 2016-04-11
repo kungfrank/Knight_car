@@ -1,0 +1,7 @@
+gate_type: "AND"
+inputs:
+  input_a:
+    topic: "input_topic_a"
+  input_b:
+    topic: "input_topic_b"
+output_topic: "~output_topic"

@@ -15,13 +15,14 @@ class ForwardKinematicsNode(object):
 
         # Read parameters
         # self.veh_name = self.setupParameter("~veh_name","megaman")
-        fi_theta_dot_function = self.setupParameter('~fi_theta_dot_function', 'Duty_fi_theta_dot_naive')
-        fi_v_function = self.setupParameter('~fi_v_function', 'Duty_fi_v_naive')
-        theta_dot_weights = self.setupParameter('~theta_dot_weights', [-1.0])
-        v_weights = self.setupParameter('~v_weights', [1.0])
+        fi_theta_dot_function = self.setupParameter('~fi_theta_dot_function_param', 'Duty_fi_theta_dot_naive')
+        fi_v_function = self.setupParameter('~fi_v_function_param', 'Duty_fi_v_naive')
+        theta_dot_weights = matrix(self.setupParameter('~theta_dot_weights_param', [-1.0]))
+        v_weights = matrix(self.setupParameter('~v_weights_param', [1.0]))
+        self.filename = self.setupParameter("~FIfile","FIfile")
 
         #Setup the forward kinematics model
-        self.fk = Forward_kinematics.Forward_kinematics(fi_theta_dot_function, fi_v_function, matrix(theta_dot_weights), matrix(v_weights))
+        self.fk = Forward_kinematics.Forward_kinematics(fi_theta_dot_function, fi_v_function, theta_dot_weights, v_weights)
 
         #Setup the publisher and subscribers
         self.pub_velocity = rospy.Publisher("~velocity", Twist2DStamped, queue_size=1)
@@ -32,8 +33,8 @@ class ForwardKinematicsNode(object):
         rospy.loginfo("[%s] has started", self.node_name)
 
     def wheelsCmdCallback(self, msg_wheels_cmd):
-        [theta_dot, v] = self.fk.evaluate(msg_wheels_cmd.vel_left, msg_wheels_cmd.vel_right)
-        
+        [theta_dot, v] = self.fk.evaluate(matrix(msg_wheels_cmd.vel_left), matrix(msg_wheels_cmd.vel_right))
+
         # Stuff the v and omega into a message and publish
         msg_velocity = Twist2DStamped()
         msg_velocity.header = msg_wheels_cmd.header
@@ -46,11 +47,11 @@ class ForwardKinematicsNode(object):
 
     def thedaDotWeightsCallback(self, msg):
         # update theta_dot_weights for the forward kinematics model
-        self.fk.theta_dot_weights = msg.weights
+        self.fk.theta_dot_weights = matrix(msg.weights)
 
     def vWeightsCallback(self, msg):
         # update v_weights for the forward kinematics model
-        self.fk.v_weights = msg.weights
+        self.fk.v_weights = matrix(msg.weights)
 
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

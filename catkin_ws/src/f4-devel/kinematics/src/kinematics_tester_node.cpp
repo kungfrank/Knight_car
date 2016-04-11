@@ -24,7 +24,6 @@ private:
 
   //Constant velocity arguments
   float v_, omega_, hz_;
-
   void twistCallback(geometry_msgs::TwistConstPtr const& msg);
 };
 
@@ -39,7 +38,6 @@ kinematics_tester_node::kinematics_tester_node() : nh_("~"), node_name_("kinemat
 {
   //Setup the publishers and subscirbers
   pub_carCmdOut_ = nh_.advertise<duckietown_msgs::Twist2DStamped>("car_cmd", 10);
-  sub_twistIn_ = nh_.subscribe("twist_in", 10, &kinematics_tester_node::twistCallback, this);
 
   //Setup parameters
   nh_.param("v", v_, 0.0f);
@@ -48,18 +46,23 @@ kinematics_tester_node::kinematics_tester_node() : nh_("~"), node_name_("kinemat
 
   ROS_INFO_STREAM("[" << node_name_ << "] has started.");
 
-  //If parameters were given, publsh them
+  //If parameters were given, publish them
   if(hz_ > 0)
   {
     duckietown_msgs::Twist2DStamped cmd_msg;
-    cmd_msg.header.stamp = ros::Time();
+
     cmd_msg.v = v_;
     cmd_msg.omega = omega_;
     ros::Rate rate(hz_);
     while(ros::ok()){
+      cmd_msg.header.stamp = ros::Time::now();
       pub_carCmdOut_.publish(cmd_msg);
       rate.sleep();
     }
+  }
+  else
+  {  
+    sub_twistIn_ = nh_.subscribe("twist_in", 10, &kinematics_tester_node::twistCallback, this);
   }
 }
 

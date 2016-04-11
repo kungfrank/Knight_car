@@ -3,7 +3,7 @@ from __future__ import print_function
 from random import random
 import rospy
 from duckietown_msgs.msg import IntersectionDetection, VehicleDetection, TrafficLightDetection, \
-    CoordinationClearance, CoordinationSignal, FSMState, BoolStamped, WheelsCmdStamped
+    CoordinationClearance, CoordinationSignal, FSMState, BoolStamped, Twist2DStamped
 from time import time
 
 
@@ -71,7 +71,7 @@ class VehicleCoordinator():
         self.clearance_to_go = CoordinationClearance.NA
         self.clearance_to_go_pub = rospy.Publisher('~clearance_to_go', CoordinationClearance, queue_size=10)
         self.pub_intersection_go = rospy.Publisher('~intersection_go', BoolStamped, queue_size=1)
-        self.pub_coord_cmd = rospy.Publisher('~coordination_cmd',WheelsCmdStamped, queue_size=1)
+        self.pub_coord_cmd = rospy.Publisher('~car_cmd',Twist2DStamped, queue_size=1)
 
         self.roof_light = CoordinationSignal.SIGNAL_A
         self.roof_light_pub = rospy.Publisher('~coordination_signal', CoordinationSignal, queue_size=10)
@@ -117,9 +117,9 @@ class VehicleCoordinator():
             # TODO: publish intersection go only once.
         self.roof_light_pub.publish(CoordinationSignal(signal=self.roof_light))
 
-        wheels_cmd_msg = WheelsCmdStamped(vel_left=0.0,vel_right=0.0)
-        wheels_cmd_msg.header.stamp = now
-        self.pub_coord_cmd.publish(wheels_cmd_msg)
+        car_cmd_msg = Twist2DStamped(v=0.0,omega=0.0)
+        car_cmd_msg.header.stamp = now
+        self.pub_coord_cmd.publish(car_cmd_msg)
 
     def loop(self):
         self.reconsider()

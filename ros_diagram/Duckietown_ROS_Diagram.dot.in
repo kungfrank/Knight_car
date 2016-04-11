@@ -20,51 +20,53 @@ digraph D {
 		label = "Sensors";
 		camera_node [!NODE:compiled!, label="pi_camera\ncamera_node (SY,AC)"];
 		joy_node [!NODE:tested!, label="joy_node"];
- 		joy[!TOPIC!, label="joy\nsensor_msgs/Joy.msg"];
  		
+ 		joy[!TOPIC!, label="joy\nsensor_msgs/Joy.msg"];
  		image_compressed[!TOPIC!, label="~image/compressed\nsensor_msgs/CompressedImage.msg"];
- 		camera_node->image_compressed;
 	}
 
 	subgraph cluster_camera {
 		label = "Camera";
 		decoder_node[!NODE:compiled!, label="pi_camera\ndecoder_node (SY)"];
 		cam_info_reader_node[!NODE:compiled!, label="pi_camera\ncam_info_reader_node (SY)"];
-		intrinsic_calibration_file[!CONFIG!, label="calibration/camera_intrinsic"];
+		
 		camera_info[!TOPIC!, label="camera_node/camera_info\nsensor_msgs/CameraInfo.msg"];
  		image_raw[!TOPIC!, label="camera_node/image/raw\nsensor_msgs/Image.msg"];
+		
+		intrinsic_calibration_file[!CONFIG!, label="calibration/camera_intrinsic"];
 	}
 
 	subgraph cluster_actuators {
 		label = "Actuators";
-		wheels_command[!TOPIC!, label="wheels_driver_node/wheels_cmd\nduckietown_msgs/WheelsCmdStamped.msg"];
-		
-		change_color_pattern [!TOPIC!, label="~change_color_pattern\nString"];
-
 		LED_emitter_node     [!NODE:development!, label="led_emitter\nled_emitter_node"    ];
 		wheels_driver_node[!NODE:compiled!, label="dagu_car\nwheels_driver_node (DY,SY)"];
+
+		wheels_command[!TOPIC!, label="wheels_driver_node/wheels_cmd\nduckietown_msgs/WheelsCmdStamped.msg"];
+		change_color_pattern [!TOPIC!, label="~change_color_pattern\nString"];
 	}
 
 	subgraph cluster_visualization {
 		label = "Visualization for operator";
 		image_with_lines[!TOPIC!, label="~image_with_lines\nsensor_msgs/Image.msg"];
 		object_detection_markers[!TOPIC!, label="~object_detection_markers\nvisualization_msgs/MarkerArray.msg"];
-
 	}
 
 	subgraph cluster_line_detection {
 		label = "Line Detection and Projection";
 		line_detector_node[!NODE:compiled!, label="line_detector\nline_detector_node (LP,HZ)"];
 		ground_projection_node[!NODE:compiled!, label="ground_projection\nground_projection_node (CC)"];
-		extrinsic_calibration_file[!CONFIG!, label="calibration/camera_extrinsic"];	
+
 		segment_list[!TOPIC!, label="~segment_list\nduckietown_msgs/SegmentList.msg"];
 		segment_list_proj[!TOPIC!, label="~segment_list_proj\nduckietown_msgs/SegmentList.msg"];
+
+		extrinsic_calibration_file[!CONFIG!, label="calibration/camera_extrinsic"];	
 	}
 
 	subgraph cluster_parallel_autonomy {
 		label = "Parallel Autonomy";
 		joy_mapper_node[!NODE:compiled!, label="joy_mapper\njoy_mapper_node (SY)"];
 		lane_supervisor_node[!NODE:compiled!, label="lane_control\nlane_supervisor_node (LP)"];
+		
 		lane_control_sup[!TOPIC!, label="~lane_control_supervised\nduckietown_msgs/Twist2DStamped.msg"];
 		joy_control[!TOPIC!, label="~joy_control\nduckietown_msgs/Twist2DStamped.msg"];
 	}
@@ -74,6 +76,7 @@ digraph D {
 		label = "Finate State Machine";
 		fsm_node[!NODE:development!,  label="fsm\nfsm_node (MN)"];	
 		car_cmd_switch_node[!NODE:compiled!, label="dagu_car\ncar_cmd_switch (SY)"]			
+		
 		mode[!TOPIC!, label="~mode\nduckietown_msgs/FSMState.msg"];
 	}
 
@@ -84,8 +87,6 @@ digraph D {
 		random_april_tag_turns_node[!NODE:development!,  label="navigation\nrandom_april_tag_turns_node (MN)"];
 		graph_planner_node[!NODE:development!, label="navigation\ngraph_planner_node (MN)"];
 		action_dispatcher_node[!NODE:development!, label="navigation\naction_dispatcher_node (MN)"];
-		//graph_planner_path[!TOPIC!, label="~navigation\n???.msg"];
-		//action_dispatcher_turn_type[!TOPIC!, label="~turn_type\nstd_msgs/Int16.msg"];
 
 		intersection_control[!TOPIC!, label="~intersection_control\nduckietown_msgs/Twist2DStamped.msg"];
 		intersection_done[!TOPIC!, label="~intersection_done\nduckietown_msgs/BoolStamped.msg"];
@@ -96,14 +97,15 @@ digraph D {
 	subgraph cluster_coordination{
 		label="Coordination"; 
 		veh_coordinator_node        [!NODE:designed!,  label="veh_coordinator_node (DH)"]
+
 		intersection_go[!TOPIC!, label="~intersection_go\nduckietown_msgs/BoolStamped.msg"];
 	}
-	
 
 	subgraph cluster_f1{
 		!FEATURE!
 		label="F1: Illumination Robustness"; 
 		anti_instagram_node[!NODE:development!,  label="anti_instagram\nanti_instagram_node (F1)"];
+
 		corrected_image[!TOPIC!, label="~corrected_image/raw\nsensor_msgs/Image.msg"];
 		image_health[!TOPIC!, label="~image_health\nduckietown_msgs/AntiInstagramHealth.msg"];
 	}
@@ -130,12 +132,11 @@ digraph D {
 
 		inverse_kinematics_file[!CONFIG!, label="calibration/inverse_kinematics"];
 		kinematics_file[!CONFIG!, label="calibration/forward_kinematics"];
-		odometry_training_pairs_file[!CONFIG!, label="???/odometry_training_pairs"];
+		odometry_training_pairs_file[!CONFIG!, label="odometry_training_pairs"];
 	
 		forward_kinematics_pose[!TOPIC!, label="~pose\nduckietown_msgs/Pose2DStamped.msg"];
 		forward_kinematics_velocity[!TOPIC!, label="~velocity\nduckietown_msgs/Twist2DStamped.msg"];
-		car_command_switch[!TOPIC!, label="~car_command_switch\nduckietown_msgs/Twist2DStamped.msg"];
-		
+		car_command_switch[!TOPIC!, label="~car_command_switch\nduckietown_msgs/Twist2DStamped.msg"];	
 	}
 
 	subgraph cluster_f5 {
@@ -180,7 +181,6 @@ digraph D {
 		april_pre_pros_global_image [!TOPIC!, label="~global/image_raw \n sensor_msgs/Image.msg"];
 		apriltags_fast_tags_image [!TOPIC!, label="~tags_image \n sensor_msgs/Image.msg"];
 		apriltags_global_tags_image [!TOPIC!, label="~tags_image \n sensor_msgs/Image.msg"];
-		
 		apriltags_fast_tags_detection [!TOPIC!, label="~apriltags \n duckietown_msgs/apriltags.msg"];
 		apriltags_global_tags_detection [!TOPIC!, label="~apriltags \n duckietown_msgs/apriltags.msg"];
 		apriltags_fast_tags_detection_processed [!TOPIC!, label="~apriltags \n duckietown_msgs/apriltags.msg"];
@@ -205,7 +205,10 @@ digraph D {
 
 	// ==== Connections ====
 	
-	// fsm_node
+	// == camera_node == //
+	camera_node->image_compressed;
+
+	// == fsm_node == //
 	{intersection_go,intersection_done,at_stop_line, veh_avoidance_flag, object_too_close} -> fsm_node;
 	fsm_node->mode;
 	
@@ -213,12 +216,14 @@ digraph D {
 	open_loop_intersection_control_node->{intersection_control, intersection_done};
 	{mode,in_lane,graph_turn_type}->open_loop_intersection_control_node;
 	random_turn_type -> open_loop_intersection_control_node[style="dashed"];
+
+	// == random_april_tag_turns_node == //
 	apriltags_global_tags_detection_processed -> random_april_tag_turns_node;
 	random_april_tag_turns_node -> random_turn_type;
 
+	// == action_dispatcher_node == //
 	graph_planner_node -> action_dispatcher_node[style="dashed",label="navigation/GraphSearch.srv"];
 	action_dispatcher_node -> graph_turn_type;
-
 
 	// == stop_line_filter_node == //
 	stop_line_filter_node -> {at_stop_line, stop_line_dist};
@@ -258,11 +263,6 @@ digraph D {
 	{mode, lane_control, intersection_control, veh_avoidance_control, simple_stop_control, joy_control, lane_control_sup}->car_cmd_switch_node;	
 	car_cmd_switch_node->car_command_switch;
 	
-	//// == wheels_trimmer_node == //	
-	//motion_calibration_file->wheels_trimmer_node[style="dotted"]
-	//car_command_switch->wheels_trimmer_node;
-	//wheels_trimmer_node->wheels_command;
-
 	// == wheels_driver_node == //
 	wheels_command->wheels_driver_node;
 
@@ -272,15 +272,21 @@ digraph D {
 	anti_instagram_node->{corrected_image,image_health};
 
 	// == F2-3 == //
+
+	// == LED_joy_mapper_node == //
 	// the joystick is connected to LED_joy_mapper_node, which produces a desired_signaling_state
 	joy->LED_joy_mapper_node;
 	LED_joy_mapper_node->desired_signaling_state[style="dashed"]; // dashed = only for testing
 
+	// == LED_emitter_node == //
 	// LED_emitter_node reads change_color_pattern and activates the LED
 	change_color_pattern->LED_emitter_node;
 
+	// == LED_detector_node == //
 	// Image goes to LED_detector_node which produces "raw" led detections
 	image_compressed->LED_detector_node->raw_led_detection;
+	
+	// == LED_interpreter_node == //
 	// These are interpreted by LED_interpreter_node
 	raw_led_detection->LED_interpreter_node->signals_detection;
 	// the node also needs to know where the vehicle is
@@ -288,9 +294,9 @@ digraph D {
 	{intrinsic_calibration_file, extrinsic_calibration_file}->LED_interpreter_node[style="dotted"];
  
 	// == F4 == //
+
 	// == odometry_training_pairs_node == //
 	{apriltags_global_tags_detection_processed ,segment_list_proj, car_command_switch} -> odometry_training_pairs_node;
-	//image_compressed -> odometry_training_pairs_node[color="red",label="Not sure if this should still be here"];
 	odometry_training_pairs_node -> odometry_training_pairs_file[style="dotted"];
 
 	// == kinematics_learning_node == //
@@ -307,8 +313,8 @@ digraph D {
 	wheels_command -> forward_kinematics_node;
 	forward_kinematics_node -> {forward_kinematics_pose,forward_kinematics_velocity};
 
-
 	// == F5 == //
+
 	// == lane_controller_node == //
 	lane_pose->lane_controller_node;
 	lane_controller_node->lane_control;
@@ -318,6 +324,7 @@ digraph D {
 	lane_filter_node -> {lane_pose, in_lane};
 
 	// == F6 == //
+
 	// == vehicle_detector_node == //
 	image_raw -> vehicle_detector_node;
 	vehicle_detector_node -> veh_corners;
@@ -329,19 +336,28 @@ digraph D {
 	vehicle_avoidance_control_node -> {veh_avoidance_control, veh_avoidance_flag};
 
 	// == F8 == //
+
+	// == april_pre_pros_node == //
 	image_raw -> april_pre_pros_node;
 	april_pre_pros_node -> {april_pre_pros_global_image, april_pre_pros_fast_image};
+	
+	// == apriltags_fast_node == //
 	april_pre_pros_fast_image -> apriltags_fast_node;
-	{april_pre_pros_global_image, camera_info} -> apriltags_global_node;
 	apriltags_fast_node -> {apriltags_fast_tags_image,apriltags_fast_tags_detection};
-	apriltags_global_node -> {apriltags_global_tags_image,apriltags_global_tags_detection};
-	apriltags_fast_tags_detection -> apriltags_postprocessing_fast_node ;
-	apriltags_global_tags_detection -> apriltags_postprocessing_global_node ;
-	apriltags_postprocessing_fast_node -> apriltags_fast_tags_detection_processed ;
-	apriltags_postprocessing_global_node -> apriltags_global_tags_detection_processed ;
-	apriltags_db_file -> apriltags_postprocessing_fast_node [style="dashed"];
-	apriltags_db_file -> apriltags_postprocessing_global_node [style="dashed"];
 
+	// == apriltags_global_node == // 
+	{april_pre_pros_global_image, camera_info} -> apriltags_global_node;	
+	apriltags_global_node -> {apriltags_global_tags_image,apriltags_global_tags_detection};
+
+	// == apriltags_postprocessing_fast_node == // 
+	apriltags_fast_tags_detection -> apriltags_postprocessing_fast_node ;
+	apriltags_postprocessing_fast_node -> apriltags_fast_tags_detection_processed ;
+	apriltags_db_file -> apriltags_postprocessing_fast_node [style="dashed"];
+
+	// == apriltags_postprocessing_global_node == // 
+	apriltags_global_tags_detection -> apriltags_postprocessing_global_node ;
+	apriltags_postprocessing_global_node -> apriltags_global_tags_detection_processed ;
+	apriltags_db_file -> apriltags_postprocessing_global_node [style="dashed"];
 
 	// == F9 == //
 	// == static_object_detector_node ==//

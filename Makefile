@@ -25,6 +25,7 @@ build:
 # Teddy: make it so "make unittests" runs all unit tests
 
 unittests:
+	bash -c "source environment.sh; python setup/sanity_checks"
 	bash -c "source environment.sh; catkin_make -C $(catkin_ws) run_tests_anti_instagram"
 
 # HW testing 

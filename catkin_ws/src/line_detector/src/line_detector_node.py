@@ -1,17 +1,16 @@
 #!/usr/bin/env python
-import rospy
-import cv2
 from cv_bridge import CvBridge, CvBridgeError
-from sensor_msgs.msg import CompressedImage, Image
-from duckietown_msgs.msg import Segment, SegmentList, Vector2D, BoolStamped
+from duckietown_msgs.msg import BoolStamped, Segment, SegmentList, Vector2D
+from geometry_msgs.msg import Point
 from line_detector.LineDetector import *
 from line_detector.WhiteBalance import *
+from sensor_msgs.msg import CompressedImage, Image
 from visualization_msgs.msg import Marker
-from geometry_msgs.msg import Point
+import cv2
 import numpy as np
+import rospy
 import threading
-#from PIL import Image as pimg
-#import jpeg4py as jpeg
+from duckietown_utils.jpg import image_cv_from_jpg
 
 class LineDetectorNode(object):
     def __init__(self):
@@ -89,14 +88,7 @@ class LineDetectorNode(object):
 
         # Decode from compressed image
         # with OpenCV
-        image_cv = cv2.imdecode(np.fromstring(image_msg.data, np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
-        
-        # with PIL Image
-        # image_cv = jpeg.JPEG(np.fromstring(image_msg.data, np.uint8)).decode()
-        
-        # with libjpeg-turbo
-        # Convert from uncompressed image message
-        # image_cv = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
+        image_cv = image_cv_from_jpg(image_msg.data)
         
         # Verbose
         if self.verbose:

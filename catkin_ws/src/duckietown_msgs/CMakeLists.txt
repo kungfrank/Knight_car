@@ -53,36 +53,54 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   CarControl.msg
-  LEDControl.msg
   DuckieSensor.msg
   LanePose.msg
+#  LEDControl.msg
+  LEDDetection.msg
+  LEDDetectionArray.msg
+  LEDDetectionDebugInfo.msg
   WheelsCmd.msg
   WheelsCmdStamped.msg
+  Pose2DStamped.msg
+  Twist2DStamped.msg
   TagDetection.msg
+  TagInfo.msg
   AprilTags.msg
   Pixel.msg
   Vector2D.msg
   Segment.msg
   SegmentList.msg
-  ControlMode.msg
   Rect.msg
   Rects.msg
   SceneSegments.msg
   CoordinationClearance.msg
-  IntersectionDetection.msg
-  CoordinationSignal.msg
-  TrafficLightDetection.msg
+#  IntersectionDetection.msg
+#  CoordinationSignal.msg
+#  TrafficLightDetection.msg
+  VehicleCorners.msg
+  VehiclePose.msg
   VehicleDetection.msg
   FSMState.msg
+  BoolStamped.msg
+  StopLineReading.msg
   AntiInstagramHealth.msg
+  KinematicsWeights.msg
+  ThetaDotSample.msg
+  Vsample.msg
+  Trajectory.msg
+  ObstacleType.msg
+  ObstacleImageDetection.msg
+  ObstacleImageDetectionList.msg
+  ObstacleProjectedDetection.msg
+  ObstacleProjectedDetectionList.msg
 )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  SetFSMState.srv
+  # Service2.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(

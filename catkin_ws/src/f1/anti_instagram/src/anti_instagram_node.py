@@ -2,7 +2,7 @@
 import rospy
 from copy import deepcopy
 from sensor_msgs.msg import CompressedImage,Image
-from duckietown_msgs.msg import AntiInstagramHealth
+from duckietown_msgs.msg import AntiInstagramHealth, BoolStamped
 from anti_instagram.AntiInstagram import *
 import numpy as np
 import threading
@@ -13,9 +13,11 @@ class AntiInstagramNode():
 	def __init__(self):
 		self.node_name = rospy.get_name()
 
+                self.active = True
 		# Initialize publishers and subscribers
 		self.pub_image = rospy.Publisher("~corrected_image",Image,queue_size=1)
 		self.pub_health = rospy.Publisher("~health",AntiInstagramHealth,queue_size=1)
+                self.sub_switch = rospy.Subscriber("~switch",BoolStamped, self.cbSwitch, queue_size=1)
 		self.sub_image = rospy.Subscriber("~uncorrected_image",Image,self.cbNewImage,queue_size=1)
 
 		# image callback thread lock
@@ -36,8 +38,12 @@ class AntiInstagramNode():
 
 		self.numFramesSeen = 0
 
+        def cbSwitch(self,switch_msg):
+                self.active = switch_msg.data
 
 	def cbNewImage(self,image_msg):
+                if not self.active:
+                        return false
 		# Start a daemon thread to process the image
 		thread = threading.Thread(target=self.processImage,args=(image_msg,))
 		thread.setDaemon(True)

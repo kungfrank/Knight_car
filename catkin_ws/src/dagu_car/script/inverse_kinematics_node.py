@@ -10,18 +10,15 @@ from numpy import *
 class InverseKinematicsNode(object):
     def __init__(self):
         self.node_name = 'inverse_kinematics_node'
-
-        # Setup the publisher and subscriber
-        self.sub_car_cmd = rospy.Subscriber("~car_cmd", Twist2DStamped, self.car_cmd_callback)
-        self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd", WheelsCmdStamped, queue_size=1)
-
         # Read in parameters
         self.k_l = self.setup_parameter('k_l', 25.0)
         self.k_r = self.setup_parameter('k_r', 25.0)
         self.radius_l = self.setup_parameter('radius_l', 0.02)
         self.radius_r = self.setup_parameter('radius_r', 0.02)
         self.baseline = self.setup_parameter('baseline', 0.1)
-
+        # Setup the publisher and subscriber
+        self.sub_car_cmd = rospy.Subscriber("~car_cmd", Twist2DStamped, self.car_cmd_callback)
+        self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd", WheelsCmdStamped, queue_size=1)
         rospy.loginfo("[%s] has started", self.node_name)
 
     def car_cmd_callback(self, msg_car_cmd):

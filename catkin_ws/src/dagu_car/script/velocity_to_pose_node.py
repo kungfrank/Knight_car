@@ -16,15 +16,15 @@ class VelocityToPoseNode(object):
         # Read parameters
         self.veh_name = self.setup_parameter("~veh_name", "megaman")
 
-        # Setup the publisher and subscriber
-        self.sub_velocity = rospy.Subscriber("~velocity", Twist2DStamped,
-                                             self.velocity_callback)
-        self.pub_pose = rospy.Publisher("~pose", Pose2DStamped, queue_size=1)
-
         # Keep track of the last known pose
         self.last_pose = Pose2DStamped()
         self.last_theta_dot = 0
         self.last_v = 0
+        
+        # Setup the publisher and subscriber
+        self.sub_velocity = rospy.Subscriber("~velocity", Twist2DStamped,
+                                             self.velocity_callback)
+        self.pub_pose = rospy.Publisher("~pose", Pose2DStamped, queue_size=1)
 
         rospy.loginfo("[%s] has started", self.node_name)
 

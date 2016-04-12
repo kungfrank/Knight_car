@@ -19,6 +19,7 @@ import time
 class LaneFilterNode(object):
     def __init__(self):
         self.node_name = "Lane Filter"
+        self.active = False
         self.mean_0 = [self.setupParam("~mean_d_0",0) , self.setupParam("~mean_phi_0",0)]
         self.cov_0  = [ [self.setupParam("~sigma_d_0",0.1) , 0] , [0, self.setupParam("~sigma_phi_0",0.01)] ]
         self.delta_d     = self.setupParam("~delta_d",0.02) # in meters
@@ -55,12 +56,13 @@ class LaneFilterNode(object):
         self.lanePose = LanePose()
         self.lanePose.d=self.mean_0[0]
         self.lanePose.phi=self.mean_0[1]
-        # self.sub = rospy.Subscriber("~velocity",
+
         self.pub_lane_pose  = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
         self.pub_belief_img = rospy.Publisher("~belief_img", Image, queue_size=1)
         self.pub_entropy    = rospy.Publisher("~entropy",Float32, queue_size=1)
         self.pub_in_lane    = rospy.Publisher("~in_lane",BoolStamped, queue_size=1)
-        self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments)
+        self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
+        self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments, queue_size=1)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -68,7 +70,12 @@ class LaneFilterNode(object):
         rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
         return value
 
+    def cbSwitch(self, switch_msg):
+        self.active = switch_msg.data
+
     def processSegments(self,segment_list_msg):
+        if not self.active:
+            return
         t_start = rospy.get_time()
         self.propagateBelief()
         # initialize measurement likelihood

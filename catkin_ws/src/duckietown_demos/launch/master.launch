@@ -399,6 +399,7 @@
       </include>
     </group>
 
+    <!-- TODO do we need some remappings here? -->
     <group if="$(arg /LED/interpreter)">
       <include file="$(find led_interpreter)/launch/led_interpreter_node.launch">
 	<arg name="veh" value="$(arg veh)"/>

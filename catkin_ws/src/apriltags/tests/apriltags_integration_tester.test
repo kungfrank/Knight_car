@@ -1,0 +1,17 @@
+<launch>
+    <arg name="veh" default="amadobot"/>
+    <arg name="bagin" default="$(find apriltags)/tests/20160408-226-intersection_apriltags-amadobot.bag" />
+
+    <!-- Run the system level launch -->
+    <include file="$(find duckietown)/launch/apriltags.launch">
+        <arg name="veh" value="$(arg veh)" />
+        <arg name="live" value="false" />
+    </include>
+
+    <!-- Start the bag -->
+    <node pkg="rosbag" type="play" name="rosbag_play" args="$(arg bagin) --clock"/>
+
+    <!-- Run unit test -->
+    <remap from="apriltags_integration_tester/apriltags" to="apriltags_global_node/apriltags" />
+    <test test-name="apriltags_integration_tester" pkg="apriltags" type="apriltags_integration_tester.py" ns="$(arg veh)"/>
+</launch>

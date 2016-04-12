@@ -3,7 +3,7 @@ import rospy
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import CompressedImage, Image
-from duckietown_msgs.msg import Segment, SegmentList, Vector2D
+from duckietown_msgs.msg import Segment, SegmentList, Vector2D, BoolStamped
 from line_detector.LineDetector import *
 from line_detector.WhiteBalance import *
 from visualization_msgs.msg import Marker
@@ -27,8 +27,8 @@ class LineDetectorNode(object):
         self.flag_wb_ref = False
        
         # Parameters
-        self.flag_wb = rospy.get_param('~white_balance')
-        
+        self.flag_wb = False
+        self.active = False
         self.image_size = rospy.get_param('~img_size')
         self.top_cutoff = rospy.get_param('~top_cutoff')
   
@@ -58,9 +58,15 @@ class LineDetectorNode(object):
 
         # Subscribers
         self.sub_image = rospy.Subscriber("~image", CompressedImage, self.cbImage, queue_size=1)
+        self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
         rospy.loginfo("[%s] Initialized." %(self.node_name))
 
+    def cbSwitch(self, switch_msg):
+        self.active = switch_msg.data
+
     def cbImage(self,image_msg):
+        if not self.active:
+            return 
         # Start a daemon thread to process the image
         thread = threading.Thread(target=self.processImage,args=(image_msg,))
         thread.setDaemon(True)

@@ -14,7 +14,7 @@
         <rosparam command="load" file="$(find duckietown)/config/$(arg config)/fsm/fsm_node/$(arg param_file_name).yaml"/>
     </node>
 
-    <!-- Publicaitons -->
+    <!-- Publications -->
 
     <!-- Subscriptions -->
 

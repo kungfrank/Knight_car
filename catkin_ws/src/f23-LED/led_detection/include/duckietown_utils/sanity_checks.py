@@ -10,6 +10,17 @@ def check_years():
         raise Exception(msg)
     return '%s' % now.year
 
+def check_import(package):
+    def f():
+        try:
+            __import__(package, fromlist=['dummy'])
+        except ImportError as e:
+            msg = 'Cannot import package %r: %s\n' % (package, e)
+            raise ValueError(msg)
+
+    f.__name__ = 'import-%s' % package
+    return f
+
 def check_failure():
     raise ValueError('error')
 
@@ -56,8 +67,11 @@ def do_all_checks():
 
     checks = [
         check_years,
-#         check_failure,
         check_environment_variables,
+
+        check_import('scipy'),
+        check_import('scipy.io'),
+        check_import('sklearn'),
     ]
 
     results = []

@@ -21,6 +21,12 @@ build-parallel:
 build:
 	catkin_make -C $(catkin_ws) 
 
+# Unit tests
+# Teddy: make it so "make unittests" runs all unit tests
+
+unittests:
+	bash -c "source environment.sh; catkin_make -C $(catkin_ws) run_tests_anti_instagram"
+
 # HW testing 
 
 test-camera:

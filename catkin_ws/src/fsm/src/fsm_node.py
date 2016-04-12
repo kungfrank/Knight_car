@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 import rospy
 import copy
-from duckietown_msgs.msg import FSMState, BoolStamped
+import duckietown_msgs
+import sensor_msgs
+import std_msgs
 from duckietown_msgs.srv import SetFSMState, SetFSMStateRequest, SetFSMStateResponse
 
 class FSMNode(object):
@@ -43,10 +45,12 @@ class FSMNode(object):
 
         self.sub_list = list()
         self.event_trigger_dict = dict()
+        self.event_msg_type_dict = dict()
         for event_name, event_dict in param_events_dict.items():
             topic_name = event_dict["topic"]
+            msg_type = event_dict["msg_type"]
             self.event_trigger_dict[event_name] = event_dict["trigger"]
-            self.sub_list.append(rospy.Subscriber("%s"%(topic_name), BoolStamped, self.cbEvent, callback_args=event_name))
+            self.sub_list.append(rospy.Subscriber("%s"%(topic_name), msg_type, self.cbEvent, callback_args=event_name))
 
         rospy.loginfo("[%s] Initialized." %self.node_name)
         # Publish initial state

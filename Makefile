@@ -49,7 +49,10 @@ test-led:
 vehicle_name=$(shell hostname)
 
 demo-joystick:	
-	bash -c "source environment.sh; roslaunch duckietown joystick.launch veh:=$(vehicle_name) trim:=true"
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown joystick.launch veh:=$(VEHICLE_NAME)"
+
+demo-joystick-camera:
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown joystick_camera.launch veh:=$(VEHICLE_NAME)"
 
 demo-line_detector:
 	bash -c "source environment.sh; roslaunch duckietown line_detector.launch veh:=emma"

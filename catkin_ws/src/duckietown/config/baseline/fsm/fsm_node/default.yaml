@@ -49,7 +49,7 @@ states:
       - line_detector_node
       - stop_line_filter_node
       - anti_instagram_node
-    lights:
+    lights: []
   COORDINATION:
     transitions:
       intersection_go: "INTERSECTION_CONTROL"

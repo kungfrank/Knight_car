@@ -20,7 +20,7 @@ import time
 class LaneFilterNode(object):
     def __init__(self):
         self.node_name = "Lane Filter"
-        self.active = False
+        self.active = True
         self.mean_0 = [self.setupParam("~mean_d_0",0) , self.setupParam("~mean_phi_0",0)]
         self.cov_0  = [ [self.setupParam("~sigma_d_0",0.1) , 0] , [0, self.setupParam("~sigma_phi_0",0.01)] ]
         self.delta_d     = self.setupParam("~delta_d",0.02) # in meters

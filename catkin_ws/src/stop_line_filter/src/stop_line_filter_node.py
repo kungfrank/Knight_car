@@ -10,7 +10,7 @@ import math
 class StopLineFilterNode(object):
     def __init__(self):
         self.node_name = "Stop Line Filter"
-        self.active = False
+        self.active = True
         ## state vars
         self.lane_pose = LanePose()
 

@@ -126,7 +126,7 @@ class StaticObjectDetectorNode:
         self.name = 'static_object_detector_node'
         
         self.tm = Matcher()
-        self.active = False
+        self.active = True
         self.thread_lock = threading.Lock()
         self.sub_image = rospy.Subscriber("~image_raw", Image, self.cbImage, queue_size=1)
         self.sub_switch = rospy.Subscriber("~switch",BoolStamped, self.cbSwitch, queue_size=1)

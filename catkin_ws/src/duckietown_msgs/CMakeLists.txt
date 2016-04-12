@@ -85,6 +85,7 @@ add_message_files(
   StopLineReading.msg
   AntiInstagramHealth.msg
   KinematicsWeights.msg
+  KinematicsParams.msg
   ThetaDotSample.msg
   Vsample.msg
   Trajectory.msg

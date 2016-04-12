@@ -21,7 +21,7 @@ class IndefNavigationNode(object):
 
         self.lane = None
         self.stop = None
-        self.forward_time = 3.0
+        self.forward_time = 5.0
 
         self.pub_wheels_cmd = rospy.Publisher(wheel_topic,WheelsCmdStamped, queue_size=1)
         self.sub_lane = rospy.Subscriber(lane_topic, LanePose, self.cbLane, queue_size=1) 

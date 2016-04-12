@@ -31,7 +31,7 @@ class IndefNavigationNode(object):
 
         rospy.loginfo("[%s] Initialzed." %(self.node_name))
 
-        self.rate = rospy.Rate(10) # 10hz
+        self.rate = rospy.Rate(3) # 10hz
     
     def cbIbvs (self,data):
         self.ibvs_data = data.data
@@ -43,28 +43,47 @@ class IndefNavigationNode(object):
 
     def servo(self):
         #move forward
+        #end = rospy.Time.now() + rospy.Duration(.5)
+
         while not rospy.is_shutdown():
-            angle_direction = (0.5 - self.ibvs_data)
-            wheels_cmd_msg = WheelsCmdStamped()
-            wheels_cmd_msg.header.stamp = rospy.Time.now()
-            wheels_cmd_msg.vel_left = 0
-            wheels_cmd_msg.vel_right = 0
-            gain = 1.0 
-            if abs(angle_direction) < 0.1 or self.ibvs_data == -1:
-                if self.ibvs_data == -1:
-                    rospy.loginfo("nothing detected!")
+
+            spin_for = rospy.Time.now() + rospy.Duration(1.0)
+            while not rospy.is_shutdown() and rospy.Time.now() < spin_for:            
+                wheels_cmd_msg = WheelsCmdStamped()
+                wheels_cmd_msg.header.stamp = rospy.Time.now()
+                wheels_cmd_msg.vel_left = 1
+                wheels_cmd_msg.vel_right = -1
+                self.pub_wheels_cmd.publish(wheels_cmd_msg)    
+            
+            locate_for = rospy.Time.now() + rospy.Duration(7.0)
+            while not rospy.is_shutdown() and rospy.Time.now() < locate_for:
+                angle_direction = (self.ibvs_data - 0.5)
+                wheels_cmd_msg = WheelsCmdStamped()
+                wheels_cmd_msg.header.stamp = rospy.Time.now()
+                wheels_cmd_msg.vel_left = 0
+                wheels_cmd_msg.vel_right = 0
+                gain = .1
+                if abs(angle_direction) < 0.2 or self.ibvs_data == -1:
+                    if self.ibvs_data == -1:
+                        rospy.loginfo("nothing detected!")
+                        
+                        wheels_cmd_msg.vel_left  =-.1
+                        wheels_cmd_msg.vel_right = -.1
+                    else:
+                        rospy.loginfo("already centered!")
+                        wheels_cmd_msg.vel_left  =.4
+                        wheels_cmd_msg.vel_right =.4
                 else:
-                    rospy.loginfo("already centered!")
-            else:
-                if angle_direction > 0:
-                    wheels_cmd_msg.vel_left = gain*abs(angle_direction)
-                    rospy.loginfo("turning left %f " % angle_direction)
-                else:
-                    wheels_cmd_msg.vel_right = gain*abs(angle_direction)
-                    rospy.loginfo("turning right %f " % angle_direction)
-            self.pub_wheels_cmd.publish(wheels_cmd_msg)    
-            rospy.loginfo("")
-            self.rate.sleep()
+                    if angle_direction > 0:
+                        wheels_cmd_msg.vel_left = gain*abs(angle_direction)
+                        wheels_cmd_msg.vel_right = -gain *abs(angle_direction)
+                        rospy.loginfo("turning left %f " % angle_direction)
+                    else:
+                        wheels_cmd_msg.vel_right = gain *abs(angle_direction)
+                        wheels_cmd_msg.vel_left = -gain *abs(angle_direction)
+                        rospy.loginfo("turning right %f " % angle_direction)
+                self.pub_wheels_cmd.publish(wheels_cmd_msg)    
+                self.rate.sleep()
 
 
 if __name__ == '__main__':

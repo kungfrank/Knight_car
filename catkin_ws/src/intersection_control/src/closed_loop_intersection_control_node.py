@@ -45,20 +45,38 @@ class OpenLoopIntersectionNode(object):
 
     def servo(self, turn_type):
         #move forward
-        while  self.mode == "INTERSECTION_CONTROL": # If not in the mode anymore, return
+
+        wheels_cmd_msg = WheelsCmdStamped()
+        end_time = rospy.Time.now() + rospy.Duration(0.5)
+        while rospy.Time.now() < end_time:
+            wheels_cmd_msg.header.stamp = rospy.Time.now()
+            wheels_cmd_msg.vel_left = .4 # go straight
+            wheels_cmd_msg.vel_right = .4
+            self.pub_cmd.publish(wheels_cmd_msg)
+
+        wheels_cmd_msg = WheelsCmdStamped()
+        wheels_cmd_msg.header.stamp = rospy.Time.now()
+        while not rospy.is_shutdown():
+            #self.mode == "INTERSECTION_CONTROL": # If not in the mode anymore, return
             angle_direction = (0.5 - self.ibvs_data)
             wheels_cmd_msg = WheelsCmdStamped()
             wheels_cmd_msg.header.stamp = rospy.Time.now()
             wheels_cmd_msg.vel_left = 0
             wheels_cmd_msg.vel_right = 0
-            gain = 1.0 
+            gain = 0.5
+            done = False
+
             if abs(angle_direction) < 0.1 or self.ibvs_data == -1:
                 if self.ibvs_data == -1:
                     rospy.loginfo("nothing detected!")
+                    wheels_cmd_msg.vel_left = .2 # go straight
+                    wheels_cmd_msg.vel_right = -.2
                 else:
                     rospy.loginfo("already centered!")
 
-                    self.pub_done.publish(msg)
+                    done= True
+                    wheels_cmd_msg.vel_left = .4 # go straight
+                    wheels_cmd_msg.vel_right = .4
             else:
                 if angle_direction > 0:
                     wheels_cmd_msg.vel_left = gain*abs(angle_direction)
@@ -66,17 +84,20 @@ class OpenLoopIntersectionNode(object):
                 else:
                     wheels_cmd_msg.vel_right = gain*abs(angle_direction)
                     rospy.loginfo("turning right %f " % angle_direction)
-            self.pub_wheels_cmd.publish(wheels_cmd_msg)    
-            rospy.loginfo("")
+            self.pub_cmd.publish(wheels_cmd_msg)
+            if self.in_lane:# and done==True:
+                self.pub_done.publish(msg)
+
             self.rate.sleep()
 
 
     def publishDoneMsg(self):
-        msg = BoolStamped()
-        msg.header.stamp = rospy.Time.now()
-        msg.data = True
-        self.pub_done.publish(msg)
-        rospy.loginfo("[%s] interesction_done!" %(self.node_name))
+        if self.mode == "INTERSECTION_CONTROL":
+            msg = BoolStamped()
+            msg.header.stamp = rospy.Time.now()
+            msg.data = True
+            self.pub_done.publish(msg)
+            rospy.loginfo("[%s] interesction_done!" %(self.node_name))
     
     def on_shutdown(self):
         rospy.loginfo("[%s] Shutting down." %(self.node_name))

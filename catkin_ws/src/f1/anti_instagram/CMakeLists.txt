@@ -189,4 +189,5 @@ include_directories(
 if (CATKIN_ENABLE_TESTING)
     find_package(rostest REQUIRED)
     add_rostest(tests/antiinstagram_correctness_test.test)
+    add_rostest(tests/antiinstagram_stub_test.test)
 endif()

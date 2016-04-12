@@ -2,13 +2,13 @@
 % splits annotation files by saving each annotations set from the map under
 % XXX.mat, where XXX.jpg was the original filename.
 %
+% Usage: from the same directory as the annotator, use:
+% split_annotation_by_files(joint_filename)
+%
 % to read in python, use for example:
 % In [17]: res=scipy.io.loadmat('frame0000.mat')
-% 
 % In [18]: reg=res['regions']
-% 
 % In [19]: r1=reg[0,0]
-% 
 % In [20]: r1['x']
 % Out[20]: 
 % array([[ array([[ 273.73076923],

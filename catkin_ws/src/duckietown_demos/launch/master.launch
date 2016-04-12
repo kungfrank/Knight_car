@@ -21,7 +21,7 @@
 
   <!-- start switch args -->
   <arg name="camera" default="true"/>
-  <arg name="/camera/raw" default="true"/>
+  <arg name="/camera/raw" default="false"/>
   <arg name="/camera/cam_info" default="true"/>
 
   <arg name="wheels" default="true"/>
@@ -124,7 +124,7 @@
       <arg name="veh" value="$(arg veh)"/>
     </include>
    
-    <group if="/wheels/forward_kinematics">
+    <group if="$(arg /wheels/forward_kinematics)">
       <!-- TODO  remappings -->
       <include file="$(find dagu_car)/launch/forward_kinematics_node.launch">
 	<arg name="veh" value="$(arg veh)"/>
@@ -132,7 +132,7 @@
     </group>
 
     <!-- When Robert says so the wheels trimmer should be gone - it is totally replaced by inverse kin. -->
-    <group if="$(arg wheels_trim)">
+    <group if="$(arg /wheels/wheels_trim)">
       <!-- Wheels Trimmer -->
       <remap from="wheels_trimmer_node/wheels_cmd" to="inverse_kinematics_node/wheels_cmd"/>
       <include file="$(find dagu_car)/launch/wheels_trimmer_node.launch">
@@ -143,7 +143,7 @@
     </group>
 
     <!-- Wheel Driver -->
-    <remap from="wheels_driver_node/wheels_cmd" to="wheels_trimmer_node/wheels_cmd" />
+    <remap from="wheels_driver_node/wheels_cmd" to="wheels_trimmer_node/trimmed_wheels_cmd" />
     <include file="$(find dagu_car)/launch/wheels_driver_node.launch">
       <arg name="veh" value="$(arg veh)"/>
     </include>

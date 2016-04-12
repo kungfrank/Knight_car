@@ -3,48 +3,34 @@ import cv2
 import numpy as np
 import rospy
 from sensor_msgs.msg import Image, CompressedImage
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, Bool
 from cv_bridge import CvBridge, CvBridgeError
 from duckietown_msgs.msg import ObstacleImageDetection, ObstacleImageDetectionList, ObstacleType, Rect, BoolStamped
 import sys
 import threading
+from count_turns import TurnCounter
 
 
 class Matcher:
-    CONE = [np.array(x, np.uint8) for x in [[0,140,100], [15, 255,255]] ]
-    DUCK = [np.array(x, np.uint8) for x in [[165,140,100], [180, 255, 255]] ]
+    STOP1 = [np.array(x, np.uint8) for x in [[0,140,100], [15, 255,255]] ]
+    STOP2 = [np.array(x, np.uint8) for x in [[165,140,100], [180, 255, 255]] ]
     terms = {ObstacleType.CONE :"cone", ObstacleType.DUCKIE:"duck", 2: "CANNY"}
+    LINE = [np.array(x, np.uint8) for x in [[25,100,150], [35, 255, 255]] ] 
     
-    def __init__(self):
-        self.cone_color_low = self.setupParam("~cone_low", [0,80,80])
-        self.cone_color_high = self.setupParam("~cone_high", [22, 255,255])
-        self.duckie_color_low = self.setupParam("~duckie_low", [25, 100, 150])
-        self.duckie_color_high = self.setupParam("~duckie_high", [35, 255,255])
-        #self.CONE = [np.array(x, np.uint8) for x in [self.cone_color_low, self.cone_color_high] ]
-        #self.DUCK = [np.array(x, np.uint8) for x in [self.duckie_color_low, self.duckie_color_high] ]
-
-    def setupParam(self, param_name, default_value):
-        value = rospy.get_param(param_name,default_value)
-        rospy.set_param(param_name,value) #Write to parameter server for transparancy
-        rospy.loginfo("[%s] %s = %s " %('arii',param_name,value))
-        return value
-
     def get_filtered_contours(self,img, contour_type):
         hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        
-        if contour_type == "CONE":
-            frame_threshed = cv2.inRange(hsv_img, self.CONE[0], self.CONE[1])
+         
+        if contour_type == "STOP1":
+            frame_threshed = cv2.inRange(hsv_img, self.STOP1[0], self.STOP1[1])
             ret,thresh = cv2.threshold(frame_threshed,22,255,0)
-        elif contour_type == "DUCK_COLOR":
-            frame_threshed = cv2.inRange(hsv_img, self.DUCK[0], self.DUCK[1])
-            ret,thresh = cv2.threshold(frame_threshed,30,255,0)
-        elif contour_type == "DUCK_CANNY":
-            frame_threshed = cv2.inRange(hsv_img, self.DUCK[0], self.DUCK[1])
-            frame_threshed = cv2.adaptiveThreshold(frame_threshed,255,\
-                    cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,5,2)
-            thresh = cv2.Canny(frame_threshed, 100,200)
+        elif contour_type == "STOP2":
+            frame_threshed = cv2.inRange(hsv_img, self.STOP2[0], self.STOP2[1])
+            ret,thresh = cv2.threshold(frame_threshed,22,255,0)
+        elif contour_type == "LINE":
+            frame_threshed = cv2.inRange(hsv_img, self.LINE[0], self.LINE[1])
+            ret,thresh = cv2.threshold(frame_threshed,35,255,0)
         else:
-            return 
+            return  []
         
         filtered_contours = []
         
@@ -61,17 +47,6 @@ class Matcher:
             d =  0.5*(x-width/2)**2 + (y-height)**2 
             if not(h>15 and w >15 and d  < 120000):
                     continue
-            if contour_type =="DUCK_COLOR": # extra filtering to remove lines
-                if cv2.contourArea(cnt)==0:
-                    continue
-                val = cv2.arcLength(cnt,True)**2/ cv2.contourArea(cnt)
-                if val > 35: continue
-                rect = cv2.minAreaRect(cnt)
-                ctr, sides, deg = rect
-                val  = 0.5*cv2.arcLength(cnt,True) / (w**2+h**2)**0.5
-                if val < 1.12: continue
-                #if area > 1000: continue
-
             mask = np.zeros(thresh.shape,np.uint8)
             cv2.drawContours(mask,[cnt],0,255,-1)
             mean_val = cv2.mean(img,mask = mask)
@@ -97,15 +72,15 @@ class Matcher:
         cv2.rectangle(img, (4*width/5, 0) , (width,height), (0,0,0),thickness=-5)
 
         # get filtered contours
-        cone_contours = self.get_filtered_contours(img, "CONE")
-        duck_contours = self.get_filtered_contours(img, "DUCK_COLOR")
-        canny_contours = self.get_filtered_contours(img, "DUCK_CANNY")
-
-        all_contours = duck_contours + cone_contours +  canny_contours
-
+        stop1 = self.get_filtered_contours(img, "STOP1")
+        stop2 = self.get_filtered_contours(img, "STOP2")
+        line = self.get_filtered_contours(img, "LINE")
+        
+        all_contours = stop1 + stop2
         all_contours= sorted(all_contours,reverse=True, key=lambda x: x[0])
 
         i = 0
+        center = -1
         if len(all_contours) > 0:
             area, (cnt, box, ds, aspect_ratio, mean_color, area)  = all_contours[0]
                         
@@ -115,9 +90,26 @@ class Matcher:
             cv2.putText(img,"stop line", (x,y), font, 0.5,mean_color,4)
             cv2.rectangle(img,(x,y),(x+w,y+h), mean_color,2)
        
-            center =  (x + w ) /float(width)
-        else:
-            center = -1
+            #center =  (x + w ) /float(width)
+
+            test = x+w 
+
+        if len(all_contours)> 0 and len(line)> 0:
+            for area, (cnt, box, ds, aspect_ratio, mean_color, area) in  line:
+                 
+                # plot box around contour
+                x,y,w,h = box
+                font = cv2.FONT_HERSHEY_SIMPLEX
+                val = (test - x)/float(w)
+                if abs(val) > 0.75: continue
+
+                #cv2.putText(img,"%s" % val, (x,y), font, 1.0, (255)*3 ,4)
+                cv2.putText(img,"servo line", (x,y), font, 0.5,mean_color,4)
+                cv2.rectangle(img,(x,y),(x+w,y+h), mean_color,2)
+            
+                center =  (x + w ) /float(width)
+                break
+
         return img, center
 
 class StaticObjectDetectorNode:
@@ -127,12 +119,12 @@ class StaticObjectDetectorNode:
         self.tm = Matcher()
         self.active = False
         self.thread_lock = threading.Lock()
-        topic = "oreo/camera_node/image/compressed"
-        self.pub_ibvs = rospy.Publisher("~ibvs", Float32, queue_size=1)
+        self.turn_counter = TurnCounter()
 
-        self.sub_image = rospy.Subscriber(topic, CompressedImage, self.cbImage, queue_size=1)
-        self.pub_image = rospy.Publisher("~cone_detection_image", Image, queue_size=1)
-        self.pub_detections_list = rospy.Publisher("~detection_list", ObstacleImageDetectionList, queue_size=1)
+        self.pub_ibvs = rospy.Publisher("~ibvs", Float32, queue_size=1)
+        self.sub_image = rospy.Subscriber("~image_compressed", CompressedImage, self.cbImage, queue_size=1)
+        self.pub_image = rospy.Publisher("~servo_image", Image, queue_size=1)
+        self.pub_turns = rospy.Publisher("~turned", Bool, queue_size=1)
         self.bridge = CvBridge()
 
         rospy.loginfo("[%s] Initialized." %(self.name))
@@ -154,7 +146,11 @@ class StaticObjectDetectorNode:
         image_cv = cv2.imdecode(np_arr, cv2.IMREAD_COLOR) 
             
         img, center = self.tm.contour_match(image_cv)
-
+        crossing, turns = self.turn_counter.cbmsg(center)
+        if crossing:
+            # only trigger if it's been awhile
+            rospy.loginfo("Crossing.  %d turn" % turns)
+            self.pub_turns.publish(Bool(data=True))
         self.pub_ibvs.publish(Float32(data=center))
         
         height,width = img.shape[:2]

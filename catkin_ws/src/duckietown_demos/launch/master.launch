@@ -25,6 +25,8 @@
   <arg name="/camera/cam_info" default="true"/>
 
   <arg name="wheels" default="true"/>
+  <arg name="/wheels/forward_kinematics" default="false"/>
+  <arg name="/wheels/wheels_trim" default="true"/>
 
   <arg name="joystick" default="true"/>
 
@@ -116,11 +118,20 @@
   <!-- Start Wheels -->
   <group if="$(arg wheels)">
 
+    <!-- TODO when Robert says so this should switch to find dagu car -->
     <remap from="inverse_kinematics_node/car_cmd" to="car_cmd_switch_node/cmd"/> 
     <include file="$(find kinematics)/launch/inverse_kinematics_node.launch">
       <arg name="veh" value="$(arg veh)"/>
     </include>
    
+    <group if="/wheels/forward_kinematics">
+      <!-- TODO  remappings -->
+      <include file="$(find dagu_car)/launch/forward_kinematics_node.launch">
+	<arg name="veh" value="$(arg veh)"/>
+      </include>
+    </group>
+
+    <!-- When Robert says so the wheels trimmer should be gone - it is totally replaced by inverse kin. -->
     <group if="$(arg wheels_trim)">
       <!-- Wheels Trimmer -->
       <remap from="wheels_trimmer_node/wheels_cmd" to="inverse_kinematics_node/wheels_cmd"/>
@@ -129,7 +140,8 @@
         <arg name="config" value="$(arg config)"/>
         <arg name="param_file_name" value="$(arg param_file_name)"/>
       </include>
-    </group> 
+    </group>
+
     <!-- Wheel Driver -->
     <remap from="wheels_driver_node/wheels_cmd" to="wheels_trimmer_node/wheels_cmd" />
     <include file="$(find dagu_car)/launch/wheels_driver_node.launch">
@@ -515,7 +527,7 @@
     <remap from="lane_supervisor_node/wheels_control_joy" to="joy_mapper_node/car_cmd"/>
     <remap from="lane_supervisor_node/wheels_control_lane" to="lane_controller_node/car_cmd"/>
     <remap from="lane_supervisor_node/stop_line_reading" to="stop_line_filter_node/stop_line_reading"/>
-    <include file="$(find lane_control)/launch/lane_supervisor_node.launch">
+    <include file="$(find parallel_autonomy)/launch/lane_supervisor_node.launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="config" value="$(arg config)"/>
         <arg name="param_file_name" value="$(arg param_file_name)"/>        

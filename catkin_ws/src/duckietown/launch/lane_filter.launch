@@ -17,6 +17,7 @@
 
 	<!-- Lane Filter -->
 	<remap from="lane_filter_node/segment_list" to="ground_projection/lineseglist_out"/>
+    <remap from="lane_filter_node/velocity" to="forward_kinematics_node/velocity"/>
 	<include file="$(find lane_filter)/launch/lane_filter_node.launch">
 	    <arg name="veh" value="$(arg veh)"/>
 	    <arg name="local" value="$(arg local)"/>
@@ -40,6 +41,15 @@
 	<include file="$(find lane_filter)/launch/lane_pose_visualizer_node.launch">
 	    <arg name="veh" value="$(arg veh)"/>		
 	</include>
+
+    <!-- run forward_kinematics_node -->
+    <remap from="forward_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
+    <include file="$(find kinematics)/launch/forward_kinematics_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="local" value="$(arg local)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+    </include>
 
 
 </launch>	

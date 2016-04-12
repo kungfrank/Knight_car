@@ -4,6 +4,7 @@
   radius_l:     0.02
   radius_r:     0.02
   baseline_lr:  0.217
+
 #  fi_theta_dot_function_param: Duty_fi_linear_no_constant
 #  fi_v_function_param: Duty_fi_linear_no_constant
 #  theta_dot_weights_param: [-1, 1]

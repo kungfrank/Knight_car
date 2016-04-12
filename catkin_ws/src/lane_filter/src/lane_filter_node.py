@@ -4,8 +4,9 @@ import numpy as np
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 from std_msgs.msg import Float32
-from duckietown_msgs.msg import SegmentList, Segment, Pixel, LanePose, BoolStamped
+from duckietown_msgs.msg import SegmentList, Segment, Pixel, LanePose, BoolStamped, Twist2DStamped
 from scipy.stats import multivariate_normal, entropy
+from scipy.ndimage.filters import gaussian_filter
 from math import floor, atan2, pi, cos, sin, sqrt
 import time
 
@@ -29,26 +30,12 @@ class LaneFilterNode(object):
         self.phi_min     = self.setupParam("~phi_min",-pi/2)
         self.phi_max     = self.setupParam("~phi_max",pi/2)
 
-        #For distance weighting (dw) function
-        self.zero_val    = self.setupParam("~zero_val",1)
-        self.l_peak      = self.setupParam("~l_peak",1)
-        self.peak_val    = self.setupParam("~peak_val",10)
-        self.l_max       = self.setupParam("~l_max",2)
-        self.dwa = -(self.zero_val*self.l_peak**2 + self.zero_val*self.l_max**2 - self.l_max**2*self.peak_val - 2*self.zero_val*self.l_peak*self.l_max + 2*self.l_peak*self.l_max*self.peak_val)/(self.l_peak**2*self.l_max*(self.l_peak - self.l_max)**2)
-        self.dwb = (2*self.zero_val*self.l_peak**3 + self.zero_val*self.l_max**3 - self.l_max**3*self.peak_val - 3*self.zero_val*self.l_peak**2*self.l_max + 3*self.l_peak**2*self.l_max*self.peak_val)/(self.l_peak**2*self.l_max*(self.l_peak - self.l_max)**2)
-        self.dwc = -(self.zero_val*self.l_peak**3 + 2*self.zero_val*self.l_max**3 - 2*self.l_max**3*self.peak_val - 3*self.zero_val*self.l_peak*self.l_max**2 + 3*self.l_peak*self.l_max**2*self.peak_val)/(self.l_peak*self.l_max*(self.l_peak - self.l_max)**2)
-        # self.dwa = 0
-        # self.dwb = 0
-        # self.dwc = 0
-
         self.cov_v       = self.setupParam("~cov_v",0.5) # linear velocity "input"
         self.cov_omega   = self.setupParam("~cov_omega",0.01) # angular velocity "input"
         self.linewidth_white = self.setupParam("~linewidth_white",0.04)
         self.linewidth_yellow = self.setupParam("~linewidth_yellow",0.02)
         self.lanewidth        = self.setupParam("~lanewidth",0.4)
         self.min_max = self.setupParam("~min_max", 0.3) # nats
-        self.min_segs = self.setupParam("~min_segs", 10)
-        self.max_segment_dist = self.setupParam("~max_segment_dist",1.0)
 
         self.d,self.phi = np.mgrid[self.d_min:self.d_max:self.delta_d,self.phi_min:self.phi_max:self.delta_phi]
         self.beliefRV=np.empty(self.d.shape)
@@ -57,12 +44,47 @@ class LaneFilterNode(object):
         self.lanePose.d=self.mean_0[0]
         self.lanePose.phi=self.mean_0[1]
 
+        # For use of distance weighting (dw) function
+        self.use_distance_weighting = self.setupParam("~use_distance_weighting",False)
+        self.zero_val    = self.setupParam("~zero_val",1)
+        self.l_peak      = self.setupParam("~l_peak",1)
+        self.peak_val    = self.setupParam("~peak_val",10)
+        self.l_max       = self.setupParam("~l_max",2)
+        self.dwa = -(self.zero_val*self.l_peak**2 + self.zero_val*self.l_max**2 - self.l_max**2*self.peak_val - 2*self.zero_val*self.l_peak*self.l_max + 2*self.l_peak*self.l_max*self.peak_val)/(self.l_peak**2*self.l_max*(self.l_peak - self.l_max)**2)
+        self.dwb = (2*self.zero_val*self.l_peak**3 + self.zero_val*self.l_max**3 - self.l_max**3*self.peak_val - 3*self.zero_val*self.l_peak**2*self.l_max + 3*self.l_peak**2*self.l_max*self.peak_val)/(self.l_peak**2*self.l_max*(self.l_peak - self.l_max)**2)
+        self.dwc = -(self.zero_val*self.l_peak**3 + 2*self.zero_val*self.l_max**3 - 2*self.l_max**3*self.peak_val - 3*self.zero_val*self.l_peak*self.l_max**2 + 3*self.l_peak*self.l_max**2*self.peak_val)/(self.l_peak*self.l_max*(self.l_peak - self.l_max)**2)
+
+        # For use of maximum segment distance
+        self.use_max_segment_dist = self.setupParam("~use_max_segment_dist",False)
+        self.max_segment_dist = self.setupParam("~max_segment_dist",1.0)
+
+        # For use of minimum segment count
+        self.use_min_segs = self.setupParam("~use_min_segs",False)
+        self.min_segs = self.setupParam("~min_segs", 10)
+
+        # For propagation
+        self.use_propagation = self.setupParam("~use_propagation",False)
+        self.cov_mask = [self.setupParam("~sigma_d_mask",0.05) , self.setupParam("~sigma_phi_mask",0.05)]
+        self.t_last_update = rospy.get_time()
+        self.v_current = 0
+        self.w_current = 0
+        self.v_last = 0
+        self.w_last = 0
+        self.v_avg = 0
+        self.w_avg = 0
+
+        # Subscribers
+        if self.use_propagation:
+            self.sub_velocity = rospy.Subscriber("~velocity", Twist2DStamped, self.updateVelocity)
+        self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments, queue_size=1)
+
+        # Publishers
         self.pub_lane_pose  = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
         self.pub_belief_img = rospy.Publisher("~belief_img", Image, queue_size=1)
         self.pub_entropy    = rospy.Publisher("~entropy",Float32, queue_size=1)
+    	#self.pub_prop_img = rospy.Publisher("~prop_img", Image, queue_size=1)
         self.pub_in_lane    = rospy.Publisher("~in_lane",BoolStamped, queue_size=1)
         self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
-        self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments, queue_size=1)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -77,31 +99,47 @@ class LaneFilterNode(object):
         if not self.active:
             return
         t_start = rospy.get_time()
-        self.propagateBelief()
+
+        if self.use_propagation:
+            self.propagateBelief()
+            self.t_last_update = rospy.get_time()
+
         # initialize measurement likelihood
         measurement_likelihood = np.zeros(self.d.shape)
+
         for segment in segment_list_msg.segments:
             if segment.color != segment.WHITE and segment.color != segment.YELLOW:
                 continue
             if segment.points[0].x < 0 or segment.points[1].x < 0:
                 continue
-            if self.getSegmentDistance(segment) > self.max_segment_dist:
-                continue
 
             d_i,phi_i,l_i = self.generateVote(segment)
             if d_i > self.d_max or d_i < self.d_min or phi_i < self.phi_min or phi_i>self.phi_max:
                 continue
+            if self.use_max_segment_dist and (l_i > self.max_segment_dist):
+                continue
+
             i = floor((d_i - self.d_min)/self.delta_d)
             j = floor((phi_i - self.phi_min)/self.delta_phi)
-            dist_weight = self.dwa*l_i**3+self.dwb*l_i**2+self.dwc*l_i+self.zero_val # should be tested 
-            if dist_weight < 0:
-                continue
-            measurement_likelihood[i,j] = measurement_likelihood[i,j] + dist_weight
+
+            if self.use_distance_weighting:           
+                dist_weight = self.dwa*l_i**3+self.dwb*l_i**2+self.dwc*l_i+self.zero_val
+                if dist_weight < 0:
+                    continue
+                measurement_likelihood[i,j] = measurement_likelihood[i,j] + dist_weight
+            else:
+                measurement_likelihood[i,j] = measurement_likelihood[i,j] +  1/(l_i)
+
+
         if np.linalg.norm(measurement_likelihood) == 0:
             return
-        measurement_likelihood = measurement_likelihood/np.linalg.norm(measurement_likelihood)
-        #self.updateBelief(measurement_likelihood)
-        self.beliefRV = measurement_likelihood
+        measurement_likelihood = measurement_likelihood/np.sum(measurement_likelihood)
+
+        if self.use_propagation:
+            self.updateBelief(measurement_likelihood)
+        else:
+            self.beliefRV = measurement_likelihood
+
         # TODO entropy test:
         #print self.beliefRV.argmax()
 
@@ -116,16 +154,14 @@ class LaneFilterNode(object):
         belief_img = bridge.cv2_to_imgmsg((255*self.beliefRV).astype('uint8'), "mono8")
         belief_img.header.stamp = segment_list_msg.header.stamp
         
-
-
         max_val = self.beliefRV.max()
         self.lanePose.in_lane = max_val > self.min_max and len(segment_list_msg.segments) > self.min_segs and np.linalg.norm(self.measurement_likelihood) != 0
         self.pub_lane_pose.publish(self.lanePose)
         self.pub_belief_img.publish(belief_img)
+
         # print "time to process segments:"
         # print rospy.get_time() - t_start
-#        print ent
-        
+
         # Publish in_lane according to the ent
         in_lane_msg = BoolStamped()
         in_lane_msg.header.stamp = segment_list_msg.header.stamp
@@ -137,6 +173,16 @@ class LaneFilterNode(object):
         #     in_lane_msg.data = False
         self.pub_in_lane.publish(in_lane_msg)
 
+    def updateVelocity(self,twist_msg):
+        self.v_current = twist_msg.v
+        self.w_current = twist_msg.omega
+        
+        #self.v_avg = (self.v_current + self.v_last)/2.0
+        #self.w_avg = (self.w_current + self.w_last)/2.0
+
+        #self.v_last = v_current
+        #self.w_last = w_current
+
     def initializeBelief(self):
         pos = np.empty(self.d.shape + (2,))
         pos[:,:,0]=self.d
@@ -146,13 +192,38 @@ class LaneFilterNode(object):
         self.beliefRV=RV.pdf(pos)
 
     def propagateBelief(self):
-        # starting with option 1 (don't read linear and angular velocity)
-        # even simpler.. do nothing
+        delta_t = rospy.get_time() - self.t_last_update
+
+        d_t = self.d + self.v_current*delta_t*np.sin(self.phi)
+        phi_t = self.phi + self.w_current*delta_t
+
+        p_beliefRV = np.zeros(self.beliefRV.shape)
+
+        for i in range(self.beliefRV.shape[0]):
+            for j in range(self.beliefRV.shape[1]):
+                if self.beliefRV[i,j] > 0:
+                    if d_t[i,j] > self.d_max or d_t[i,j] < self.d_min or phi_t[i,j] < self.phi_min or phi_t[i,j] > self.phi_max:
+                        continue
+                    i_new = floor((d_t[i,j] - self.d_min)/self.delta_d)
+                    j_new = floor((phi_t[i,j] - self.phi_min)/self.delta_phi)
+                    p_beliefRV[i_new,j_new] += self.beliefRV[i,j]
+
+        s_beliefRV = np.zeros(self.beliefRV.shape)
+        gaussian_filter(100*p_beliefRV, self.cov_mask, output=s_beliefRV, mode='constant')
+
+        if np.sum(s_beliefRV) == 0:
+            return
+        self.beliefRV = s_beliefRV/np.sum(s_beliefRV)
+
+    	#bridge = CvBridge()
+        #prop_img = bridge.cv2_to_imgmsg((255*self.beliefRV).astype('uint8'), "mono8")
+        #self.pub_prop_img.publish(prop_img)
+                
         return
 
     def updateBelief(self,measurement_likelihood):
-        self.beliefRV=np.multiply(self.beliefRV,measurement_likelihood)
-        self.beliefRV=self.beliefRV/np.linalg.norm(self.beliefRV)
+        self.beliefRV=np.multiply(self.beliefRV+1,measurement_likelihood+1)-1
+        self.beliefRV=self.beliefRV/np.sum(self.beliefRV)#np.linalg.norm(self.beliefRV)
 
     def generateVote(self,segment):
         p1 = np.array([segment.points[0].x, segment.points[0].y])
@@ -177,6 +248,7 @@ class LaneFilterNode(object):
                 d_i = - d_i
                 phi_i = -phi_i
             d_i = d_i - self.lanewidth/2
+
         elif segment.color == segment.YELLOW: # left lane is yellow
             if (p2[0] > p1[0]): # left edge of yellow lane
                 d_i = d_i - self.linewidth_yellow
@@ -184,6 +256,7 @@ class LaneFilterNode(object):
             else: # right edge of white lane
                 d_i = -d_i
             d_i =  self.lanewidth/2 - d_i
+
         return d_i, phi_i, l_i
 
     def getSegmentDistance(self, segment):

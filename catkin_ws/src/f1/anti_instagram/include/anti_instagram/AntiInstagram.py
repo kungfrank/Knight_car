@@ -20,7 +20,7 @@ def calculate_transform(image):
 
 	if r[0][0] == 0.0:
 		# XXX: not sure what this is supposed to be 
-		return False, 0, None
+		return False, 0.0, None
 
 	scale = np.array([r[0][0][0],g[0][0][0],b[0][0][0]])
 	shift = np.array([r[1][0], g[1][0],b[1][0]])
@@ -30,7 +30,7 @@ def calculate_transform(image):
 	
 	parameters = dict(scale=scale, shift=shift)
 	
-	return True, health, parameters
+	return True, float(health), parameters
 
 class ScaleAndShift():
 	""" Represents the transformation """

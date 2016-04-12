@@ -11,11 +11,17 @@ __all__ = [
 
 # @contract(returns='list(str)', directory='str',
 #           pattern='str', followlinks='bool')
-def locate_files(directory, pattern, followlinks=True):
+def locate_files(directory, pattern, followlinks=True, alsodirs=False):
     # print('locate_files %r %r' % (directory, pattern))
     filenames = []
 
-    for root, _, files in os.walk(directory, followlinks=followlinks):
+    for root, dirs, files in os.walk(directory, followlinks=followlinks):
+        if alsodirs:
+            for f in dirs:
+                if fnmatch.fnmatch(f, pattern):
+                    filename = os.path.join(root, f)
+                    filenames.append(filename)
+
         for f in files:
             if fnmatch.fnmatch(f, pattern):
                 filename = os.path.join(root, f)

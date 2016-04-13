@@ -6,7 +6,7 @@
 	<arg name="fsm_file_name" default="default" />
 	<arg name="visualization" default="true" />
 	<arg name="verbose" default="true" />
-
+	<arg name="statistics" default="true"/>
 	<!-- end basic args -->
  
 <!-- the things that are "on" by default: 
@@ -84,6 +84,8 @@
 	<arg name="anti_instagram" default="false"/>
 	<!-- end switch args -->
 	
+	<!-- Enable statistics -->
+	<param name="enable_statistics" value="$(arg statistics)"/>
 
 	<!-- Start Camera -->  
 	<group if="$(arg camera)">

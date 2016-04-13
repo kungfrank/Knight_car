@@ -10,12 +10,12 @@ import math
 class StopLineFilterNode(object):
     def __init__(self):
         self.node_name = "Stop Line Filter"
-
+        self.active = True
         ## state vars
         self.lane_pose = LanePose()
 
         ## params
-        self.stop_distance = self.setupParam("~stop_distance", 0.02) # distance from the stop line that we should stop 
+        self.stop_distance = self.setupParam("~stop_distance", 0.2) # distance from the stop line that we should stop 
         self.min_segs      = self.setupParam("~min_segs", 2) # minimum number of red segments that we should detect to estimate a stop
         self.lanewidth = 0 # updated continuously below
 
@@ -40,10 +40,15 @@ class StopLineFilterNode(object):
         self.stop_distance = rospy.get_param("~stop_distance")
         self.min_segs      = rospy.get_param("~min_segs")
 
+    def cbSwitch(self, switch_msg):
+        self.active = switch_msg.data
+
     def processLanePose(self, lane_pose_msg):
         self.lane_pose = lane_pose_msg
 
     def processSegments(self, segment_list_msg):
+        if not self.active:
+            return
         good_seg_count=0
         stop_line_x_accumulator=0.0
         stop_line_y_accumulator=0.0

@@ -3,13 +3,14 @@ import rospy
 import time
 from led_detection.LEDDetector import LEDDetector
 from std_msgs.msg import Byte
-from duckietown_msgs.msg import Vector2D, LEDDetection, LEDDetectionArray, LEDDetectionDebugInfo
+from duckietown_msgs.msg import Vector2D, LEDDetection, LEDDetectionArray, LEDDetectionDebugInfo, BoolStamped
 from sensor_msgs.msg import CompressedImage
 from duckietown_utils.bag_logs import numpy_from_ros_compressed
 import numpy as np
 
 class LEDDetectorNode(object):
     def __init__(self):
+        self.active = True
         self.first_timestamp = -1 # won't start unless it's None
         self.data = []
         self.capture_time = 1.0 # capture time
@@ -35,9 +36,15 @@ class LEDDetectorNode(object):
         rospy.loginfo('Vehicle: %s'%self.veh_name)
         self.sub_cam = rospy.Subscriber("camera_node/image/compressed",CompressedImage, self.camera_callback)
         self.sub_cam = rospy.Subscriber("~trigger",Byte, self.trigger_callback)
+        self.sub_switch = rospy.Subscrier("~switch",BoolStamped,self.cbSwitch)
         print('Waiting for camera image...')
 
+    def cbSwitch(self, switch_msg):
+        self.active = switch_msg.data
+
     def camera_callback(self, msg):
+        if not self.active:
+            return
         float_time = msg.header.stamp.to_sec()
         debug_msg = LEDDetectionDebugInfo()
 

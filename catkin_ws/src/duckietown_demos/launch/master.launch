@@ -21,10 +21,12 @@
 
   <!-- start switch args -->
   <arg name="camera" default="true"/>
-  <arg name="/camera/raw" default="true"/>
+  <arg name="/camera/raw" default="false"/>
   <arg name="/camera/cam_info" default="true"/>
 
   <arg name="wheels" default="true"/>
+  <arg name="/wheels/forward_kinematics" default="false"/>
+  <arg name="/wheels/wheels_trim" default="true"/>
 
   <arg name="joystick" default="true"/>
 
@@ -115,17 +117,50 @@
 
   <!-- Start Wheels -->
   <group if="$(arg wheels)">
+
+    <remap from="inverse_kinematics_node/car_cmd" to="car_cmd_switch_node/cmd"/>
+    <include file="$(find dagu_car)/launch/inverse_kinematics_node.launch">
+      <arg name="veh" value="$(arg veh)"/>
+    </include>
+
+
+      <!-- TODO  move this group to odometry?? -->
+    <group if="$(arg /wheels/forward_kinematics)">
+        <!-- TODO  remappings -->
+        <remap from="forward_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd_executed" />
+        <include file="$(find dagu_car)/launch/forward_kinematics_node.launch">
+	        <arg name="veh" value="$(arg veh)"/>
+        </include>
+        <!-- run the velocity_to_pose_node -->
+        <remap from="velocity_to_pose_node/velocity" to="forward_kinematics_node/velocity" />
+        <include file="$(find dagu_car)/launch/velocity_to_pose_node.launch">
+            <arg name="veh" value="$(arg veh)"/>
+            <arg name="local" value="$(arg local)"/>
+            <arg name="config" value="$(arg config)"/>
+            <arg name="param_file_name" value="$(arg param_file_name)"/>
+        </include>
+    </group>
+
+    <!-- When Robert says so the wheels trimmer should be gone - it is totally replaced by inverse kin. -->
+    <group if="$(arg /wheels/wheels_trim)">
+      <!-- Wheels Trimmer -->
+      <remap from="wheels_trimmer_node/wheels_cmd" to="inverse_kinematics_node/wheels_cmd"/>
+      <include file="$(find dagu_car)/launch/wheels_trimmer_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+      </include>
+    </group>
+
     <!-- Wheel Driver -->
-    <remap from="wheels_driver_node/wheels_cmd" to="inverse_kinematics_node/wheels_cmd" />
+    <remap from="wheels_driver_node/wheels_cmd" to="wheels_trimmer_node/trimmed_wheels_cmd" />
     <include file="$(find dagu_car)/launch/wheels_driver_node.launch">
       <arg name="veh" value="$(arg veh)"/>
     </include>
 
-    <remap from="inverse_kinematics_node/car_cmd" to="car_cmd_switch_node/cmd"/> 
-    <include file="$(find kinematics)/launch/inverse_kinematics_node.launch">
-      <arg name="veh" value="$(arg veh)"/>
-    </include>
+   
   </group>
+
   <!-- End Wheels -->
 
   <!-- Start Joystick -->
@@ -399,6 +434,7 @@
       </include>
     </group>
 
+    <!-- TODO do we need some remappings here? -->
     <group if="$(arg /LED/interpreter)">
       <include file="$(find led_interpreter)/launch/led_interpreter_node.launch">
 	<arg name="veh" value="$(arg veh)"/>
@@ -501,7 +537,7 @@
     <remap from="lane_supervisor_node/wheels_control_joy" to="joy_mapper_node/car_cmd"/>
     <remap from="lane_supervisor_node/wheels_control_lane" to="lane_controller_node/car_cmd"/>
     <remap from="lane_supervisor_node/stop_line_reading" to="stop_line_filter_node/stop_line_reading"/>
-    <include file="$(find lane_control)/launch/lane_supervisor_node.launch">
+    <include file="$(find parallel_autonomy)/launch/lane_supervisor_node.launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="config" value="$(arg config)"/>
         <arg name="param_file_name" value="$(arg param_file_name)"/>        

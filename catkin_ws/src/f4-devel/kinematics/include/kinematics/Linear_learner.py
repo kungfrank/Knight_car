@@ -6,6 +6,8 @@ from numpy import *
 import csv
 from Duty_fi_function import *
 from scipy.linalg import solve
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 
 class Linear_learner(object):
@@ -48,6 +50,16 @@ class Linear_learner(object):
         
         # compute theta_dot
         theta_dot = theta_angle_pose_delta/dt
+
+        # x = d_L + d_R
+        # y = theta_dot
+        # fig = plt.figure()
+        # ax = fig.add_subplot(111)
+        # ax.set_xlabel('Duty cycle', fontsize=16, fontweight='bold')
+        # ax.set_ylabel('theta_dot', fontsize=16, fontweight='bold')
+        # plt.scatter(x, y)
+        # plt.show(block=False)
+
         
         # compute features for theta_dot
         Fi_theta_dot = self.fi_theta_dot_function.computeFi(d_L, d_R)
@@ -79,6 +91,18 @@ class Linear_learner(object):
         r = c/(2*sin(abs_theta_angle_pose_delta/2))
         s = abs_theta_angle_pose_delta*r
         v = s/dt
+
+        # x = d_L + d_R
+        # y = v
+        # fig = plt.figure()
+        # ax = fig.add_subplot(111, projection='3d')
+        # #fig = plt.figure()
+        # #ax = fig.add_subplot(111)
+        # ax.set_xlabel('d_L', fontsize=16, fontweight='bold')
+        # ax.set_ylabel('d_R', fontsize=16, fontweight='bold')
+        # ax.set_zlabel('v', fontsize=16, fontweight='bold')
+        # plt.scatter(d_L, d_R, y)
+        # plt.show(block=False)
 
         # compute features for v
         Fi_v = self.fi_v_function.computeFi(d_L, d_R)

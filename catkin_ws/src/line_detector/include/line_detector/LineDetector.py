@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import sys
-import time
+
 
 class LineDetector(object):
     def __init__(self):
@@ -38,9 +38,9 @@ class LineDetector(object):
             bw2 = cv2.inRange(self.hsv, self.hsv_red3, self.hsv_red4)
             bw = cv2.bitwise_or(bw1, bw2)
         else:
-	        raise Exception('Error: Undefined color strings...')
+            raise Exception('Error: Undefined color strings...')
 
-		# binary dilation
+        # binary dilation
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(self.dilation_kernel_size, self.dilation_kernel_size))
         bw = cv2.dilate(bw, kernel)
         
@@ -143,7 +143,7 @@ class LineDetector(object):
                 cv2.circle(self.bgr, (x4,y4), 3, (0,0,255))
 
     def getColorPixels(self, color):
-        bw, edge_color = self.__colorFilter(color)
+        bw, _edge_color = self.__colorFilter(color)
         return bw
 
 def _main():

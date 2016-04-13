@@ -45,7 +45,9 @@ class FSMNode(object):
         self.event_trigger_dict = dict()
         for event_name, event_dict in param_events_dict.items():
             topic_name = event_dict["topic"]
+            msg_type = event_dict["msg_type"]
             self.event_trigger_dict[event_name] = event_dict["trigger"]
+# TODO so far I can't figure out how to put msg_type instead of BoolStamped. 
             self.sub_list.append(rospy.Subscriber("%s"%(topic_name), BoolStamped, self.cbEvent, callback_args=event_name))
 
         rospy.loginfo("[%s] Initialized." %self.node_name)
@@ -55,10 +57,14 @@ class FSMNode(object):
     def validateEvents(self,events_dict):
         pass_flag = True
         for event_name, event_dict in events_dict.items():
+            print 
             if "topic" not in event_dict:
                 rospy.logerr("[%s] Event %s missing topic definition." %(self.node_name,event_name))
                 pass_flag = False
-            if "trigger" not in events_dict:
+            if "msg_type" not in event_dict:
+                rospy.logerr("[%s] Event %s missing topic definition." %(self.node_name,event_name))
+                pass_flag = False
+            if "trigger" not in event_dict:
                 rospy.logerr("[%s] Event %s missing trigger definition." %(self.node_name,event_name))
                 pass_flag = False
         return pass_flag

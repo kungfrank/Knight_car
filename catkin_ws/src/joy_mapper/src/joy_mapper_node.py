@@ -68,12 +68,12 @@ class JoyMapper(object):
             parallel_autonomy_msg = BoolStamped()
             parallel_autonomy_msg.header.stamp = self.joy.header.stamp
             parallel_autonomy_msg.data = True
-            self.pub_parallel_autonomy_msg(parallel_autonomy_msg)
+            self.pub_parallel_autonomy.publish(parallel_autonomy_msg)
         elif (joy_msg.buttons[4] == 1):
             parallel_autonomy_msg = BoolStamped()
             parallel_autonomy_msg.header.stamp = self.joy.header.stamp
             parallel_autonomy_msg.data = False
-            self.pub_parallel_autonomy_msg(parallel_autonomy_msg)
+            self.pub_parallel_autonomy.publish(parallel_autonomy_msg)
 
 if __name__ == "__main__":
     rospy.init_node("joy_mapper",anonymous=False)

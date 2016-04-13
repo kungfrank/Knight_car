@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from copy import deepcopy
 from cv_bridge import CvBridge, CvBridgeError
-from duckietown_msgs.msg import VehicleCorners
+from duckietown_msgs.msg import VehicleCorners, BoolStamped
 from geometry_msgs.msg import Point32
 from mutex import mutex
 from sensor_msgs.msg import CompressedImage, Image
@@ -20,6 +20,7 @@ class VehicleDetectionNode(object):
 	def __init__(self):
 		self.node_name = "Vehicle Detection"
 		self.bridge = CvBridge()
+                self.active = True
 		self.config	= self.setupParam("~config", "baseline")
 		self.cali_file_name = self.setupParam("~cali_file_name", "default")
 		rospack = rospkg.RosPack()
@@ -33,6 +34,8 @@ class VehicleDetectionNode(object):
 		self.loadConfig(self.cali_file)
 		self.sub_image = rospy.Subscriber("~image", CompressedImage, 
 				self.cbImage, queue_size=1)
+                self.sub_switch = rospy.Subscriber("~switch", BoolStamped,
+                                                   cbSwitch, queue_size=1)
 		self.pub_corners = rospy.Publisher("~corners", 
 				VehicleCorners, queue_size=1)
 		self.pub_circlepattern_image = rospy.Publisher("~circlepattern_image", 
@@ -62,7 +65,12 @@ class VehicleDetectionNode(object):
 		rospy.loginfo('[%s] blobdetector_min_dist_between_blobs: %.2f' % (self.node_name, 
 				self.blobdetector_min_dist_between_blobs))
 
+        def cbSwitch(self, switch_msg):
+                self.active = switch_msg.data
+
 	def cbImage(self, image_msg):
+                if not self.active:
+                        return
 		# Start a daemon thread to process the image
 		thread = threading.Thread(target=self.processImage,args=(image_msg,))
 		thread.setDaemon(True)

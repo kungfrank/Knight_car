@@ -113,8 +113,8 @@ class InverseKinematicsNode(object):
 
     def car_cmd_callback(self, msg_car_cmd):
         # compute duty cycle gain
-        k_l = self.gain - self.trim
-        k_r = self.gain + self.trim
+        k_l = 1/(self.gain - self.trim)
+        k_r = 1/(self.gain + self.trim)
         
         # conversion from linear and angular velocities to motor rotation rate
         omega_r = (msg_car_cmd.v + 0.5 * msg_car_cmd.omega * self.baseline) / self.radius

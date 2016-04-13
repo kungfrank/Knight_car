@@ -30,11 +30,17 @@ def rgb_from_jpg_by_PIL(data):
 # third option: jpeg library
 import StringIO
 
-# sudo apt-get install libturbojpeg
-# sudo apt-get install python-cffi
-# sudo pip install jpeg4py
+try:
+    import jpeg4py as jpeg
+except ImportError as e:
+    installation = """
+sudo apt-get install -y libturbojpeg  python-cffi
+sudo pip install jpeg4py
+"""
+    logger.error(installation)
+    raise
 
-import jpeg4py as jpeg
+
 
 def rgb_from_jpg_by_JPEG_library(data):
     jpg_data = np.fromstring(data, dtype=np.uint8)

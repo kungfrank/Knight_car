@@ -23,12 +23,15 @@ class InverseKinematicsNode(object):
 
     def car_cmd_callback(self, msg_car_cmd):
         # conversion from linear and angular velocities to motor rotation rate
-        omega_r = (msg_car_cmd.v + 0.5 * msg_car_cmd.omega * self.baseline) / self.radius_r
-        omega_l = (msg_car_cmd.v - 0.5 * msg_car_cmd.omega * self.baseline) / self.radius_l
+        #omega_r = (msg_car_cmd.v + 0.5 * msg_car_cmd.omega * self.baseline) / self.radius_r
+        #omega_l = (msg_car_cmd.v - 0.5 * msg_car_cmd.omega * self.baseline) / self.radius_l
 
         # conversion from motor rotation rate to duty cycle
-        u_r = omega_r / self.k_r
-        u_l = omega_l / self.k_l
+        #u_r = omega_r / self.k_r
+        #u_l = omega_l / self.k_l
+
+        u_r = msg_car_cmd.v + msg_car_cmd.omega
+        u_l = msg_car_cmd.v - msg_car_cmd.omega
 
         # Put the wheel commands in a message and publish
         msg_wheels_cmd = WheelsCmdStamped()

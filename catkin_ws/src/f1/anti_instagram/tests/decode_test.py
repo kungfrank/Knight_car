@@ -14,8 +14,11 @@ def setup():
     with open(get_test_image(), 'rb') as f:
         return f.read()
 
-def decode1(data):
+def decode_cv_orig(data):
     return image_cv_from_jpg(data)
+#
+# def decode_cv_buf(data):
+#     return image_cv_from_jpg_buf(data)
 
 def decode2(data):
     return rgb_from_jpg_by_PIL(data)
@@ -23,6 +26,12 @@ def decode2(data):
 def decode3(data):
     return rgb_from_jpg_by_JPEG_library(data)
 
+import numpy as np
+def create_empty_image(data):
+    r = np.zeros((480, 640, 3), np.uint8)
+    return r
+#     cv.CreateImage(cv.GetSize(src), cv.IPL_DEPTH_8U, 1).
+    
 def wrap(method, data):
     res = method(data)
     # print('%s returned %s' % (method.__name__, res.shape))
@@ -32,7 +41,9 @@ if __name__ == '__main__':
     import platform
     proc = platform.processor()
 
-    methods = ['decode1', 'decode2', 'decode3']
+    methods = ['decode_cv_orig',  # 'decode_cv_buf',
+
+                'decode2', 'decode3', 'create_empty_image']
     for m in methods:
         tn = timeit.timeit(stmt='from __main__ import %s, wrap; wrap(%s, data)' % (m, m),
                        setup='from __main__ import setup; data=setup()',

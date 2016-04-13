@@ -3,12 +3,26 @@ import numpy as np
 from duckietown_utils import logger
 #from PIL import Image as pimg
 
-
-
 def image_cv_from_jpg(data):
-    """ Returns an OpenCV image from a string """
-    image_cv = cv2.imdecode(np.fromstring(data, np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
+    """ Returns an OpenCV BGR image from a string """
+    s = np.fromstring(data, np.uint8)
+    image_cv = cv2.imdecode(s, cv2.CV_LOAD_IMAGE_COLOR)
     return image_cv
+
+# class Storage:
+#     dst = None
+# 
+# def image_cv_from_jpg_buf(data):
+#     pass
+#     """ Returns an OpenCV BGR image from a string """
+#     s = np.fromstring(data, np.uint8)
+#     if Storage.dst is not None:
+#         image_cv = cv2.imdecode(s, cv2.CV_LOAD_IMAGE_COLOR, dst=Storage.dst)
+#     else:
+#         image_cv = cv2.imdecode(s, cv2.CV_LOAD_IMAGE_COLOR)
+#     Storage.dst = image_cv
+#     return image_cv
+
 
 def image_cv_from_jpg_fn(fn):
     with open(fn) as f:
@@ -21,6 +35,7 @@ def image_cv_from_jpg_fn(fn):
 import numpy as np
 from PIL import ImageFile  # @UnresolvedImport
 def rgb_from_jpg_by_PIL(data):
+    """ Warning: this returns RGB """
     parser = ImageFile.Parser()
     parser.feed(data)
     res = parser.close() 

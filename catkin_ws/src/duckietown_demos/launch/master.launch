@@ -115,17 +115,30 @@
 
   <!-- Start Wheels -->
   <group if="$(arg wheels)">
-    <!-- Wheel Driver -->
-    <remap from="wheels_driver_node/wheels_cmd" to="inverse_kinematics_node/wheels_cmd" />
-    <include file="$(find dagu_car)/launch/wheels_driver_node.launch">
-      <arg name="veh" value="$(arg veh)"/>
-    </include>
 
     <remap from="inverse_kinematics_node/car_cmd" to="car_cmd_switch_node/cmd"/> 
     <include file="$(find kinematics)/launch/inverse_kinematics_node.launch">
       <arg name="veh" value="$(arg veh)"/>
     </include>
+   
+    <group if="$(arg wheels_trim)">
+      <!-- Wheels Trimmer -->
+      <remap from="wheels_trimmer_node/wheels_cmd" to="inverse_kinematics_node/wheels_cmd"/>
+      <include file="$(find dagu_car)/launch/wheels_trimmer_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+      </include>
+    </group> 
+    <!-- Wheel Driver -->
+    <remap from="wheels_driver_node/wheels_cmd" to="wheels_trimmer_node/wheels_cmd" />
+    <include file="$(find dagu_car)/launch/wheels_driver_node.launch">
+      <arg name="veh" value="$(arg veh)"/>
+    </include>
+
+   
   </group>
+
   <!-- End Wheels -->
 
   <!-- Start Joystick -->
@@ -399,6 +412,7 @@
       </include>
     </group>
 
+    <!-- TODO do we need some remappings here? -->
     <group if="$(arg /LED/interpreter)">
       <include file="$(find led_interpreter)/launch/led_interpreter_node.launch">
 	<arg name="veh" value="$(arg veh)"/>

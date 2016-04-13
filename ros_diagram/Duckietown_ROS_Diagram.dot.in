@@ -113,6 +113,7 @@ digraph D {
 	subgraph cluster_f23 {
 		!FEATURE!
 		label="F2-3: LED Detection";
+
 		LED_detector_node    [!NODE:development!, label="led_detection\nLED_detector_node"   ];
 		LED_interpreter_node [!NODE:missing!, label="led_interpreter\nLED_interpreter_node"];
 		LED_joy_mapper_node    [!NODE:development!, label="led_joy_mapper\nled_joy_mapper_node"   ];

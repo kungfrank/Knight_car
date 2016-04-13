@@ -1,6 +1,4 @@
-import pydot_ng as pydot
-import networkx as nx
-import matplotlib.pyplot as plt
+import graphviz
 import os
 
 class NodeNotInGraph(Exception):
@@ -72,76 +70,46 @@ class Graph(object):
     def node_edges(self, node):
         if not node in self:
             raise NodeNotInGraph(node)
-        return self._edges.get(node, set())
+        return self._edges.get(node, set())        
 
-    def draw(self, highlight_edges=None, show_weights=False, save_draw=False, map_name = 'duckietown_map'):
-        plt.close('all')
-        nxg = nx.DiGraph()
-        edges = [(e.source, e.target, {'weight':e.weight, 'inv_weight':1.0/e.weight, 'action':e.action}) for node_set in self._edges.values() for e in node_set]
-        nxg.add_edges_from(edges)
-        if len(self.node_positions) < len(self._nodes):
-            # Calculate positions for nodes whose pos is not specified.
-            pos = nx.spring_layout(nxg, weight='inv_weight', pos=self.node_positions, fixed=self.node_positions.keys() if self.node_positions else None)
-        else:
-            pos = self.node_positions
-        
-        f = plt.figure(figsize=(12,20))
-        plt.gca().set_aspect('auto')
-        nx.draw_networkx_nodes(nxg, pos, node_color='w')
-        nx.draw_networkx_edges(nxg, pos, edges)
-        nx.draw_networkx_labels(nxg, pos)
-        if show_weights:
-            edge_labels=dict([((u,v,),"%s" % (d['weight'])) for u,v,d in nxg.edges(data=True)])
-            nx.draw_networkx_edge_labels(nxg, pos, edge_labels=edge_labels)
+    def draw(self, highlight_edges=None, show_weights=None, map_name = 'duckietown', highlight_nodes = None):
+        if highlight_nodes:        
+            start_node = highlight_nodes[0]
+            target_node = highlight_nodes[1]        
 
-        if highlight_edges:
-            nx.draw_networkx_edges(nxg, pos, highlight_edges, edge_color='r')
-        plt.axis('off')
-        if not save_draw:
-            plt.show()
-        else:
-            script_dir = os.path.dirname(__file__)
-            map_path = script_dir + '/maps/' + map_name + '.png'
-            plt.savefig(map_path)
-        
-    def draw_edges(self, edges):
-        # print edges
-        nx.draw_networkx_edges(nxg, pos, edges, edge_color='r')
-        reduced_labels = {(u,v): edge_labels[(u,v)] for u,v,_ in edges}
-        nx.draw_networkx_edge_labels(nxg, pos, edge_labels=reduced_labels, font_color='r')
-        
-        reduced_nodes = set([u for u,_,_ in edges])
-        reduced_nodes.update([v for _,v,_ in edges])
-        # nx.draw_networkx_nodes(nxg, pos, nodelist=reduced_nodes,  node_color='r')
-        red_labels = {n:n for n in reduced_nodes}
-        print red_labels
-        nx.draw_networkx_labels(nxg, pos, labels=red_labels, font_color='r')
+        g = graphviz.Digraph(name="duckietown", engine="neato")
+        g.edge_attr.update(fontsize = '8', arrowsize = '0.4', arrowhead = 'open')
+        g.node_attr.update(shape="circle", fontsize='10',margin="0", height='0')
+        #g.graph_attr.update(ratio = '0.7', inputscale = '1.3')
 
-    def highlight_edges(self, edges):
-        nx.draw_networkx_edges(nxg, pos, edges, edge_color='r')
-        reduced_labels = {(u,v): edge_labels[(u,v)] for u,v,_ in edges}
-        nx.draw_networkx_edge_labels(nxg, pos, edge_labels=reduced_labels, font_color='r')
-        
-        reduced_nodes = set([u for u,_,_ in edges])
-        reduced_nodes.update([v for _,v,_ in edges])
-        # nx.draw_networkx_nodes(nxg, pos, nodelist=reduced_nodes,  node_color='r')
-        red_labels = {n:n for n in reduced_nodes}
-        print red_labels
-        nx.draw_networkx_labels(nxg, pos, labels=red_labels, font_color='r')
-
-    def _create_dot_graph(self):
-        dot_graph = pydot.Dot(graph_type='digraph', concentrate=True, rankdir="LR")
-        dot_graph.set_node_defaults(shape='rect', fontsize=12)
-        for n in self._nodes:
-            node_name = self.node_label_fn(n)
-            node = pydot.Node(shape="ellipse", name=node_name)
-            if n in self.node_positions:
-                node.set_pos("%d,%d!" % (self.node_positions[n][0], self.node_positions[n][1]))
-            dot_graph.add_node(node)
+        for node in self._nodes:
+            node_name = self.node_label_fn(node)
+            node_pos = "%f,%f!" % (self.node_positions[node][0], self.node_positions[node][1])
+            if highlight_nodes and node == target_node:
+                g.node(name=node_name, pos=node_pos, color='green')
+            elif highlight_nodes and node == start_node:
+                g.node(name=node_name, pos=node_pos, color='blue')
+            elif len(node_name) == 2:
+                g.node(name=node_name, pos=node_pos)
+            elif len(node_name) == 3:
+                g.node(name=node_name, pos=node_pos, fixedsize='true', width='0', height='0', style='invis', label="")
         for src_node, edges in self._edges.items():
             for e in edges:
-                dot_graph.add_edge(pydot.Edge(self.node_label_fn(src_node), self.node_label_fn(e.target), label=e.weight if e.weight!=1.0 else ""))
-        return dot_graph
-
-    def _repr_svg_(self):
-        return self._create_dot_graph().create_svg()
+                if show_weights:
+                    t = str(e.weight)
+                else:
+                    t = ""
+                    
+                if highlight_edges and (self.node_label_fn(src_node), self.node_label_fn(e.target)) in highlight_edges:
+                    c = 'red'
+                else:
+                    c  = 'black'
+                    
+                g.edge(self.node_label_fn(src_node), self.node_label_fn(e.target), taillabel=t , color = c)
+        
+        script_dir = os.path.dirname(__file__)
+        map_path = script_dir + '/maps/'
+        g.format = 'png'
+        g.render(filename=map_name, directory=map_path, view=False, cleanup=True)
+        
+      

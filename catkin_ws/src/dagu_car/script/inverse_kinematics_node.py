@@ -27,11 +27,13 @@ class InverseKinematicsNode(object):
         self.trim = self.setup_parameter("~trim", 0.0)
         self.baseline = self.setup_parameter("~baseline", 0.1)
         self.radius = self.setup_parameter("~radius", 0.0318)
+        self.limit = self.setup_parameter("~limit", 1.0)
 
         # Prepare services
         self.srv_set_gain = rospy.Service("~set_gain", SetValue, self.cbSrvSetGain)
         self.srv_set_trim = rospy.Service("~set_trim", SetValue, self.cbSrvSetTrim)
         self.srv_set_baseline = rospy.Service("~set_baseline", SetValue, self.cbSrvSetBaseline)
+        self.srv_set_limit = rospy.Service("~set_limit", SetValue, self.cbSrvSetLimit)
         self.srv_save = rospy.Service("~save_calibration", Empty, self.cbSrvSaveCalibration)
 
         # Setup the publisher and subscriber
@@ -60,7 +62,7 @@ class InverseKinematicsNode(object):
         if yaml_dict is None:
             # Empty yaml file
             return
-        for param_name in ["gain","trim","baseline","radius"]:
+        for param_name in ["gain", "trim", "baseline", "radius", "limit"]:
             param_value = yaml_dict.get(param_name)
             if param_name is not None:
                 rospy.set_param("~"+param_name, param_value)
@@ -68,7 +70,7 @@ class InverseKinematicsNode(object):
                 # Skip if not defined, use default value instead.
                 pass
 
-    def getFilePath(self,name):
+    def getFilePath(self, name):
         rospack = rospkg.RosPack()
         return rospack.get_path('duckietown')+'/config/baseline/calibration/kinematics/' + name + ".yaml"        
 
@@ -80,6 +82,7 @@ class InverseKinematicsNode(object):
             "trim": self.trim,
             "baseline": self.baseline,
             "radius": self.radius,
+            "limit": self.limit,
         }
 
         # Write to file
@@ -90,27 +93,32 @@ class InverseKinematicsNode(object):
         self.printValues()
         rospy.loginfo("[%s] Saved to %s" %(self.node_name,file_name))
 
-    def cbSrvSaveCalibration(self,req):
+    def cbSrvSaveCalibration(self, req):
         self.saveCalibration()
         return EmptyResponse()
 
-    def cbSrvSetGain(self,req):
+    def cbSrvSetGain(self, req):
         self.gain = req.value
         self.printValues()
         return SetValueResponse()
 
-    def cbSrvSetTrim(self,req):
+    def cbSrvSetTrim(self, req):
         self.trim = req.value
         self.printValues()
         return SetValueResponse()
 
-    def cbSrvSetBaseline(self,req):
+    def cbSrvSetBaseline(self, req):
         self.baseline = req.value
         self.printValues()
         return SetValueResponse()
 
+    def cbSrvSetLimit(self, req):
+        self.limit = req.value
+        self.printValues()
+        return SetValueResponse()
+
     def printValues(self):
-        rospy.loginfo("[%s] gain: %s trim: %s baseline: %s" %(self.node_name,self.gain,self.trim,self.baseline))
+        rospy.loginfo("[%s] gain: %s trim: %s baseline: %s limit: %s" % (self.node_name, self.gain, self.trim, self.baseline, self.limit))
 
     def car_cmd_callback(self, msg_car_cmd):
         # compute duty cycle gain
@@ -127,11 +135,15 @@ class InverseKinematicsNode(object):
         u_r = omega_r * k_r_inv
         u_l = omega_l * k_l_inv
 
+        # clipping to limit output velocity
+        u_r_limited = max(min(u_r, self.limit), -self.limit)
+        u_l_limited = max(min(u_l, self.limit), -self.limit)
+
         # Put the wheel commands in a message and publish
         msg_wheels_cmd = WheelsCmdStamped()
         msg_wheels_cmd.header.stamp = msg_car_cmd.header.stamp
-        msg_wheels_cmd.vel_right = u_r
-        msg_wheels_cmd.vel_left = u_l
+        msg_wheels_cmd.vel_right = u_r_limited
+        msg_wheels_cmd.vel_left = u_l_limited
         self.pub_wheels_cmd.publish(msg_wheels_cmd)
 
     def setup_parameter(self, param_name, default_value):

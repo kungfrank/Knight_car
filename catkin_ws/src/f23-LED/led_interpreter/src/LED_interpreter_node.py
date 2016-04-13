@@ -50,7 +50,7 @@ class LEDInterpreterNode(object):
 	#task of this is to check on what type of intersection we are
 		self.trafficLightIntersection = False
 		for info in msg.infos:
-			if info.traffic_sign_type == traffic_light_ahead:
+			if info.traffic_sign_type == info.TRAFFIC_LIGHT_AHEAD: #TODO put correct constant
 				self.trafficLightIntersection = True
 			
 

@@ -28,6 +28,8 @@ class InverseKinematicsNode(object):
         self.baseline = self.setup_parameter("~baseline", 0.1)
         self.radius = self.setup_parameter("~radius", 0.0318)
         self.limit = self.setup_parameter("~limit", 1.0)
+        self.limit_max = 1.0
+        self.limit_min = 0.0
 
         # Prepare services
         self.srv_set_gain = rospy.Service("~set_gain", SetValue, self.cbSrvSetGain)
@@ -113,9 +115,20 @@ class InverseKinematicsNode(object):
         return SetValueResponse()
 
     def cbSrvSetLimit(self, req):
-        self.limit = req.value
+        self.limit = self.setLimit(req.value)
         self.printValues()
         return SetValueResponse()
+
+    def setLimit(self, value):
+        if value > self.limit_max:
+            rospy.logwarn("[%s] limit (%s) larger than max at %s" % (self.node_name, value, self.limit_max))
+            limit = self.limit_max
+        elif value < self.limit_min:
+            rospy.logwarn("[%s] limit (%s) smaller than allowable min at %s" % (self.node_name, value, self.limit_min))
+            limit = self.limit_min
+        else:
+            limit = value
+        return limit
 
     def printValues(self):
         rospy.loginfo("[%s] gain: %s trim: %s baseline: %s limit: %s" % (self.node_name, self.gain, self.trim, self.baseline, self.limit))
@@ -135,7 +148,7 @@ class InverseKinematicsNode(object):
         u_r = omega_r * k_r_inv
         u_l = omega_l * k_l_inv
 
-        # clipping to limit output velocity
+        # limiting output to limit, which is 1.0 for the duckiebot
         u_r_limited = max(min(u_r, self.limit), -self.limit)
         u_l_limited = max(min(u_l, self.limit), -self.limit)
 

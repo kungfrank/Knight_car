@@ -21,14 +21,16 @@
 
   <!-- start switch args -->
   <arg name="camera" default="true"/>
-  <arg name="/camera/raw" default="true"/>
+  <arg name="/camera/raw" default="false"/>
   <arg name="/camera/cam_info" default="true"/>
 
   <arg name="wheels" default="true"/>
-  <arg name="/wheels/forward_kinematics" default="false"/>
   <arg name="/wheels/wheels_trim" default="true"/>
 
   <arg name="joystick" default="true"/>
+
+  <arg name="odometry" default="false"/>
+  <arg name="/odometry/forward_kinematics" default="false"/>
 
   <arg name="lane_following" default="true"/>
   <arg name="/lane_following/line_detection" default="true"/>
@@ -123,8 +125,19 @@
       <arg name="veh" value="$(arg veh)"/>
     </include>
 
-      <!-- TODO  move this group to odometry?? -->
-    <group if="/wheels/forward_kinematics">
+    <!-- Wheel Driver -->
+    <remap from="wheels_driver_node/wheels_cmd" to="inverse_kinematics_node/wheels_cmd" />
+    <include file="$(find dagu_car)/launch/wheels_driver_node.launch">
+      <arg name="veh" value="$(arg veh)"/>
+    </include>
+
+   
+  </group>
+
+  <!-- End Wheels -->
+
+  <group if="$(arg odometry)">
+    <group if="$(arg /odometry/forward_kinematics)">
         <!-- TODO  remappings -->
         <remap from="forward_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd_executed" />
         <include file="$(find dagu_car)/launch/forward_kinematics_node.launch">
@@ -139,28 +152,8 @@
             <arg name="param_file_name" value="$(arg param_file_name)"/>
         </include>
     </group>
-
-    <!-- When Robert says so the wheels trimmer should be gone - it is totally replaced by inverse kin. -->
-    <group if="$(arg wheels_trim)">
-      <!-- Wheels Trimmer -->
-      <remap from="wheels_trimmer_node/wheels_cmd" to="inverse_kinematics_node/wheels_cmd"/>
-      <include file="$(find dagu_car)/launch/wheels_trimmer_node.launch">
-        <arg name="veh" value="$(arg veh)"/>
-        <arg name="config" value="$(arg config)"/>
-        <arg name="param_file_name" value="$(arg param_file_name)"/>
-      </include>
-    </group>
-
-    <!-- Wheel Driver -->
-    <remap from="wheels_driver_node/wheels_cmd" to="wheels_trimmer_node/wheels_cmd" />
-    <include file="$(find dagu_car)/launch/wheels_driver_node.launch">
-      <arg name="veh" value="$(arg veh)"/>
-    </include>
-
-   
   </group>
 
-  <!-- End Wheels -->
 
   <!-- Start Joystick -->
   <group if="$(arg joystick)">

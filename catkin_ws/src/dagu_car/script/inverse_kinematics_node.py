@@ -116,7 +116,6 @@ class InverseKinematicsNode(object):
         k_l = 1/(self.gain - self.trim)
         k_r = 1/(self.gain + self.trim)
         
-        # conversion from linear and angular velocities to motor rotation rate
         omega_r = (msg_car_cmd.v + 0.5 * msg_car_cmd.omega * self.baseline) / self.radius
         omega_l = (msg_car_cmd.v - 0.5 * msg_car_cmd.omega * self.baseline) / self.radius
         

@@ -10,8 +10,11 @@ import sys
 # TODO read from command line
 
 config = "baseline"
-# param_file = "default"
-param_file = sys.argv[1]
+param_file = "default"
+
+argv = sys.argv
+if len(argv) > 1:
+	param_file = sys.argv[1]
 
 file_path = rospkg.RosPack().get_path("duckietown") + "/config/" + config + "/fsm/fsm_node/" + param_file + ".yaml"
 print "Load file: %s"%(file_path)

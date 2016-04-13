@@ -55,7 +55,7 @@ class FSMNode(object):
             self.event_trigger_dict[event_name] = event_dict["trigger"]
         # TODO so far I can't figure out how to put msg_type instead of BoolStamped.
         # importlib might help. But it might get too complicated since different type 
-            self.sub_list.append(rospy.Subscriber("%s"%(topic_name), rospy.msg.AnyMsg, self.cbEvent, callback_args=event_name))
+            self.sub_list.append(rospy.Subscriber("%s"%(topic_name), BoolStamped, self.cbEvent, callback_args=event_name))
 
         rospy.loginfo("[%s] Initialized." %self.node_name)
         # Publish initial state

@@ -104,7 +104,7 @@ class LineDetectorNode(object):
             self.flag_wb_ref = True
 
         # Resize and crop image
-        hei_original, wid_original = image_cv.shape[0:1]
+        hei_original, wid_original = image_cv.shape[0:2]
 
         if self.image_size[0] != hei_original or self.image_size[1] != wid_original:
             # image_cv = cv2.GaussianBlur(image_cv, (5,5), 2)

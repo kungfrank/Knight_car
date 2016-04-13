@@ -29,7 +29,7 @@ class LineDetectorNode(object):
         self.flag_wb = False
         self.active = True
 
-        self.updateParams()
+        self.updateParams(None)
 
         # Publishers
         self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
@@ -45,9 +45,9 @@ class LineDetectorNode(object):
         self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
         rospy.loginfo("[%s] Initialized." %(self.node_name))
 
-        self.timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams))
+        self.timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
 
-    def updateParams(self,event)
+    def updateParams(self,event):
         self.image_size = rospy.get_param('~img_size')
         self.top_cutoff = rospy.get_param('~top_cutoff')
   

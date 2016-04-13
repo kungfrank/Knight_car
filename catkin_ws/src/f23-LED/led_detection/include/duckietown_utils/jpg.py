@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 #from PIL import Image as pimg
-#import jpeg4py as jpeg
+
 
 
 def image_cv_from_jpg(data):
@@ -10,10 +10,36 @@ def image_cv_from_jpg(data):
     image_cv = cv2.imdecode(np.fromstring(data, np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
     return image_cv
 
-
 def image_cv_from_jpg_fn(fn):
     with open(fn) as f:
         return image_cv_from_jpg(f.read())
+
+
+# Second option: use PIL
+
+    
+import numpy as np
+from PIL import ImageFile  # @UnresolvedImport
+def rgb_from_jpg_by_PIL(data):
+    parser = ImageFile.Parser()
+    parser.feed(data)
+    res = parser.close() 
+    res = np.asarray(res)
+    return res
+
+# third option: jpeg library
+import StringIO
+
+# sudo apt-get install libturbojpeg
+# sudo apt-get install python-cffi
+# sudo pip install jpeg4py
+
+import jpeg4py as jpeg
+
+def rgb_from_jpg_by_JPEG_library(data):
+    jpg_data = np.fromstring(data, dtype=np.uint8)
+    image_cv = jpeg.JPEG(jpg_data).decode()
+    return image_cv
 
 
 def image_clip_255(image_float):
@@ -29,9 +55,6 @@ def image_clip_255(image_float):
 #         self.corrected_image = self.bridge.cv2_to_imgmsg(corrected_image_cv2,"bgr8"
 
 
-
-# with PIL Image
-# image_cv = jpeg.JPEG(np.fromstring(image_msg.data, np.uint8)).decode()
 
 # with libjpeg-turbo
 # Convert from uncompressed image message

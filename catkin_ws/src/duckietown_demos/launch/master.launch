@@ -1,6 +1,6 @@
 <launch>
   <!-- start basic args -->
-  <arg name="veh" value="$(env VEHICLE_NAME)"/>
+  <arg name="veh" default="$(env VEHICLE_NAME)"/>
   <arg name="config" default="baseline" />
   <arg name="param_file_name" default="default" />
   <arg name="fsm_file_name" default="default" />

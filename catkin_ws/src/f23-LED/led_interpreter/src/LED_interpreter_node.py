@@ -8,17 +8,20 @@ from sensor_msgs.msg import CompressedImage
 from duckietown_utils.bag_logs import numpy_from_ros_compressed
 import numpy as np
 
+#this is a stup for traffic light testing
+
 class LEDInterpreterNode(object):
 	def __init__(self):
+		self.trafficLightIntersection = False
 		self.node_name = rospy.get_name()
-		self.pub_interpret = rospy.Publisher("~LED_intepreter", LEDInterpreter, queue_size = 1)
+		self.pub_interpret = rospy.Publisher("~signals_detection", signalings/SignalsDetection, queue_size = 1)
 		self.sub_tags = rospy.Subscriber("apriltags_postprocessing_fast_node/apriltags", AprilTags, self.CheckTags)
-		self.sub_LEDs = rospy.Subscriber("led_detector/detection", LEDDetectionArray, self.Interpreter, queue_size = 1)
+		self.sub_LEDs = rospy.Subscriber("~raw_led_detection", LEDDetectionArray, self.Interpreter, queue_size = 1)
 
 
 		self.protocol = self.setParam("~LED_Protocol") #should be a list of tuples
-		self.label = self.setParam("~TrafficLocation") # should be a list
-		self._traffic = False
+		self.label = self.setParam("~location_config") # should be a list
+		#self._traffic = True
 		# self._light = None
 		self._freq = None
 
@@ -44,7 +47,11 @@ class LEDInterpreterNode(object):
 
 
 	def CheckTags(self, msg):
-
+	#task of this is to check on what type of intersection we are
+		self.trafficLightIntersection = False
+		for info in msg.infos
+			info.traffic_sign_type == info.
+			
 
 
 

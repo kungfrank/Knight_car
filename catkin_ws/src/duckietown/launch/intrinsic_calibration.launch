@@ -3,6 +3,7 @@
 
 	<include file="$(find duckietown)/launch/camera.launch">
 		<arg name="veh" value="$(arg veh)"/>
+		<arg name="raw" value="true"/>
 	</include>
 	<param name="$(arg veh)/decoder_node/publish_freq" value="10.0"/>
 

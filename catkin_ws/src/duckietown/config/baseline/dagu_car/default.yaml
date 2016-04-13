@@ -1,6 +1,0 @@
-  # default parameters for forward_kinematics_node and inverse_kinematics_node
-  k_l:          28.6
-  k_r:          25.9
-  radius_l:     0.02
-  radius_r:     0.02
-  baseline:  0.217

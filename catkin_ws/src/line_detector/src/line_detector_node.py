@@ -28,6 +28,26 @@ class LineDetectorNode(object):
         # Parameters
         self.flag_wb = False
         self.active = True
+
+        self.updateParams(None)
+
+        # Publishers
+        self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
+        self.pub_image = rospy.Publisher("~image_with_lines", Image, queue_size=1)
+       
+        # Verbose option 
+        self.verbose = rospy.get_param('~verbose')
+        if self.verbose:
+            self.toc_pre = rospy.get_time()   
+
+        # Subscribers
+        self.sub_image = rospy.Subscriber("~image", CompressedImage, self.cbImage, queue_size=1)
+        self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
+        rospy.loginfo("[%s] Initialized." %(self.node_name))
+
+        self.timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
+
+    def updateParams(self,event):
         self.image_size = rospy.get_param('~img_size')
         self.top_cutoff = rospy.get_param('~top_cutoff')
   
@@ -46,19 +66,6 @@ class LineDetectorNode(object):
         self.detector.hough_max_line_gap    = rospy.get_param('~hough_max_line_gap')
         self.detector.hough_threshold = rospy.get_param('~hough_threshold')
 
-        # Publishers
-        self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
-        self.pub_image = rospy.Publisher("~image_with_lines", Image, queue_size=1)
-       
-        # Verbose option 
-        self.verbose = rospy.get_param('~verbose')
-        if self.verbose:
-            self.toc_pre = rospy.get_time()   
-
-        # Subscribers
-        self.sub_image = rospy.Subscriber("~image", CompressedImage, self.cbImage, queue_size=1)
-        self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
-        rospy.loginfo("[%s] Initialized." %(self.node_name))
 
     def cbSwitch(self, switch_msg):
         self.active = switch_msg.data
@@ -104,7 +111,7 @@ class LineDetectorNode(object):
             self.flag_wb_ref = True
 
         # Resize and crop image
-        hei_original, wid_original = image_cv.shape[0:1]
+        hei_original, wid_original = image_cv.shape[0:2]
 
         if self.image_size[0] != hei_original or self.image_size[1] != wid_original:
             # image_cv = cv2.GaussianBlur(image_cv, (5,5), 2)

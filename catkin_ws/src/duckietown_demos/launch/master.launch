@@ -6,7 +6,7 @@
 	<arg name="fsm_file_name" default="default" />
 	<arg name="visualization" default="true" />
 	<arg name="verbose" default="true" />
-	<arg name="statistics" default="true"/>
+	<arg name="statistics" default="false"/>
 	<!-- end basic args -->
  
 <!-- the things that are "on" by default: 

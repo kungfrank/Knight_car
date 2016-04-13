@@ -31,7 +31,7 @@ class TimeKeeper():
         self.latencies.append((phase, dict(latency_ms=asms(latency))))
     
     def getall(self):
-        s = ""
+        s = "\nLatencies:\n"
 
         for phase, data in self.latencies:
             s +=  ' %15s latency %s\n' % (phase, data['latency_ms'])
@@ -120,8 +120,6 @@ class LineDetectorNode(object):
         tk = TimeKeeper(image_msg)
         
         self.verbose_counter += 1
-
-        tk.completed('received')
 
         # Decode from compressed image with OpenCV
         image_cv = image_cv_from_jpg(image_msg.data)

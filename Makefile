@@ -21,6 +21,16 @@ build-parallel:
 build:
 	catkin_make -C $(catkin_ws) 
 
+# Unit tests
+# Teddy: make it so "make unittests" runs all unit tests
+
+unittests-environment:
+	bash -c "source environment.sh; python setup/sanity_checks"
+
+unittests:
+	$(MAKE) unittests-environment
+	bash -c "source environment.sh; catkin_make -C $(catkin_ws) run_tests_anti_instagram"
+
 # HW testing 
 
 test-camera:
@@ -39,7 +49,10 @@ test-led:
 vehicle_name=$(shell hostname)
 
 demo-joystick:	
-	bash -c "source environment.sh; roslaunch duckietown joystick.launch veh:=$(vehicle_name) trim:=true"
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown joystick.launch veh:=$(VEHICLE_NAME)"
+
+demo-joystick-camera:
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown joystick_camera.launch veh:=$(VEHICLE_NAME)"
 
 demo-line_detector:
 	bash -c "source environment.sh; roslaunch duckietown line_detector.launch veh:=emma"

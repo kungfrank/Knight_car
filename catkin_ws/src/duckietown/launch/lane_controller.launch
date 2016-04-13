@@ -48,15 +48,6 @@
         <arg name="param_file_name" value="$(arg param_file_name)"/>
     </include>
 
-    <!-- All Kinematics Nodes -->
-    <remap from="inverse_kinematics_node/car_cmd" to="car_cmd_switch_node/cmd"/>
-    <include file="$(find duckietown)/launch/kinematics.launch">
-        <arg name="veh" value="$(arg veh)"/>
-        <arg name="local" value="$(arg local)"/>
-        <arg name="config" value="$(arg config)"/>
-        <arg name="param_file_name" value="$(arg param_file_name)"/>
-    </include>
-
     <group if="$(arg drive)">
         <!-- Wheel Driver -->
     	<include if="$(arg live)" file="$(find dagu_car)/launch/wheels_driver_node.launch">

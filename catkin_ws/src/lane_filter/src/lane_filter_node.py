@@ -20,7 +20,7 @@ import time
 class LaneFilterNode(object):
     def __init__(self):
         self.node_name = "Lane Filter"
-        self.active = False
+        self.active = True
         self.mean_0 = [self.setupParam("~mean_d_0",0) , self.setupParam("~mean_phi_0",0)]
         self.cov_0  = [ [self.setupParam("~sigma_d_0",0.1) , 0] , [0, self.setupParam("~sigma_phi_0",0.01)] ]
         self.delta_d     = self.setupParam("~delta_d",0.02) # in meters
@@ -155,7 +155,7 @@ class LaneFilterNode(object):
         belief_img.header.stamp = segment_list_msg.header.stamp
         
         max_val = self.beliefRV.max()
-        self.lanePose.in_lane = max_val > self.min_max and len(segment_list_msg.segments) > self.min_segs and np.linalg.norm(self.measurement_likelihood) != 0
+        self.lanePose.in_lane = max_val > self.min_max and len(segment_list_msg.segments) > self.min_segs and np.linalg.norm(measurement_likelihood) != 0
         self.pub_lane_pose.publish(self.lanePose)
         self.pub_belief_img.publish(belief_img)
 

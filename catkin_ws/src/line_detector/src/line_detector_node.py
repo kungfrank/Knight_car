@@ -1,17 +1,16 @@
 #!/usr/bin/env python
-import rospy
-import cv2
 from cv_bridge import CvBridge, CvBridgeError
-from sensor_msgs.msg import CompressedImage, Image
-from duckietown_msgs.msg import Segment, SegmentList, Vector2D, BoolStamped
+from duckietown_msgs.msg import BoolStamped, Segment, SegmentList, Vector2D
+from geometry_msgs.msg import Point
 from line_detector.LineDetector import *
 from line_detector.WhiteBalance import *
+from sensor_msgs.msg import CompressedImage, Image
 from visualization_msgs.msg import Marker
-from geometry_msgs.msg import Point
+import cv2
 import numpy as np
+import rospy
 import threading
-#from PIL import Image as pimg
-#import jpeg4py as jpeg
+from duckietown_utils.jpg import image_cv_from_jpg
 
 class LineDetectorNode(object):
     def __init__(self):
@@ -28,7 +27,7 @@ class LineDetectorNode(object):
        
         # Parameters
         self.flag_wb = False
-        self.active = False
+        self.active = True
         self.image_size = rospy.get_param('~img_size')
         self.top_cutoff = rospy.get_param('~top_cutoff')
   
@@ -64,7 +63,7 @@ class LineDetectorNode(object):
     def cbSwitch(self, switch_msg):
         self.active = switch_msg.data
 
-    def cbImage(self,image_msg):
+    def cbImage(self, image_msg):
         if not self.active:
             return 
         # Start a daemon thread to process the image
@@ -73,30 +72,23 @@ class LineDetectorNode(object):
         thread.start()
         # Returns rightaway
 
-    def processImage(self,image_msg):
+    def processImage(self, image_msg):
         if not self.thread_lock.acquire(False):
             # Return immediately if the thread is locked
             return
         
         # Verbose
         if self.verbose:
-            rospy.loginfo("[%s] Latency received = %.3f ms" %(self.node_name, (rospy.get_time()-image_msg.header.stamp.to_sec()) * 1000.0))
+            rospy.loginfo("[%s] Latency received = %.3f ms" %
+                          (self.node_name, (rospy.get_time() - image_msg.header.stamp.to_sec()) * 1000.0))
         
         # time_start = rospy.Time.now()
         # time_start = event.last_real
         # msg_age = time_start - image_msg.header.stamp
         # rospy.loginfo("[LineDetector] image age: %s" %msg_age.to_sec())
 
-        # Decode from compressed image
-        # with OpenCV
-        image_cv = cv2.imdecode(np.fromstring(image_msg.data, np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
-        
-        # with PIL Image
-        # image_cv = jpeg.JPEG(np.fromstring(image_msg.data, np.uint8)).decode()
-        
-        # with libjpeg-turbo
-        # Convert from uncompressed image message
-        # image_cv = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
+        # Decode from compressed image with OpenCV
+        image_cv = image_cv_from_jpg(image_msg.data)
         
         # Verbose
         if self.verbose:
@@ -112,11 +104,12 @@ class LineDetectorNode(object):
             self.flag_wb_ref = True
 
         # Resize and crop image
-        hei_original = image_cv.shape[0]
-        wid_original = image_cv.shape[1]
-        if self.image_size[0]!=hei_original or self.image_size[1]!=wid_original:
+        hei_original, wid_original = image_cv.shape[0:2]
+
+        if self.image_size[0] != hei_original or self.image_size[1] != wid_original:
             # image_cv = cv2.GaussianBlur(image_cv, (5,5), 2)
-            image_cv = cv2.resize(image_cv, (self.image_size[1], self.image_size[0]), interpolation=cv2.INTER_NEAREST)
+            image_cv = cv2.resize(image_cv, (self.image_size[1], self.image_size[0]),
+                                   interpolation=cv2.INTER_NEAREST)
         image_cv = image_cv[self.top_cutoff:,:,:]
 
         # White balancing
@@ -125,7 +118,7 @@ class LineDetectorNode(object):
 
         # Set the image to be detected
         self.detector.setImage(image_cv)
-	
+
         # Detect lines and normals
         lines_white, normals_white = self.detector.detectLines('white')
         lines_yellow, normals_yellow = self.detector.detectLines('yellow')

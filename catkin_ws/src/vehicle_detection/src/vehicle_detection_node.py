@@ -20,7 +20,7 @@ class VehicleDetectionNode(object):
 	def __init__(self):
 		self.node_name = "Vehicle Detection"
 		self.bridge = CvBridge()
-                self.active = False
+                self.active = True
 		self.config	= self.setupParam("~config", "baseline")
 		self.cali_file_name = self.setupParam("~cali_file_name", "default")
 		rospack = rospkg.RosPack()

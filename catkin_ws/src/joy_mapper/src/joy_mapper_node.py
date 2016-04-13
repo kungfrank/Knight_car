@@ -32,8 +32,8 @@ class JoyMapper(object):
         self.has_complained = False
 
     def cbParamTimer(self,event):
-        self.v_gain = rospy.get_param("~v_gain", 1.0)
-        self.omega_gain = rospy.get_param("~omega_gain", 1.0)
+        self.v_gain = rospy.get_param("~speed_gain", 1.0)
+        self.omega_gain = rospy.get_param("~steer_gain", 1.0)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -68,12 +68,12 @@ class JoyMapper(object):
             parallel_autonomy_msg = BoolStamped()
             parallel_autonomy_msg.header.stamp = self.joy.header.stamp
             parallel_autonomy_msg.data = True
-            self.pub_parallel_autonomy_msg(parallel_autonomy_msg)
+            self.pub_parallel_autonomy.publish(parallel_autonomy_msg)
         elif (joy_msg.buttons[4] == 1):
             parallel_autonomy_msg = BoolStamped()
             parallel_autonomy_msg.header.stamp = self.joy.header.stamp
             parallel_autonomy_msg.data = False
-            self.pub_parallel_autonomy_msg(parallel_autonomy_msg)
+            self.pub_parallel_autonomy.publish(parallel_autonomy_msg)
 
 if __name__ == "__main__":
     rospy.init_node("joy_mapper",anonymous=False)

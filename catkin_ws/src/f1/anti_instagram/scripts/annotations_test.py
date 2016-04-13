@@ -103,6 +103,27 @@ def run_detection(transform, jpg, out, shape, interpolation,
 #     write('transformed_clipped', transformed_clipped)
 #     write('orig.detected', image_detections)
 #     write('transformed.detected', transformed_detections)
+
+
+    together = make_images_grid([image,  # transformed,
+                                 merge_masks_res(image_detections),
+                                 gray2rgb(image_detections['edges']),
+                                 image_detections['annotated'],
+                                 
+
+                                 transformed_clipped,
+                                 merge_masks_res(image_detections),
+                                 gray2rgb(image_detections['edges']),
+                                 transformed_detections['annotated'],
+                       ], 
+                                
+                                cols=4, pad=10, bgcolor=[1, 1, 1])
+    write('together', together)
+
+def merge_masks_res(res):
+    return merge_masks(res['area_white'], res['area_red'], res['area_yellow'])
+
+def merge_masks(area_white, area_red, area_yellow):
     B, G, R = 0, 1, 2
     def white(x):
         x = gray2rgb(x)
@@ -119,23 +140,21 @@ def run_detection(transform, jpg, out, shape, interpolation,
         x[:,:,G] *= 1
         x[:,:,B] *= 0
         return x
-    together = make_images_grid([image,  # transformed,
-                                 
-                                 white(image_detections['area_white']),
-                                 red(image_detections['area_red']),
-                                 yellow(image_detections['area_yellow']),
-                                 image_detections['annotated'],
-                                 transformed_clipped,
-                                 
-                                 white(transformed_detections['area_white']),
-                                 red(transformed_detections['area_red']),
-                                 yellow(transformed_detections['area_yellow']),
-                                 transformed_detections['annotated'],
-                       ], 
-                                
-                                cols=5, pad=10, bgcolor=[1, 1, 1])
-    write('together', together)
-
+    h, w = area_white.shape
+    orig = [area_white, area_red, area_yellow]
+    masks = [white(area_white), red(area_red), yellow(area_yellow)]
+        
+    res = np.zeros(shape=masks[0].shape, dtype=np.uint8)
+    
+    for i, m in enumerate(masks):
+        nz = (orig[i] > 0) * 1.0
+        assert nz.shape == (h, w), nz.shape
+        
+        for j in [0, 1, 2]:
+            res[:,:,j] = (1-nz) * res[:,:,j].copy() + (nz) * m[:,:,j]
+    
+    return res
+    
 
 def test_pair(transform, jpg, mat, out):
     """ 
@@ -182,6 +201,7 @@ def line_detection(bgr):
     res['area_white'] = area_white
     res['area_red'] = area_red
     res['area_yellow'] = area_yellow
+    res['edges'] = detector.edges
     return res
 
 #    cv2.imwrite('lines_with_normal.png', detector.getImage())

@@ -49,8 +49,9 @@ class LEDInterpreterNode(object):
 	def CheckTags(self, msg):
 	#task of this is to check on what type of intersection we are
 		self.trafficLightIntersection = False
-		for info in msg.infos
-			info.traffic_sign_type == info.
+		for info in msg.infos:
+			if info.traffic_sign_type == traffic_light_ahead:
+				self.trafficLightIntersection = True
 			
 
 

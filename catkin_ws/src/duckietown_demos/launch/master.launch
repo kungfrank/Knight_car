@@ -25,7 +25,6 @@
   <arg name="/camera/cam_info" default="true"/>
 
   <arg name="wheels" default="true"/>
-  <arg name="/wheels/wheels_trim" default="true"/>
 
   <arg name="joystick" default="true"/>
 

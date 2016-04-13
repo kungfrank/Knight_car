@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-
+from duckietown_utils import logger
 #from PIL import Image as pimg
 
 

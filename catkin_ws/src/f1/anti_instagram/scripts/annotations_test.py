@@ -174,7 +174,7 @@ def test_pair(transform, jpg, mat, out):
         print 'mask shape', mask.shape
         print 'type', r['type']
         print 'color', r['color']
-
+        print 'guy look here'
         # XXX: to finish
 
 def line_detection(bgr):

@@ -55,11 +55,11 @@ def examine_dataset(dirname, out):
         run_detection(transform, j, out, shape=shape,
                       interpolation=interpolation, name=name)
 
-        name = 'cubic'
-        interpolation = cv2.INTER_CUBIC
-
-        run_detection(transform, j, out, shape=shape,
-                      interpolation=interpolation, name=name)
+#         name = 'cubic'
+#         interpolation = cv2.INTER_CUBIC
+# 
+#         run_detection(transform, j, out, shape=shape,
+#                       interpolation=interpolation, name=name)
 
     for m in mats:
         logger.debug(m)
@@ -104,12 +104,57 @@ def run_detection(transform, jpg, out, shape, interpolation,
 #     write('orig.detected', image_detections)
 #     write('transformed.detected', transformed_detections)
 
+
     together = make_images_grid([image,  # transformed,
+                                 merge_masks_res(image_detections),
+                                 gray2rgb(image_detections['edges']),
+                                 image_detections['annotated'],
+                                 
+
                                  transformed_clipped,
-                       image_detections,
-                       transformed_detections], cols=None, pad=10, bgcolor=[1, 1, 1])
+                                 merge_masks_res(image_detections),
+                                 gray2rgb(image_detections['edges']),
+                                 transformed_detections['annotated'],
+                       ], 
+                                
+                                cols=4, pad=10, bgcolor=[1, 1, 1])
     write('together', together)
 
+def merge_masks_res(res):
+    return merge_masks(res['area_white'], res['area_red'], res['area_yellow'])
+
+def merge_masks(area_white, area_red, area_yellow):
+    B, G, R = 0, 1, 2
+    def white(x):
+        x = gray2rgb(x)
+        return x
+    def red(x):
+        x = gray2rgb(x)
+        x[:,:,R] *= 1
+        x[:,:,G] *= 0
+        x[:,:,B] *= 0
+        return x
+    def yellow(x):
+        x = gray2rgb(x)
+        x[:,:,R] *= 1
+        x[:,:,G] *= 1
+        x[:,:,B] *= 0
+        return x
+    h, w = area_white.shape
+    orig = [area_white, area_red, area_yellow]
+    masks = [white(area_white), red(area_red), yellow(area_yellow)]
+        
+    res = np.zeros(shape=masks[0].shape, dtype=np.uint8)
+    
+    for i, m in enumerate(masks):
+        nz = (orig[i] > 0) * 1.0
+        assert nz.shape == (h, w), nz.shape
+        
+        for j in [0, 1, 2]:
+            res[:,:,j] = (1-nz) * res[:,:,j].copy() + (nz) * m[:,:,j]
+    
+    return res
+    
 
 def test_pair(transform, jpg, mat, out):
     """ 
@@ -129,7 +174,7 @@ def test_pair(transform, jpg, mat, out):
         print 'mask shape', mask.shape
         print 'type', r['type']
         print 'color', r['color']
-
+        print 'guy look here'
         # XXX: to finish
 
 def line_detection(bgr):
@@ -137,9 +182,9 @@ def line_detection(bgr):
     detector.setImage(bgr)
 
     # detect lines and normals
-    lines_white, normals_white = detector.detectLines('white')
-    lines_yellow, normals_yellow = detector.detectLines('yellow')
-    lines_red, normals_red = detector.detectLines('red')
+    lines_white, normals_white, area_white = detector.detectLines('white')
+    lines_yellow, normals_yellow, area_yellow = detector.detectLines('yellow')
+    lines_red, normals_red, area_red = detector.detectLines('red')
 
     # draw lines
     detector.drawLines(lines_white, (0, 0, 0))
@@ -151,9 +196,34 @@ def line_detection(bgr):
     detector.drawNormals(lines_white, normals_white)
     detector.drawNormals(lines_red, normals_red)
 
-    return detector.getImage()
+    res = {}
+    res['annotated'] = detector.getImage()
+    res['area_white'] = area_white
+    res['area_red'] = area_red
+    res['area_yellow'] = area_yellow
+    res['edges'] = detector.edges
+    return res
 
 #    cv2.imwrite('lines_with_normal.png', detector.getImage())
+
+import numpy as np
+def gray2rgb(gray):
+    ''' 
+        Converts a H x W grayscale into a H x W x 3 RGB image 
+        by replicating the gray channel over R,G,B. 
+        
+        :param gray: grayscale
+        :type  gray: array[HxW](uint8),H>0,W>0
+        
+        :return: A RGB image in shades of gray.
+        :rtype: array[HxWx3](uint8)
+    '''
+#    assert_gray_image(gray, 'input to gray2rgb')
+
+    rgb = np.zeros((gray.shape[0], gray.shape[1], 3), dtype='uint8')
+    for i in range(3):
+        rgb[:, :, i] = gray
+    return rgb
 
 
 def anti_instagram_annotations_test():

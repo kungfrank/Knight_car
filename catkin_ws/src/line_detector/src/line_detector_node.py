@@ -27,7 +27,32 @@ class LineDetectorNode(object):
        
         # Parameters
         self.flag_wb = False
-        self.active = False
+        self.active = True
+
+        self.updateParams()
+
+        # Publishers
+        self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
+        self.pub_image = rospy.Publisher("~image_with_lines", Image, queue_size=1)
+       
+        # Subscribers
+        self.sub_image = rospy.Subscriber("~image", CompressedImage, self.cbImage, queue_size=1)
+        self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
+        rospy.loginfo("[%s] Initialized." %(self.node_name))
+
+        self.timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
+        
+        # Verbose option 
+        self.verbose = rospy.get_param('~verbose')
+        if self.verbose:
+            self.pub_edge = rospy.Publisher("~edge", Image, queue_size=1)
+            self.pub_white = rospy.Publisher("~white", Image, queue_size=1)
+            self.pub_yellow = rospy.Publisher("~yellow", Image, queue_size=1)
+            self.pub_red = rospy.Publisher("~red", Image, queue_size=1)
+            
+            self.toc_pre = rospy.get_time() 
+
+    def updateParams(self):
         self.image_size = rospy.get_param('~img_size')
         self.top_cutoff = rospy.get_param('~top_cutoff')
   
@@ -46,19 +71,6 @@ class LineDetectorNode(object):
         self.detector.hough_max_line_gap    = rospy.get_param('~hough_max_line_gap')
         self.detector.hough_threshold = rospy.get_param('~hough_threshold')
 
-        # Publishers
-        self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
-        self.pub_image = rospy.Publisher("~image_with_lines", Image, queue_size=1)
-       
-        # Verbose option 
-        self.verbose = rospy.get_param('~verbose')
-        if self.verbose:
-            self.toc_pre = rospy.get_time()   
-
-        # Subscribers
-        self.sub_image = rospy.Subscriber("~image", CompressedImage, self.cbImage, queue_size=1)
-        self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
-        rospy.loginfo("[%s] Initialized." %(self.node_name))
 
     def cbSwitch(self, switch_msg):
         self.active = switch_msg.data
@@ -104,7 +116,7 @@ class LineDetectorNode(object):
             self.flag_wb_ref = True
 
         # Resize and crop image
-        hei_original, wid_original = image_cv.shape[0:1]
+        hei_original, wid_original = image_cv.shape[0:2]
 
         if self.image_size[0] != hei_original or self.image_size[1] != wid_original:
             # image_cv = cv2.GaussianBlur(image_cv, (5,5), 2)
@@ -120,9 +132,9 @@ class LineDetectorNode(object):
         self.detector.setImage(image_cv)
 
         # Detect lines and normals
-        lines_white, normals_white = self.detector.detectLines('white')
-        lines_yellow, normals_yellow = self.detector.detectLines('yellow')
-        lines_red, normals_red = self.detector.detectLines('red')
+        lines_white, normals_white, area_white = self.detector.detectLines('white')
+        lines_yellow, normals_yellow, area_yellow = self.detector.detectLines('yellow')
+        lines_red, normals_red, area_red = self.detector.detectLines('red')
 
         # Draw lines and normals
         self.detector.drawLines(lines_white, (0,0,0))
@@ -173,6 +185,15 @@ class LineDetectorNode(object):
         # Verbose
         if self.verbose:
             rospy.loginfo("[%s] Latency sent = %.3f ms" %(self.node_name, (rospy.get_time()-image_msg.header.stamp.to_sec()) * 1000.0))
+       
+            edge_msg_out = self.bridge.cv2_to_imgmsg(self.detector.edges, "mono8")
+            white_msg_out = self.bridge.cv2_to_imgmsg(area_white, "mono8")
+            yellow_msg_out = self.bridge.cv2_to_imgmsg(area_yellow, "mono8")
+            red_msg_out = self.bridge.cv2_to_imgmsg(area_red, "mono8")
+            self.pub_edge.publish(edge_msg_out)
+            self.pub_white.publish(white_msg_out)
+            self.pub_yellow.publish(yellow_msg_out)
+            self.pub_red.publish(red_msg_out)
 
         # Release the thread lock
         self.thread_lock.release()

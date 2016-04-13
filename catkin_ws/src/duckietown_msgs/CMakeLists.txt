@@ -85,6 +85,7 @@ add_message_files(
   StopLineReading.msg
   AntiInstagramHealth.msg
   KinematicsWeights.msg
+  KinematicsParameters.msg
   ThetaDotSample.msg
   Vsample.msg
   Trajectory.msg
@@ -99,6 +100,7 @@ add_message_files(
 add_service_files(
   FILES
   SetFSMState.srv
+  SetValue.srv
   # Service2.srv
 )
 

@@ -115,7 +115,7 @@ class LineDetector(object):
         bw, edge_color = self.__colorFilter(color)
         lines = self.__HoughLine(edge_color)
         normals = self.__findNormal(bw, lines)
-        return lines, normals
+        return lines, normals, bw
 
     def setImage(self, bgr):
         self.bgr = np.copy(bgr)

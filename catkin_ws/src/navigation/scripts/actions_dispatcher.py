@@ -33,14 +33,15 @@ def dispatcher(data):
         elif action == 'w':
             pub.publish(Int16(-1))    
     
-        str = ''
+        action_str = ''
         for letter in actions:
-            str += letter
+            action_str += letter
 
-        pubList.publish(str)
+        pubList.publish(action_str)
         firstUpdate = False
 
 def graph_search(data):
+    print 'Requesting map for src: ', data.source_node, ' and target: ', data.target_node
     global actions
     rospy.wait_for_service('graph_search')
     try:
@@ -52,11 +53,13 @@ def graph_search(data):
             actions = [x for x in actions if x != 'f']
             actions.append('w')
             print 'Actions to be executed:', actions
-            str = ''
+            action_str = ''
             for letter in actions:
-                str += letter
+                action_str += letter
+            pubList.publish(action_str)
+        else:
+            print 'Actions to be executed:', actions
 
-            pubList.publish(str)
     except rospy.ServiceException, e:
         print "Service call failed: %s"%e
 

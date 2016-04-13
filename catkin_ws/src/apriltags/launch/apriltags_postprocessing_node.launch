@@ -8,7 +8,7 @@
 	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman"/>
  	
  	<group ns="$(arg veh)">
-         <node pkg="$(arg pkg_name)" type="$(arg node_name)_node.py" name="$(arg node_name)$(arg sub_node_name)_node" output="screen">
+         <node pkg="$(arg pkg_name)" type="$(arg node_name)_node.py" name="$(arg node_name)$(arg sub_node_name)_node" output="screen" clear_params="true" required="true">
          <param name="~loc" value="$(arg loc)" />
 	 <rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/apriltags_postprocessing_node/$(arg param_file_name).yaml"/>
          </node>

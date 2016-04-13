@@ -18,6 +18,7 @@ catkin-clean:
 
 build-parallel:
 	catkin_make -C $(catkin_ws) --make-args "-j4"
+	
 build:
 	catkin_make -C $(catkin_ws) 
 
@@ -29,7 +30,7 @@ unittests-environment:
 
 unittests:
 	$(MAKE) unittests-environment
-	bash -c "source environment.sh; catkin_make -C $(catkin_ws) run_tests_anti_instagram"
+	bash -c "source environment.sh; catkin_make -C $(catkin_ws) run_tests; catkin_test_results $(catkin_ws)/build/test_results/"
 
 # HW testing 
 

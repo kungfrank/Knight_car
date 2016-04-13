@@ -11,10 +11,9 @@ from numpy import *
 
 class VelocityToPoseNode(object):
     def __init__(self):
-        self.node_name = 'velocity_to_position_node'
-
-        # Read parameters
-        self.veh_name = self.setup_parameter("~veh_name", "megaman")
+        # Get node name and vehicle name
+        self.node_name = rospy.get_name()
+        self.veh_name = self.node_name.split("/")[1]
 
         # Keep track of the last known pose
         self.last_pose = Pose2DStamped()
@@ -22,21 +21,15 @@ class VelocityToPoseNode(object):
         self.last_v = 0
         
         # Setup the publisher and subscriber
-        self.sub_velocity = rospy.Subscriber("~velocity", Twist2DStamped,
-                                             self.velocity_callback)
+        self.sub_velocity = rospy.Subscriber("~velocity", Twist2DStamped, self.velocity_callback, queue_size=1)
         self.pub_pose = rospy.Publisher("~pose", Pose2DStamped, queue_size=1)
-
-        rospy.loginfo("[%s] has started", self.node_name)
+        rospy.loginfo("[%s] Initialized.", self.node_name)
 
     def velocity_callback(self, msg_velocity):
         if self.last_pose.header.stamp.to_sec() > 0:  # skip first frame
             delta_t = (msg_velocity.header.stamp - self.last_pose.header.stamp).to_sec()
-
-            [theta_delta, x_delta, y_delta] = self.integrate(self.last_theta_dot,
-                                                             self.last_v, delta_t)
-            [theta_res, x_res, y_res] = self.propagate(self.last_pose.theta,
-                                                       self.last_pose.x, self.last_pose.y,
-                                                       theta_delta, x_delta, y_delta)
+            [theta_delta, x_delta, y_delta] = self.integrate(self.last_theta_dot, self.last_v, delta_t)
+            [theta_res, x_res, y_res] = self.propagate(self.last_pose.theta, self.last_pose.x, self.last_pose.y, theta_delta, x_delta, y_delta)
 
             self.last_pose.theta = theta_res
             self.last_pose.x = x_res
@@ -76,14 +69,6 @@ class VelocityToPoseNode(object):
         x_res = x + x_delta * cos(theta) - y_delta * sin(theta)
         y_res = y + y_delta * cos(theta) + x_delta * sin(theta)
         return [theta_res, x_res, y_res]
-
-    def setup_parameter(self, param_name, default_value):
-        value = rospy.get_param(param_name, default_value)
-        # Write to parameter server for transparency
-        rospy.set_param(param_name, value)
-        rospy.loginfo("[%s] %s = %s " % (self.node_name, param_name, value))
-        return value
-
 
 if __name__ == '__main__':
     rospy.init_node('velocity_to_pose_node', anonymous=False)

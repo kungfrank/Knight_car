@@ -7,7 +7,7 @@
 	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman"/>
 
 	<include unless="$(arg local)" file="$(find duckietown)/machines"/>
-	<node unless="$(arg local)" ns="$(arg veh)" machine="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name)" name="$(arg node_name)" output="screen">
+	<node unless="$(arg local)" ns="$(arg veh)" machine="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name)" name="$(arg node_name)" output="screen" clear_params="true" required="true">
 		<rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
 	</node>	
 

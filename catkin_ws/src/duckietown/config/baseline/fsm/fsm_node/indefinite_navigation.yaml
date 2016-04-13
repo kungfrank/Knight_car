@@ -16,7 +16,7 @@ states:
     transitions:
       at_stop_line: "COORDINATION"
     active_nodes: []
-  COORDINATION:
+  READ_TAG:
     transitions:
       intersection_go: "INTERSECTION_CONTROL"
     active_nodes: ["apriltag_node"]

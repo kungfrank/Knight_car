@@ -1,7 +1,6 @@
 # Initail state of the FSM
 initial_state: "JOYSTICK_CONTROL"
 
-
 events: #Maps from subscribing topic to singal ids
   joystick_override: 
     topic: "joy_mapper_node/joystick_override"
@@ -20,6 +19,9 @@ events: #Maps from subscribing topic to singal ids
     msg_type: "BoolStamped"
     trigger: True
 
+# Define global transitions. Available from all states.
+global_transitions:
+  joystick_override: "JOYSTICK_CONTROL"
 
 # Define nodes 
 nodes:
@@ -41,7 +43,6 @@ states:
   LANE_FOLLOWING:
     transitions:
       at_stop_line: "COORDINATION"
-      joystick_override: "JOYSTICK_CONTROL"
     active_nodes:
       - vehicle_detector_node
       - static_object_detector_node
@@ -53,10 +54,8 @@ states:
   COORDINATION:
     transitions:
       intersection_go: "INTERSECTION_CONTROL"
-      joystick_override: "JOYSTICK_CONTROL"
     active_nodes: ["apriltag_node"]
   INTERSECTION_CONTROL:
     transitions:
       intersection_done: "LANE_FOLLOWING"
-      joystick_override: "JOYSTICK_CONTROL"
     active_nodes: []

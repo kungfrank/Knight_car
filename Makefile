@@ -18,6 +18,7 @@ catkin-clean:
 
 build-parallel:
 	catkin_make -C $(catkin_ws) --make-args "-j4"
+	
 build:
 	catkin_make -C $(catkin_ws) 
 

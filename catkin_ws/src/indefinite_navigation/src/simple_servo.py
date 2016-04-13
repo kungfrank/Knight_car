@@ -26,10 +26,12 @@ class IndefNavigationNode(object):
         self.pub_servo_status = rospy.Publisher("~servo_status", String, queue_size =1)
         rospy.loginfo("[%s] Initialzed." %(self.node_name))
 
-        self.rate = rospy.Rate(3) # 10hz
+        self.rate = rospy.Rate(30) # 10hz
     
     def cbIbvs (self,data):
-        self.ibvs_data = data.data
+        if not (data.data == -1 and self.ibvs_data != -1) :
+            self.ibvs_data = data.data
+
     def cbLane(self, data):
         self.lane = data
 
@@ -41,9 +43,8 @@ class IndefNavigationNode(object):
         #end = rospy.Time.now() + rospy.Duration(.5)
         
         # continuous spin until servo line detected
-
+        centered = True
         while not rospy.is_shutdown():
-            centered = False 
             wheels_cmd_msg = WheelsCmdStamped()
 
             # spin right unless servoing or centered
@@ -56,7 +57,7 @@ class IndefNavigationNode(object):
             if self.ibvs_data == -1:
                 rospy.loginfo("No Line Detected! continuing turn")
                 self.pub_servo_status.publish(String(data="None"))
-            elif abs(angle_direction) < 0.2:
+            elif abs(angle_direction) < 0.05:
                     rospy.loginfo("Centered!")
                     wheels_cmd_msg.vel_left  =0
                     wheels_cmd_msg.vel_right =0
@@ -64,21 +65,31 @@ class IndefNavigationNode(object):
                     self.pub_servo_status.publish(String(data="center"))
 
             elif angle_direction > 0:
-                wheels_cmd_msg.vel_left = gain*abs(angle_direction)
-                wheels_cmd_msg.vel_right = -gain *abs(angle_direction)
+                wheels_cmd_msg.vel_left = gain#*abs(angle_direction)
+                wheels_cmd_msg.vel_right = -gain# *abs(angle_direction)
                 rospy.loginfo("Servo right %f " % angle_direction)
                 self.pub_servo_status.publish(String(data="moving"))
             else:
-                wheels_cmd_msg.vel_right = gain *abs(angle_direction)
-                wheels_cmd_msg.vel_left = -gain *abs(angle_direction)
+                wheels_cmd_msg.vel_right = gain# *abs(angle_direction)
+                wheels_cmd_msg.vel_left = -gain# *abs(angle_direction)
                 rospy.loginfo("Servo left %f " % angle_direction)
                 self.pub_servo_status.publish(String(data="moving"))
+            
             self.pub_wheels_cmd.publish(wheels_cmd_msg)    
-            self.rate.sleep()
+            #self.rate.sleep()
             
             if centered:
                 rospy.loginfo("centered.  Waiting for while")
-                rospy.sleep(rospy.Duration(3.0))
+                rospy.sleep(rospy.Duration(2.5))
+            
+                #  while not rospy.is_shutdown():
+                wheels_cmd_msg = WheelsCmdStamped()
+                wheels_cmd_msg.header.stamp = rospy.Time.now()
+                wheels_cmd_msg.vel_left = .3
+                wheels_cmd_msg.vel_right = -.3
+                self.pub_wheels_cmd.publish(wheels_cmd_msg)
+                rospy.sleep(rospy.Duration(0.5))
+                centered = False 
 
 if __name__ == '__main__':
     # Initialize the node with rospy

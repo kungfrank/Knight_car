@@ -5,7 +5,7 @@ import rospy
 from sensor_msgs.msg import Image, CompressedImage
 from std_msgs.msg import Float32, Bool
 from cv_bridge import CvBridge, CvBridgeError
-from duckietown_msgs.msg import ObstacleImageDetection, ObstacleImageDetectionList, ObstacleType, Rect, BoolStamped
+#from duckietown_msgs.msg import ObstacleImageDetection, ObstacleImageDetectionList, ObstacleType, Rect, BoolStamped
 import sys
 import threading
 from count_turns import TurnCounter
@@ -14,7 +14,6 @@ from count_turns import TurnCounter
 class Matcher:
     STOP1 = [np.array(x, np.uint8) for x in [[0,140,100], [15, 255,255]] ]
     STOP2 = [np.array(x, np.uint8) for x in [[165,140,100], [180, 255, 255]] ]
-    terms = {ObstacleType.CONE :"cone", ObstacleType.DUCKIE:"duck", 2: "CANNY"}
     LINE = [np.array(x, np.uint8) for x in [[25,100,150], [35, 255, 255]] ] 
     
     def get_filtered_contours(self,img, contour_type):
@@ -61,12 +60,8 @@ class Matcher:
                 2. an ObstacleImageDetectionList
         '''
 
-        object_list = ObstacleImageDetectionList()
-        object_list.list = []
 
         height,width = img.shape[:2]
-        object_list.imwidth = width
-        object_list.imheight = height
         cv2.rectangle(img, (0, 0) , (width,height/3), (0,0,0),thickness=-5)
         cv2.rectangle(img, (0, 0) , (width/5,height), (0,0,0),thickness=-5)
         cv2.rectangle(img, (4*width/5, 0) , (width,height), (0,0,0),thickness=-5)
@@ -154,11 +149,12 @@ class StaticObjectDetectorNode:
         self.pub_ibvs.publish(Float32(data=center))
         
         height,width = img.shape[:2]
+        """
         try:
             self.pub_image.publish(self.bridge.cv2_to_imgmsg(img, "bgr8"))
         except CvBridgeError as e:
             print(e)
-
+        """
         self.thread_lock.release()
 
 if __name__=="__main__":

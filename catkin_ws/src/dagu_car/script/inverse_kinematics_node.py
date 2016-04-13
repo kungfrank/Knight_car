@@ -9,6 +9,7 @@ import yaml
 import time
 import os.path
 
+
 # Inverse Kinematics Node
 # Author: Robert Katzschmann, Shih-Yuan Liu
 
@@ -22,10 +23,10 @@ class InverseKinematicsNode(object):
         self.readParamFromFile()
 
         # Set local variable by reading parameters
-        self.gain = self.setup_parameter("~gain", 25.0)
+        self.gain = self.setup_parameter("~gain", 1.0)
         self.trim = self.setup_parameter("~trim", 0.0)
-        self.baseline = self.setup_parameter("~baseline",0.1)
-        self.radius = self.setup_parameter("~wheel_radius", 0.02)
+        self.baseline = self.setup_parameter("~baseline", 0.1)
+        self.radius = self.setup_parameter("~wheel_radius", 0.0318)
 
         # Prepare services
         self.srv_set_gain = rospy.Service("~set_gain", SetValue, self.cbSrvSetGain)
@@ -44,7 +45,7 @@ class InverseKinematicsNode(object):
         fname = self.getFilePath(self.veh_name)
         # Use default.yaml if file doesn't exsit
         if not os.path.isfile(fname):
-            rospy.logwarn("[%s] %s does not exsit. Using default.yaml." %(self.node_name,fname))
+            rospy.logwarn("[%s] %s does not exist. Using default.yaml." %(self.node_name,fname))
             fname = self.getFilePath("default")
 
         with open(fname, 'r') as in_file:
@@ -81,7 +82,7 @@ class InverseKinematicsNode(object):
             "radius": self.radius,
         }
 
-        # Wrtie to file
+        # Write to file
         file_name = self.getFilePath(self.veh_name)
         with open(file_name, 'w') as outfile:
             outfile.write(yaml.dump(data, default_flow_style=False))

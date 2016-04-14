@@ -12,13 +12,21 @@ class LineDetector(object):
 
         # Color value range in HSV space: default
         self.hsv_white1 = np.array([0, 0, 150])
-        self.hsv_white2 = np.array([180, 60, 255]) 
-        self.hsv_yellow1 = np.array([25, 140, 100])
+        self.hsv_white2 = np.array([180, 50, 255]) 
+        self.hsv_yellow1 = np.array([25, 120, 90])
         self.hsv_yellow2 = np.array([45, 255, 255]) 
         self.hsv_red1 = np.array([0, 140, 100])
         self.hsv_red2 = np.array([15, 255, 255]) 
         self.hsv_red3 = np.array([165, 140, 100])
         self.hsv_red4 = np.array([180, 255, 255]) 
+        self.rgb_red = np.array([240, 20, 20])
+        self.rgb_yellow = np.array([240, 240,60])
+        self.rgb_white = np.array([240, 240, 240])
+        self.rgb_road = np.array([60,60,60])
+        self.bgr_red = np.flipud(self.rgb_red)
+        self.bgr_yellow = np.flipud(self.rgb_yellow)
+        self.bgr_white = np.flipud(self.rgb_white)
+        self.bgr_road = np.flipud(self.rgb_road)
 
         # Parameters for dilation, Canny, and Hough transform: default
         self.dilation_kernel_size = 3
@@ -26,6 +34,49 @@ class LineDetector(object):
         self.hough_threshold  = 20
         self.hough_min_line_length = 3
         self.hough_max_line_gap = 1
+        self.max_color_dist=150
+        self.coeff_yellow=1.25
+        self.coeff_white=0.75
+
+# RGB-based color filter - try after some annotations are available 
+    def __colorFilter2(self, color):
+        # threshold colors in HSV space
+        im=np.abs(self.bgr-self.bgr_white)
+        d_white=(im[:,:,0]+im[:,:,1]+im[:,:,2])/self.coeff_white;
+        im=np.abs(self.bgr-self.bgr_yellow)
+        d_yellow=(im[:,:,0]+im[:,:,1]+im[:,:,2])/self.coeff_yellow;
+        im=np.abs(self.bgr-self.bgr_red)
+        d_red=im[:,:,0]+im[:,:,1]+im[:,:,2];
+        im=np.abs(self.bgr-self.bgr_road)
+        d_road=im[:,:,0]+im[:,:,1]+im[:,:,2];
+        if color == 'white':
+            bw=(d_white<d_red)&(d_white<d_yellow)&(d_white<self.max_color_dist)
+        elif color == 'yellow':
+            # WINDOW_NAME = 'white'
+            # cv2.namedWindow(WINDOW_NAME, cv2.CV_WINDOW_AUTOSIZE)
+            # cv2.startWindowThread()
+
+            # cv2.imshow(WINDOW_NAME,d_yellow/1024.0)
+            # cv2.waitKey(0) 
+
+
+            # cv2.destroyAllWindows()
+            bw=(d_yellow<d_red)&(d_yellow<d_white)&(d_yellow<self.max_color_dist)
+        elif color == 'red':
+            bw=(d_red<d_yellow)&(d_red<d_white)&(d_red<self.max_color_dist)
+        else:
+            raise Exception('Error: Undefined color strings...')
+        # IPython.embed()
+        bw=np.uint8(bw*255)
+
+        # binary dilation
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(self.dilation_kernel_size, self.dilation_kernel_size))
+        bw = cv2.dilate(bw, kernel)
+        
+        # refine edge for certain color
+        edge_color = cv2.bitwise_and(bw, self.edges)
+
+        return bw, edge_color
 
     def __colorFilter(self, color):
         # threshold colors in HSV space

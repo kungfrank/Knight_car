@@ -29,6 +29,7 @@ global_transitions:
 
 # Define nodes 
 nodes:
+  decoder_node: "decoder_node/switch"
   anti_instagram_node: "anti_instagram_node/switch"
   apriltag_global_node: "apriltags_preprocessing_node/global_switch"
   apriltag_fast_node: "apriltags_preprocessing_node/fast_switch"
@@ -60,7 +61,7 @@ states:
   COORDINATION:
     transitions:
       intersection_go: "INTERSECTION_CONTROL"
-    active_nodes: ["apriltag_node"]
+    active_nodes: ["apriltag_node", "decoder_node"]
   INTERSECTION_CONTROL:
     transitions:
       intersection_done: "LANE_FOLLOWING"

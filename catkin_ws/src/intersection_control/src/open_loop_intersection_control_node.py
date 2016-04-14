@@ -69,7 +69,11 @@ class OpenLoopIntersectionNode(object):
         if (not self.mode == "INTERSECTION_CONTROL") and msg.state == "INTERSECTION_CONTROL":
             # Switch into INTERSECTION_CONTROL mode
             rospy.loginfo("[%s] %s triggered." %(self.node_name,self.mode))
-            self.trigger(-1)
+            start = rospy.Time.now()
+            current = rospy.Time.now()
+            while current.secs - start.secs < 0.5:
+                current = rospy.Time.now()
+                self.trigger(-1)
         self.mode = msg.state
         self.turn_type = -1 #Reset turn_type at mode change
 

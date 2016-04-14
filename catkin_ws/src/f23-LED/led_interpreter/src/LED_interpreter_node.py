@@ -82,7 +82,7 @@ class LEDInterpreterNode(object):
 		
 		rospy.loginfo("[%s] The observed LEDs are:\n Front = %s\n Right = %s\n Traffic light state = %s" %(self.node_name, self.front, self.right,self.traffic_light_state))
 
-		pub_interpret.publish(SignalsDetection(self.front,self.right,self.left,self.traffic_light_state))
+		pub_interpret.publish(SignalsDetection(front=self.front,right=self.right,left=self.left,traffic_light_state=self.traffic_light_state))
 				
 					
 
@@ -98,11 +98,11 @@ class LEDInterpreterNode(object):
 
 
 
-	def setupParam(self,param_name,default_value):
-			value = rospy.get_param(param_name,default_value)
-			rospy.set_param(param_name,value) #Write to parameter server for transparancy
-			# rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
-			return value
+	#def setupParam(self,param_name,default_value):
+	#		value = rospy.get_param(param_name,default_value)
+	#		rospy.set_param(param_name,value) #Write to parameter server for transparancy
+	#		# rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
+	#		return value
 
 
 	def onShutdown(self):

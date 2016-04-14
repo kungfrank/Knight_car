@@ -3,7 +3,6 @@ from cv_bridge import CvBridge, CvBridgeError
 from duckietown_msgs.msg import BoolStamped, Segment, SegmentList, Vector2D
 from geometry_msgs.msg import Point
 from line_detector.LineDetector2 import *
-from line_detector.WhiteBalance import *
 from sensor_msgs.msg import CompressedImage, Image
 from visualization_msgs.msg import Marker
 import cv2
@@ -47,7 +46,6 @@ class LineDetectorNode2(object):
         # Constructor of line detector 
         self.bridge = CvBridge()
         self.detector = LineDetector2()
-        self.wb = WhiteBalance()
         self.flag_wb_ref = False
        
         # Parameters
@@ -125,21 +123,16 @@ class LineDetectorNode2(object):
             return
 
         tk = TimeKeeper(image_msg)
+       
+        if self.verbose: 
+            self.verbose_counter += 1
+            print self.verbose_counter
         
-        self.verbose_counter += 1
-
         # Decode from compressed image with OpenCV
         image_cv = image_cv_from_jpg(image_msg.data)
 
         tk.completed('decoded')
         
-        # White balancing: set reference image to estimate parameters
-        if self.flag_wb and (not self.flag_wb_ref):
-            # set reference image to estimate parameters
-            self.wb.setRefImg(image_cv)
-            self.verboselog(" White balance: parameters computed.")
-            self.flag_wb_ref = True
-
         # Resize and crop image
         hei_original, wid_original = image_cv.shape[0:2]
 
@@ -150,10 +143,6 @@ class LineDetectorNode2(object):
         image_cv = image_cv[self.top_cutoff:,:,:]
 
         tk.completed('resized')
-
-        # White balancing
-        if self.flag_wb and self.flag_wb_ref:
-            self.wb.correctImg(image_cv)
 
         # Set the image to be detected
         self.detector.setImage(image_cv)

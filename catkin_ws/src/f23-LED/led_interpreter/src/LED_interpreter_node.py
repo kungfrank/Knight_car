@@ -13,7 +13,7 @@ import numpy as np
 
 class LEDInterpreterNode(object):
 	def __init__(self):
-		self.trafficLightIntersection = False
+		self.trafficLightIntersection = True
 		self.node_name = rospy.get_name()
 		self.pub_interpret = rospy.Publisher("~signals_detection", SignalsDetection, queue_size = 1)
 		self.sub_tags = rospy.Subscriber("apriltags_postprocessing_fast_node/apriltags", AprilTags, self.CheckTags)
@@ -82,7 +82,7 @@ class LEDInterpreterNode(object):
 		
 		rospy.loginfo("[%s] The observed LEDs are:\n Front = %s\n Right = %s\n Traffic light state = %s" %(self.node_name, self.front, self.right,self.traffic_light_state))
 
-		pub_interpret.publish(SignalsDetection(front=self.front,right=self.right,left=self.left,traffic_light_state=self.traffic_light_state))
+		self.pub_interpret.publish(SignalsDetection(front=self.front,right=self.right,left=self.left,traffic_light_state=self.traffic_light_state))
 				
 					
 
@@ -90,10 +90,11 @@ class LEDInterpreterNode(object):
 
 	def CheckTags(self, msg):
 	#task of this is to check on what type of intersection we are
-		self.trafficLightIntersection = False
+		self.trafficLightIntersection = True
 		for info in msg.infos:
-			if info.traffic_sign_type == info.TRAFFIC_LIGHT_AHEAD: #TODO put correct constant
-				self.trafficLightIntersection = True
+			if info.traffic_sign_type == info.STOP: #TODO put correct constant
+				self.trafficLightIntersection = False
+				break
 			
 
 

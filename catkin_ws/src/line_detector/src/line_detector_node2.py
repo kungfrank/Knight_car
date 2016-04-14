@@ -2,8 +2,7 @@
 from cv_bridge import CvBridge, CvBridgeError
 from duckietown_msgs.msg import BoolStamped, Segment, SegmentList, Vector2D
 from geometry_msgs.msg import Point
-from line_detector.LineDetector import *
-from line_detector.WhiteBalance import *
+from line_detector.LineDetector2 import *
 from sensor_msgs.msg import CompressedImage, Image
 from visualization_msgs.msg import Marker
 import cv2
@@ -15,7 +14,6 @@ from duckietown_utils.jpg import image_cv_from_jpg
 def asms(s):
     return "%.1fms" % (s*1000)
         
-
 class TimeKeeper():
     def __init__(self,  image_msg):
         self.t_acquisition = image_msg.header.stamp.to_sec()
@@ -38,18 +36,16 @@ class TimeKeeper():
 
         return s
 
-
-class LineDetectorNode(object):
+class LineDetectorNode2(object):
     def __init__(self):
-        self.node_name = "Line Detector"
+        self.node_name = "Line Detector2"
 
         # Thread lock 
         self.thread_lock = threading.Lock()
        
         # Constructor of line detector 
         self.bridge = CvBridge()
-        self.detector = LineDetector()
-        self.wb = WhiteBalance()
+        self.detector = LineDetector2()
         self.flag_wb_ref = False
        
         # Parameters
@@ -72,6 +68,11 @@ class LineDetectorNode(object):
         # Verbose option 
         self.verbose = rospy.get_param('~verbose')
         if self.verbose:
+            # Only be verbose every 10 cycles
+            self.verbose_interval = 10
+            self.verbose_counter = 0
+            rospy.loginfo('Verbose: %s interval: %s' % (self.verbose, self.verbose_interval))
+
             self.pub_edge = rospy.Publisher("~edge", Image, queue_size=1)
             self.pub_segment = rospy.Publisher("~segment", Image, queue_size=1)
             
@@ -95,25 +96,6 @@ class LineDetectorNode(object):
         self.detector.hough_min_line_length = rospy.get_param('~hough_min_line_length')
         self.detector.hough_max_line_gap    = rospy.get_param('~hough_max_line_gap')
         self.detector.hough_threshold = rospy.get_param('~hough_threshold')
-
-        # Publishers
-        self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
-        self.pub_image = rospy.Publisher("~image_with_lines", Image, queue_size=1)
-       
-        # Verbose option 
-        self.verbose = rospy.get_param('~verbose')
-        # Only be verbose every 10 cycles
-        self.verbose_interval = 10
-        self.verbose_counter = 0
-
-        rospy.loginfo('Verbose: %s interval: %s' % (self.verbose, self.verbose_interval))
-        if self.verbose:
-            self.toc_pre = rospy.get_time()   
-
-        # Subscribers
-        self.sub_image = rospy.Subscriber("~image", CompressedImage, self.cbImage, queue_size=1)
-        self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
-        rospy.loginfo("[%s] Initialized." %(self.node_name))
 
     def cbSwitch(self, switch_msg):
         self.active = switch_msg.data
@@ -141,21 +123,16 @@ class LineDetectorNode(object):
             return
 
         tk = TimeKeeper(image_msg)
+       
+        if self.verbose: 
+            self.verbose_counter += 1
+            print self.verbose_counter
         
-        self.verbose_counter += 1
-
         # Decode from compressed image with OpenCV
         image_cv = image_cv_from_jpg(image_msg.data)
 
         tk.completed('decoded')
         
-        # White balancing: set reference image to estimate parameters
-        if self.flag_wb and (not self.flag_wb_ref):
-            # set reference image to estimate parameters
-            self.wb.setRefImg(image_cv)
-            self.verboselog(" White balance: parameters computed.")
-            self.flag_wb_ref = True
-
         # Resize and crop image
         hei_original, wid_original = image_cv.shape[0:2]
 
@@ -167,27 +144,23 @@ class LineDetectorNode(object):
 
         tk.completed('resized')
 
-        # White balancing
-        if self.flag_wb and self.flag_wb_ref:
-            self.wb.correctImg(image_cv)
-
         # Set the image to be detected
         self.detector.setImage(image_cv)
 
         # Detect lines and normals
-        lines_white, normals_white, area_white = self.detector.detectLines('white')
-        lines_yellow, normals_yellow, area_yellow = self.detector.detectLines('yellow')
-        lines_red, normals_red, area_red = self.detector.detectLines('red')
+        lines_white, normals_white, centers_white, area_white = self.detector.detectLines2('white')
+        lines_yellow, normals_yellow, centers_yellow, area_yellow = self.detector.detectLines2('yellow')
+        lines_red, normals_red, centers_red, area_red = self.detector.detectLines2('red')
 
         tk.completed('detected')
         
         # Draw lines and normals
-        self.detector.drawLines(lines_white, (0,0,0))
-        self.detector.drawLines(lines_yellow, (255,0,0))
-        self.detector.drawLines(lines_red, (0,255,0))
-        #self.detector.drawNormals(lines_white, normals_white)
-        #self.detector.drawNormals(lines_yellow, normals_yellow)
-        #self.detector.drawNormals(lines_red, normals_red)
+        #self.detector.drawLines(lines_white, (0,0,0))
+        #self.detector.drawLines(lines_yellow, (255,0,0))
+        #self.detector.drawLines(lines_red, (0,255,0))
+        self.detector.drawNormals2(centers_white, normals_white, (0,0,0))
+        self.detector.drawNormals2(centers_yellow, normals_yellow, (255,0,0))
+        self.detector.drawNormals2(centers_red, normals_red, (0,255,0))
 
         tk.completed('drawn')
 
@@ -225,9 +198,8 @@ class LineDetectorNode(object):
         # Verbose
         if self.verbose:
             rospy.loginfo("[%s] Latency sent = %.3f ms" %(self.node_name, (rospy.get_time()-image_msg.header.stamp.to_sec()) * 1000.0))
-      
-            segment = np.zeros((self.image_size[0],self.image_size[1], 3), dtype=np.uint8) 
-
+        
+            segment = np.zeros((self.image_size[0],self.image_size[1], 3), dtype=np.uint8)
             edge_msg_out = self.bridge.cv2_to_imgmsg(self.detector.edges, "mono8")
             segment_msg_out = self.bridge.cv2_to_imgmsg(segment, "bgr8")
             self.pub_edge.publish(edge_msg_out)
@@ -235,13 +207,12 @@ class LineDetectorNode(object):
 
         tk.completed('pub_image')
 
-
         self.verboselog(tk.getall())
         # Release the thread lock
         self.thread_lock.release()
 
     def onShutdown(self):
-        rospy.loginfo("[LineDetectorNode] Shutdown.")
+        rospy.loginfo("[LineDetectorNode2] Shutdown.")
             
     def toSegmentMsg(self,  lines, normals, color):
         
@@ -260,7 +231,7 @@ class LineDetectorNode(object):
         return segmentMsgList
 
 if __name__ == '__main__': 
-    rospy.init_node('line_detector',anonymous=False)
-    line_detector_node = LineDetectorNode()
+    rospy.init_node('line_detector2',anonymous=False)
+    line_detector_node = LineDetectorNode2()
     rospy.on_shutdown(line_detector_node.onShutdown)
     rospy.spin()

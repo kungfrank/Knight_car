@@ -41,7 +41,6 @@ class LineDetector2(object):
 
         # binary dilation
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(self.dilation_kernel_size, self.dilation_kernel_size))
-        #bw = cv2.dilate(bw, kernel)
         
         # refine edge for certain color
         edge_color = cv2.bitwise_and(cv2.dilate(bw, kernel), self.edges)
@@ -68,7 +67,6 @@ class LineDetector2(object):
         normals = np.vstack((grad_x[roi], grad_y[roi])).transpose()
         normals /= np.sqrt(np.sum(normals**2, axis=1, keepdims=True))
 
-        #self.drawNormals(centers, normals, (0,0,0))
         lines = self._synthesizeLines(centers, normals)
 
         return lines, normals, centers
@@ -82,13 +80,6 @@ class LineDetector2(object):
         val[val>=bound]=bound-1
         return val
 
-    def _correctPixelOrdering(self, lines, normals):
-        flag = ((lines[:,2]-lines[:,0])*normals[:,1] - (lines[:,3]-lines[:,1])*normals[:,0])>0
-        for i in range(len(lines)):
-            if flag[i]:
-                x1,y1,x2,y2 = lines[i, :]
-                lines[i, :] = [x2,y2,x1,y1] 
- 
     def _synthesizeLines(self, centers, normals):
         lines = []
         if len(centers)>0:

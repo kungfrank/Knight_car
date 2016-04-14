@@ -163,7 +163,7 @@ class LineDetectorNode2(object):
         tk.completed('drawn')
 
         # SegmentList constructor
-        segmentList = SegmentList()
+        segmentList = Segment#List()
         segmentList.header.stamp = image_msg.header.stamp
         
         # Convert to normalized pixel coordinates, and add segments to segmentList
@@ -204,8 +204,8 @@ class LineDetectorNode2(object):
             self.pub_segment.publish(segment_msg_out)
 
         tk.completed('pub_image')
-
         self.verboselog(tk.getall())
+
         # Release the thread lock
         self.thread_lock.release()
 
@@ -215,6 +215,8 @@ class LineDetectorNode2(object):
     def toSegmentMsg(self,  lines, normals, color):
         
         segmentMsgList = []
+        #segmentMsgList = [Segment() for i in range(lines.shape[0])]
+        #k = 0
         for x1,y1,x2,y2,norm_x,norm_y in np.hstack((lines,normals)):
             segment = Segment()
             segment.color = color
@@ -226,6 +228,8 @@ class LineDetectorNode2(object):
             segment.normal.y = norm_y
              
             segmentMsgList.append(segment)
+            #segmentMsgList[k] = segment
+            #k += 1
         return segmentMsgList
 
 if __name__ == '__main__': 

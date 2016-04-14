@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 import rospy
 import time
-from led_detection.LEDDetector import LEDDetector
+#from led_detection.LEDDetector import LEDDetector
 from std_msgs.msg import Byte
-from duckietown_msgs.msg import Vector2D, AprilTags, LEDDetection, LEDDetectionArray, LEDDetectionDebugInfo, LEDInterpreter
+from duckietown_msgs.msg import Vector2D, AprilTags, LEDDetection, LEDDetectionArray, LEDDetectionDebugInfo #, LEDInterpreter
+from duckietown_msgs.msg.signalings import SignalsDetection
 from sensor_msgs.msg import CompressedImage
 from duckietown_utils.bag_logs import numpy_from_ros_compressed
 import numpy as np
@@ -14,35 +15,76 @@ class LEDInterpreterNode(object):
 	def __init__(self):
 		self.trafficLightIntersection = False
 		self.node_name = rospy.get_name()
-		self.pub_interpret = rospy.Publisher("~signals_detection", signalings/SignalsDetection, queue_size = 1)
+		self.pub_interpret = rospy.Publisher("~signals_detection", SignalsDetection, queue_size = 1)
 		self.sub_tags = rospy.Subscriber("apriltags_postprocessing_fast_node/apriltags", AprilTags, self.CheckTags)
 		self.sub_LEDs = rospy.Subscriber("~raw_led_detection", LEDDetectionArray, self.Interpreter, queue_size = 1)
 
 
 		self.protocol = self.setParam("~LED_Protocol") #should be a list of tuples
-		self.label = self.setParam("~location_config") # should be a list
-		#self._traffic = True
+		self.label = self.setParam("~location") # should be a list
+		# self._traffic = True
 		# self._light = None
-		self._freq = None
+		# self._freq = None
 
 		self.lightGo = self.protocol['traffic_light_go']['frequency_idx']
 		self.lightStop = self.protocol['traffic_light_stop']['frequency_idx']
+		self.carSignalA = self.protocol['CAR_SIGNAL_A']['frequency_idx']
+		self.carSignalB = self.protocol['CAR_SIGNAL_B']['frequency_idx']
+		self.carSignalC = self.protocol['CAR_SIGNAL_C']['frequency_idx']
+
+		self.signalFrequencies = [self.carSignalA, self.carSignalB,self.carSignal.C]
+		self.vehicleSignals = [SignalsDetection.SIGNAL_A,SignalsDetection.SIGNAL_B,SignalsDetection.SIGNAL_C] 
+
+
+		#initialize the standard output message
+		self.front = SignalsDetection.NO_CAR
+		self.right = SignalsDetection.NO_CAR
+		self.left = SignalsDetection.NO_CAR
+
+		self.traffic_light_state = SignalsDetection.NO_TRAFFIC_LIGHT
 
 		rospy.loginfo("Initialized.")
 
 
 	def Interpreter(self, msg):
-		if self._traffic is not False:
+		#case with a traffic light
+		if self.trafficLightIntersection:
 			for item in msg:
-				#only recognize if it is traffic light
-				if item.pixels_normalized.x > self.label['left'] and item.pixels_normalized.x < self.label['right'] and item.pixels_normalized.y > self.label['top']:
+				if item.pixels_normalized.y > self.label['top']:
+					if item.frequency == self.lightGo:
+						self.traffic_light_state = SignalsDetection.GO
+						break
 
-					self._freq = item.frequency
-					if self._freq = self.lightGo:
-						msg = "go"
+					else:
+						self.traffic_light_state = SingnalsDetection.STOP
+						break
 
-					elif self._freq = self.lightStop:
-						msg = "stop"
+		#case with stop sign intersection	
+		else:
+			for item in msg:
+				#check if front vehicle detection
+				if item.pixels_normalized.x > self.label['left'] and item.pixels_normalized.x < self.label['right'] and item.pixels_normalized.y < self.label['top']:
+					#check signal of that vehicle
+					detected_freq = item.frequency
+					for i in range(len(self.signalFrequencies)):
+						if self.signalFrequencies[i] == detected_freq:
+							self.front = self.vehicleSignals[i]
+							break
+
+				#check if right vehicle detection
+				if item.pixels_normalized.x > self.label['right'] and item.pixels_normalized.y < self.label['top']:
+					#check signal of that vehicle
+					detected_freq = item.frequency
+					for i in range(len(self.signalFrequencies)):
+						if self.signalFrequencies[i] == detected_freq:
+							self.right = self.vehicleSignals[i]
+							break	
+		
+		rospy.loginfo("[%s] The observed LEDs are:\n Front = %s\n Right = %s\n Traffic light state = %s" %(self.node_name, self.front, self.right,self.traffic_light_state))
+
+		pub_interpret.publish(SignalsDetection(self.front,self.right,self.left,self.traffic_light_state))
+				
+					
 
 
 

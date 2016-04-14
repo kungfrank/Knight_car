@@ -100,6 +100,7 @@ add_message_files(
 add_service_files(
   FILES
   SetFSMState.srv
+  SetValue.srv
   # Service2.srv
 )
 

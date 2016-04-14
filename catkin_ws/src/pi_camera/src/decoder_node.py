@@ -12,6 +12,7 @@ import time
 class DecoderNode(object):
     def __init__(self):
         self.node_name = rospy.get_name()
+        self.active = True
         self.bridge = CvBridge()
         
         self.publish_freq = self.setupParam("~publish_freq",1.0)
@@ -19,6 +20,7 @@ class DecoderNode(object):
         self.pub_raw = rospy.Publisher("~image/raw",Image,queue_size=1)
         self.last_stamp = rospy.Time.now()        
         self.sub_compressed_img = rospy.Subscriber("~compressed_image",CompressedImage,self.cbImg,queue_size=1)
+        self.sub_switch = rospy.Subscriber("~switch",BoolStamped, self.cbSwitch, queue_size=1)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -26,7 +28,12 @@ class DecoderNode(object):
         rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
         return value
 
+    def cbSwitch(self,switch_msg):
+        self.active = switch_msg.data
+
     def cbImg(self,msg):
+        if not self.active:
+            return
         now = rospy.Time.now()
         if now - self.last_stamp < self.publish_duration:
             return

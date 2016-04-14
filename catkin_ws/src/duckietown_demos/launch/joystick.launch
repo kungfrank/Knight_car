@@ -29,7 +29,6 @@
         <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>
         <arg name="config" value="$(arg config)"/>
-        <arg name="param_file_name" value="$(arg param_file_name)"/>
     </include>
 
     <!-- run forward_kinematics_node -->
@@ -38,7 +37,6 @@
         <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>
         <arg name="config" value="$(arg config)"/>
-        <arg name="param_file_name" value="$(arg param_file_name)"/>
     </include>
 
     <!-- run the velocity_to_pose_node -->
@@ -47,7 +45,6 @@
         <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>
         <arg name="config" value="$(arg config)"/>
-        <arg name="param_file_name" value="$(arg param_file_name)"/>
     </include>
 
     <!-- Wheels Driver -->

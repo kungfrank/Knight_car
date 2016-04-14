@@ -22,6 +22,10 @@ events: #Maps from subscribing topic to singal ids
     topic: "open_loop_intersection_control_node/intersection_done"
     msg_type: "BoolStamped"
     trigger: True
+  intersection_done_and_in_lane:
+    topic: "logic_gate_node/in_lane"
+    msg_type: "BoolStamped"
+    trigger: True
 
 # Define global transitions. Available from all states.
 global_transitions:
@@ -46,11 +50,11 @@ states:
     transitions:
       joystick_override_off: "LANE_FOLLOWING"
     active_nodes: []
-    lights: []
   LANE_FOLLOWING:
     transitions:
-      at_stop_line: "COORDINATION"
+      at_stop_line: "INTERSECTION_CONTROL"
     active_nodes:
+      - decoder_node
       - vehicle_detector_node
       - static_object_detector_node
       - lane_filter_node

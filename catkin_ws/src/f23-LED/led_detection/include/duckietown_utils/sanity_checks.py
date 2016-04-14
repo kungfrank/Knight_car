@@ -24,8 +24,18 @@ def check_import(package):
 def check_failure():
     raise ValueError('error')
 
+def on_duckiebot():
+    import platform
+    proc = platform.processor()
+    on_the_robot = not('x86' in proc)
+    # armv7l
+    return on_the_robot
+
 def check_environment_variables():
     vs = {
+    'DUCKIETOWN_ROOT': """
+DUCKIETOWN_ROOT should be set.
+    """,
           'DUCKIETOWN_DATA': """
 The environment variable DUCKIETOWN_DATA must either:
 1) be set to "n/a"
@@ -37,12 +47,13 @@ The environment variable DUCKIETOWN_DATA must either:
     }
 
     # Only check this if we are on the robot
-    import platform
-    proc = platform.processor()
-    on_the_robot = 'x86' in proc
 
-    if not on_the_robot:
+    if not on_duckiebot():
         del vs['VEHICLE_NAME']
+
+    # do not check DUCKIETOWN_DATA on robot
+    if on_duckiebot():
+        del vs['DUCKIETOWN_DATA']
 
     errors = []
     for v in vs:
@@ -50,14 +61,15 @@ The environment variable DUCKIETOWN_DATA must either:
             e = 'Environment variable %r not defined.' % v
             errors.append(e + '\n' + vs[v])
         
-    if 'DUCKIETOWN_DATA' in os.environ:
-        path = os.environ['DUCKIETOWN_DATA']
-        if path != 'n/a':
-            f = expand_environment(path)
-            logs = os.path.join(f, 'logs')
-            if not os.path.exists(f) or not os.path.exists(logs):
-                e = vs['DUCKIETOWN_DATA']
-                errors.append(e)
+    if not on_duckiebot():
+        if 'DUCKIETOWN_DATA' in os.environ:
+            path = os.environ['DUCKIETOWN_DATA']
+            if path != 'n/a':
+                f = expand_environment(path)
+                logs = os.path.join(f, 'logs')
+                if not os.path.exists(f) or not os.path.exists(logs):
+                    e = vs['DUCKIETOWN_DATA']
+                    errors.append(e)
 
     if errors:
         raise Exception('\n---\n'.join(errors))

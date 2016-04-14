@@ -47,7 +47,8 @@ class IndefNavigationNode(object):
             rospy.loginfo("could not subscribe to lane and stop line")
             return
         
-        self.init = self.lane, self.stop
+        #Measured dist for stop as 145 cm physically
+        self.init = self.lane, -0.145
         forward_for_time = self.forward_time
         starting_time = rospy.Time.now()
         while((rospy.Time.now() - starting_time) < rospy.Duration(forward_for_time)):
@@ -71,31 +72,34 @@ class IndefNavigationNode(object):
 
         off_d = abs(init_d - final_d)
         off_phi = abs(init_phi - final_phi)
+        result_trim = "FAILED"
 
-        result_trim = "PASSED/NOT PASSED "
+        if abs(off_d) < 0.08:
+            result_trim = "PASSED"
 
-        init_stop_y = self.init[1].stop_line_point.y
+        init_stop_y  = self.init[1]
         final_stop_y = self.final[1].stop_line_point.y
 
         velocity = abs(init_stop_y - final_stop_y) / self.forward_time
-        result_vel = "PASSED/NOT PASSED"
-        
+        result_vel = "FAILED"
+        if abs(velocity - 0.030833333333333333333)< 0.009:
+            result_vel = "PASSED"
         info = """
         LANE OFFSET SUMMARY
         ===================
-        initial location is (%.2f, %.2f), 
-        final location is (%.2f, %.2f).
+        initial location is (%.4f, %.4f), 
+        final location is (%.4f, %.4f).
 
-        distance offset = %.2f
-        distance angle offset = %.2f
+        distance offset = %.4f
+        distance angle offset = %.4f
         TRIM TEST % s
-
+        Note: pose angle offset does not factor into the trim test.
 
         VELOCITY OFFSET SUMMARY
         ======================
-        initial stop sign y offset: %.2f
-        final stop sign y offset: %.2f
-        velocity computed: %.2f
+        initial stop sign y offset: %.4f
+        final stop sign y offset: %.4f
+        velocity computed: %.4f
         VELOCITY TEST: %s
 
         """ % ( init_d, init_phi, final_d, final_phi, \

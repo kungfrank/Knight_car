@@ -6,7 +6,7 @@ from std_msgs.msg import Byte
 from duckietown_msgs.msg import Vector2D, AprilTags, LEDDetection, LEDDetectionArray, LEDDetectionDebugInfo #, LEDInterpreter
 from duckietown_msgs.msg.signalings import SignalsDetection
 from sensor_msgs.msg import CompressedImage
-from duckietown_utils.bag_logs import numpy_from_ros_compressed
+#from duckietown_utils.bag_logs import numpy_from_ros_compressed
 import numpy as np
 
 #this is a stup for traffic light testing

@@ -2,7 +2,7 @@
 import rospy
 from copy import deepcopy
 from sensor_msgs.msg import CompressedImage,Image
-from duckietown_msgs.msg import AntiInstagramHealth, BoolStamped
+from duckietown_msgs.msg import AntiInstagramHealth, BoolStamped, AntiInstagramTransform
 from anti_instagram.AntiInstagram import *
 import numpy as np
 import threading
@@ -19,7 +19,7 @@ class AntiInstagramNode():
 		self.pub_health = rospy.Publisher("~health",AntiInstagramHealth,queue_size=1)
                 self.sub_switch = rospy.Subscriber("~switch",BoolStamped, self.cbSwitch, queue_size=1)
 		self.sub_image = rospy.Subscriber("~uncorrected_image",Image,self.cbNewImage,queue_size=1)
-
+		self.pub_transform = rospy.Publisher("~transform",AntiInstagramTransform,queue_size=1)
 		# image callback thread lock
 		self.thread_lock = threading.Lock()
 
@@ -32,11 +32,20 @@ class AntiInstagramNode():
 		# Initialize health message
 		self.health = AntiInstagramHealth()
 
+		# Initialize transform message
+		self.transform = AntiInstagramTransform()
+
 		self.ai = AntiInstagram()
 		self.corrected_image = Image()
 		self.bridge = CvBridge()
 
 		self.numFramesSeen = 0
+
+		# pull status from Antiinstagram class
+		self.health.J1 = self.ai.health
+		self.transform.shift1, self.transform.shift2, self.transform.shift3 = self.ai.shift
+		self.transform.scale1, self.transform.scale2, self.transform.scale3 = self.ai.scale
+
 
         def cbSwitch(self,switch_msg):
                 self.active = switch_msg.data
@@ -99,8 +108,15 @@ class AntiInstagramNode():
 			rospy.loginfo("[%s] Latency image msg encode = %.3f ms" %(self.node_name, (rospy.get_time()-toc) * 1000.0))
 			toc = rospy.get_time()
 
-		# self.pub_health.publish(self.health)
+		# pull status from Antiinstagram class
+		self.health.J1 = self.ai.health
+		self.transform.shift1, self.transform.shift2, self.transform.shift3 = self.ai.shift
+		self.transform.scale1, self.transform.scale2, self.transform.scale3 = self.ai.scale
+
+		self.pub_health.publish(self.health)
+		self.pub_transform.publish(self.transform)
 		self.pub_image.publish(self.corrected_image)
+
 		if self.verbose:  
 			rospy.loginfo("[%s] Latency image publish  = %.3f ms" %(self.node_name, (rospy.get_time() - toc) * 1000.0))
 			rospy.loginfo("[%s] Total Latency image published (total time frame in -> frame out) = %.3f ms" %(self.node_name, (rospy.get_time() - tic) * 1000.0))

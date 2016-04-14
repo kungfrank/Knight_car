@@ -15,10 +15,6 @@ class LEDInterpreterNode(object):
 		self.trafficLightIntersection = True
 		self.node = rospy.init_node('LED_interpreter_node',anonymous=True)
 		self.node_name = rospy.get_name()
-		self.pub_interpret = rospy.Publisher("~signals_detection", SignalsDetection, queue_size = 1)
-		self.sub_tags = rospy.Subscriber("apriltags_postprocessing_fast_node/apriltags", AprilTags, self.CheckTags)
-		self.sub_LEDs = rospy.Subscriber("~raw_led_detection", LEDDetectionArray, self.Interpreter, queue_size = 1)
-
 
 		self.protocol = rospy.get_param("~LED_protocol") #should be a list of tuples
 		self.label = rospy.get_param("~location") # should be a list
@@ -42,6 +38,11 @@ class LEDInterpreterNode(object):
 		self.left = SignalsDetection.NO_CAR
 
 		self.traffic_light_state = SignalsDetection.NO_TRAFFIC_LIGHT
+
+		#publishers and subscribers
+		self.pub_interpret = rospy.Publisher("~signals_detection", SignalsDetection, queue_size = 1)
+		self.sub_tags = rospy.Subscriber("apriltags_postprocessing_fast_node/apriltags", AprilTags, self.CheckTags)
+		self.sub_LEDs = rospy.Subscriber("~raw_led_detection", LEDDetectionArray, self.Interpreter, queue_size = 1)
 
 		rospy.loginfo("Initialized.")
 
@@ -92,7 +93,7 @@ class LEDInterpreterNode(object):
 	#task of this is to check on what type of intersection we are
 		self.trafficLightIntersection = True
 		for info in msg.infos:
-			if info.traffic_sign_type == info.STOP: #TODO put correct constant
+			if info.traffic_sign_type == info.STOP:
 				self.trafficLightIntersection = False
 				break
 			

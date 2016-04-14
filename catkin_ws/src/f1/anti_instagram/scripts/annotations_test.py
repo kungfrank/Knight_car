@@ -114,8 +114,8 @@ def run_detection(transform, jpg, out, shape, interpolation,
                                  
 
                                  transformed_clipped,
-                                 merge_masks_res(image_detections),
-                                 gray2rgb(image_detections['edges']),
+                                 merge_masks_res(transformed_detections),
+                                 gray2rgb(transformed_detections['edges']),
                                  transformed_detections['annotated'],
                        ], 
                                 

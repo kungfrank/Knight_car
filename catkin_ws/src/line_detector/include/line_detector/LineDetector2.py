@@ -51,15 +51,14 @@ class LineDetector2(object):
 
     def _lineFilter(self, bw, edge_color):
         # find gradient of the bw image
-        grad_x = -cv2.Sobel(bw/10, cv2.CV_32F, 1, 0, ksize=5)
-        grad_y = -cv2.Sobel(bw/10, cv2.CV_32F, 0, 1, ksize=5)
+        grad_x = -cv2.Sobel(bw/255, cv2.CV_32F, 1, 0, ksize=5)
+        grad_y = -cv2.Sobel(bw/255, cv2.CV_32F, 0, 1, ksize=5)
         grad_x *= (edge_color == 255)
         grad_y *= (edge_color == 255)
 
         grad = np.sqrt(grad_x**2 + grad_y**2)
-        roi = (grad>1000)
+        roi = (grad>40)
 
-        #grad *= roi
         #print np.unique(grad)
         #print np.sum(roi)
 
@@ -70,7 +69,6 @@ class LineDetector2(object):
         normals /= np.sqrt(np.sum(normals**2, axis=1, keepdims=True))
 
         #self.drawNormals(centers, normals, (0,0,0))
-
         lines = self._synthesizeLines(centers, normals)
 
         return lines, normals, centers

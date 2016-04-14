@@ -21,7 +21,7 @@ class LEDInterpreterNode(object):
 
 
 		self.protocol = self.setParam("~LED_Protocol") #should be a list of tuples
-		self.label = self.setParam("~location") # should be a list
+		self.label = self.setParam("~TrafficLocation") # should be a list
 		# self._traffic = True
 		# self._light = None
 		# self._freq = None

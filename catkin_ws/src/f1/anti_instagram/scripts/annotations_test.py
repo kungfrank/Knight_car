@@ -205,19 +205,14 @@ def line_detection(LineDetectorClass, bgr):
         lines_red, normals_red, centers_red, area_red = detector.detectLines2('red')
 
         # draw lines
-        detector.drawLines(lines_white, (0, 0, 0))
-        detector.drawLines(lines_yellow, (255, 0, 0))
-        detector.drawLines(lines_red, (0, 255, 0))
-        # draw normals
-        #detector.drawNormals2(centers_yellow, lines_yellow, normals_yellow)
-        #detector.drawNormals2(centers_white, lines_white, normals_white)
-        #detector.drawNormals2(centers_red, lines_red, normals_red)
+        #detector.drawLines(lines_white, (0, 0, 0))
+        #detector.drawLines(lines_yellow, (255, 0, 0))
+        #detector.drawLines(lines_red, (0, 255, 0))
     
-        print('XXX Hang Zhao please fix')
         # draw normals
-#         detector.drawNormals2(centers_yellow, lines_yellow, normals_yellow)
-#         detector.drawNormals2(centers_white, lines_white, normals_white)
-#         detector.drawNormals2(centers_red, lines_red, normals_red)
+        detector.drawNormals2(centers_white, normals_white, (0, 0, 0))
+        detector.drawNormals2(centers_yellow, normals_yellow, (255, 0, 0))
+        detector.drawNormals2(centers_red, normals_red, (0, 255, 0))
         
     res = {}
     res['annotated'] = detector.getImage()
@@ -251,6 +246,7 @@ def gray2rgb(gray):
 
 def anti_instagram_annotations_test():
     base = "${DUCKIETOWN_DATA}/phase3-misc-files/so1/"
+    #base = "/home/hang/duckietown-data/phase3-misc-files/so1/"
 
     base = expand_environment(base)
     dirs = locate_files(base, '*.iids1', alsodirs=True)

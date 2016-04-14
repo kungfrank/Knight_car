@@ -27,7 +27,7 @@ class LineDetector(object):
         self.hough_min_line_length = 3
         self.hough_max_line_gap = 1
 
-    def __colorFilter(self, color):
+    def _colorFilter(self, color):
         # threshold colors in HSV space
         if color == 'white':
             bw = cv2.inRange(self.hsv, self.hsv_white1, self.hsv_white2)
@@ -49,11 +49,11 @@ class LineDetector(object):
 
         return bw, edge_color
 
-    def __findEdge(self, gray):
+    def _findEdge(self, gray):
         edges = cv2.Canny(gray, self.canny_thresholds[0], self.canny_thresholds[1], apertureSize = 3)
         return edges
 
-    def __HoughLine(self, edge):
+    def _HoughLine(self, edge):
         lines = cv2.HoughLinesP(edge, 1, np.pi/180, self.hough_threshold, np.empty(1), self.hough_min_line_length, self.hough_max_line_gap)
         if lines is not None:
             lines = np.array(lines[0])
@@ -61,19 +61,19 @@ class LineDetector(object):
             lines = []
         return lines
     
-    def __checkBounds(self, val, bound):
+    def _checkBounds(self, val, bound):
         val[val<0]=0
         val[val>=bound]=bound-1
         return val
 
-    def __correctPixelOrdering(self, lines, normals):
+    def _correctPixelOrdering(self, lines, normals):
         flag = ((lines[:,2]-lines[:,0])*normals[:,1] - (lines[:,3]-lines[:,1])*normals[:,0])>0
         for i in range(len(lines)):
             if flag[i]:
                 x1,y1,x2,y2 = lines[i, :]
                 lines[i, :] = [x2,y2,x1,y1] 
  
-    def __findNormal(self, bw, lines):
+    def _findNormal(self, bw, lines):
         normals = []
         if len(lines)>0:
             length = np.sum((lines[:, 0:2] -lines[:, 2:4])**2, axis=1, keepdims=True)**0.5
@@ -83,10 +83,10 @@ class LineDetector(object):
             y3 = ((lines[:,1:2]+lines[:,3:4])/2 - 3.*dy).astype('int')
             x4 = ((lines[:,0:1]+lines[:,2:3])/2 + 3.*dx).astype('int')
             y4 = ((lines[:,1:2]+lines[:,3:4])/2 + 3.*dy).astype('int')
-            x3 = self.__checkBounds(x3, bw.shape[1])
-            y3 = self.__checkBounds(y3, bw.shape[0])
-            x4 = self.__checkBounds(x4, bw.shape[1])
-            y4 = self.__checkBounds(y4, bw.shape[0])
+            x3 = self._checkBounds(x3, bw.shape[1])
+            y3 = self._checkBounds(y3, bw.shape[0])
+            x4 = self._checkBounds(x4, bw.shape[1])
+            y4 = self._checkBounds(y4, bw.shape[0])
             flag_signs = (np.logical_and(bw[y3,x3]>0, bw[y4,x4]==0)).astype('int')*2-1
             normals = np.hstack([dx, dy]) * flag_signs
  
@@ -99,28 +99,28 @@ class LineDetector(object):
                 y3 = int((y1+y2)/2. - 3.*dy)
                 x4 = int((x1+x2)/2. + 3.*dx)
                 y4 = int((y1+y2)/2. + 3.*dy)
-                x3 = self.__checkBounds(x3, bw.shape[1])
-                y3 = self.__checkBounds(y3, bw.shape[0])
-                x4 = self.__checkBounds(x4, bw.shape[1])
-                y4 = self.__checkBounds(y4, bw.shape[0])
+                x3 = self._checkBounds(x3, bw.shape[1])
+                y3 = self._checkBounds(y3, bw.shape[0])
+                x4 = self._checkBounds(x4, bw.shape[1])
+                y4 = self._checkBounds(y4, bw.shape[0])
                 if bw[y3,x3]>0 and bw[y4,x4]==0:
                     normals[cnt,:] = [dx, dy] 
                 else:
                     normals[cnt,:] = [-dx, -dy]
             """
-            self.__correctPixelOrdering(lines, normals)
+            self._correctPixelOrdering(lines, normals)
         return normals
 
     def detectLines(self, color):
-        bw, edge_color = self.__colorFilter(color)
-        lines = self.__HoughLine(edge_color)
-        normals = self.__findNormal(bw, lines)
+        bw, edge_color = self._colorFilter(color)
+        lines = self._HoughLine(edge_color)
+        normals = self._findNormal(bw, lines)
         return lines, normals, bw
 
     def setImage(self, bgr):
         self.bgr = np.copy(bgr)
         self.hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
-        self.edges = self.__findEdge(self.bgr)
+        self.edges = self._findEdge(self.bgr)
   
     def getImage(self):
         return self.bgr
@@ -143,7 +143,7 @@ class LineDetector(object):
                 cv2.circle(self.bgr, (x4,y4), 3, (0,0,255))
 
     def getColorPixels(self, color):
-        bw, _edge_color = self.__colorFilter(color)
+        bw, _edge_color = self._colorFilter(color)
         return bw
 
 def _main():
@@ -160,9 +160,9 @@ def _main():
         detector.setImage(bgr)
 
         # detect lines and normals
-        lines_white, normals_white = detector.detectLines('white')
-        lines_yellow, normals_yellow = detector.detectLines('yellow')
-        lines_red, normals_red = detector.detectLines('red')
+        lines_white, normals_white, area_white = detector.detectLines('white')
+        lines_yellow, normals_yellow, area_yellow = detector.detectLines('yellow')
+        lines_red, normals_red, area_red = detector.detectLines('red')
         
         # draw lines
         detector.drawLines(lines_white, (0,0,0))
@@ -198,9 +198,9 @@ def _main():
             detector.setImage(bgr)
  
             # detect lines and normals
-            lines_white, normals_white = detector.detectLines('white')
-            lines_yellow, normals_yellow = detector.detectLines('yellow')
-            lines_red, normals_red = detector.detectLines('red')
+            lines_white, normals_white, area_white = detector.detectLines('white')
+            lines_yellow, normals_yellow, area_yellow = detector.detectLines('yellow')
+            lines_red, normals_red, area_red = detector.detectLines('red')
             
             # draw lines
             detector.drawLines(lines_white, (0,0,0))

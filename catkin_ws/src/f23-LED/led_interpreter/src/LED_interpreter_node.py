@@ -3,17 +3,17 @@ import rospy
 import time
 #from led_detection.LEDDetector import LEDDetector
 from std_msgs.msg import Byte
-from duckietown_msgs.msg import Vector2D, AprilTags, LEDDetection, LEDDetectionArray, LEDDetectionDebugInfo #, LEDInterpreter
-from duckietown_msgs.msg.signalings import SignalsDetection
+from duckietown_msgs.msg import Vector2D, AprilTags, LEDDetection, LEDDetectionArray, LEDDetectionDebugInfo, SignalsDetection 
 from sensor_msgs.msg import CompressedImage
 #from duckietown_utils.bag_logs import numpy_from_ros_compressed
-import numpy as np
+#import numpy as np
 
 #this is a stup for traffic light testing
 
 class LEDInterpreterNode(object):
 	def __init__(self):
 		self.trafficLightIntersection = True
+		self.node = rospy.init_node('LED_interpreter_node',anonymous=True)
 		self.node_name = rospy.get_name()
 		self.pub_interpret = rospy.Publisher("~signals_detection", SignalsDetection, queue_size = 1)
 		self.sub_tags = rospy.Subscriber("apriltags_postprocessing_fast_node/apriltags", AprilTags, self.CheckTags)
@@ -110,7 +110,7 @@ class LEDInterpreterNode(object):
 		    rospy.loginfo("[LED Interpreter] Shutdown.")
 
 if __name__ == '__main__':
-    rospy.init_node('virtual_mirror_qlai_tester',anonymous=False)
+   # rospy.init_node('virtual_mirror_qlai_tester',anonymous=False)
     interpreternode = LEDInterpreterNode()
     rospy.on_shutdown(interpreternode.onShutdown)
     rospy.spin()

@@ -53,6 +53,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   CarControl.msg
+  CoordinationSignal.msg
   DuckieSensor.msg
   LanePose.msg
 #  LEDControl.msg
@@ -62,6 +63,7 @@ add_message_files(
   WheelsCmd.msg
   WheelsCmdStamped.msg
   Pose2DStamped.msg
+  SignalsDetection.msg
   Twist2DStamped.msg
   TagDetection.msg
   TagInfo.msg

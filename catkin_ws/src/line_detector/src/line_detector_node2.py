@@ -15,7 +15,6 @@ from duckietown_utils.jpg import image_cv_from_jpg
 def asms(s):
     return "%.1fms" % (s*1000)
         
-
 class TimeKeeper():
     def __init__(self,  image_msg):
         self.t_acquisition = image_msg.header.stamp.to_sec()
@@ -37,7 +36,6 @@ class TimeKeeper():
             s +=  ' %15s latency %s\n' % (phase, data['latency_ms'])
 
         return s
-
 
 class LineDetectorNode2(object):
     def __init__(self):
@@ -72,6 +70,11 @@ class LineDetectorNode2(object):
         # Verbose option 
         self.verbose = rospy.get_param('~verbose')
         if self.verbose:
+            # Only be verbose every 10 cycles
+            self.verbose_interval = 10
+            self.verbose_counter = 0
+            rospy.loginfo('Verbose: %s interval: %s' % (self.verbose, self.verbose_interval))
+
             self.pub_edge = rospy.Publisher("~edge", Image, queue_size=1)
             self.pub_segment = rospy.Publisher("~segment", Image, queue_size=1)
             
@@ -95,25 +98,6 @@ class LineDetectorNode2(object):
         self.detector.hough_min_line_length = rospy.get_param('~hough_min_line_length')
         self.detector.hough_max_line_gap    = rospy.get_param('~hough_max_line_gap')
         self.detector.hough_threshold = rospy.get_param('~hough_threshold')
-
-        # Publishers
-        self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
-        self.pub_image = rospy.Publisher("~image_with_lines", Image, queue_size=1)
-       
-        # Verbose option 
-        self.verbose = rospy.get_param('~verbose')
-        # Only be verbose every 10 cycles
-        self.verbose_interval = 10
-        self.verbose_counter = 0
-
-        rospy.loginfo('Verbose: %s interval: %s' % (self.verbose, self.verbose_interval))
-        if self.verbose:
-            self.toc_pre = rospy.get_time()   
-
-        # Subscribers
-        self.sub_image = rospy.Subscriber("~image", CompressedImage, self.cbImage, queue_size=1)
-        self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
-        rospy.loginfo("[%s] Initialized." %(self.node_name))
 
     def cbSwitch(self, switch_msg):
         self.active = switch_msg.data

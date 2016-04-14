@@ -36,7 +36,7 @@ class LEDDetectorNode(object):
         rospy.loginfo('Vehicle: %s'%self.veh_name)
         self.sub_cam = rospy.Subscriber("camera_node/image/compressed",CompressedImage, self.camera_callback)
         self.sub_cam = rospy.Subscriber("~trigger",Byte, self.trigger_callback)
-        self.sub_switch = rospy.Subscrier("~switch",BoolStamped,self.cbSwitch)
+        self.sub_switch = rospy.Subscriber("~switch",BoolStamped,self.cbSwitch)
         print('Waiting for camera image...')
 
     def cbSwitch(self, switch_msg):

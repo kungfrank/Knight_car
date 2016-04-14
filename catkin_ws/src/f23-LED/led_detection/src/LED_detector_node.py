@@ -10,6 +10,7 @@ import numpy as np
 
 class LEDDetectorNode(object):
     def __init__(self):
+        self.active = True
         self.first_timestamp = -1 # won't start unless it's None
         self.data = []
         self.capture_time = 1.0 # capture time

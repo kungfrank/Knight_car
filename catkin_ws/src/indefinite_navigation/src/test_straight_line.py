@@ -6,7 +6,7 @@ from duckietown_msgs.msg import LanePose, StopLineReading
 from std_msgs.msg import String #Imports msg
 from std_msgs.msg import Bool #Imports msg
 #from duckietown_msgs.msg import messages to command the wheels
-from duckietown_msgs.msg import WheelsCmdStamped
+from duckietown_msgs.msg import Twist2DStamped
 
 class IndefNavigationNode(object):
     def __init__(self):
@@ -15,15 +15,15 @@ class IndefNavigationNode(object):
         
         rospy.loginfo("[%s] Initialzing." %(self.node_name))
 	veh_name= rospy.get_param("veh")['duckiebot_visualizer']['veh_name']
-	wheel_topic = veh_name + "/wheels_driver_node/wheels_cmd"
-        lane_topic = veh_name + "/lane_filter_node/lane_pose"
-        stop_topic = veh_name + "/stop_line_filter_node/stop_line_reading"
+	wheel_topic = "/" + veh_name + "/joy_mapper_node/car_cmd"
+        lane_topic = "/" + veh_name + "/lane_filter_node/lane_pose"
+        stop_topic = "/" + veh_name + "/stop_line_filter_node/stop_line_reading"
 
         self.lane = None
         self.stop = None
-        self.forward_time = 5.0
+        self.forward_time = 4.8
 
-        self.pub_wheels_cmd = rospy.Publisher(wheel_topic,WheelsCmdStamped, queue_size=1)
+        self.pub_wheels_cmd = rospy.Publisher(wheel_topic,Twist2DStamped, queue_size=1)
         self.sub_lane = rospy.Subscriber(lane_topic, LanePose, self.cbLane, queue_size=1) 
         self.sub_stop = rospy.Subscriber(stop_topic, StopLineReading, self.cbStop, queue_size=1) 
 
@@ -51,10 +51,10 @@ class IndefNavigationNode(object):
         forward_for_time = self.forward_time
         starting_time = rospy.Time.now()
         while((rospy.Time.now() - starting_time) < rospy.Duration(forward_for_time)):
-            wheels_cmd_msg = WheelsCmdStamped()
+            wheels_cmd_msg = Twist2DStamped()
             wheels_cmd_msg.header.stamp = rospy.Time.now()
-            wheels_cmd_msg.vel_left = 0.4
-            wheels_cmd_msg.vel_right = 0.4
+            wheels_cmd_msg.v = 0.5
+            wheels_cmd_msg.omega = 0.0
             self.pub_wheels_cmd.publish(wheels_cmd_msg)    
             #rospy.loginfo("Moving?.")
             self.rate.sleep()

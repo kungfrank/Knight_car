@@ -9,6 +9,7 @@ from line_detector.LineDetector import LineDetector
 import cv2
 import os
 import scipy.io
+import IPython
 
 def examine_dataset(dirname, out):
     logger.info(dirname)
@@ -98,13 +99,14 @@ def run_detection(transform, jpg, out, shape, interpolation,
         fn = os.path.join(out, '%s.%s.%s.png' % (bn, name, postfix))
         cv2.imwrite(fn, imz)
 
+
 #     write('orig', image)
 #     write('transformed', transformed)
 #     write('transformed_clipped', transformed_clipped)
 #     write('orig.detected', image_detections)
 #     write('transformed.detected', transformed_detections)
 
-
+    # IPython.embed()    
     together = make_images_grid([image,  # transformed,
                                  merge_masks_res(image_detections),
                                  gray2rgb(image_detections['edges']),
@@ -112,8 +114,8 @@ def run_detection(transform, jpg, out, shape, interpolation,
                                  
 
                                  transformed_clipped,
-                                 merge_masks_res(image_detections),
-                                 gray2rgb(image_detections['edges']),
+                                 merge_masks_res(transformed_detections),
+                                 gray2rgb(transformed_detections['edges']),
                                  transformed_detections['annotated'],
                        ], 
                                 
@@ -172,9 +174,10 @@ def test_pair(transform, jpg, mat, out):
         print 'x', x
         print 'y', y
         print 'mask shape', mask.shape
-        print 'type', r['type']
-        print 'color', r['color']
-        print 'guy look here'
+        print 'type', r['type'][0][0][0][0] # type in 1- based / matlab-based indices from the list of region types (i.e road, white, yellow, red, or what ever types were annotated) 
+        print 'color', r['color'][0] # color in [r,g,b] where [r,g,b]are between 0 and 1
+        # print 'guy look here'
+        # IPython.embed()
         # XXX: to finish
 
 def line_detection(bgr):

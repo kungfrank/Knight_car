@@ -177,7 +177,7 @@ def test_pair(transform, jpg, mat, out):
         print 'type', r['type'][0][0][0][0] # type in 1- based / matlab-based indices from the list of region types (i.e road, white, yellow, red, or what ever types were annotated) 
         print 'color', r['color'][0] # color in [r,g,b] where [r,g,b]are between 0 and 1
         # print 'guy look here'
-        IPython.embed()
+        # IPython.embed()
         # XXX: to finish
 
 def line_detection(bgr):

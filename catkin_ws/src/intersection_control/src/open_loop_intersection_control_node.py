@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from duckietown_msgs.msg import FSMState, BoolStamped, Twist2DStamped
+from duckietown_msgs.msg import FSMState, BoolStamped, Twist2DStamped, LanePose, StopLineReading
 from std_srvs.srv import EmptyRequest, EmptyResponse, Empty
 from std_msgs.msg import String, Int16 #Imports msg
 import copy
@@ -12,6 +12,9 @@ class OpenLoopIntersectionNode(object):
         self.mode = None
         self.turn_type = -1
         self.in_lane = False
+        self.lane_pose = LanePose()
+        self.stop_line_reading = StopLineReading()
+
 
         self.pub_cmd = rospy.Publisher("~car_cmd",Twist2DStamped,queue_size=1)
         self.pub_done = rospy.Publisher("~intersection_done",BoolStamped,queue_size=1)
@@ -34,6 +37,8 @@ class OpenLoopIntersectionNode(object):
         self.sub_in_lane = rospy.Subscriber("~in_lane", BoolStamped, self.cbInLane, queue_size=1)
         self.sub_turn_type = rospy.Subscriber("~turn_type", Int16, self.cbTurnType, queue_size=1)
         self.sub_mode = rospy.Subscriber("~mode", FSMState, self.cbFSMState, queue_size=1)
+        self.sub_lane_pose = rospy.Subscriber("~lane_pose", LanePose, self.cbLanePose, queue_size=1)
+        self.sub_stop_line = rospy.Subscriber("~stop_line_reading", StopLineReading, self.cbStopLine, queue_size=1)
 
     def cbSrvLeft(self,req):
         self.trigger(0)
@@ -62,6 +67,13 @@ class OpenLoopIntersectionNode(object):
             self.turn_type = msg.data #Only listen if in INTERSECTION_CONTROL mode
             self.trigger(self.turn_type)
 
+    def cbLanePose(self,msg):
+        self.lane_pose = msg
+
+    def cbStopLine(self,msg):
+        self.stop_line_reading = msg
+                
+        # TODO remove in lane it is now handled by the logic_gate_node
     def cbInLane(self,msg):
         self.in_lane = msg.data
 
@@ -84,12 +96,24 @@ class OpenLoopIntersectionNode(object):
         self.pub_done.publish(msg)
         rospy.loginfo("[%s] interesction_done!" %(self.node_name))
     
+    def update_trajectory(self,turn_type):
+        first_leg = self.maneuvers[turn_type].pop[0]
+        exec_time = first_leg[0];
+        car_cmd   = first_leg[1];
+        new_exec_time = exec_time + self.stop_line_reading.stop_line_point.x/car_cmd.v
+        ###### warning this next line is because of wrong inverse kinematics - remove the 10s after it's fixed
+        new_car_cmd = Twist2DStamped(car_cmd.v,10*(car_cmd.omega/10 - lane_pose.phi/new_exec_time))
+        self.maneuvers[turn_type].insert(0,[new_exec_time,new_car_cmd])
+
     def trigger(self,turn_type):
         if turn_type == -1: #Wait. Publish stop command. Does not publish done.
             cmd = Twist2DStamped(v=0.0,omega=0.0)
             cmd.header.stamp = rospy.Time.now()
             self.pub_cmd.publish(cmd)
             return
+
+        if (self.trajectory_reparam):
+            self.update_trajectory(turn_type)
 
         published_already = False
         for index, pair in enumerate(self.maneuvers[turn_type]):

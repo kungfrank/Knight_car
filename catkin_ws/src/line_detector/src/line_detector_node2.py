@@ -93,9 +93,7 @@ class LineDetectorNode2(object):
 
         self.detector.dilation_kernel_size = rospy.get_param('~dilation_kernel_size')
         self.detector.canny_thresholds = rospy.get_param('~canny_thresholds')
-        self.detector.hough_min_line_length = rospy.get_param('~hough_min_line_length')
-        self.detector.hough_max_line_gap    = rospy.get_param('~hough_max_line_gap')
-        self.detector.hough_threshold = rospy.get_param('~hough_threshold')
+        self.detector.sobel_threshold = rospy.get_param('~sobel_threshold')
 
     def cbSwitch(self, switch_msg):
         self.active = switch_msg.data

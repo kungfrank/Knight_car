@@ -6,7 +6,7 @@
 	<arg name="pre_param_file_name" default="default" doc="Specify a param file. ex:megaman." />
 	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
 	<arg name="pos_param_file_name" default="default" doc="Specify a param file. ex:megaman." />
-	<arg name="raw" default="false" doc="If set to true, also publish raw image using decoder."/> 
+	<arg name="raw" default="true" doc="If set to true, also publish raw image using decoder."/> 
 	<arg name="live" default="true" doc="if set to true, run the camera and do live detection. "/>
 	<arg name="camera" default="true" doc="If set to false, won't launch the camera. This is for easier relaunching of the line_detector_node only "/>
 
@@ -34,14 +34,13 @@
 	    <arg name="config" value="$(arg config)"/>
 	</include>
 
-	<!--
-		<include file="$(find led_interpreter)/launch/LED_interpreter.launch">
-	    		<arg name="veh" value="$(arg veh)"/>
-	    		<arg name="local" value="$(arg local)"/>
-	    		<arg name="config" value="$(arg config)"/>
-		</include>
-	-->
-
+	<!-- LED interpreter --> 
+	<include file="$(find led_interpreter)/launch/LED_interpreter.launch">
+		<arg name="veh" value="$(arg veh)"/>
+	    	<arg name="local" value="$(arg local)"/>
+	    	<arg name="config" value="$(arg config)"/>
+	</include>
+	
 	<!-- april tags -->
 	<!-- Preprocessing -->
  	<include file="$(find apriltags)/launch/apriltags_preprocessing_node.launch">
@@ -86,17 +85,5 @@
  		<arg name="loc" value="$(arg loc)"/>
 		<arg name="param_file_name" value="$(arg pos_param_file_name)"/>
 		<arg name="config" value="$(arg config)"/>
- 	</include>
-
- 	<!-- Visualizer node -->
- 	<remap from="apriltags_visualizer_fast_node/apriltags_in" to="apriltags_postprocessing_fast_node/apriltags_out"/>
- 	<remap from="apriltags_visualizer_global_node/apriltags_in" to="apriltags_postprocessing_global_node/apriltags_out"/>
-	<include file="$(find apriltags)/launch/apriltags_visualizer_node.launch">
- 		<arg name="veh" value="$(arg veh)"/>
- 		<arg name="sub_node_name" value="fast"/>
- 	</include>
- 	<include file="$(find apriltags)/launch/apriltags_visualizer_node.launch">
- 		<arg name="veh" value="$(arg veh)"/>
- 		<arg name="sub_node_name" value="global"/>
  	</include>
 </launch>

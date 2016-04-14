@@ -7,7 +7,6 @@ from sensor_msgs.msg import CameraInfo, Image
 from ground_projection.srv import GetGroundCoord
 from duckietown_msgs.msg import Vector2D
 import numpy as np
-import IPython
 
 class GroundProjectionTest:
   def __init__(self, veh):
@@ -24,7 +23,7 @@ class GroundProjectionTest:
     self.image_topic_name = self.get_image_topic_name(veh)
     print "image topic name: " + self.image_topic_name
 
-    self.th_mean_sq_dist = 0.01**2
+    self.th_mean_sq_dist = 0.03**2 # 3cm error bound
 
   def get_image_topic_name(self, veh):
     image_topic_name = veh + "/camera_node/image_rect"
@@ -86,6 +85,7 @@ class GroundProjectionTest:
     sum_sq_dist = 0.
     for gt, est in zip(pts_gnd, pts_gnd_est):
       sq_dist = (gt[0]-est[0])**2 + (gt[1]-est[1])**2
+      print "sq_dist: ", sq_dist
       sum_sq_dist += sq_dist
     mean_sq_dist = sum_sq_dist/len(pts_gnd)
 
@@ -131,14 +131,9 @@ class GroundProjectionTest:
       print "Service call failed: %s" % e
 
 if __name__ == "__main__":
-  if len(sys.argv) != 2:
-    print "usage: " + sys.argv[0] + " vehicle name"
-    sys.exit(1)
-  
-  param = sys.argv[1]
-  param = param.replace('veh:=','')
-  print('Using vehicle name %r.' % param)
-  veh = "/" + param
+  veh = rospy.get_param("~veh", "porsche911")
+  print('Using vehicle name %r.' % veh)
+  veh = "/" + veh
 
   bridge = CvBridge()
 
@@ -149,8 +144,8 @@ if __name__ == "__main__":
   try:
     pass_fail = gpt.run()
     if pass_fail:
-      print "pass"
+      print "result: " + '\033[92m' + "passed" + '\033[0m'
     else:
-      print "fail"
+      print "result: " + '\033[91m' + "failed" + '\033[0m'
   except KeyboardInterrupt:
     print "test shutting down"

@@ -20,8 +20,8 @@ class LEDInterpreterNode(object):
 		self.sub_LEDs = rospy.Subscriber("~raw_led_detection", LEDDetectionArray, self.Interpreter, queue_size = 1)
 
 
-		self.protocol = self.setParam("~LED_Protocol") #should be a list of tuples
-		self.label = self.setParam("~TrafficLocation") # should be a list
+		self.protocol = rospy.get_param("~LED_Protocol") #should be a list of tuples
+		self.label = rospy.get_param("~location") # should be a list
 		# self._traffic = True
 		# self._light = None
 		# self._freq = None

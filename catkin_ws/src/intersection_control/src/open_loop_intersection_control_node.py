@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from duckietown_msgs.msg import FSMState, BoolStamped, Twist2DStamped
+from std_srvs.srv import EmptyRequest, EmptyResponse, Empty
 from std_msgs.msg import String, Int16 #Imports msg
 import copy
 
@@ -23,6 +24,10 @@ class OpenLoopIntersectionNode(object):
         self.maneuvers[2] = self.getManeuver("turn_right")
         # self.maneuvers[-1] = self.getManeuver("turn_stop")
 
+        self.srv_turn_left = rospy.Service("~turn_left", Empty, self.cbSrvLeft)
+        self.srv_turn_right = rospy.Service("~turn_right", Empty, self.cbSrvRight)
+        self.srv_turn_forward = rospy.Service("~turn_forward", Empty, self.cbSrvForward)
+
         self.rate = rospy.Rate(30)
 
         # Subscribers
@@ -30,12 +35,25 @@ class OpenLoopIntersectionNode(object):
         self.sub_turn_type = rospy.Subscriber("~turn_type", Int16, self.cbTurnType, queue_size=1)
         self.sub_mode = rospy.Subscriber("~mode", FSMState, self.cbFSMState, queue_size=1)
 
+    def cbSrvLeft(self,req):
+        self.trigger(0)
+        return EmptyResponse()
+    
+    def cbSrvForward(self,req):
+        self.trigger(1)
+        return EmptyResponse()        
+    
+    def cbSrvRight(self,req):
+        self.trigger(2)
+        return EmptyResponse()
+
+
     def getManeuver(self,param_name):
         param_list = rospy.get_param("~%s"%(param_name))
         # rospy.loginfo("PARAM_LIST:%s" %param_list)        
         maneuver = list()
         for param in param_list:
-            maneuver.append((param[0],Twist2DStamped(v=param[0],omega=param[1])))
+            maneuver.append((param[0],Twist2DStamped(v=param[1],omega=param[2])))
         # rospy.loginfo("MANEUVER:%s" %maneuver)
         return maneuver
 
@@ -51,6 +69,11 @@ class OpenLoopIntersectionNode(object):
         if (not self.mode == "INTERSECTION_CONTROL") and msg.state == "INTERSECTION_CONTROL":
             # Switch into INTERSECTION_CONTROL mode
             rospy.loginfo("[%s] %s triggered." %(self.node_name,self.mode))
+            start = rospy.Time.now()
+            current = rospy.Time.now()
+            while current.secs - start.secs < 0.5:
+                current = rospy.Time.now()
+                self.trigger(-1)
         self.mode = msg.state
         self.turn_type = -1 #Reset turn_type at mode change
 

@@ -29,7 +29,7 @@ class LineDetectorNode(object):
         self.flag_wb = False
         self.active = True
 
-        self.updateParams()
+        self.updateParams(None)
 
         # Publishers
         self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
@@ -46,13 +46,11 @@ class LineDetectorNode(object):
         self.verbose = rospy.get_param('~verbose')
         if self.verbose:
             self.pub_edge = rospy.Publisher("~edge", Image, queue_size=1)
-            self.pub_white = rospy.Publisher("~white", Image, queue_size=1)
-            self.pub_yellow = rospy.Publisher("~yellow", Image, queue_size=1)
-            self.pub_red = rospy.Publisher("~red", Image, queue_size=1)
+            self.pub_segment = rospy.Publisher("~segment", Image, queue_size=1)
             
             self.toc_pre = rospy.get_time() 
 
-    def updateParams(self):
+    def updateParams(self, event):
         self.image_size = rospy.get_param('~img_size')
         self.top_cutoff = rospy.get_param('~top_cutoff')
   
@@ -185,15 +183,13 @@ class LineDetectorNode(object):
         # Verbose
         if self.verbose:
             rospy.loginfo("[%s] Latency sent = %.3f ms" %(self.node_name, (rospy.get_time()-image_msg.header.stamp.to_sec()) * 1000.0))
-       
+      
+            segment = np.zeros((self.image_size[0],self.image_size[1], 3), dtype=np.uint8) 
+
             edge_msg_out = self.bridge.cv2_to_imgmsg(self.detector.edges, "mono8")
-            white_msg_out = self.bridge.cv2_to_imgmsg(area_white, "mono8")
-            yellow_msg_out = self.bridge.cv2_to_imgmsg(area_yellow, "mono8")
-            red_msg_out = self.bridge.cv2_to_imgmsg(area_red, "mono8")
+            segment_msg_out = self.bridge.cv2_to_imgmsg(segment, "bgr8")
             self.pub_edge.publish(edge_msg_out)
-            self.pub_white.publish(white_msg_out)
-            self.pub_yellow.publish(yellow_msg_out)
-            self.pub_red.publish(red_msg_out)
+            self.pub_segment.publish(segment_msg_out)
 
         # Release the thread lock
         self.thread_lock.release()

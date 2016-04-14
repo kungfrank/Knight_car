@@ -5,8 +5,10 @@ import cv2
 import numpy as np
 import sys
 import time
+import IPython
 
-CENTERS = np.array([[60, 60, 60], [20, 240, 240], [240, 240, 240]])
+CENTERS = np.array([[60, 60, 60], [50, 240, 240], [240, 240, 240]])
+# in HSV: [0,0,60], [127.5000  233.7500  240.0000],[0,0,240]
 
 
 def getimgdatapts(cv2img):
@@ -79,8 +81,8 @@ def getparameters2(mapping, trained, weights, true):
 	# print trained, true
 	prior_trained=np.array([[255, 0, 0],[0, 255, 0],[0, 0, 255]])
 	prior_true=np.array([[255, 0, 0],[0, 255, 0],[0, 0, 255]])
-	diagonal_prior_weight=300 # the coefficients along the diagonal should be close to each other - i.e close to "white" light
-	a_prior_weight=0.8 # a should be close to 1
+	diagonal_prior_weight=5 # the coefficients along the diagonal should be close to each other - i.e close to "white" light
+	a_prior_weight=0.2 # a should be close to 1
 	INFEASIBILITY_PENALTY=1000000
 	
 	min_fitting_cost=np.inf
@@ -144,8 +146,8 @@ def getparameters2(mapping, trained, weights, true):
 			MIN_GREEN_b=p[3]
 			MIN_BLUE_b=p[5]
 			min_perm=perm
-	# IPython.embed()
 	t2=time.time()
+	# IPython.embed()
 
 
 	#print MIN_RED_a, MIN_RED_b

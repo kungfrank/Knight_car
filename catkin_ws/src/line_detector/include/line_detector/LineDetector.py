@@ -12,13 +12,21 @@ class LineDetector(object):
 
         # Color value range in HSV space: default
         self.hsv_white1 = np.array([0, 0, 150])
-        self.hsv_white2 = np.array([180, 60, 255]) 
-        self.hsv_yellow1 = np.array([25, 140, 100])
+        self.hsv_white2 = np.array([180, 50, 255]) 
+        self.hsv_yellow1 = np.array([25, 120, 90])
         self.hsv_yellow2 = np.array([45, 255, 255]) 
         self.hsv_red1 = np.array([0, 140, 100])
         self.hsv_red2 = np.array([15, 255, 255]) 
         self.hsv_red3 = np.array([165, 140, 100])
         self.hsv_red4 = np.array([180, 255, 255]) 
+        self.rgb_red = np.array([240, 20, 20])
+        self.rgb_yellow = np.array([240, 240,60])
+        self.rgb_white = np.array([240, 240, 240])
+        self.rgb_road = np.array([60,60,60])
+        self.bgr_red = np.flipud(self.rgb_red)
+        self.bgr_yellow = np.flipud(self.rgb_yellow)
+        self.bgr_white = np.flipud(self.rgb_white)
+        self.bgr_road = np.flipud(self.rgb_road)
 
         # Parameters for dilation, Canny, and Hough transform: default
         self.dilation_kernel_size = 3
@@ -26,6 +34,49 @@ class LineDetector(object):
         self.hough_threshold  = 20
         self.hough_min_line_length = 3
         self.hough_max_line_gap = 1
+        self.max_color_dist=150
+        self.coeff_yellow=1.25
+        self.coeff_white=0.75
+
+# RGB-based color filter - try after some annotations are available 
+    def __colorFilter2(self, color):
+        # threshold colors in HSV space
+        im=np.abs(self.bgr-self.bgr_white)
+        d_white=(im[:,:,0]+im[:,:,1]+im[:,:,2])/self.coeff_white;
+        im=np.abs(self.bgr-self.bgr_yellow)
+        d_yellow=(im[:,:,0]+im[:,:,1]+im[:,:,2])/self.coeff_yellow;
+        im=np.abs(self.bgr-self.bgr_red)
+        d_red=im[:,:,0]+im[:,:,1]+im[:,:,2];
+        im=np.abs(self.bgr-self.bgr_road)
+        d_road=im[:,:,0]+im[:,:,1]+im[:,:,2];
+        if color == 'white':
+            bw=(d_white<d_red)&(d_white<d_yellow)&(d_white<self.max_color_dist)
+        elif color == 'yellow':
+            # WINDOW_NAME = 'white'
+            # cv2.namedWindow(WINDOW_NAME, cv2.CV_WINDOW_AUTOSIZE)
+            # cv2.startWindowThread()
+
+            # cv2.imshow(WINDOW_NAME,d_yellow/1024.0)
+            # cv2.waitKey(0) 
+
+
+            # cv2.destroyAllWindows()
+            bw=(d_yellow<d_red)&(d_yellow<d_white)&(d_yellow<self.max_color_dist)
+        elif color == 'red':
+            bw=(d_red<d_yellow)&(d_red<d_white)&(d_red<self.max_color_dist)
+        else:
+            raise Exception('Error: Undefined color strings...')
+        # IPython.embed()
+        bw=np.uint8(bw*255)
+
+        # binary dilation
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(self.dilation_kernel_size, self.dilation_kernel_size))
+        bw = cv2.dilate(bw, kernel)
+        
+        # refine edge for certain color
+        edge_color = cv2.bitwise_and(bw, self.edges)
+
+        return bw, edge_color
 
     def _colorFilter(self, color):
         # threshold colors in HSV space
@@ -145,80 +196,79 @@ class LineDetector(object):
     def getColorPixels(self, color):
         bw, _edge_color = self._colorFilter(color)
         return bw
-
-def _main():
-    detector = LineDetector()
-    # read image from file or camera
-    if len(sys.argv)==2:
-        bgr = cv2.imread(sys.argv[1])
-        
-        # crop and resize frame
-        bgr = cv2.resize(bgr, (200, 150))
-        bgr = bgr[bgr.shape[0]/2:, :, :]
-
-        # set the image to be detected 
-        detector.setImage(bgr)
-
-        # detect lines and normals
-        lines_white, normals_white, area_white = detector.detectLines('white')
-        lines_yellow, normals_yellow, area_yellow = detector.detectLines('yellow')
-        lines_red, normals_red, area_red = detector.detectLines('red')
-        
-        # draw lines
-        detector.drawLines(lines_white, (0,0,0))
-        detector.drawLines(lines_yellow, (255,0,0))
-        detector.drawLines(lines_red, (0,255,0))
-       
-        # draw normals
-        detector.drawNormals(lines_yellow, normals_yellow)
-        detector.drawNormals(lines_white, normals_white)
-        detector.drawNormals(lines_red, normals_red)
-
-        cv2.imwrite('lines_with_normal.png', detector.getImage()) 
-        cv2.imshow('frame', detector.getImage())
-        cv2.imshow('edge', detector.edges)
-        cv2.waitKey(0)
-
-    elif len(sys.argv)==1:
-        cap = cv2.VideoCapture(0)
-        if not cap.isOpened():
-            print 'Error opening camera...'
-            return -1
-
-        while True:
-            ret, bgr = cap.read()
-            if not ret:
-                print 'No frames grabbed...'
-                break
-
-            # crop and resize frame
-            bgr = cv2.resize(bgr, (200, 150))
-          
-            # set the image to be detected 
-            detector.setImage(bgr)
- 
-            # detect lines and normals
-            lines_white, normals_white, area_white = detector.detectLines('white')
-            lines_yellow, normals_yellow, area_yellow = detector.detectLines('yellow')
-            lines_red, normals_red, area_red = detector.detectLines('red')
-            
-            # draw lines
-            detector.drawLines(lines_white, (0,0,0))
-            detector.drawLines(lines_yellow, (255,0,0))
-            detector.drawLines(lines_red, (0,255,0))
-           
-            # draw normals
-            detector.drawNormals(lines_yellow, normals_yellow)
-            detector.drawNormals(lines_white, normals_white)
-            detector.drawNormals(lines_red, normals_red)
-
-            # show frame
-            cv2.imshow('Line Detector', detector.getImage())
-            cv2.imshow('Edge', detector.edges)
-            cv2.waitKey(30)
-
-    else:
-        return -1
-
-if __name__ == '__main__':
-    _main()	
+#
+# def _main():
+#     detector = LineDetector()
+#     # read image from file or camera
+#     if len(sys.argv)==2:
+#         bgr = cv2.imread(sys.argv[1])
+#
+#         # crop and resize frame
+#         bgr = cv2.resize(bgr, (200, 150))
+#         bgr = bgr[bgr.shape[0]/2:, :, :]
+#
+#         # set the image to be detected
+#         detector.setImage(bgr)
+#
+#         # detect lines and normals
+#         lines_white, normals_white, area_white = detector.detectLines('white')
+#         lines_yellow, normals_yellow, area_yellow = detector.detectLines('yellow')
+#         lines_red, normals_red, area_red = detector.detectLines('red')
+#
+#         # draw lines
+#         detector.drawLines(lines_white, (0,0,0))
+#         detector.drawLines(lines_yellow, (255,0,0))
+#         detector.drawLines(lines_red, (0,255,0))
+#
+#         # draw normals
+#         detector.drawNormals(lines_yellow, normals_yellow)
+#         detector.drawNormals(lines_white, normals_white)
+#         detector.drawNormals(lines_red, normals_red)
+#
+#         cv2.imwrite('lines_with_normal.png', detector.getImage())
+#         cv2.imshow('frame', detector.getImage())
+#         cv2.imshow('edge', detector.edges)
+#         cv2.waitKey(0)
+#
+#     elif len(sys.argv)==1:
+#         cap = cv2.VideoCapture(0)
+#         if not cap.isOpened():
+#             print 'Error opening camera...'
+#             return -1
+#
+#         while True:
+#             ret, bgr = cap.read()
+#             if not ret:
+#                 print 'No frames grabbed...'
+#                 break
+#
+#             # crop and resize frame
+#             bgr = cv2.resize(bgr, (200, 150))
+#
+#             # set the image to be detected
+#             detector.setImage(bgr)
+#
+#             # detect lines and normals
+#             lines_white, normals_white, centers_white, area_white = detector.detectLines('white')
+#             lines_yellow, normals_yellow, centers_yellow, area_yellow = detector.detectLines('yellow')
+#             lines_red, normals_red, centers_red, area_red = detector.detectLines('red')
+#
+#             # draw lines
+#             detector.drawLines(lines_white, (0,0,0))
+#             detector.drawLines(lines_yellow, (255,0,0))
+#             detector.drawLines(lines_red, (0,255,0))
+#
+#             # draw normals
+#             detector.drawNormals(lines_yellow, normals_yellow)
+#             detector.drawNormals(lines_white, normals_white)
+#             detector.drawNormals(lines_red, normals_red)
+#
+#             # show frame
+#             cv2.imshow('Line Detector', detector.getImage())
+#             cv2.imshow('Edge', detector.edges)
+#             cv2.waitKey(30)
+#
+#     else:
+#         return -1
+# if __name__ == '__main__':
+#     _main()

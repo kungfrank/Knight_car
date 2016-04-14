@@ -2,7 +2,7 @@
 from cv_bridge import CvBridge, CvBridgeError
 from duckietown_msgs.msg import BoolStamped, Segment, SegmentList, Vector2D
 from geometry_msgs.msg import Point
-from line_detector2.LineDetector2 import *
+from line_detector.LineDetector2 import *
 from line_detector.WhiteBalance import *
 from sensor_msgs.msg import CompressedImage, Image
 from visualization_msgs.msg import Marker
@@ -56,7 +56,7 @@ class LineDetectorNode2(object):
         self.flag_wb = False
         self.active = True
 
-        self.updateParams()
+        self.updateParams(None)
 
         # Publishers
         self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
@@ -77,7 +77,7 @@ class LineDetectorNode2(object):
             
             self.toc_pre = rospy.get_time() 
 
-    def updateParams(self):
+    def updateParams(self, event):
         self.image_size = rospy.get_param('~img_size')
         self.top_cutoff = rospy.get_param('~top_cutoff')
   

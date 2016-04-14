@@ -27,7 +27,7 @@ class LineDetector2(object):
         self.hough_min_line_length = 3
         self.hough_max_line_gap = 1
 
-    def __colorFilter(self, color):
+    def _colorFilter(self, color):
         # threshold colors in HSV space
         if color == 'white':
             bw = cv2.inRange(self.hsv, self.hsv_white1, self.hsv_white2)
@@ -49,7 +49,7 @@ class LineDetector2(object):
 
         return bw, edge_color
 
-    def __lineFilter(self, bw, edge_color):
+    def _lineFilter(self, bw, edge_color):
         # find gradient of the bw image
         grad_x = -cv2.Sobel(bw/10, cv2.CV_32F, 1, 0, ksize=5)
         grad_y = -cv2.Sobel(bw/10, cv2.CV_32F, 0, 1, ksize=5)
@@ -59,11 +59,9 @@ class LineDetector2(object):
         grad = np.sqrt(grad_x**2 + grad_y**2)
         roi = (grad>1000)
 
-        #print np.unique(grad_x)
-        #print np.unique(grad_y)
-        grad *= roi
-        print np.unique(grad)
-        print np.sum(roi)
+        #grad *= roi
+        #print np.unique(grad)
+        #print np.sum(roi)
 
         # turn into a list of points and normals
         roi_y, roi_x = np.nonzero(roi)
@@ -73,15 +71,15 @@ class LineDetector2(object):
 
         #self.drawNormals(centers, normals, (0,0,0))
 
-        lines = self.__synthesizeLines(centers, normals)
+        lines = self._synthesizeLines(centers, normals)
 
         return lines, normals, centers
 
-    def __findEdge(self, gray):
+    def _findEdge(self, gray):
         edges = cv2.Canny(gray, self.canny_thresholds[0], self.canny_thresholds[1], apertureSize = 3)
         return edges
 
-    def __HoughLine(self, edge):
+    def _HoughLine(self, edge):
         lines = cv2.HoughLinesP(edge, 1, np.pi/180, self.hough_threshold, np.empty(1), self.hough_min_line_length, self.hough_max_line_gap)
         if lines is not None:
             lines = np.array(lines[0])
@@ -89,41 +87,41 @@ class LineDetector2(object):
             lines = []
         return lines
     
-    def __checkBounds(self, val, bound):
+    def _checkBounds(self, val, bound):
         val[val<0]=0
         val[val>=bound]=bound-1
         return val
 
-    def __correctPixelOrdering(self, lines, normals):
+    def _correctPixelOrdering(self, lines, normals):
         flag = ((lines[:,2]-lines[:,0])*normals[:,1] - (lines[:,3]-lines[:,1])*normals[:,0])>0
         for i in range(len(lines)):
             if flag[i]:
                 x1,y1,x2,y2 = lines[i, :]
                 lines[i, :] = [x2,y2,x1,y1] 
  
-    def __synthesizeLines(self, centers, normals):
+    def _synthesizeLines(self, centers, normals):
         lines = []
         if len(centers)>0:
             x1 = (centers[:,0:1] + normals[:, 1:2] * 2.).astype('int')
             y1 = (centers[:,1:2] - normals[:, 0:1] * 2.).astype('int')
             x2 = (centers[:,0:1] - normals[:, 1:2] * 2.).astype('int')
             y2 = (centers[:,1:2] + normals[:, 0:1] * 2.).astype('int')
-            x1 = self.__checkBounds(x1, self.bgr.shape[1])
-            y1 = self.__checkBounds(y1, self.bgr.shape[0])
-            x2 = self.__checkBounds(x2, self.bgr.shape[1])
-            y2 = self.__checkBounds(y2, self.bgr.shape[0])
+            x1 = self._checkBounds(x1, self.bgr.shape[1])
+            y1 = self._checkBounds(y1, self.bgr.shape[0])
+            x2 = self._checkBounds(x2, self.bgr.shape[1])
+            y2 = self._checkBounds(y2, self.bgr.shape[0])
             lines = np.hstack([x1, y1, x2, y2])
         return lines
 
     def detectLines(self, color):
-        bw, edge_color = self.__colorFilter(color)
-        lines, normals, centers = self.__lineFilter(bw, edge_color)
+        bw, edge_color = self._colorFilter(color)
+        lines, normals, centers = self._lineFilter(bw, edge_color)
         return lines, normals, centers, bw
 
     def setImage(self, bgr):
         self.bgr = np.copy(bgr)
         self.hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
-        self.edges = self.__findEdge(self.bgr)
+        self.edges = self._findEdge(self.bgr)
   
     def getImage(self):
         return self.bgr
@@ -202,19 +200,19 @@ def _main():
             detector.setImage(bgr)
  
             # detect lines and normals
-            lines_white, normals_white = detector.detectLines('white')
-            lines_yellow, normals_yellow = detector.detectLines('yellow')
-            lines_red, normals_red = detector.detectLines('red')
+            lines_white, normals_white, centers_white, area_white = detector.detectLines('white')
+            lines_yellow, normals_yellow, centers_yellow, area_yellow = detector.detectLines('yellow')
+            lines_red, normals_red, centers_red, area_red = detector.detectLines('red')
             
             # draw lines
-            detector.drawLines(lines_white, (0,0,0))
-            detector.drawLines(lines_yellow, (255,0,0))
-            detector.drawLines(lines_red, (0,255,0))
+            #detector.drawLines(lines_white, (0,0,0))
+            #detector.drawLines(lines_yellow, (255,0,0))
+            #detector.drawLines(lines_red, (0,255,0))
            
             # draw normals
-            detector.drawNormals(lines_yellow, normals_yellow)
-            detector.drawNormals(lines_white, normals_white)
-            detector.drawNormals(lines_red, normals_red)
+            detector.drawNormals(centers_white, normals_white, (0,0,0))
+            detector.drawNormals(centers_yellow, normals_yellow, (255,0,0))
+            detector.drawNormals(centers_red, normals_red, (0,255,0))
 
             # show frame
             cv2.imshow('Line Detector', detector.getImage())

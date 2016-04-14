@@ -6,6 +6,7 @@ from duckietown_utils.jpg import (image_clip_255, image_cv_from_jpg_fn,
     make_images_grid)
 from duckietown_utils.locate_files_impl import locate_files
 from line_detector.LineDetector import LineDetector
+from line_detector.LineDetector2 import LineDetector2
 import cv2
 import os
 import scipy.io
@@ -49,18 +50,29 @@ def examine_dataset(dirname, out):
     
     for j in jpgs:
         shape = (200, 160)
-
-        name = 'nearest'
         interpolation = cv2.INTER_NEAREST
+        name = 'line_detector'
+ 
+        summaries =[]
+        LineDetectorClass = LineDetector
+        s =run_detection(transform, j, out, shape=shape,
+                      interpolation=interpolation, name=name,
+                      LineDetectorClass=LineDetectorClass)
+        summaries.append(s)
 
-        run_detection(transform, j, out, shape=shape,
-                      interpolation=interpolation, name=name)
+        name = 'line_detector2'
+        LineDetectorClass = LineDetector2
+        s=run_detection(transform, j, out, shape=shape,
+                      interpolation=interpolation, name=name,
+                      LineDetectorClass=LineDetectorClass)
+        summaries.append(s)
+        
+        together = make_images_grid(summaries, cols=1, pad=10, bgcolor=[.5, .5, .5])
 
-#         name = 'cubic'
-#         interpolation = cv2.INTER_CUBIC
-# 
-#         run_detection(transform, j, out, shape=shape,
-#                       interpolation=interpolation, name=name)
+        # 
+        bn = os.path.splitext(os.path.basename(j))[0]
+        fn = os.path.join(out, '%s.all.png' % (bn))
+        cv2.imwrite(fn, zoom_image(together, 4))
 
     for m in mats:
         logger.debug(m)
@@ -68,59 +80,50 @@ def examine_dataset(dirname, out):
         if not os.path.exists(jpg):
             msg = 'JPG %r for mat %r does not exist' % (jpg, m)
             logger.error(msg)
-#             raise ValueError(msg)
         else:
             test_pair(transform, jpg, m, out)
         
-def run_detection(transform, jpg, out, shape, interpolation,
-                  name):
-    image = image_cv_from_jpg_fn(jpg)
+def zoom_image(im, zoom):
+    zoom = 4
+    s = (im.shape[1] * zoom, im.shape[0] * zoom)
+    imz = cv2.resize(im, s, interpolation=cv2.INTER_NEAREST)
+    return imz
 
+def run_detection(transform, jpg, out, shape, interpolation,
+                  name, LineDetectorClass):
+    image = image_cv_from_jpg_fn(jpg)
 
     image = cv2.resize(image, shape, interpolation=interpolation)
 #     bgr = bgr[bgr.shape[0] / 2:, :, :]
 
-
-    image_detections = line_detection(image)
+    image_detections = line_detection(LineDetectorClass, image)
     transformed = transform(image)
 
     transformed_clipped = image_clip_255(transformed)
-    transformed_detections = line_detection(transformed_clipped)
+    transformed_detections = line_detection(LineDetectorClass, transformed_clipped)
 
     if not os.path.exists(out):
         os.makedirs(out)
     bn = os.path.splitext(os.path.basename(jpg))[0]
 
     def write(postfix, im):
-        zoom = 4
-        s = (im.shape[1] * zoom, im.shape[0] * zoom)
-        imz = cv2.resize(im, s, interpolation=cv2.INTER_NEAREST)
-
         fn = os.path.join(out, '%s.%s.%s.png' % (bn, name, postfix))
-        cv2.imwrite(fn, imz)
+        cv2.imwrite(fn, zoom_image(im, 4))
 
-
-#     write('orig', image)
-#     write('transformed', transformed)
-#     write('transformed_clipped', transformed_clipped)
-#     write('orig.detected', image_detections)
-#     write('transformed.detected', transformed_detections)
-
-    # IPython.embed()    
     together = make_images_grid([image,  # transformed,
                                  merge_masks_res(image_detections),
                                  gray2rgb(image_detections['edges']),
                                  image_detections['annotated'],
                                  
-
                                  transformed_clipped,
-                                 merge_masks_res(image_detections),
-                                 gray2rgb(image_detections['edges']),
+                                 merge_masks_res(transformed_detections),
+                                 gray2rgb(transformed_detections['edges']),
                                  transformed_detections['annotated'],
                        ], 
                                 
                                 cols=4, pad=10, bgcolor=[1, 1, 1])
     write('together', together)
+    return together
 
 def merge_masks_res(res):
     return merge_masks(res['area_white'], res['area_red'], res['area_yellow'])
@@ -180,25 +183,42 @@ def test_pair(transform, jpg, mat, out):
         # IPython.embed()
         # XXX: to finish
 
-def line_detection(bgr):
-    detector = LineDetector()
+def line_detection(LineDetectorClass, bgr):
+    detector = LineDetectorClass()
     detector.setImage(bgr)
 
-    # detect lines and normals
-    lines_white, normals_white, area_white = detector.detectLines('white')
-    lines_yellow, normals_yellow, area_yellow = detector.detectLines('yellow')
-    lines_red, normals_red, area_red = detector.detectLines('red')
+    if isinstance(detector, LineDetector):
+        # detect lines and normals
+        lines_white, normals_white, area_white = detector.detectLines('white')
+        lines_yellow, normals_yellow, area_yellow = detector.detectLines('yellow')
+        lines_red, normals_red, area_red = detector.detectLines('red')
 
-    # draw lines
-    detector.drawLines(lines_white, (0, 0, 0))
-    detector.drawLines(lines_yellow, (255, 0, 0))
-    detector.drawLines(lines_red, (0, 255, 0))
+        # draw lines
+        detector.drawLines(lines_white, (0, 0, 0))
+        detector.drawLines(lines_yellow, (255, 0, 0))
+        detector.drawLines(lines_red, (0, 255, 0))
+    
+    elif isinstance(detector, LineDetector2):
+        # detect lines and normals
+        lines_white, normals_white, centers_white, area_white = detector.detectLines2('white')
+        lines_yellow, normals_yellow, centers_yellow, area_yellow = detector.detectLines2('yellow')
+        lines_red, normals_red, centers_red, area_red = detector.detectLines2('red')
 
-    # draw normals
-    detector.drawNormals(lines_yellow, normals_yellow)
-    detector.drawNormals(lines_white, normals_white)
-    detector.drawNormals(lines_red, normals_red)
-
+        # draw lines
+        detector.drawLines(lines_white, (0, 0, 0))
+        detector.drawLines(lines_yellow, (255, 0, 0))
+        detector.drawLines(lines_red, (0, 255, 0))
+        # draw normals
+        #detector.drawNormals2(centers_yellow, lines_yellow, normals_yellow)
+        #detector.drawNormals2(centers_white, lines_white, normals_white)
+        #detector.drawNormals2(centers_red, lines_red, normals_red)
+    
+        print('XXX Hang Zhao please fix')
+        # draw normals
+#         detector.drawNormals2(centers_yellow, lines_yellow, normals_yellow)
+#         detector.drawNormals2(centers_white, lines_white, normals_white)
+#         detector.drawNormals2(centers_red, lines_red, normals_red)
+        
     res = {}
     res['annotated'] = detector.getImage()
     res['area_white'] = area_white

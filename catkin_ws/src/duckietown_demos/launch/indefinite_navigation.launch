@@ -6,5 +6,7 @@
 		<arg name="fsm_file_name" value="indefinite_navigation" />
 		<arg name="visualization" value="false" />
 		<arg name="navigation" value="true"/>
+		<arg name="apriltags" value="true" />
+		<arg name="/camera/raw" value="true"/>
 	</include>
 </launch>

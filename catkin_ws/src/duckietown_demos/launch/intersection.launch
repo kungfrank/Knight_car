@@ -7,5 +7,6 @@
 		<arg name="visualization" value="false" />
 		<arg name="navigation" value="true"/>
 		<arg name="/navigation/apriltags_random" value="false"/>
+		<arg name="/camera/raw" value="true"/>
 	</include>
 </launch>

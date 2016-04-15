@@ -16,3 +16,6 @@ turn_forward:
   - [0.5, 0.35, 0.0]
 # turn_stop:
 #   - [0.2, 0.0, 0.0]
+
+#do we want to update the values based on where/what angle we stop at.
+trajectory_reparam: 0

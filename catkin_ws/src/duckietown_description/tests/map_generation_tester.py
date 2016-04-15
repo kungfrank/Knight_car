@@ -10,7 +10,7 @@ import subprocess
 class MapGenerationTester(unittest.TestCase):
     def setup(self):
         # Setup the node
-        rospy.init_node('map_generation_tester_node', anonymous=False)
+        rospy.init_node('map_generation_tester_node', anonymous=True)
 
         # Setup the tf listener
         self.tfl = tf.TransformListener()
@@ -23,9 +23,9 @@ class MapGenerationTester(unittest.TestCase):
         while not os.path.isfile(self.path) and not rospy.is_shutdown() and rospy.Time.now() < timeout:
             rospy.sleep(0.1)
         self.assertTrue(os.path.isfile(self.path), "Test timed out while waiting for map file to be generated")
-
-    def test_map_file_generates(self):
-        self.setup()  # Setup the node
+    #
+    # def test_map_file_generates(self):
+    #     self.setup()  # Setup the node
 
 
     def test_csv_to_transform(self):
@@ -34,14 +34,14 @@ class MapGenerationTester(unittest.TestCase):
         # Launch the duckietown_description
         os.system("roslaunch duckietown_description duckietown_description_node.launch veh:=testbot gui:=false map_name:=test_map_tmp &")
 
-        # Wait up to 5 seconds for the transform to become available
+        # Wait up to n seconds for the transform to become available
         try:
-            self.tfl.waitForTransform("world", "tile_1_1", rospy.Time(), rospy.Duration(5))
+            self.tfl.waitForTransform("world", "tile_1_1", rospy.Time(), rospy.Duration(10))
         except:
-            pass
+            self.assertTrue(False, "Test timed out while waiting for transform.")
 
         transform_exists = self.tfl.canTransform("world", "tile_1_1", rospy.Time())
-        self.assertTrue(transform_exists, "Test timed out while waiting for transform")
+        self.assertTrue(transform_exists, "Couldn't find transform")
 
         # Get the param for tile_width
         tile_width = rospy.get_param("~tile_width")

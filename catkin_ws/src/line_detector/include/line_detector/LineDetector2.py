@@ -125,7 +125,7 @@ class LineDetector2(object):
                 cv2.circle(self.bgr, (x3,y3), 1, (0,255,0))
                 cv2.circle(self.bgr, (x4,y4), 1, (0,0,255))
 
-    def merge_masks(self, area_white, area_red, area_yellow):
+    def color_segment(self, area_white, area_red, area_yellow):
         B, G, R = 0, 1, 2
         def white(x):
             x = cv2.cvtColor(x, cv2.COLOR_GRAY2BGR)
@@ -188,7 +188,7 @@ def _main():
         detector.drawNormals2(centers_red, normals_red, (0,255,0))
 
         # merge masks
-        segment = detector.merge_masks(area_white, area_red, area_yellow)
+        segment = detector.color_segment(area_white, area_red, area_yellow)
 
         #cv2.imwrite('lines_with_normal.png', detector.getImage())
         cv2.imshow('frame with lines', cv2.resize(detector.getImage(), (640,320), interpolation=cv2.INTER_CUBIC))

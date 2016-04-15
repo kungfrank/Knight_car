@@ -13,15 +13,18 @@ firstUpdate = True
 
 actions = []
 pub = 0
+state_data = 0
 
 def dispatcher(data):
     global actions
     global pub
     global firstUpdate
-    if firstUpdate == False and data.state != data.INTERSECTION_CONTROL:
+    global state_data
+    state_data = data
+    if firstUpdate == False and state_data.state != state_data.INTERSECTION_CONTROL:
         firstUpdate = True
 
-    if firstUpdate == True and data.state == data.INTERSECTION_CONTROL and actions:
+    if firstUpdate == True and state_data.state == data.INTERSECTION_CONTROL and actions:
         action = actions.pop(0)
         print 'Dispatched:', action
         if action == 's':
@@ -43,6 +46,7 @@ def dispatcher(data):
 def graph_search(data):
     print 'Requesting map for src: ', data.source_node, ' and target: ', data.target_node
     global actions
+    global state_data
     rospy.wait_for_service('graph_search')
     try:
         graph_search = rospy.ServiceProxy('graph_search', GraphSearch)
@@ -57,6 +61,7 @@ def graph_search(data):
             for letter in actions:
                 action_str += letter
             pubList.publish(action_str)
+            dispatcher(state_data)
         else:
             print 'Actions to be executed:', actions
 

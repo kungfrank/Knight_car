@@ -7,7 +7,7 @@
 	<arg name="node_name" default="cam_info_reader_node"/>
 
 	<!-- Run on local (laptop) -->
-	<node if="$(arg local)" ns="$(arg veh)" pkg="pi_camera" type="cam_info_reader_node.py" name="cam_info_reader_node" output="screen">
+	<node if="$(arg local)" ns="$(arg veh)" pkg="pi_camera" type="cam_info_reader_node.py" name="cam_info_reader_node" output="screen" clear_params="true" required="true">
 		<!-- These are special in that the configs are set as parameter and should alway obey the arg -->
 		<rosparam command="load" file="$(find duckietown)/config/$(arg config)/pi_camera/cam_info_reader_node/$(arg param_file_name).yaml"/>
 		<param name="~config" value="$(arg config)"/>
@@ -16,7 +16,7 @@
 
 	<!-- Run on remote (vehicle) -->
 	<include unless="$(arg local)" file="$(find duckietown)/machines"/>
-	<node unless="$(arg local)" ns="$(arg veh)" machine="$(arg veh)" pkg="pi_camera" type="cam_info_reader_node.py" name="cam_info_reader_node" output="screen">
+	<node unless="$(arg local)" ns="$(arg veh)" machine="$(arg veh)" pkg="pi_camera" type="cam_info_reader_node.py" name="cam_info_reader_node" output="screen" clear_params="true" required="true">
 		<rosparam command="load" file="$(find duckietown)/config/$(arg config)/pi_camera/cam_info_reader_node/$(arg param_file_name).yaml"/>
 		<!-- These are special in that the configs are set as parameter and should alway obey the arg -->
 		<param name="~config" value="$(arg config)"/>

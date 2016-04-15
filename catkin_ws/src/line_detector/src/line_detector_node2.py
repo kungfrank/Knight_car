@@ -93,9 +93,7 @@ class LineDetectorNode2(object):
 
         self.detector.dilation_kernel_size = rospy.get_param('~dilation_kernel_size')
         self.detector.canny_thresholds = rospy.get_param('~canny_thresholds')
-        self.detector.hough_min_line_length = rospy.get_param('~hough_min_line_length')
-        self.detector.hough_max_line_gap    = rospy.get_param('~hough_max_line_gap')
-        self.detector.hough_threshold = rospy.get_param('~hough_threshold')
+        self.detector.sobel_threshold = rospy.get_param('~sobel_threshold')
 
     def cbSwitch(self, switch_msg):
         self.active = switch_msg.data
@@ -165,7 +163,7 @@ class LineDetectorNode2(object):
         tk.completed('drawn')
 
         # SegmentList constructor
-        segmentList = SegmentList()
+        segmentList = Segment#List()
         segmentList.header.stamp = image_msg.header.stamp
         
         # Convert to normalized pixel coordinates, and add segments to segmentList
@@ -206,8 +204,8 @@ class LineDetectorNode2(object):
             self.pub_segment.publish(segment_msg_out)
 
         tk.completed('pub_image')
-
         self.verboselog(tk.getall())
+
         # Release the thread lock
         self.thread_lock.release()
 
@@ -217,6 +215,8 @@ class LineDetectorNode2(object):
     def toSegmentMsg(self,  lines, normals, color):
         
         segmentMsgList = []
+        #segmentMsgList = [Segment() for i in range(lines.shape[0])]
+        #k = 0
         for x1,y1,x2,y2,norm_x,norm_y in np.hstack((lines,normals)):
             segment = Segment()
             segment.color = color
@@ -228,6 +228,8 @@ class LineDetectorNode2(object):
             segment.normal.y = norm_y
              
             segmentMsgList.append(segment)
+            #segmentMsgList[k] = segment
+            #k += 1
         return segmentMsgList
 
 if __name__ == '__main__': 

@@ -20,12 +20,11 @@ class LineDetector2(object):
         self.hsv_red3 = np.array([165, 140, 100])
         self.hsv_red4 = np.array([180, 255, 255]) 
 
-        # Parameters for dilation, Canny, and Hough transform: default
+        # Parameters for dilation, Canny, and etc: default
         self.dilation_kernel_size = 3
         self.canny_thresholds = [80,200]
-        self.hough_threshold  = 20
-        self.hough_min_line_length = 3
-        self.hough_max_line_gap = 1
+
+        self.sobel_threshold = 40.
 
     def _colorFilter(self, color):
         # threshold colors in HSV space
@@ -42,7 +41,6 @@ class LineDetector2(object):
 
         # binary dilation
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(self.dilation_kernel_size, self.dilation_kernel_size))
-        #bw = cv2.dilate(bw, kernel)
         
         # refine edge for certain color
         edge_color = cv2.bitwise_and(cv2.dilate(bw, kernel), self.edges)
@@ -56,8 +54,9 @@ class LineDetector2(object):
         grad_x *= (edge_color == 255)
         grad_y *= (edge_color == 255)
 
+        # compute gradient and thresholding
         grad = np.sqrt(grad_x**2 + grad_y**2)
-        roi = (grad>40)
+        roi = (grad>self.sobel_threshold)
 
         #print np.unique(grad)
         #print np.sum(roi)
@@ -68,7 +67,6 @@ class LineDetector2(object):
         normals = np.vstack((grad_x[roi], grad_y[roi])).transpose()
         normals /= np.sqrt(np.sum(normals**2, axis=1, keepdims=True))
 
-        #self.drawNormals(centers, normals, (0,0,0))
         lines = self._synthesizeLines(centers, normals)
 
         return lines, normals, centers
@@ -77,26 +75,11 @@ class LineDetector2(object):
         edges = cv2.Canny(gray, self.canny_thresholds[0], self.canny_thresholds[1], apertureSize = 3)
         return edges
 
-    def _HoughLine(self, edge):
-        lines = cv2.HoughLinesP(edge, 1, np.pi/180, self.hough_threshold, np.empty(1), self.hough_min_line_length, self.hough_max_line_gap)
-        if lines is not None:
-            lines = np.array(lines[0])
-        else:
-            lines = []
-        return lines
-    
     def _checkBounds(self, val, bound):
         val[val<0]=0
         val[val>=bound]=bound-1
         return val
 
-    def _correctPixelOrdering(self, lines, normals):
-        flag = ((lines[:,2]-lines[:,0])*normals[:,1] - (lines[:,3]-lines[:,1])*normals[:,0])>0
-        for i in range(len(lines)):
-            if flag[i]:
-                x1,y1,x2,y2 = lines[i, :]
-                lines[i, :] = [x2,y2,x1,y1] 
- 
     def _synthesizeLines(self, centers, normals):
         lines = []
         if len(centers)>0:

@@ -1,0 +1,6 @@
+# default parameters for lane_filter/traffic_traffic_node
+traffic_light_list: [1,3,2,0]
+allred_duration: 7
+greenlight_duration: 3
+redlight_freq: 2
+greenlight_freq: 4

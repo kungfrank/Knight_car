@@ -24,13 +24,10 @@ class AntiInstagramNode():
 		self.thread_lock = threading.Lock()
 
 		# publish corrected image as well as transform
-		self.image_pub_switch = False
+		self.image_pub_switch = rospy.get_param("~publish_corrected_image",False)
 
 		# Verbose option 
-		self.verbose = True #rospy.get_param('~verbose')  
-
-		# Get all params from launch file
-		self.xyz = rospy.get_param("~xyz",1)
+		self.verbose = rospy.get_param('~verbose',True)  
 
 		# Initialize health message
 		self.health = AntiInstagramHealth()

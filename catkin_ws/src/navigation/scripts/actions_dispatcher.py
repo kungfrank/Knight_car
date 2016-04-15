@@ -25,7 +25,7 @@ def dispatcher(data):
     if firstUpdate == False and state_data.state != 'INTERSECTION_CONTROL': #state_data.INTERSECTION_CONTROL:
         firstUpdate = True
 
-    if firstUpdate == True and state_data.state == 'INTERSECTION_CONTROL' and actions": #data.INTERSECTION_CONTROL and actions:
+    if firstUpdate == True and state_data.state == 'INTERSECTION_CONTROL' and actions: #data.INTERSECTION_CONTROL and actions:
         action = actions.pop(0)
         print 'Dispatched:', action
         if action == 's':

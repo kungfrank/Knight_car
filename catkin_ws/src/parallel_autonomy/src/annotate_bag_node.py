@@ -12,7 +12,8 @@ class AnnotateBagNode(object):
         self.topicout = self.setupParam("~topicout", 'desired_supervisor_behavior')
         self.bagin     = self.setupParam("~bagin", False)
         self.bagout    = self.setupParam("~bagout", self.bagin+".annotated.bag")
-        self.annotation_filename = self.setupParam("~annotation_file", basename(self.bagin)+"_annotation.txt")
+        self.annotation_filename = self.bagin[:-4]+"-annotation.txt"
+        rospy.loginfo(self.annotation_filename)
         self.current_annotation = 'safe'
         self.processAnnotationFile()
         self.processBag()
@@ -22,13 +23,12 @@ class AnnotateBagNode(object):
         with rosbag.Bag(self.bagout, 'w') as outbag:
             for topic, msg, t in rosbag.Bag(self.bagin).read_messages():
                 # rospy.loginfo("topic: %s, self.topicin: %s." %(topic,self.topicin))
-                outbag.write(self.topicin,msg,t)
+                outbag.write(topic,msg,t)
                 if rospy.is_shutdown():
                     break
                 if topic == self.topicin: # annotate based on this topic's seq number
-                    if msg.seq in self.annotation_dict:
-                        self.current_annotation = self.annotation_dict[msg.seq]
-                    rospy.loginfo('here')
+                    if msg.header.seq in self.annotation_dict:
+                        self.current_annotation = self.annotation_dict[msg.header.seq]
                     annotation = self.current_annotation
                     msgout = String()
                     msgout.data = annotation
@@ -38,9 +38,9 @@ class AnnotateBagNode(object):
         self.annotation_dict = {}
         with open(self.annotation_filename, 'r') as f:
             for line in f:
-                line = line[:-1] # remove \n at end
+                line = line.strip() # remove \n at end
                 l = line.split(',')
-                self.annotation_dict[int(l[0])] = l[1]
+                self.annotation_dict[int(l[0][5:])] = l[1][6:]
 
 
     def setupParam(self,param_name,default_value):

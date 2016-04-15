@@ -1,12 +1,15 @@
 # Initail state of the FSM
 initial_state: "JOYSTICK_CONTROL"
 
-
 events: #Maps from subscribing topic to singal ids
-  joystick_override: 
+  joystick_override_on: 
     topic: "joy_mapper_node/joystick_override"
     msg_type: "BoolStamped"
     trigger: True
+  joystick_override_off: 
+    topic: "joy_mapper_node/joystick_override"
+    msg_type: "BoolStamped"
+    trigger: False
   at_stop_line:
     topic: "stop_line_filter_node/at_stop_line"
     msg_type: "BoolStamped"
@@ -20,9 +23,13 @@ events: #Maps from subscribing topic to singal ids
     msg_type: "BoolStamped"
     trigger: True
 
+# Define global transitions. Available from all states.
+global_transitions:
+  joystick_override_on: "JOYSTICK_CONTROL"
 
 # Define nodes 
 nodes:
+  decoder_node: "decoder_node/switch"
   anti_instagram_node: "anti_instagram_node/switch"
   apriltag_global_node: "apriltags_preprocessing_node/global_switch"
   apriltag_fast_node: "apriltags_preprocessing_node/fast_switch"
@@ -36,12 +43,13 @@ nodes:
 # Define state transitions
 states:
   JOYSTICK_CONTROL:
-    transitions: {}
+    transitions:
+      joystick_override_off: "LANE_FOLLOWING"
     active_nodes: []
+    lights: []
   LANE_FOLLOWING:
     transitions:
       at_stop_line: "COORDINATION"
-      joystick_override: "JOYSTICK_CONTROL"
     active_nodes:
       - vehicle_detector_node
       - static_object_detector_node
@@ -49,14 +57,12 @@ states:
       - line_detector_node
       - stop_line_filter_node
       - anti_instagram_node
-    lights:
+    lights: []
   COORDINATION:
     transitions:
       intersection_go: "INTERSECTION_CONTROL"
-      joystick_override: "JOYSTICK_CONTROL"
-    active_nodes: ["apriltag_node"]
+    active_nodes: ["apriltag_node", "decoder_node"]
   INTERSECTION_CONTROL:
     transitions:
       intersection_done: "LANE_FOLLOWING"
-      joystick_override: "JOYSTICK_CONTROL"
     active_nodes: []

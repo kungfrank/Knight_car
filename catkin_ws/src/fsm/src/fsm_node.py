@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import copy
-import duckietown_msgs
-import sensor_msgs
-import std_msgs
+from duckietown_msgs.msg import FSMState, BoolStamped
 from duckietown_msgs.srv import SetFSMState, SetFSMStateRequest, SetFSMStateResponse
 
 class FSMNode(object):
@@ -11,16 +9,21 @@ class FSMNode(object):
         self.node_name = rospy.get_name()
 
         # Build transition dictionray
-        self.states_dict = rospy.get_param("~states")
+        self.states_dict = rospy.get_param("~states",{})        
+        # Validate state and global transitions
+        if not self._validateStates(self.states_dict):
+            rospy.signal_shutdown("[%s] Incoherent definition." %self.node_name)
+            return          
 
-        # Validate state transitions
-        if not self.validateStates(self.states_dict):
+        # Load global transitions
+        self.global_transitions_dict = rospy.get_param("~global_transitions", {})
+        if not self._validateGlobalTransitions(self.global_transitions_dict,self.states_dict.keys()):
             rospy.signal_shutdown("[%s] Incoherent definition." %self.node_name)
             return          
 
         # Setup initial state
         self.state_msg = FSMState()
-        self.state_msg.state = rospy.get_param("~initial_state")
+        self.state_msg.state = rospy.get_param("~initial_state","")
         self.state_msg.header.stamp = rospy.Time.now()
         # Setup publisher and publish initial state
         self.pub_state = rospy.Publisher("~mode",FSMState,queue_size=1,latch=True)
@@ -37,37 +40,52 @@ class FSMNode(object):
             self.pub_dict[node_name] = rospy.Publisher(topic_name, BoolStamped, queue_size=1, latch=True)
 
         # Process events definition
-        param_events_dict = rospy.get_param("~events")
+        param_events_dict = rospy.get_param("~events",{})
         # Validate events definition
-        if not self.validateEvents(param_events_dict):
+        if not self._validateEvents(param_events_dict):
             rospy.signal_shutdown("[%s] Invalid event definition." %self.node_name)
             return          
 
+
         self.sub_list = list()
         self.event_trigger_dict = dict()
-        self.event_msg_type_dict = dict()
         for event_name, event_dict in param_events_dict.items():
             topic_name = event_dict["topic"]
             msg_type = event_dict["msg_type"]
             self.event_trigger_dict[event_name] = event_dict["trigger"]
-            self.sub_list.append(rospy.Subscriber("%s"%(topic_name), msg_type, self.cbEvent, callback_args=event_name))
+        # TODO so far I can't figure out how to put msg_type instead of BoolStamped.
+        # importlib might help. But it might get too complicated since different type 
+            self.sub_list.append(rospy.Subscriber("%s"%(topic_name), BoolStamped, self.cbEvent, callback_args=event_name))
 
         rospy.loginfo("[%s] Initialized." %self.node_name)
         # Publish initial state
         self.publish()
 
-    def validateEvents(self,events_dict):
+
+    def _validateGlobalTransitions(self,global_transitions, valid_states):
+        pass_flag = True
+        for event_name, state_name in global_transitions.items():
+            if state_name not in valid_states:
+                rospy.logerr("[%s] State %s is not valid. (From global_transitions of %s)" %(self.node_name,state_name, event_name)) 
+                pass_flag = False
+        return pass_flag
+
+    def _validateEvents(self,events_dict):
         pass_flag = True
         for event_name, event_dict in events_dict.items():
+            print 
             if "topic" not in event_dict:
                 rospy.logerr("[%s] Event %s missing topic definition." %(self.node_name,event_name))
                 pass_flag = False
-            if "trigger" not in events_dict:
+            if "msg_type" not in event_dict:
+                rospy.logerr("[%s] Event %s missing msg_type definition." %(self.node_name,event_name))
+                pass_flag = False
+            if "trigger" not in event_dict:
                 rospy.logerr("[%s] Event %s missing trigger definition." %(self.node_name,event_name))
                 pass_flag = False
         return pass_flag
 
-    def validateStates(self,states_dict):
+    def _validateStates(self,states_dict):
         pass_flag = True
         valid_states = states_dict.keys()
         for state, state_dict in states_dict.items():        
@@ -83,16 +101,22 @@ class FSMNode(object):
         return pass_flag 
 
     def _getNextState(self, state_name, event_name):
-        state_dict = self.states_dict.get(state_name)
-        if state_dict is None:
+        if not self.isValidState(state_name):
             rospy.logwarn("[%s] %s not defined. Treat as terminal. "%(self.node_name,state_name))
             return None
+
+        # state transitions overwrites global transition
+        state_dict = self.states_dict.get(state_name)
+        if "transitions" in state_dict:
+            next_state = state_dict["transitions"].get(event_name)
         else:
-            if "transitions" in state_dict:
-                next_state = state_dict["transitions"].get(event_name)
-            else:
-                next_state = None
-            return next_state
+            next_state = None
+
+        # state transitions overwrites global transitions
+        if next_state is None:
+            # No state transition defined, look up global transition
+            next_state = self.global_transitions_dict.get(event_name) #None when no global transitions
+        return next_state
                 
     def _getActiveNodesOfState(self,state_name):
         state_dict = self.states_dict[state_name]
@@ -106,10 +130,16 @@ class FSMNode(object):
         self.publishBools()
         self.publishState()
 
+    def isValidState(self,state):
+        return state in self.states_dict.keys()
+
     def cbSrvSetState(self,req):
-        self.state_msg.header.stamp = rospy.Time.now()
-        self.state_msg.state = req.state
-        self.publish()
+        if self.isValidState(req.state):
+            self.state_msg.header.stamp = rospy.Time.now()
+            self.state_msg.state = req.state
+            self.publish()
+        else:
+            rospy.logwarn("[%s] %s is not a valid state." %(self.node_name,req.state))
         return SetFSMStateResponse()
 
     def publishState(self):

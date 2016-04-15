@@ -11,6 +11,7 @@
 		pkg="navigation"
 		type="graph_search_server.py"
 		output="screen"
+		clear_params="true" required="true"
 	/>
 
     <node
@@ -19,6 +20,7 @@
 		pkg="navigation"
 		type="actions_dispatcher.py"
 		output="screen"
+		clear_params="true" required="true"
 	/>
 
 </launch>

@@ -1,5 +1,0 @@
-<launch>
-	<node pkg="cone_detector" type="echo.py" name="echo" output="screen" >
-        <remap from="~image_raw" to="/camera/rgb/image_rect_color"/>
-	</node>
-</launch>

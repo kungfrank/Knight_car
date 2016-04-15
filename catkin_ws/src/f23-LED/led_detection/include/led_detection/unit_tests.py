@@ -44,15 +44,10 @@ class LEDDetectionUnitTest():
                  min_distance_between_LEDs_pixels=self.query['min_distance_between_LEDs_pixels'])
         return d
 
-
-
 def LEDDetectionUnitTest_from_yaml(s):
     """
         Returns an instance of LEDDetectionUnitTest from YAML.
     """
-    # TODO: data validation
-    logger.warn('No data validation is implemented')
-
     data = s['data']
     
     data['bag']
@@ -67,33 +62,11 @@ def LEDDetectionUnitTest_from_yaml(s):
         e['image_coordinates'] = tuple(e['image_coordinates'])
         e['image_coordinates_margin']
         e['frequency']
-        e['color']
-        e['color_tolerance']
-        e['confidence_min']
+        #e['color']
+        #e['color_tolerance']
+        #e['confidence_min']
 
-    # TODO: data validation
     return LEDDetectionUnitTest(data=data, query=query, expected=expected)
-
-# YAML format:
-#
-# allblinking_test1-argo:
-#     bag: 20160311-allblinking_test1-argo.bag
-#    interval:
-#         [0, 2]
-#    query:
-#
-#       frequencies_to_detect:
-#         [1.0, 3.0]
-#     ground_truth:
-#     # 1Hz white on left (Magitek)
-#     - timestamp1: 0
-#       timestamp2: 2
-#       image_coordinates: [?, ?]
-#       image_coordinates_margin: 5 # pixels
-#       frequency: 1.0
-#       color: [1,1,1]
-#       color_tolerance: 0.1
-#       confidence_min: 0.9
 
 def load_tests(filename):
     """ 
@@ -113,3 +86,24 @@ def load_tests(filename):
             raise
             
     return contents
+
+# example YAML:
+#
+# allblinking_test1-argo:
+#     bag: 20160311-allblinking_test1-argo.bag
+#    interval:
+#         [0, 2]
+#    query:
+#
+#       frequencies_to_detect:
+#         [1.0, 3.0]
+#     ground_truth:
+#     # 1Hz white on left (Magitek)
+#     - timestamp1: 0
+#       timestamp2: 2
+#       image_coordinates: [?, ?]
+#       image_coordinates_margin: 5 # pixels
+#       frequency: 1.0
+#       color: [1,1,1]
+#       color_tolerance: 0.1
+#       confidence_min: 0.9

@@ -2,10 +2,18 @@ emma: # (Noether)
   name: Andrea Censi
   mac: 00:0f:60:06:0a:4d
 
+  buffalo_pwd: 27833193
+
+shamrock:
+  name: Hang Zhao  
+
 # bmwm3: R.I.P.
 porsche911:
   name: Changhyun Choi
   mac: 00:0f:60:06:0a:6a  
+
+leon:
+  name: Javier Alonso
 
 megaman:
   name: Shih-Yuan Liu
@@ -135,3 +143,42 @@ shamrock:
 
 ernie:
   name: Noam Buckman
+
+maserati:
+  name: Valerio Varricchio
+
+trabant:
+  name: Nick Wang
+
+wama:
+  name: Brian Chuang
+
+agent-orange:
+  name: JihShi Chen
+
+benz:
+  name: NCTU Group 8
+
+alphaduck:
+  name: NCTU Group 7
+
+kfc:
+  name: NCTU Group 6
+
+osram:
+  name: NCTU Group 5
+
+parker:
+  name: NCTU Group 4
+
+robotics:
+  name: NCTU Group 3
+
+grasseater:
+  name: NCTU Group 2
+
+pandola:
+  name: NCTU Group 1
+
+sonata:
+  name: Heejin Ahn

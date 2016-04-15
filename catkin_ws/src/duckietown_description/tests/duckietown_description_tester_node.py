@@ -8,7 +8,6 @@ class DuckietownDescriptionTesterNode(unittest.TestCase):
     def setup(self):
         # Setup the node
         rospy.init_node('duckietown_description_tester_node', anonymous=False)
-        self.msg_received = False
 
         # Setup the tf listener
         self.tfl = tf.TransformListener()

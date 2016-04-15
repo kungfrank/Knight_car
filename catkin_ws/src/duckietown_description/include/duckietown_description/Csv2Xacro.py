@@ -138,7 +138,7 @@ class Csv2Xacro(object):
             tempChild.setAttribute('id', row[0].strip('" '))
             tempChild.setAttribute('x', row[1].strip('" '))
             tempChild.setAttribute('y', row[2].strip('" '))
-            tempChild.setAttribute('position', row[3].strip('" '))
+            tempChild.setAttribute('pos', "${pos_" + row[3].strip('" ') + "}")
             tempChild.setAttribute('rotation', row[4].strip('" '))
             root.appendChild(tempChild)
 

@@ -35,10 +35,13 @@ class MapGenerationTester(unittest.TestCase):
         os.system("roslaunch duckietown_description duckietown_description_node.launch veh:=testbot gui:=false map_name:=test_map_tmp &")
 
         # Wait up to 5 seconds for the transform to become available
-        self.tfl.waitForTransform("world", "tile_1_1", rospy.Time(), rospy.Duration(5))
+        try:
+            self.tfl.waitForTransform("world", "tile_1_1", rospy.Time(), rospy.Duration(5))
+        except:
+            pass
 
         transform_exists = self.tfl.canTransform("world", "tile_1_1", rospy.Time())
-        self.assertTrue(transform_exists)
+        self.assertTrue(transform_exists, "Test timed out while waiting for transform")
 
         # Get the param for tile_width
         tile_width = rospy.get_param("~tile_width")

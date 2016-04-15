@@ -3,7 +3,7 @@ from __future__ import print_function
 from random import random
 import rospy
 from duckietown_msgs.msg import CoordinationClearance, FSMState, BoolStamped, Twist2DStamped
-from duckietown_msgs.msg.signalings import SignalsDetection, CoordinationSignal
+from duckietown_msgs.msg import SignalsDetection, CoordinationSignal
 from time import time
 
 
@@ -48,26 +48,12 @@ class VehicleCoordinator():
 
         # Subscriptions
         self.mode = "LANE_FOLLOWING"
-        rospy.Subscriber('~mode', FSMState,
-                         lambda msg: self.set('mode', msg.state))
-
-	rospy.Subscriber('~signals_detection', SignalsDetection, self.getLEDInfo)
-
-        #self.intersection = IntersectionDetection.NONE
-        #rospy.Subscriber('~intersection_detection', IntersectionDetection,
-        #                 lambda msg: self.set('intersection', msg.type))
+        rospy.Subscriber('~mode', FSMState, lambda msg: self.set('mode', msg.state))
 
         self.traffic_light = SignalsDetection.NO_TRAFFIC_LIGHT
-        #rospy.Subscriber('~traffic_light_detection', TrafficLightDetection,
-        #                 lambda msg: self.set('traffic_light', msg.color))
-
         self.right_veh = SignalsDetection.NO_CAR
-        #rospy.Subscriber('~right_vehicle_detection', VehicleDetection,
-        #                 lambda msg: self.set('right_veh', msg.detection))
-
         self.opposite_veh = SignalsDetection.NO_CAR
-        #rospy.Subscriber('~opposite_vehicle_detection', VehicleDetection,
-        #                 lambda msg: self.set('opposite_veh', msg.detection))
+        rospy.Subscriber('~signals_detection', SignalsDetection, self.process_signals_detection)
 
         # Publishing
         self.clearance_to_go = CoordinationClearance.NA
@@ -91,10 +77,10 @@ class VehicleCoordinator():
 
         if self.state == State.RESERVING:
             self.roof_light = CoordinationSignal.SIGNAL_B
-	elif self.state == State.GO:
-	    self.roof_light = CoordinationSignal.SIGNAL_C
-	elif self.state == State.LANE_FOLLOWING:
-	    self.roof_light = CoordinationSignal.OFF
+        elif self.state == State.GO:
+            self.roof_light = CoordinationSignal.SIGNAL_C
+        elif self.state == State.LANE_FOLLOWING:
+            self.roof_light = CoordinationSignal.OFF
         else:
             self.roof_light = CoordinationSignal.SIGNAL_A
 
@@ -111,11 +97,10 @@ class VehicleCoordinator():
     def set(self, name, value):
         self.__dict__[name] = value
 
-    def getLEDInfo(self, msg):
-	self.set('traffic_light', msg.traffic_light_state))
-	self.set('right_veh', msg.right))
-	self.set('opposite_veh', msg.front))
-	
+    def process_signals_detection(self, msg):
+        self.set('traffic_light', msg.traffic_light_state)
+        self.set('right_veh', msg.right)
+        self.set('opposite_veh', msg.front)
 
     def publish_topics(self):
         now = rospy.Time.now()
@@ -151,22 +136,22 @@ class VehicleCoordinator():
                 self.set_state(State.AT_STOP_CLEARING)
 
         elif self.state == State.AT_STOP_CLEARING:
-            if self.right_veh != VehicleDetection.NO_CAR or self.opposite_veh == SignalsDetection.SIGNAL_B or self.opposite_veh == SignalsDetection.SIGNAL_C:
+            if self.right_veh != SignalsDetection.NO_CAR or self.opposite_veh == SignalsDetection.SIGNAL_B or self.opposite_veh == SignalsDetection.SIGNAL_C:
                 self.set_state(State.AT_STOP)
             elif self.time_at_current_state() > self.T_CROSS:
                 self.set_state(State.AT_STOP_CLEAR)
 
         elif self.state == State.AT_STOP_CLEAR:
-            if self.right_veh != VehicleDetection.NO_CAR or self.opposite_veh == SignalsDetection.SIGNAL_B or self.opposite_veh == SignalsDetection.SIGNAL_C:
+            if self.right_veh != SignalsDetection.NO_CAR or self.opposite_veh == SignalsDetection.SIGNAL_B or self.opposite_veh == SignalsDetection.SIGNAL_C:
                 self.set_state(State.AT_STOP)
             else:
                 self.set_state(State.RESERVING)
 
         elif self.state == State.RESERVING:
-            if self.right_veh != VehicleDetection.NO_CAR:
+            if self.right_veh != SignalsDetection.NO_CAR:
                 self.set_state(State.AT_STOP)
             elif self.time_at_current_state() > self.T_S:
-                if self.opposite_veh == VehicleDetection.SIGNAL_B:
+                if self.opposite_veh == SignalsDetection.SIGNAL_B:
                     self.random_delay = random() * self.T_MAX_RANDOM
                     print ("Other vehicle reserving as well. Will wait for %.2f s" % self.random_delay)
                     self.set_state(State.CONFLICT)
@@ -178,7 +163,7 @@ class VehicleCoordinator():
                 self.set_state(State.LANE_FOLLOWING)
 
         elif self.state == State.CONFLICT:
-            if self.right_veh != VehicleDetection.NO_CAR or self.opposite_veh == VehicleDetection.SIGNAL_B or self.opposite_veh == VehicleDetection.SIGNAL_C:
+            if self.right_veh != SignalsDetection.NO_CAR or self.opposite_veh == SignalsDetection.SIGNAL_B or self.opposite_veh == SignalsDetection.SIGNAL_C:
                 self.set_state(State.AT_STOP)
             elif self.time_at_current_state() > self.random_delay:
                 self.set_state(State.AT_STOP_CLEAR)

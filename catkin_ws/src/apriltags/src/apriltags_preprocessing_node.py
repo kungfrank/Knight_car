@@ -72,17 +72,17 @@ class AprilPrePros(object):
         
 
     def global_switch( self , msg ):
-        """ """
         self.global_enabled = msg.data
         
         
     def fast_switch( self , msg ):
-        """ """ 
         self.fast_enabled = msg.data
         
 
     def callback( self , msg ):
         """ Save camera IMG """ 
+        if not self.global_enabled and not self.fast_enabled:
+            return
 
         # Load message
         cv_img = self.bridge.imgmsg_to_cv2( msg , desired_encoding="passthrough" )

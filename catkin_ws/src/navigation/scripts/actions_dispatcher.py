@@ -13,7 +13,8 @@ firstUpdate = True
 
 actions = []
 pub = 0
-state_data = 0
+state_data = FSMState()
+state_data.state = 'JOYSTICK_CONTROL'
 
 def dispatcher(data):
     global actions
@@ -21,10 +22,10 @@ def dispatcher(data):
     global firstUpdate
     global state_data
     state_data = data
-    if firstUpdate == False and state_data.state != state_data.INTERSECTION_CONTROL:
+    if firstUpdate == False and state_data.state != 'INTERSECTION_CONTROL': #state_data.INTERSECTION_CONTROL:
         firstUpdate = True
 
-    if firstUpdate == True and state_data.state == data.INTERSECTION_CONTROL and actions:
+    if firstUpdate == True and state_data.state == 'INTERSECTION_CONTROL' and actions" #data.INTERSECTION_CONTROL and actions:
         action = actions.pop(0)
         print 'Dispatched:', action
         if action == 's':

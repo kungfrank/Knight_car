@@ -10,12 +10,13 @@ import subprocess
 class MapGenerationTester(unittest.TestCase):
     def setup(self):
         # Setup the node
-        rospy.init_node('duckietown_description_tester_node', anonymous=False)
+        rospy.init_node('map_generation_tester_node', anonymous=False)
 
         # Setup the tf listener
         self.tfl = tf.TransformListener()
         rp = rospkg.RosPack()
-        self.path = "{pkg_root}/urdf/test_map_tmp.urdf.xacro".format(pkg_root=rp.get_path("duckietown_description"))
+        map_name = rospy.get_param("~map_name")
+        self.path = "{pkg_root}/urdf/{map_name}.urdf.xacro".format(pkg_root=rp.get_path("duckietown_description"), map_name=map_name)
 
         # Wait for the map generator  to finish saving the file
         timeout = rospy.Time.now() + rospy.Duration(5)  # Wait at most 5 seconds for the node to come up
@@ -31,10 +32,11 @@ class MapGenerationTester(unittest.TestCase):
         self.setup()
 
         # Launch the duckietown_description
-        os.system("roslaunch duckietown_description duckietown_description_node.launch veh:=testbot gui:=false map_file_name:=test_map_tmp.urdf.xacro &")
+        os.system("roslaunch duckietown_description duckietown_description_node.launch veh:=testbot gui:=false map_name:=test_map_tmp &")
 
         # Wait up to 5 seconds for the transform to become available
         self.tfl.waitForTransform("world", "tile_1_1", rospy.Time(), rospy.Duration(5))
+
         transform_exists = self.tfl.canTransform("world", "tile_1_1", rospy.Time())
         self.assertTrue(transform_exists)
 

@@ -7,6 +7,7 @@ import sys
 import time
 import IPython
 
+CENTERS2 = np.array([[60, 60, 60],[60, 60, 240], [50, 240, 240], [240, 240, 240]]);
 CENTERS = np.array([[60, 60, 60], [50, 240, 240], [240, 240, 240]])
 # in HSV: [0,0,60], [127.5000  233.7500  240.0000],[0,0,240]
 
@@ -21,16 +22,28 @@ def getimgdatapts(cv2img):
 #priors
 def runKMeans(cv_img, num_colors, init):
 	imgdata = getimgdatapts(cv_img[-100:,:,:])
-	kmc = KMeans(n_clusters=num_colors, max_iter=100, n_init=10, init=init)
+	kmc = KMeans(n_clusters=num_colors, max_iter=25, n_init=10, init=init)
+	t1 = time.time();
 	kmc.fit_predict(imgdata)
+	t2 = time.time();
+	print("fit time: %f"%(t2-t1))
 	trained_centers = kmc.cluster_centers_
 	# print trained_centers
 	labels = kmc.labels_
 	labelcount = Counter()
-	for pixel in labels:
-		labelcount[pixel] += 1
+	t1 = time.time();
+	# IPython.embed()
+	# for pixel in labels:
+	# 	labelcount[pixel] += 1
+	for i in np.arange(num_colors):
+		labelcount[i]=np.sum(labels==i)
+
+	t2 = time.time();
+	print("counting labels time: %f"%(t2-t1))
 	# print labelcount
-	return trained_centers, labelcount
+	# IPython.embed()
+	score=kmc.score(imgdata)
+	return trained_centers, labelcount,score
 
 
 def identifyColors(trained, true):
@@ -81,7 +94,7 @@ def getparameters2(mapping, trained, weights, true):
 	# print trained, true
 	prior_trained=np.array([[255, 0, 0],[0, 255, 0],[0, 0, 255]])
 	prior_true=np.array([[255, 0, 0],[0, 255, 0],[0, 0, 255]])
-	diagonal_prior_weight=5 # the coefficients along the diagonal should be close to each other - i.e close to "white" light
+	diagonal_prior_weight=300 # the coefficients along the diagonal should be close to each other - i.e close to "white" light
 	a_prior_weight=0.2 # a should be close to 1
 	INFEASIBILITY_PENALTY=1000000
 	
@@ -127,7 +140,10 @@ def getparameters2(mapping, trained, weights, true):
 		A=np.concatenate((A1,A2,A3),0)
 		b=np.concatenate((b1,b2,b3),0)
 		# solve equations
+		# t1=time.time()
 		p,residuals,rank,s=np.linalg.lstsq(A,b);
+		# t2=time.time()
+		# print("least-squares time: %f"%(t2-t1))
 		fitting_cost=residuals
 		RED_a=p[0]
 		GREEN_a=p[2]

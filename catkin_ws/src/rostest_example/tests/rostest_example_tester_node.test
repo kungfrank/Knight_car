@@ -1,0 +1,9 @@
+<launch>
+    <!-- Run the system level launch -->
+    <include file="$(find duckietown)/launch/rostest_example.launch" />
+
+    <!-- Run unit test -->
+    <remap from="rostest_example_tester_node/list" to="average_quacks_node/list" />
+    <remap from="rostest_example_tester_node/duckiecall" to="duckiecall_node/duckiecall" />
+    <test test-name="rostest_example_tester_node" pkg="rostest_example" type="rostest_example_tester_node.py"/>
+</launch>

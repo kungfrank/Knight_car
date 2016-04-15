@@ -520,7 +520,7 @@
 		<group if="$(arg /navigation/graph_planner)">
 		    <remap from="actions_dispatcher/turn_type" to="open_loop_intersection_node/turn_type" /> <!-- remapping outputs since there are two different possible turn types -->
 
-			<include file="$(find navigation)/launch/graph_search_server.launch">
+			<include file="$(find navigation)/launch/graph_search_server_node.launch">
 				<arg name="map_name" value="$(arg map_name)"/>        
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>        

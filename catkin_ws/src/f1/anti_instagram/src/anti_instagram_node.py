@@ -13,15 +13,18 @@ class AntiInstagramNode():
 	def __init__(self):
 		self.node_name = rospy.get_name()
 
-                self.active = True
+		self.active = True
 		# Initialize publishers and subscribers
 		self.pub_image = rospy.Publisher("~corrected_image",Image,queue_size=1)
-		self.pub_health = rospy.Publisher("~health",AntiInstagramHealth,queue_size=1)
-                self.sub_switch = rospy.Subscriber("~switch",BoolStamped, self.cbSwitch, queue_size=1)
+		self.pub_health = rospy.Publisher("~health",AntiInstagramHealth,queue_size=1,latch=True)
+		self.sub_switch = rospy.Subscriber("~switch",BoolStamped, self.cbSwitch, queue_size=1)
 		self.sub_image = rospy.Subscriber("~uncorrected_image",Image,self.cbNewImage,queue_size=1)
-		self.pub_transform = rospy.Publisher("~transform",AntiInstagramTransform,queue_size=1)
+		self.pub_transform = rospy.Publisher("~transform",AntiInstagramTransform,queue_size=1,latch=True)
 		# image callback thread lock
 		self.thread_lock = threading.Lock()
+
+		# publish corrected image as well as transform
+		self.image_pub_switch = False
 
 		# Verbose option 
 		self.verbose = True #rospy.get_param('~verbose')  
@@ -42,17 +45,29 @@ class AntiInstagramNode():
 		self.numFramesSeen = 0
 
 		# pull status from Antiinstagram class
+		self.getStatus()
+
+	def cbSwitch(self,switch_msg):
+		self.active = switch_msg.data
+
+	def getStatus(self):
+		# pull status from Antiinstagram class
 		self.health.J1 = self.ai.health
-		self.transform.shift1, self.transform.shift2, self.transform.shift3 = self.ai.shift
-		self.transform.scale1, self.transform.scale2, self.transform.scale3 = self.ai.scale
+		self.transform.s[0], self.transform.s[1], self.transform.s[2] = self.ai.shift
+		self.transform.s[3], self.transform.s[4], self.transform.s[5] = self.ai.scale
+		return True
 
-
-        def cbSwitch(self,switch_msg):
-                self.active = switch_msg.data
+	def pubStatus(self):
+		if self.getStatus():
+			# publish fitting results
+			self.pub_health.publish(self.health)
+			self.pub_transform.publish(self.transform)
+		else:
+			rospy.loginfo("Unable to get transform and status.")
 
 	def cbNewImage(self,image_msg):
-                if not self.active:
-                        return false
+		if not self.active:
+			return False
 		# Start a daemon thread to process the image
 		thread = threading.Thread(target=self.processImage,args=(image_msg,))
 		thread.setDaemon(True)
@@ -93,34 +108,28 @@ class AntiInstagramNode():
 				rospy.loginfo("[%s] Latency calculate transform = %.3f ms" %(self.node_name, (rospy.get_time()-toc) * 1000.0))
 				toc = rospy.get_time()
 			print (self.ai.scale,self.ai.shift)
+
+		if self.image_pub_switch:
+			corrected_image_cv2 = self.ai.applyTransform(cv_image)
+			if self.verbose:  
+				rospy.loginfo("[%s] Latency apply transform = %.3f ms" %(self.node_name, (rospy.get_time()-toc) * 1000.0))
+				toc = rospy.get_time()
+
+			# corrected_image_cv2 = cv_image
+			corrected_image_cv2 = np.clip(corrected_image_cv2, 0, 255).astype(np.uint8)
+			self.corrected_image = self.bridge.cv2_to_imgmsg(corrected_image_cv2,"bgr8")
+
+			if self.verbose:  
+				rospy.loginfo("[%s] Latency image msg encode = %.3f ms" %(self.node_name, (rospy.get_time()-toc) * 1000.0))
+				toc = rospy.get_time()
+
+			self.pub_image.publish(self.corrected_image)
+
+			if self.verbose:  
+				rospy.loginfo("[%s] Latency image publish  = %.3f ms" %(self.node_name, (rospy.get_time() - toc) * 1000.0))
+				rospy.loginfo("[%s] Total Latency image published (total time frame in -> frame out) = %.3f ms" %(self.node_name, (rospy.get_time() - tic) * 1000.0))
 		
-
-		corrected_image_cv2 = self.ai.applyTransform(cv_image)
-		if self.verbose:  
-			rospy.loginfo("[%s] Latency apply transform = %.3f ms" %(self.node_name, (rospy.get_time()-toc) * 1000.0))
-			toc = rospy.get_time()
-
-		# corrected_image_cv2 = cv_image
-		corrected_image_cv2 = np.clip(corrected_image_cv2, 0, 255).astype(np.uint8)
-		self.corrected_image = self.bridge.cv2_to_imgmsg(corrected_image_cv2,"bgr8")
-
-		if self.verbose:  
-			rospy.loginfo("[%s] Latency image msg encode = %.3f ms" %(self.node_name, (rospy.get_time()-toc) * 1000.0))
-			toc = rospy.get_time()
-
-		# pull status from Antiinstagram class
-		self.health.J1 = self.ai.health
-		self.transform.shift1, self.transform.shift2, self.transform.shift3 = self.ai.shift
-		self.transform.scale1, self.transform.scale2, self.transform.scale3 = self.ai.scale
-
-		self.pub_health.publish(self.health)
-		self.pub_transform.publish(self.transform)
-		self.pub_image.publish(self.corrected_image)
-
-		if self.verbose:  
-			rospy.loginfo("[%s] Latency image publish  = %.3f ms" %(self.node_name, (rospy.get_time() - toc) * 1000.0))
-			rospy.loginfo("[%s] Total Latency image published (total time frame in -> frame out) = %.3f ms" %(self.node_name, (rospy.get_time() - tic) * 1000.0))
-		
+		self.pubStatus()
 		self.numFramesSeen += 1
 
 		self.thread_lock.release()

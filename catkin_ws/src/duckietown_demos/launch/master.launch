@@ -521,7 +521,8 @@
 		</group>
 
 		<group if="$(arg /navigation/graph_planner)">
-		    <remap from="actions_dispatcher/turn_type" to="open_loop_intersection_control_node/turn_type" /> <!-- remapping outputs since there are two different possible turn types -->
+			<remap from="actions_dispatcher/mode" to="fsm_node/mode" />
+			<remap from="actions_dispatcher/turn_type" to="open_loop_intersection_control_node/turn_type" /> <!-- remapping outputs since there are two different possible turn types -->
 
 			<include file="$(find navigation)/launch/graph_search_server_node.launch">
 				<arg name="map_name" value="$(arg map_name)"/>        
@@ -530,11 +531,11 @@
 				<arg name="param_file_name" value="$(arg param_file_name)"/>        
 			</include>
 
-            <include file="$(find navigation)/launch/actions_dispatcher_node.launch">
+	        	<include file="$(find navigation)/launch/actions_dispatcher_node.launch">
  				<arg name="veh" value="$(arg veh)"/>        
 				<arg name="config" value="$(arg config)"/>        
 				<arg name="param_file_name" value="$(arg param_file_name)"/>        
-            </include>
+        		</include>
 		</group>
 		
 	</group>

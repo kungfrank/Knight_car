@@ -4,8 +4,10 @@ from xml.dom.minidom import Document
 class Csv2Xacro(object):
 
     def __init__(self, tile_csv_file, tag_csv_file, xacro_file, tile_width, tag_offset):
-        self.map_csv = csv.reader(open(tile_csv_file, 'rb'), delimiter=',')
-        self.tag_csv = csv.reader(open(tag_csv_file, 'rb'), delimiter=',')
+        self.tile_csv_file = open(tile_csv_file, 'rb')
+        self.tag_csv_file = open(tag_csv_file, 'rb')
+        self.tile_csv = csv.reader(self.tile_csv_file, delimiter=',')
+        self.tag_csv = csv.reader(self.tag_csv_file, delimiter=',')
         self.map_xml = open(xacro_file, 'w')
         self.tile_width = tile_width
         self.tag_offset = tag_offset
@@ -80,15 +82,46 @@ class Csv2Xacro(object):
 
         # Create tiles
         header = True
-        for row in self.map_csv:
+        x_max = 0
+        y_max = 0
+        for row in self.tile_csv:
             if header:
                 header = False
                 continue
+            x = row[0].strip('" ')
+            if int(x) > x_max:
+                x_max = int(x)
+            y = row[1].strip('" ')
+            if int(y) > y_max:
+                y_max = int(y)
             tempChild = doc.createElement('xacro:tile')
             tempChild.setAttribute('x',row[0].strip('" '))
             tempChild.setAttribute('y',row[1].strip('" '))
             tempChild.setAttribute('type',row[2].strip('" '))
             tempChild.setAttribute('rotation',row[3].strip('" '))
+            root.appendChild(tempChild)
+
+        # Check that the map has the right number of tiles
+        if not ((x_max+1)*(y_max+1) == root.getElementsByTagName('xacro:tile').length):
+            raise Exception("Map should be exactly rectangular.")
+
+        # Create comment
+        comment = doc.createComment('Empty border tiles')
+        root.appendChild(comment)
+
+        # Create empty border tiles
+        for x in range(x_max + 2):
+            tempChild = doc.createElement('xacro:tile')
+            tempChild.setAttribute('x',str(x))
+            tempChild.setAttribute('y',str(y_max + 1))
+            tempChild.setAttribute('visible','false')
+            root.appendChild(tempChild)
+
+        for y in range(y_max + 1):
+            tempChild = doc.createElement('xacro:tile')
+            tempChild.setAttribute('x',str(x_max + 1))
+            tempChild.setAttribute('y',str(y))
+            tempChild.setAttribute('visible','false')
             root.appendChild(tempChild)
 
         # Create comment
@@ -114,3 +147,5 @@ class Csv2Xacro(object):
 
         # Close file
         self.map_xml.close()
+        self.tile_csv_file.close()
+        self.tag_csv_file.close()

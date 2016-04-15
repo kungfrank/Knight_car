@@ -21,7 +21,7 @@ class Csv2xacroNode(object):
 
         self.tile_map_csv = self.setupParam("~tile_map_csv", self.package_path + '/tiles_226.csv')
         self.tag_map_csv = self.setupParam("~tag_map_csv", self.package_path + '/tags_default.csv')
-        self.map_name = self.package_path + '/urdf/' + self.setupParam("~map_name", 'default_map') + '.urdf.xacro'
+        self.map_name = self.package_path + '/urdf/' + self.setupParam("~output_map_name", 'default_map') + '.urdf.xacro'
         self.tile_width = self.setupParam("~tile_width", 0.595)
         self.tag_offset = self.setupParam("~tag_offset", 0.04)
 

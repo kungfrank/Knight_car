@@ -13,27 +13,28 @@ firstUpdate = True
 
 actions = []
 pub = 0
-state_data = FSMState()
-state_data.state = 'JOYSTICK_CONTROL'
+#state_data = FSMState()
+#state_data.state = 'JOYSTICK_CONTROL'
 
 def dispatcher(data):
     global actions
     global pub
     global firstUpdate
-    global state_data
-    state_data = data
-    if firstUpdate == False and state_data.state != 'INTERSECTION_CONTROL': #state_data.INTERSECTION_CONTROL:
+#    global state_data
+#    state_data = data
+    if firstUpdate == False and data.state != 'INTERSECTION_CONTROL': #state_data.INTERSECTION_CONTROL:
         firstUpdate = True
 
-    if firstUpdate == True and state_data.state == 'INTERSECTION_CONTROL' and actions: #data.INTERSECTION_CONTROL and actions:
+    if firstUpdate == True and data.state == 'INTERSECTION_CONTROL' and actions: #data.INTERSECTION_CONTROL and actions:
+        rospy.sleep(2)
         action = actions.pop(0)
         print 'Dispatched:', action
         if action == 's':
             pub.publish(Int16(1))
         elif action == 'r':
-            pub.publish(Int16(0))
-        elif action == 'l':
             pub.publish(Int16(2))
+        elif action == 'l':
+            pub.publish(Int16(0))
         elif action == 'w':
             pub.publish(Int16(-1))    
     
@@ -47,7 +48,7 @@ def dispatcher(data):
 def graph_search(data):
     print 'Requesting map for src: ', data.source_node, ' and target: ', data.target_node
     global actions
-    global state_data
+#    global state_data
     rospy.wait_for_service('graph_search')
     try:
         graph_search = rospy.ServiceProxy('graph_search', GraphSearch)
@@ -62,7 +63,7 @@ def graph_search(data):
             for letter in actions:
                 action_str += letter
             pubList.publish(action_str)
-            dispatcher(state_data)
+#            dispatcher(state_data)
         else:
             print 'Actions to be executed:', actions
 

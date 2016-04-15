@@ -1,0 +1,13 @@
+<launch>
+
+    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
+    <arg name="map_file_name" default="test_map.urdf.xacro" doc="The name of the xacro file with the duckietown map "/>
+    <arg name="gui" default="true" />
+
+    <group ns="$(arg veh)">
+        <param name="robot_description" command="$(find xacro)/xacro '$(find duckietown_description)/urdf/$(arg map_file_name)'" />
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+        <node if="$(arg gui)" name="rviz" pkg="rviz" type="rviz" args="-d $(find duckietown_description)/rviz/map.rviz" />
+    </group>
+
+</launch>

@@ -79,7 +79,7 @@ class StopLineFilterNode(object):
         stop_line_point.x = stop_line_x_accumulator/good_seg_count
         stop_line_point.y = stop_line_y_accumulator/good_seg_count
         stop_line_reading_msg.stop_line_point = stop_line_point
-        stop_line_reading_msg.at_stop_line = stop_line_point.x < self.stop_distance and math.fabs(stop_line_point.y) < self.lanewidth/4 and self.lane_pose.in_lane
+        stop_line_reading_msg.at_stop_line = stop_line_point.x < self.stop_distance and math.fabs(stop_line_point.y) < self.lanewidth/4 
         self.pub_stop_line_reading.publish(stop_line_reading_msg)    
         if stop_line_reading_msg.at_stop_line:
             msg = BoolStamped()

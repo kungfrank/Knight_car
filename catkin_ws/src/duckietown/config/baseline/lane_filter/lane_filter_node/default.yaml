@@ -13,7 +13,7 @@ cov_v: 0.5
 linewidth_white: 0.05
 linewidth_yellow: 0.025
 lanewidth: 0.20
-min_max: 0.3
+min_max: 0.1
 
 # minimum number of segments for generating measurement:
 use_min_segs: False
@@ -22,7 +22,6 @@ min_segs: 10
 # maximum segment distance:
 use_maximum_segment_dist: False
 max_segment_dist: 0.3
-min_max: 0.4
 
 # distance weighting:
 use_distance_weighting: False

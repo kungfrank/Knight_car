@@ -1,0 +1,30 @@
+<launch>
+    <arg name="pkg_name" value="duckietown_description"/>
+    <arg name="node_name" default="map_generation_tester"/>
+    <arg name="veh" default="testbot" doc="Name of vehicle. ex: megaman"/>
+    <arg name="config" default="baseline" doc="Specify a config."/>
+    <arg name="param_file_name" default="test_default" doc="Specify a param file. ex:megaman."/>
+    <arg name="csv_tile_file" default="test_tiles.csv" doc="The name of the csv file with tiles data "/>
+    <arg name="csv_tag_file" default="test_tags.csv" doc="The name of the csv file with tags data "/>
+    <arg name="map_file_name" default="test_map_tmp.urdf.xacro" doc="The name of the tmp test file to generate for this test."/>
+
+    <!-- Run the csv2xacro_node on a test file-->
+    <include file="$(find duckietown_description)/launch/csv2xacro_node.launch" >
+        <arg name="config" default="baseline" doc="Specify a config."/>
+        <arg name="param_file_name" default="test_default" doc="Specify a param file. ex:megaman."/>
+        <arg name="tile_map_csv" value="$(find duckietown_description)/tests/test_tiles.csv" />
+        <arg name="tag_map_csv" value="$(find duckietown_description)/tests/test_tags.csv"/>
+        <arg name="map_name" value="test_map_tmp" />
+    </include>
+
+    <!-- Run the node -->
+<!--    <include file="$(find duckietown_description)/launch/duckietown_description_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="gui" value="false" />
+    </include>-->
+
+    <!-- Run integration test -->
+    <test test-name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" ns="$(arg veh)">
+        <rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/$(arg param_file_name).yaml"/>
+    </test>
+</launch>

@@ -23,6 +23,7 @@
  	</include>
  
  	<!-- Preprocessing -->
+	<remap from="apriltags_preprocessing_node/image_in" to="camera_node/image/raw" />
  	<include file="$(find apriltags)/launch/apriltags_preprocessing_node.launch">
  		<arg name="veh" value="$(arg veh)"/>
  		<arg name="config" value="$(arg config)"/>

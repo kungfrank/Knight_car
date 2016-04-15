@@ -18,18 +18,24 @@ def dispatcher(data):
     global actions
     global pub
     global firstUpdate
-    if firstUpdate == False and data.state != data.COORDINATION:
+    if firstUpdate == False and data.state != data.INTERSECTION_CONTROL:
         firstUpdate = True
 
-    if firstUpdate == True and data.state == data.COORDINATION and actions:
+    if firstUpdate == True and data.state == data.INTERSECTION_CONTROL and actions:
         action = actions.pop(0)
         print 'Dispatched:', action
         if action == 's':
             pub.publish(Int16(1))
+            turn_forward = rospy.ServiceProxy('open_loop_intersection_node/turn_forward',Empty)
+            turn_forward()
         elif action == 'r':
             pub.publish(Int16(0))
+            turn_right = rospy.ServiceProxy('open_loop_intersection_node/turn_right',Empty)
+            turn_right()
         elif action == 'l':
             pub.publish(Int16(2))
+            turn_left = rospy.ServiceProxy('open_loop_intersection_node/turn_left',Empty)
+            turn_left()
         elif action == 'w':
             pub.publish(Int16(-1))    
     

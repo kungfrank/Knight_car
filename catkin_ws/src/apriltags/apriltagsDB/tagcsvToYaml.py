@@ -1,7 +1,7 @@
 import csv
 
 # This script reads in a csv file and creates a yaml file of all the apriltags.
-# Update database and dowload csv from https://docs.google.com/spreadsheets/d/1vvrkYaFktDBXyF4E_MMxx3wTX5U5S1ToQBbKSQ6uVoA/edit#gid=847304495
+# Update database and dowload csv from https://docs.google.com/spreadsheets/d/1vvrkYaFktDBXyF4E_MMxx3wTX5U5S1ToQBbKSQ6uVoA/edit#gid=2078462339
 
 def tag_writer(id, tag_type,street_name, vehicle_name, sign_type, location_226, location_316):
     yaml.write('- tag_id: ' + str(id) + '\n')
@@ -20,7 +20,7 @@ N = 1
 with open('tagsDB.csv', 'rb') as csvfile:
     tagDB = csv.reader(csvfile, delimiter=',')
     for row in tagDB:
-        if N < 3:
+        if N < 4:
             N += 1
         else:
             while True:

@@ -5,6 +5,8 @@
 	<arg name="local" default="false" doc="true to launch locally on laptop. false to launch of vehicle"/>
 	<arg name="pkg_name" default="navigation" doc="name of the package"/>
 	<arg name="node_name" default="actions_dispatcher" doc="name of the node"/>
+    <param name="map_name" value="$(arg map_name)" />
+    <param name="veh" value="$(arg veh)"/>
 
 	<group ns="$(arg veh)">
 	    <!-- Local -->

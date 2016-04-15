@@ -1,0 +1,18 @@
+<launch>
+	<arg name="veh"/>
+	<arg name="local" default="true"/>
+	<arg name="config" default="launch/config/baseline"/>
+	<arg name="param_file_name" default="default"/>
+	<arg name="flip_direction" doc="Flip direction"/>
+
+	<arg name="node_name" default="virtual_mirror_araki_node"/>
+	<arg name="pkg_name" value="virtual_mirror_araki"/>
+
+	<remap from="virtual_mirror_araki_node/img_in" to="camera_node/image/compressed"/>
+	<remap from="virtual_mirror_araki_node/img_out" to="virtual_mirror_araki_node/topic"/>
+	
+	<node ns="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen">
+	<rosparam command="load" file="$(find duckietown_araki)/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
+            <param name="~flip_direction" value="$(arg flip_direction)"/>
+	</node>
+</launch>

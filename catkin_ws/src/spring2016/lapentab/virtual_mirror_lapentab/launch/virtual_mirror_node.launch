@@ -1,0 +1,13 @@
+<launch>
+	<arg name="pkg_name" value="virtual_mirror_lapentab"/>
+	<arg name="veh" doc="Name of vehicle. ex: megaman"/>
+	<include file="$(find duckietown)/machines"/>
+	<arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
+	<arg name="config" default="baseline" doc="Specify a config."/>
+	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
+	<group ns="$(arg veh)">
+		<node machine="$(arg veh)" name="virtual_mirror_node" pkg="virtual_mirror_lapentab" type="virtual_mirror_node.py" output="screen">
+		</node>
+	</group>
+</launch>
+

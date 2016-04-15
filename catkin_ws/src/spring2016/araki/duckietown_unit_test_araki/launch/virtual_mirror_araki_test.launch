@@ -1,0 +1,22 @@
+
+<launch>
+    <arg name="veh"  default="bill"/>
+    <arg name="local" default="true"/>
+    <arg name="config" default="launch/config/baseline"/>
+    <arg name="param_file_name" default="default"/>
+
+    <!-- run virtual_mirror_node -->
+    <include file="$(find virtual_mirror_araki)/launch/virtual_mirror_araki_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="local" value="$(arg local)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+    </include>
+
+    <!-- run the virtual_mirror_tester_node -->
+    <remap from="virtual_mirror_araki_tester_node/img_out" to="virtual_mirror__araki_node/img_in" />
+    <remap from="virtual_mirror_araki_tester_node/img_in" to="virtual_mirror_araki_node/img_out" />
+    <include file="$(find virtual_mirror_araki)/launch/virtual_mirror_araki_tester_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+    </include>
+</launch>

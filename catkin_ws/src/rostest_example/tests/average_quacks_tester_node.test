@@ -1,0 +1,9 @@
+<launch>
+    <!-- Run the node -->
+    <include file="$(find rostest_example)/launch/average_quacks_node.launch" />
+
+    <!-- Run unit test -->
+    <remap from="average_quacks_tester_node/list" to="average_quacks_node/list" />
+    <remap from="average_quacks_tester_node/number_of_quacks" to="average_quacks_node/number_of_quacks" />
+    <test test-name="average_quacks_tester_node" pkg="rostest_example" type="average_quacks_tester_node.py"/>
+</launch>

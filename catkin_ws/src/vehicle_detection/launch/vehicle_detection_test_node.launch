@@ -1,0 +1,17 @@
+<launch>
+	<arg name="veh" doc="Name of vehicle" />
+	<arg name="original_image_file" doc="full path to original image" />
+
+	<remap from="vehicle_detection_node/image" to="vehicle_detection_test_node/image" />
+	<include file="$(find vehicle_detection)/launch/vehicle_detection_node.launch">
+		<arg name="veh" value="$(arg veh)"/>
+		<arg name="local" value="true" />
+	</include>
+
+	<remap from="vehicle_detection_test_node/corners" to="vehicle_detection_node/corners" />
+	<group ns="$(arg veh)">
+		<param name="vehicle_detection_test_node/original_image_file" type="str" value="$(arg original_image_file)" />
+        <node name="vehicle_detection_test_node" pkg="vehicle_detection" type="vehicle_detection_node_test.py" output="screen" />
+	</group>
+</launch>
+

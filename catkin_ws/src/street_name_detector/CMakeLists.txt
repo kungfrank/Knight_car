@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   tf_conversions
+  apriltags
   tf
 )
 
@@ -146,9 +147,7 @@ add_executable(street_name_detector_node src/street_name_detector_node.cpp
 add_dependencies(street_name_detector_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(street_name_detector_node
-  ${catkin_LIBRARIES} apriltags
-)
+target_link_libraries(street_name_detector_node ${catkin_LIBRARIES})
 
 #############
 ## Install ##

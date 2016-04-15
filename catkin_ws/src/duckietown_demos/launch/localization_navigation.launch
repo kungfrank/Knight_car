@@ -4,6 +4,7 @@
     <include file="$(find duckietown_demos)/launch/master.launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="fsm_file_name" value="intersection" />
+        <arg name="map_name" value="duckietown_map" />
         <arg name="visualization" value="false" />
         <arg name="navigation" value="true"/>
         <arg name="/navigation/apriltags_random" value="false"/>

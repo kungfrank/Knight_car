@@ -522,7 +522,6 @@
 
 			<include file="$(find navigation)/launch/graph_search_server.launch">
 				<arg name="map_name" value="$(arg map_name)"/>        
-				<arg name="draw_solution" value="$(arg draw_solution)"/>   
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>        
 				<arg name="param_file_name" value="$(arg param_file_name)"/>        

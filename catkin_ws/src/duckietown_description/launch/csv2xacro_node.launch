@@ -16,7 +16,7 @@
         <rosparam command="load"
                   file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/$(arg param_file_name).yaml"/>
         <param name="tile_map_csv" value="$(arg tile_map_csv)"/>
-        <param name="tag_map_csv" value="$(arg tag_map_csv"/>
+        <param name="tag_map_csv" value="$(arg tag_map_csv)"/>
         <param name="output_map_name" value="$(arg map_name)"/>
     </node>
 </launch>

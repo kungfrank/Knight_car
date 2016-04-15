@@ -1,6 +1,6 @@
 <launch>
     <arg name="veh" default="amadobot"/>
-    <arg name="bagin" default="$(find apriltags)/tests/20160408-226-intersection_apriltags-amadobot.bag" />
+    <arg name="bagin" default="$(env DUCKIETOWN_DATA)/logs/20160400-phase3-logs/dp6a/20160408-226-intersection_apriltags-amadobot.bag" />
 
     <!-- Run the system level launch -->
     <include file="$(find duckietown)/launch/apriltags.launch">

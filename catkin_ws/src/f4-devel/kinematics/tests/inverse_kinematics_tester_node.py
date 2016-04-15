@@ -57,6 +57,7 @@ class TestInverseKinematicsNode(unittest.TestCase):
         timeout = time.time()+5.0
         while not self.msg_received and not rospy.is_shutdown() and not time.time()>timeout:
             rospy.sleep(0.1)
+        self.assertTrue(self.msg_received, "Test timed out while waiting for msg on output topic.")
 
         self.assertAlmostEqual(self.vel_left, 0)
         self.assertAlmostEqual(self.vel_right, 1)

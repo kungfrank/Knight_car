@@ -12,9 +12,13 @@ from sensor_msgs.msg import CompressedImage
 
 class LEDInterpreterNode(object):
 	def __init__(self):
-		self.trafficLightIntersection = True
+
 		self.node = rospy.init_node('LED_interpreter_node',anonymous=True)
 		self.node_name = rospy.get_name()
+
+		self.setIntersectionType = False
+		self.hasObservedSignals = False
+		self.trafficLightIntersection = True
 
 		self.protocol = rospy.get_param("~LED_protocol") #should be a list of tuples
 		self.label = rospy.get_param("~location") # should be a list
@@ -46,57 +50,65 @@ class LEDInterpreterNode(object):
 
 		rospy.loginfo("Initialized.")
 
-
-	def Interpreter(self, msg):
-		#case with a traffic light
-		if self.trafficLightIntersection:
-			for item in msg:
-				if item.pixels_normalized.y > self.label['top']:
-					if item.frequency == self.lightGo:
-						self.traffic_light_state = SignalsDetection.GO
-						break
-
-					else:
-						self.traffic_light_state = SingnalsDetection.STOP
-						break
-
-		#case with stop sign intersection	
-		else:
-			for item in msg:
-				#check if front vehicle detection
-				if item.pixels_normalized.x > self.label['left'] and item.pixels_normalized.x < self.label['right'] and item.pixels_normalized.y < self.label['top']:
-					#check signal of that vehicle
-					detected_freq = item.frequency
-					for i in range(len(self.signalFrequencies)):
-						if self.signalFrequencies[i] == detected_freq:
-							self.front = self.vehicleSignals[i]
-							break
-
-				#check if right vehicle detection
-				if item.pixels_normalized.x > self.label['right'] and item.pixels_normalized.y < self.label['top']:
-					#check signal of that vehicle
-					detected_freq = item.frequency
-					for i in range(len(self.signalFrequencies)):
-						if self.signalFrequencies[i] == detected_freq:
-							self.right = self.vehicleSignals[i]
-							break	
-		
-		rospy.loginfo("[%s] The observed LEDs are:\n Front = %s\n Right = %s\n Traffic light state = %s" %(self.node_name, self.front, self.right,self.traffic_light_state))
-
-		self.pub_interpret.publish(SignalsDetection(front=self.front,right=self.right,left=self.left,traffic_light_state=self.traffic_light_state))
-				
-					
-
+		while not rospy.is_shutdown():
+            		self.publish_topics()
+            		rospy.sleep(0.1)
 
 
 	def CheckTags(self, msg):
 	#task of this is to check on what type of intersection we are
-		self.trafficLightIntersection = True
-		for info in msg.infos:
-			if info.traffic_sign_type == info.STOP:
-				self.trafficLightIntersection = False
+		if not self.setIntersectionType:
+			for info in msg.infos:
+				if info.traffic_sign_type == info.STOP:
+					self.trafficLightIntersection = False
 				break
-			
+			self.setIntersectionType = True
+
+
+	def Interpreter(self, msg):
+		if self.setIntersectionType:
+			self.hasObservedSignals = True
+
+			#case with a traffic light
+			if self.trafficLightIntersection:
+				for item in msg:
+					if item.pixels_normalized.y > self.label['top']:
+						if item.frequency == self.lightGo:
+							self.traffic_light_state = SignalsDetection.GO
+							break
+
+						else:
+							self.traffic_light_state = SingnalsDetection.STOP
+							break
+
+			#case with stop sign intersection	
+			else:
+				for item in msg:
+					#check if front vehicle detection
+					if item.pixels_normalized.x > self.label['left'] and item.pixels_normalized.x < self.label['right'] and item.pixels_normalized.y < self.label['top']:
+						#check signal of that vehicle
+						detected_freq = item.frequency
+						for i in range(len(self.signalFrequencies)):
+							if self.signalFrequencies[i] == detected_freq:
+								self.front = self.vehicleSignals[i]
+								break
+
+					#check if right vehicle detection
+					if item.pixels_normalized.x > self.label['right'] and item.pixels_normalized.y < self.label['top']:
+						#check signal of that vehicle
+						detected_freq = item.frequency
+						for i in range(len(self.signalFrequencies)):
+							if self.signalFrequencies[i] == detected_freq:
+								self.right = self.vehicleSignals[i]
+								break	
+		
+			rospy.loginfo("[%s] The observed LEDs are:\n Front = %s\n Right = %s\n Traffic light state = %s" %(self.node_name, self.front, self.right,self.traffic_light_state))
+				
+					
+
+	def publish_topics(self):
+		if self.hasObservedSignals:
+			self.pub_interpret.publish(SignalsDetection(front=self.front,right=self.right,left=self.left,traffic_light_state=self.traffic_light_state))	
 
 
 

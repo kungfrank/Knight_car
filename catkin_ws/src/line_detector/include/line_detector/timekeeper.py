@@ -10,6 +10,7 @@ def asms(s):
 class TimeKeeper():
     def __init__(self,  image_msg):
         self.t_acquisition = image_msg.header.stamp.to_sec()
+        self.t_started = time.time()
 
         self.latencies = []
 

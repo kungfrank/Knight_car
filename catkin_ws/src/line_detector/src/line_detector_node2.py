@@ -27,7 +27,7 @@ class LineDetectorNode2(object):
         # Parameters
         self.active = True
 
-        self.intermittent_interval = 10
+        self.intermittent_interval = 100
         self.intermittent_counter = 0
 
         self.updateParams(None)
@@ -163,7 +163,7 @@ class LineDetectorNode2(object):
         tk.completed('pub_lines')
 
         # VISUALIZATION only below
-        
+
         # Publish the frame with lines
 
         # Draw lines and normals

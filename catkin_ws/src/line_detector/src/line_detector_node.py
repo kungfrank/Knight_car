@@ -28,8 +28,8 @@ class LineDetectorNode(object):
         self.active = True
 
         # Only be verbose every 10 cycles
-        self.verbose_interval = 10
-        self.verbose_counter = 0
+        self.intermittent_interval = 100
+        self.intermittent_counter = 0
 
         self.nreceived = 0
         self.nskipped = 0
@@ -105,10 +105,10 @@ class LineDetectorNode(object):
             rospy.loginfo("[AntiInstagram] transform received")
 
     def intermittent_log(self, s):
-        if self.verbose_counter % self.verbose_interval != 1:
+        if self.intermittent_counter % self.intermittent_interval != 1:
             return
         n = self.node_name
-        rospy.loginfo('[%s]%3d:%s' % (n, self.verbose_counter, s))
+        rospy.loginfo('[%s]%3d:%s' % (n, self.intermittent_counter, s))
 
     def processImage(self, image_msg):
         if not self.thread_lock.acquire(False):
@@ -118,7 +118,7 @@ class LineDetectorNode(object):
         self.nprocessed += 1
         tk = TimeKeeper(image_msg)
         
-        self.verbose_counter += 1
+        self.intermittent_counter += 1
 
         # Decode from compressed image with OpenCV
         image_cv = image_cv_from_jpg(image_msg.data)

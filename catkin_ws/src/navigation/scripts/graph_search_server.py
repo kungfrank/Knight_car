@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import rospy, sys, os, cv2, pickle
-from graph import Graph
-from graph_search import GraphSearchProblem
+from navigation.graph import Graph
+from navigation.graph_search import GraphSearchProblem
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 from navigation.srv import *
@@ -42,7 +42,7 @@ class graph_search_server():
         self.bridge = CvBridge()
 
         # Send graph through publisher
-        self.duckietown_graph.draw(highlight_edges=None, map_name = self.map_name)
+        self.duckietown_graph.draw(self.script_dir, highlight_edges=None, map_name = self.map_name)
         cv_image = cv2.imread(self.map_path + '.png', cv2.CV_LOAD_IMAGE_COLOR)
         self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
 
@@ -59,7 +59,7 @@ class graph_search_server():
 
         # Publish graph solution
         if path:
-            self.duckietown_graph.draw(highlight_edges=path.edges(), map_name = self.map_name, highlight_nodes = [req.source_node, req.target_node])
+            self.duckietown_graph.draw(self.script_dir, highlight_edges=path.edges(), map_name = self.map_name, highlight_nodes = [req.source_node, req.target_node])
             cv_image = cv2.imread(self.map_path + '.png', cv2.CV_LOAD_IMAGE_COLOR)
             self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
 

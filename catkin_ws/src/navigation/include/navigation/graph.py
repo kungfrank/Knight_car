@@ -72,7 +72,7 @@ class Graph(object):
             raise NodeNotInGraph(node)
         return self._edges.get(node, set())        
 
-    def draw(self, highlight_edges=None, show_weights=None, map_name = 'duckietown', highlight_nodes = None):
+    def draw(self, script_dir, highlight_edges=None, show_weights=None, map_name = 'duckietown', highlight_nodes = None):
         if highlight_nodes:        
             start_node = highlight_nodes[0]
             target_node = highlight_nodes[1]        
@@ -107,7 +107,7 @@ class Graph(object):
                     
                 g.edge(self.node_label_fn(src_node), self.node_label_fn(e.target), taillabel=t , color = c)
         
-        script_dir = os.path.dirname(__file__)
+        #script_dir = os.path.dirname(__file__)
         map_path = script_dir + '/maps/'
         g.format = 'png'
         g.render(filename=map_name, directory=map_path, view=False, cleanup=True)

@@ -13,6 +13,9 @@ fix-time:
 	echo "Calling ntpdate to fix time"
 	sudo ntpdate -u us.pool.ntp.org 
 
+fix-time2:
+	sudo ntpdate -s time.nist.gov
+
 catkin-clean:
 	rm -rf $(catkin_ws)/build
 

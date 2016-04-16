@@ -26,7 +26,7 @@ public:
   bool has_camera_info_;
   double tag_size_; //Size of the tag in meters
 
-  AprilTagDetectorNode(const ros::NodeHandle& nh): nh_p_(nh), tag_detector_(AprilTags::TagDetector(AprilTags::tagCodes36h11)),has_camera_info_(false),tag_size_(0.2)
+  AprilTagDetectorNode(const ros::NodeHandle& nh): nh_p_(nh), tag_detector_(AprilTags::TagDetector(AprilTags::tagCodes36h11)),has_camera_info_(false),tag_size_(0.065)
   {
     pub_detection_ = nh_p_.advertise<duckietown_msgs::AprilTags>("apriltags",1);
     pub_image_     = nh_p_.advertise<sensor_msgs::Image>("tags_image",1); // remaps to /apriltags/...

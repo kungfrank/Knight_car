@@ -32,6 +32,11 @@ unittests:
 	$(MAKE) unittests-environment
 	bash -c "source environment.sh; catkin_make -C $(catkin_ws) run_tests; catkin_test_results $(catkin_ws)/build/test_results/"
 
+
+unittests-anti_instagram:
+	$(MAKE) unittests-environment
+	bash -c "source environment.sh; rosrun anti_instagram annotation_tests.py"
+
 # HW testing 
 
 test-camera:

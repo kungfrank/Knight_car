@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 from cv_bridge import CvBridge, CvBridgeError
-from duckietown_msgs.msg import BoolStamped, Segment, SegmentList, Vector2D
+from duckietown_msgs.msg import BoolStamped, Segment, SegmentList, Vector2D, AntiInstagramTransform
 from geometry_msgs.msg import Point
 from line_detector.LineDetector import *
+from anti_instagram.AntiInstagram import *
 from line_detector.WhiteBalance import *
 from sensor_msgs.msg import CompressedImage, Image
 from visualization_msgs.msg import Marker
@@ -59,12 +60,16 @@ class LineDetectorNode(object):
 
         self.updateParams(None)
 
+        # color correction
+        self.ai = AntiInstagram()
+
         # Publishers
         self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
         self.pub_image = rospy.Publisher("~image_with_lines", Image, queue_size=1)
        
         # Subscribers
         self.sub_image = rospy.Subscriber("~image", CompressedImage, self.cbImage, queue_size=1)
+        self.sub_transform = rospy.Subscriber("~transform", AntiInstagramTransform, self.cbTransform, queue_size=1)
         self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
         rospy.loginfo("[%s] Initialized." %(self.node_name))
 
@@ -102,7 +107,7 @@ class LineDetectorNode(object):
         self.pub_image = rospy.Publisher("~image_with_lines", Image, queue_size=1)
        
         # Verbose option 
-        self.verbose = rospy.get_param('~verbose')
+        self.verbose = rospy.get_param('~verbose',True)
         # Only be verbose every 10 cycles
         self.verbose_interval = 10
         self.verbose_counter = 0
@@ -127,6 +132,12 @@ class LineDetectorNode(object):
         thread.setDaemon(True)
         thread.start()
         # Returns rightaway
+
+    def cbTransform(self, transform_msg):
+        self.ai.shift = transform_msg.s[0:3]
+        self.ai.scale = transform_msg.s[3:6]
+        if self.verbose:
+            rospy.loginfo("[AntiInstagram] transform received")
 
     def verboselog(self, s):
         if not self.verbose:
@@ -168,12 +179,16 @@ class LineDetectorNode(object):
 
         tk.completed('resized')
 
+        # apply color correction: AntiInstagram
+        image_cv_corr = self.ai.applyTransform(image_cv)
+        image_cv_corr = cv2.convertScaleAbs(image_cv_corr)
+
         # White balancing
         if self.flag_wb and self.flag_wb_ref:
             self.wb.correctImg(image_cv)
 
         # Set the image to be detected
-        self.detector.setImage(image_cv)
+        self.detector.setImage(image_cv_corr)
 
         # Detect lines and normals
         lines_white, normals_white, area_white = self.detector.detectLines('white')

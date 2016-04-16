@@ -28,8 +28,10 @@ class PoseAverage(object):
         if self.n == 0:
             return None
         transform_out = Transform()
-        transform_out.translation = self.translation
         theta_out = math.atan2(self.sum_sines, self.sum_cosines)
-        transform_out.rotation = tr.quaternion_from_euler(0,0,theta_out)
+        trans = transform_out.translation
+        rot = transform_out.rotation
+        (trans.x,trans.y,trans.z)=self.translation
+        (rot.x,rot.y,rot.z,rot.w)=tr.quaternion_from_euler(0,0,theta_out)
 
         return transform_out

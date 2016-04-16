@@ -85,7 +85,7 @@ class Csv2Xacro(object):
         x_max = 0
         y_max = 0
         for row in self.tile_csv:
-            if header:
+            if header or row[0].isspace():
                 header = False
                 continue
             x = row[0].strip('" ')
@@ -131,7 +131,7 @@ class Csv2Xacro(object):
         # Create tags
         header = True
         for row in self.tag_csv:
-            if header:
+            if header or row[0].isspace():
                 header = False
                 continue
             tempChild = doc.createElement('xacro:tag')

@@ -2,7 +2,7 @@
 import rospy
 from duckietown_msgs.msg import AprilTags, TagDetection
 import tf2_ros
-from tf2_ros import TFMessage
+from tf2_msgs.msg import TFMessage
 import tf.transformations as tr
 from geometry_msgs.msg import Transform, TransformStamped
 import numpy as np
@@ -48,7 +48,6 @@ class LocalizationNode(object):
                     continue
 
         Tr_w =  avg.get_average() # Average of the opinions
-
         # Broadcast the robot transform
         T = TransformStamped()
         T.transform = Tr_w

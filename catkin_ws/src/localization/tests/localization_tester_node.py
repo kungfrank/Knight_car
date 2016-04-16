@@ -12,7 +12,7 @@ import numpy.testing
 class LocalizationTesterNode(unittest.TestCase):
     def setup(self):
         # Setup the node
-        rospy.init_node('localization_tester_node', anonymous=False)
+        rospy.init_node('localization_tester_node', anonymous=True)
         self.veh_name = rospy.get_param("~veh")
 
         # Setup the publisher and subscriber
@@ -88,7 +88,7 @@ class LocalizationTesterNode(unittest.TestCase):
         rot = (Tr_w.transform.rotation.x, Tr_w.transform.rotation.y, Tr_w.transform.rotation.z, Tr_w.transform.rotation.w)
 
         numpy.testing.assert_array_almost_equal(trans, (2, 0.5, 0))
-        numpy.testing.assert_array_almost_equal(rot, tr.quaternion_from_euler(0,0,np.pi/4))
+        numpy.testing.assert_array_almost_equal(rot, tr.quaternion_from_euler(0,0,3*np.pi/4))
 
 
 if __name__ == '__main__':

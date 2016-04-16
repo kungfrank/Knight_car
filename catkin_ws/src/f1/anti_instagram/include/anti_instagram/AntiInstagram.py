@@ -2,7 +2,6 @@ from .kmeans import getparameters2, identifyColors, runKMeans
 from .scale_and_shift import scaleandshift
 from anti_instagram.kmeans import CENTERS,CENTERS2
 import numpy as np
-import IPython
 
 def calculate_transform(image):
 	""" 

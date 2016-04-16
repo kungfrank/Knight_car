@@ -10,7 +10,6 @@ from line_detector.LineDetector2 import LineDetector2
 import cv2
 import os
 import scipy.io
-import IPython
 
 def examine_dataset(dirname, out):
     logger.info(dirname)

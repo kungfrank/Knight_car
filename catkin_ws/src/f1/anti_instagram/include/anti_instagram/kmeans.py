@@ -5,7 +5,6 @@ import cv2
 import numpy as np
 import sys
 import time
-import IPython
 
 CENTERS2 = np.array([[60, 60, 60],[60, 60, 240], [50, 240, 240], [240, 240, 240]]);
 CENTERS = np.array([[60, 60, 60], [50, 240, 240], [240, 240, 240]])

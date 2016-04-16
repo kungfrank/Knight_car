@@ -11,31 +11,7 @@ import numpy as np
 import rospy
 import threading
 from duckietown_utils.jpg import image_cv_from_jpg
-
-def asms(s):
-    return "%.1fms" % (s*1000)
-        
-class TimeKeeper():
-    def __init__(self,  image_msg):
-        self.t_acquisition = image_msg.header.stamp.to_sec()
-
-        self.latencies = []
-
-        self.completed('acquired')
-
-    def completed(self, phase):
-        t = rospy.get_time() 
-        latency = t - self.t_acquisition
-        
-        self.latencies.append((phase, dict(latency_ms=asms(latency))))
-    
-    def getall(self):
-        s = "\nLatencies:\n"
-
-        for phase, data in self.latencies:
-            s +=  ' %15s latency %s\n' % (phase, data['latency_ms'])
-
-        return s
+from line_detector.timekeeper import TimeKeeper
 
 class LineDetectorNode2(object):
     def __init__(self):
@@ -47,11 +23,12 @@ class LineDetectorNode2(object):
         # Constructor of line detector 
         self.bridge = CvBridge()
         self.detector = LineDetector2()
-        self.flag_wb_ref = False
        
         # Parameters
-        self.flag_wb = False
         self.active = True
+
+        self.intermittent_interval = 10
+        self.intermittent_counter = 0
 
         self.updateParams(None)
 
@@ -62,6 +39,12 @@ class LineDetectorNode2(object):
         self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
         self.pub_image = rospy.Publisher("~image_with_lines", Image, queue_size=1)
        
+
+        # Verbose option 
+        if self.verbose:
+            self.pub_edge = rospy.Publisher("~edge", Image, queue_size=1)
+            self.pub_colorSegment = rospy.Publisher("~segment", Image, queue_size=1)
+
         # Subscribers
         self.sub_image = rospy.Subscriber("~image", CompressedImage, self.cbImage, queue_size=1)
         self.sub_transform = rospy.Subscriber("~transform", AntiInstagramTransform, self.cbTransform, queue_size=1)
@@ -70,20 +53,9 @@ class LineDetectorNode2(object):
 
         self.timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
         
-        # Verbose option 
-        self.verbose = rospy.get_param('~verbose',True)
-        if self.verbose:
-            # Only be verbose every 10 cycles
-            self.verbose_interval = 10
-            self.verbose_counter = 0
-            rospy.loginfo('Verbose: %s interval: %s' % (self.verbose, self.verbose_interval))
-
-            self.pub_edge = rospy.Publisher("~edge", Image, queue_size=1)
-            self.pub_colorSegment = rospy.Publisher("~segment", Image, queue_size=1)
-            
-            self.toc_pre = rospy.get_time() 
-
     def updateParams(self, event):
+        self.verbose = rospy.get_param('~verbose',True)
+
         self.image_size = rospy.get_param('~img_size')
         self.top_cutoff = rospy.get_param('~top_cutoff')
   
@@ -116,13 +88,11 @@ class LineDetectorNode2(object):
         self.ai.shift = transform_msg.s[0:3]
         self.ai.scale = transform_msg.s[3:6]
 
-    def verboselog(self, s):
-        if not self.verbose:
-            return
-        if self.verbose_counter % self.verbose_interval != 1:
+    def intermittent_log(self, s):
+        if self.intermittent_counter % self.intermittent_interval != 1:
             return
         n = self.node_name
-        rospy.loginfo('[%s]%3d:%s' % (n, self.verbose_counter, s))
+        rospy.loginfo('[%s]%3d:%s' % (n, self.intermittent_counter, s))
 
     def processImage(self, image_msg):
         if not self.thread_lock.acquire(False):
@@ -130,14 +100,11 @@ class LineDetectorNode2(object):
             return
 
         tk = TimeKeeper(image_msg)
-       
-        if self.verbose: 
-            self.verbose_counter += 1
-            print self.verbose_counter
+           
+        self.intermittent_counter += 1
         
         # Decode from compressed image with OpenCV
         image_cv = image_cv_from_jpg(image_msg.data)
-
 
         tk.completed('decoded')
         
@@ -156,6 +123,8 @@ class LineDetectorNode2(object):
         image_cv_corr = self.ai.applyTransform(image_cv)
         image_cv_corr = cv2.convertScaleAbs(image_cv_corr)
 
+        tk.completed('corrected')
+        
         # Set the image to be detected
         self.detector.setImage(image_cv_corr)
 
@@ -166,16 +135,7 @@ class LineDetectorNode2(object):
 
         tk.completed('detected')
         
-        # Draw lines and normals
-        self.detector.drawLines(lines_white, (0,0,0))
-        self.detector.drawLines(lines_yellow, (255,0,0))
-        self.detector.drawLines(lines_red, (0,255,0))
-        #self.detector.drawNormals2(centers_white, normals_white, (0,0,0))
-        #self.detector.drawNormals2(centers_yellow, normals_yellow, (255,0,0))
-        #self.detector.drawNormals2(centers_red, normals_red, (0,255,0))
-
-        tk.completed('drawn')
-
+        
         # SegmentList constructor
         segmentList = SegmentList()
         segmentList.header.stamp = image_msg.header.stamp
@@ -193,7 +153,7 @@ class LineDetectorNode2(object):
             lines_normalized_red = ((lines_red + arr_cutoff) * arr_ratio)
             segmentList.segments.extend(self.toSegmentMsg(lines_normalized_red, normals_red, Segment.RED))
         
-        self.verboselog('# segments: white %3d yellow %3d red %3d' % (len(lines_white),
+        self.intermittent_log('# segments: white %3d yellow %3d red %3d' % (len(lines_white),
                 len(lines_yellow), len(lines_red)))
         
         tk.completed('prepared')
@@ -202,23 +162,40 @@ class LineDetectorNode2(object):
         self.pub_lines.publish(segmentList)
         tk.completed('pub_lines')
 
+        # VISUALIZATION only below
+        
         # Publish the frame with lines
+
+        # Draw lines and normals
+        self.detector.drawLines(lines_white, (0,0,0))
+        self.detector.drawLines(lines_yellow, (255,0,0))
+        self.detector.drawLines(lines_red, (0,255,0))
+        #self.detector.drawNormals2(centers_white, normals_white, (0,0,0))
+        #self.detector.drawNormals2(centers_yellow, normals_yellow, (255,0,0))
+        #self.detector.drawNormals2(centers_red, normals_red, (0,255,0))
+
+        tk.completed('drawn')
+
+
         image_msg_out = self.bridge.cv2_to_imgmsg(self.detector.getImage(), "bgr8")
         image_msg_out.header.stamp = image_msg.header.stamp
         self.pub_image.publish(image_msg_out)
 
+        tk.completed('pub_image')
+
         # Verbose
         if self.verbose:
-            rospy.loginfo("[%s] Latency sent = %.3f ms" %(self.node_name, (rospy.get_time()-image_msg.header.stamp.to_sec()) * 1000.0))
-            color_segment = detector.color_segment(area_white, area_red, area_yellow) 
+
+            color_segment = self.detector.color_segment(area_white, area_red, area_yellow) 
             
             edge_msg_out = self.bridge.cv2_to_imgmsg(self.detector.edges, "mono8")
             colorSegment_msg_out = self.bridge.cv2_to_imgmsg(color_segment, "bgr8")
             self.pub_edge.publish(edge_msg_out)
             self.pub_colorSegment.publish(colorSegment_msg_out)
 
-        tk.completed('pub_image')
-        self.verboselog(tk.getall())
+        tk.completed('pub_edge')
+
+        self.intermittent_log(tk.getall())
 
         # Release the thread lock
         self.thread_lock.release()

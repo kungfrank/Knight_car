@@ -6,6 +6,7 @@ from tf2_ros import TFMessage
 import tf.transformations as tr
 from geometry_msgs.msg import Transform, TransformStamped
 import numpy as np
+from localization import PoseAverage
 
 # Localization Node
 # Author: Teddy Ort
@@ -30,8 +31,7 @@ class LocalizationNode(object):
 
     def tag_callback(self, msg_tag):
         # Listen for the transform of the tag in the world
-        Msum = np.zeros((4,4))
-        n = 0
+        avg = PoseAverage.PoseAverage()
         for tag in msg_tag.detections:
             found_transform = False
             while not found_transform and not rospy.is_shutdown():
@@ -42,11 +42,12 @@ class LocalizationNode(object):
                     Mt_r=self.transform_to_matrix(tag.transform)
                     Mr_t=np.linalg.inv(Mt_r)
                     Mr_w=np.dot(Mt_w,Mr_t)
-                    Msum += Mr_w
-                    n += 1
+                    Tr_w = self.matrix_to_transform(Mr_w)
+                    avg.add_pose(Tr_w)
                 except(tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
                     continue
-        Tr_w = self.matrix_to_transform(Msum/n) # Average of the opinions
+
+        Tr_w =  avg.get_average() # Average of the opinions
 
         # Broadcast the robot transform
         T = TransformStamped()

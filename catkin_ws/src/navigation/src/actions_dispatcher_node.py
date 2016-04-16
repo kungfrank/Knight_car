@@ -3,7 +3,6 @@
 import sys
 import rospy
 from navigation.srv import *
-#from navigation.msg import SourceTargetNodes
 from duckietown_msgs.msg import FSMState, SourceTargetNodes
 from std_msgs.msg import Int16, String
 
@@ -71,7 +70,7 @@ def graph_search(data):
         print "Service call failed: %s"%e
 
 if __name__ == "__main__":
-    rospy.init_node('action_dispatcher')
+    rospy.init_node('actions_dispatcher_node')
     rospy.Subscriber("~mode", FSMState, dispatcher, queue_size = 1)
     rospy.Subscriber("~plan_request", SourceTargetNodes, graph_search)
     pub = rospy.Publisher("~turn_type", Int16, queue_size=1, latch=True)

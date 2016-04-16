@@ -66,7 +66,7 @@ class graph_search_server():
         return GraphSearchResponse(path.actions)        
 
 if __name__ == "__main__":	
-    rospy.init_node('graph_search_server')
+    rospy.init_node('graph_search_server_node')
     gss = graph_search_server()
     print 'Starting server...\n'
     s = rospy.Service('graph_search', GraphSearch, gss.handle_graph_search)

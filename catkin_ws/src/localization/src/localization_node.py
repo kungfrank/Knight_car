@@ -53,16 +53,8 @@ class LocalizationNode(object):
         T.transform = Tr_w
         T.header.frame_id = "world"
         T.header.stamp = rospy.Time.now()
-        T.child_frame_id = self.veh_name
+        T.child_frame_id = "duckiebot"
         self.pub_tf.publish(TFMessage([T]))
-
-    # def trans_rot_to_matrix(self, T):
-    #     # Return the 4x4 homogeneous matrix for a transform T of the form (trans, rot)=((x,y,z),(x,y,z,w))
-    #     return tr.concatenate_matrices(tr.translation_matrix(T[0]), tr.quaternion_matrix(T[1]))
-
-    # def matrix_to_transform(self, M):
-    #     # Return a transform T of the form (trans, rot)=((x,y,z),(x,y,z,w)) from a 4x4 homogeneous matrix
-    #     return (tr.translation_from_matrix(M), tr.quaternion_from_matrix(M))
 
     def transform_to_matrix(self, T):
         # Return the 4x4 homogeneous matrix for a TransformStamped.msg T from the geometry_msgs

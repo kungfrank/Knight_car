@@ -18,7 +18,7 @@ class DaguWheelsDriver:
     RIGHT_MOTOR_MIN_PWM = 60       # Minimum speed for right motor  
     RIGHT_MOTOR_MAX_PWM = 255      # Maximum speed for right motor  
     # AXEL_TO_RADIUS_RATIO = 1.0     # The axel length and turning radius ratio
-    SPEED_TOLERANCE = 1.e-2;       # speed tolerance level
+    SPEED_TOLERANCE = 1.e-2       # speed tolerance level
 
     def __init__(self, verbose=False, debug=False, left_flip=False, right_flip=False):
         self.motorhat = Adafruit_MotorHAT(addr=0x60)
@@ -27,23 +27,23 @@ class DaguWheelsDriver:
         self.verbose = verbose or debug
         self.debug = debug
         
-        self.left_sgn = 1.0;
+        self.left_sgn = 1.0
         if left_flip:
-            self.left_sgn = -1.0;
+            self.left_sgn = -1.0
 
-        self.right_sgn = 1.0;
+        self.right_sgn = 1.0
         if right_flip:
-            self.right_sgn = -1.0;
+            self.right_sgn = -1.0
 
         self.leftSpeed = 0.0
         self.rightSpeed = 0.0
         self.updatePWM()
 
     def PWMvalue(self, v, minPWM, maxPWM):
-        pwm = 0;
+        pwm = 0
         if fabs(v) > self.SPEED_TOLERANCE:
             pwm = int(floor(fabs(v) * (maxPWM - minPWM) + minPWM))
-        return min(pwm,maxPWM);
+        return min(pwm, maxPWM)
 
     def updatePWM(self):
         vl = self.leftSpeed*self.left_sgn
@@ -64,18 +64,18 @@ class DaguWheelsDriver:
 
         if fabs(vr) < self.SPEED_TOLERANCE:
             rightMotorMode = Adafruit_MotorHAT.RELEASE
-            pwmr = 0;
+            pwmr = 0
         elif vr > 0:
             rightMotorMode = Adafruit_MotorHAT.FORWARD
         elif vr < 0: 
             rightMotorMode = Adafruit_MotorHAT.BACKWARD
 
         self.leftMotor.setSpeed(pwml)
-        self.leftMotor.run(leftMotorMode);
+        self.leftMotor.run(leftMotorMode)
         self.rightMotor.setSpeed(pwmr)
-        self.rightMotor.run(rightMotorMode);
+        self.rightMotor.run(rightMotorMode)
 
-    def setWheelsSpeed(self,left,right):
+    def setWheelsSpeed(self, left, right):
         self.leftSpeed = left
         self.rightSpeed = right
         self.updatePWM()
@@ -89,7 +89,7 @@ class DaguWheelsDriver:
 if __name__ == '__main__':
     from time import sleep
 
-    N = 10;
+    N = 10
     delay = 100. / 1000.
 
     dagu = DAGU_Differential_Drive()

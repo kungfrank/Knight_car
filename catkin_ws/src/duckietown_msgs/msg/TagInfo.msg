@@ -27,9 +27,8 @@ uint8 LEFT_T_INTERSECT=13
 uint8 T_INTERSECTION=14
 uint8 DO_NOT_ENTER=15
 uint8 PEDESTRIAN=16
-uint8 DUCK_CROSSING=17
-
-uint8 tag_id
+uint8 T_LIGHT_AHEAD=17
+uint8 DUCK_CROSSING=18
 
 string vehicle_name
 

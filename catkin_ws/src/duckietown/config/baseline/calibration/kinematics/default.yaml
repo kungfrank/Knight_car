@@ -1,3 +1,4 @@
+limit: 1.0
 baseline: 0.1
 gain: 1.0
 radius: 0.0318

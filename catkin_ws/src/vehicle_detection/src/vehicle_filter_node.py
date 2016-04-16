@@ -15,7 +15,7 @@ import yaml
 
 class VehicleFilterNode(object):
 	def __init__(self):
-		self.node_name = "Vehicle Filter"
+		self.node_name = rospy.get_name()
 		self.bridge = CvBridge()
 
 		self.config	= self.setupParam("~config", "baseline")
@@ -72,44 +72,17 @@ class VehicleFilterNode(object):
 		# Returns rightaway
 
 	def processCorners(self, vehicle_corners_msg):
+		# do nothing - just relay the detection
 		if self.lock.testandset():
-			if not vehicle_corners_msg.detection.data:
-				self.lock.unlock()
 				pose_msg_out = VehiclePose()
 				pose_msg_out.rho.data = 0.0
 				pose_msg_out.theta.data = 0.0
 				pose_msg_out.psi.data = 0.0
-				pose_msg_out.detection.data = False
+				pose_msg_out.detection.data = \
+						vehicle_corners_msg.detection.data
 				self.pub_pose.publish(pose_msg_out)
+				self.lock.unlock()
 				return
-			height = vehicle_corners_msg.H 
-			width  = vehicle_corners_msg.W
-			unit_length = self.distance_between_centers
-
-			object_corners = np.ones((height * width, 2), dtype=np.float32)
-			for i in np.arange(len(vehicle_corners_msg.corners)):
-				object_corners[i][0] = \
-						np.float32(vehicle_corners_msg.corners[i].x)
-				object_corners[i][1] = \
-						np.float32(vehicle_corners_msg.corners[i].y)
-			distCoeff = np.float32(self.pcm.distortionCoeffs())
-			K = np.float32(self.pcm.fullIntrinsicMatrix())
-			objp = np.zeros((height * width, 3), np.float32)
-			objp[:, :2] = np.mgrid[0:height, 0:width].T.reshape(-1, 2)
-			objp = objp * unit_length
-			rvecs, tvecs, inliers = cv2.solvePnPRansac(objp, object_corners, 
-					K, distCoeff)
-			xrot, yrot, zrot = rvecs
-			psi = zrot
-			rho = np.linalg.norm(tvecs)
-			theta = 0.0
-			pose_msg_out = VehiclePose()
-			pose_msg_out.rho.data = rho
-			pose_msg_out.theta.data = theta
-			pose_msg_out.psi.data = psi
-			pose_msg_out.detection.data = True
-			self.pub_pose.publish(pose_msg_out)
-			self.lock.unlock()
 
 if __name__ == '__main__': 
 	rospy.init_node('vehicle_filter_node', anonymous=False)

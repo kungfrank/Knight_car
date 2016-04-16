@@ -69,10 +69,10 @@ class TestKinematicsLearningNode(unittest.TestCase):
         self.assertLess(time.time(),timeout,msg="WARNING: There was not enough time to receive the weights. Either increase the timeout or decrease the number of points needed by the learner.")
 
         # Check that the new weights are close to the generating ones
-        self.assertAlmostEqual(self.msg_v_weights.weights[0],1, 1)
-        self.assertAlmostEqual(self.msg_v_weights.weights[1],1, 1)
-        self.assertAlmostEqual(self.msg_theta_dot_weights.weights[0],-1, 1)
-        self.assertAlmostEqual(self.msg_theta_dot_weights.weights[1],1, 1)
+        self.assertAlmostEqual(self.msg_v_weights.weights[0],1, 0)
+        self.assertAlmostEqual(self.msg_v_weights.weights[1],1, 0)
+        self.assertAlmostEqual(self.msg_theta_dot_weights.weights[0],-1, 0)
+        self.assertAlmostEqual(self.msg_theta_dot_weights.weights[1],1, 0)
 
     def getRandomSamplePair(self, theta_dot_weights, v_weights):
         cmd = np.random.rand(2,1)

@@ -6,7 +6,8 @@
 	<arg name="fsm_file_name" default="default" />
 	<arg name="visualization" default="true" />
 	<arg name="verbose" default="true" />
-
+	<arg name="statistics" default="false"/>
+	<arg name="loc" default="-1"/>
 	<!-- end basic args -->
  
 <!-- the things that are "on" by default: 
@@ -84,6 +85,8 @@
 	<arg name="anti_instagram" default="false"/>
 	<!-- end switch args -->
 	
+	<!-- Enable statistics -->
+	<param name="enable_statistics" value="$(arg statistics)"/>
 
 	<!-- Start Camera -->  
 	<group if="$(arg camera)">
@@ -119,13 +122,13 @@
 	<!-- Start Wheels -->
 	<group if="$(arg wheels)">
 
+	    <remap from="inverse_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />
 		<remap from="inverse_kinematics_node/car_cmd" to="car_cmd_switch_node/cmd"/>
 		<include file="$(find dagu_car)/launch/inverse_kinematics_node.launch">
 			<arg name="veh" value="$(arg veh)"/>
 		</include>
 
 		<!-- Wheel Driver -->
-		<remap from="wheels_driver_node/wheels_cmd" to="inverse_kinematics_node/wheels_cmd" />
 		<include file="$(find dagu_car)/launch/wheels_driver_node.launch">
 			<arg name="veh" value="$(arg veh)"/>
 		</include>
@@ -137,18 +140,16 @@
 
 	<group if="$(arg odometry)">
 		<group if="$(arg /odometry/forward_kinematics)">
-				<!-- TODO  remappings -->
 				<remap from="forward_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd_executed" />
 				<include file="$(find dagu_car)/launch/forward_kinematics_node.launch">
 					<arg name="veh" value="$(arg veh)"/>
+					<arg name="config" value="$(arg config)"/>
 				</include>
 				<!-- run the velocity_to_pose_node -->
 				<remap from="velocity_to_pose_node/velocity" to="forward_kinematics_node/velocity" />
 				<include file="$(find dagu_car)/launch/velocity_to_pose_node.launch">
 					<arg name="veh" value="$(arg veh)"/>
-					<arg name="local" value="$(arg local)"/>
 					<arg name="config" value="$(arg config)"/>
-					<arg name="param_file_name" value="$(arg param_file_name)"/>
 				</include>
 		</group>
 	</group>
@@ -186,6 +187,12 @@
 		<!-- no remappings for car_cmd_switch - full topic names specified in params yaml -->
 		<remap from="car_cmd_switch_node/cmd_lane_following" to="lane_controller_node/lane_control"/> <!-- need either lots more of these or none of these -->
 		<include file="$(find dagu_car)/launch/car_cmd_switch_node.launch">
+			<arg name="veh" value="$(arg veh)"/>
+			<arg name="config" value="$(arg config)"/>
+			<arg name="param_file_name" value="$(arg param_file_name)"/>
+		</include>
+
+		<include file="$(find fsm)/launch/logic_gate_node.launch">
 			<arg name="veh" value="$(arg veh)"/>
 			<arg name="config" value="$(arg config)"/>
 			<arg name="param_file_name" value="$(arg param_file_name)"/>
@@ -331,7 +338,7 @@
 			<include file="$(find apriltags)/launch/apriltags_preprocessing_node.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
-				<arg name="param_file_name" value="$(arg pre_param_file_name)"/>
+				<arg name="param_file_name" value="$(arg param_file_name)"/>
 			</include>
 		</group>
 		
@@ -346,13 +353,13 @@
 				<arg name="param_file_name" value="$(arg param_file_name)"/>
 			</include>
 		 
-			<group if="$(arg  /apriltags/postprocessing">
-	<remap from="apriltags_postprocessing_global_node/apriltags_in" to="apriltags_global_node/apriltags"/> 	
+		<group if="$(arg /apriltags/postprocessing)">
+		<remap from="apriltags_postprocessing_global_node/apriltags_in" to="apriltags_global_node/apriltags"/> 	
 	<include file="$(find apriltags)/launch/apriltags_postprocessing_node.launch">
 		<arg name="veh" value="$(arg veh)"/>
 		<arg name="sub_node_name" value="global"/>
 		<arg name="loc" value="$(arg loc)"/>
-		<arg name="param_file_name" value="$(arg pos_param_file_name)"/>
+		<arg name="param_file_name" value="$(arg param_file_name)"/>
 		<arg name="config" value="$(arg config)"/>
 	</include>
 			</group>
@@ -369,13 +376,13 @@
 				<arg name="param_file_name" value="$(arg param_file_name)"/>
 			</include>
 	
-			<group if="$(arg /apriltags/postprocessing">
+			<group if="$(arg /apriltags/postprocessing)">
 				<remap from="apriltags_postprocessing_fast_node/apriltags_in" to="apriltags_fast_node/apriltags"/> 	
 				<include file="$(find apriltags)/launch/apriltags_postprocessing_node.launch">
 					<arg name="veh" value="$(arg veh)"/>
 					<arg name="sub_node_name" value="fast"/>
 					<arg name="loc" value="$(arg loc)"/>
-					<arg name="param_file_name" value="$(arg pos_param_file_name)"/>
+					<arg name="param_file_name" value="$(arg param_file_name)"/>
 					<arg name="config" value="$(arg config)"/>
 				</include>
 			</group>
@@ -489,7 +496,9 @@
 		
 		<group if="$(arg /navigation/intersection_control)">
 			<!-- open loop intersection_controller -->
-			<remap from="~mode" to="fsm_node/mode"/>
+			<remap from="open_loop_intersection_control_node/mode" to="fsm_node/mode"/>
+			<remap from="open_loop_intersection_control_node/lane_pose" to="lane_filter_node/lane_pose"/>
+			<remap from="open_loop_intersection_control_node/stop_line_reading" to="stop_line_filter_node/stop_line_reading"/>
 			<include file="$(find intersection_control)/launch/open_loop_intersection_controller_node.launch">
 				<arg name="veh" value="$(arg veh)"/>        
 				<arg name="config" value="$(arg config)"/>        
@@ -500,7 +509,7 @@
 		<group if="$(arg /navigation/apriltags_random)">
 			<!-- random april tags -->
 			<remap from="random_april_tag_turns_node/mode" to="fsm_node/mode"/>
-			<remap from="random_april_tag_turns_node/tag"  to="apriltags_postprocessing_global_node/apriltags"/>
+			<remap from="random_april_tag_turns_node/tag"  to="apriltags_postprocessing_global_node/apriltags_out"/>
 			<remap from="random_april_tag_turns_node/turn_type" to="open_loop_intersection_control_node/turn_type"/> <!-- remapping outputs since there are two different possible turn types -->
 
 			<include file="$(find navigation)/launch/random_april_tag_turns_node.launch">

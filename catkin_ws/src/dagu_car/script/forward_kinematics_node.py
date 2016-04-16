@@ -28,7 +28,7 @@ class ForwardKinematicsNode(object):
         self.gain = self.setup_parameter("~gain", 1.0)
         self.trim = self.setup_parameter("~trim", 0.0)
         self.baseline = self.setup_parameter("~baseline", 0.1)
-        self.radius = self.setup_parameter("~wheel_radius", 0.0318)
+        self.radius = self.setup_parameter("~radius", 0.0318)
 
         # Prepare services
         self.srv_set_gain = rospy.Service("~set_gain", SetValue, self.cbSrvSetGain)

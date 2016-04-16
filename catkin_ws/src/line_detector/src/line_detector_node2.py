@@ -153,17 +153,17 @@ class LineDetectorNode2(object):
         tk.completed('detected')
         
         # Draw lines and normals
-        #self.detector.drawLines(lines_white, (0,0,0))
-        #self.detector.drawLines(lines_yellow, (255,0,0))
-        #self.detector.drawLines(lines_red, (0,255,0))
-        self.detector.drawNormals2(centers_white, normals_white, (0,0,0))
-        self.detector.drawNormals2(centers_yellow, normals_yellow, (255,0,0))
-        self.detector.drawNormals2(centers_red, normals_red, (0,255,0))
+        self.detector.drawLines(lines_white, (0,0,0))
+        self.detector.drawLines(lines_yellow, (255,0,0))
+        self.detector.drawLines(lines_red, (0,255,0))
+        #self.detector.drawNormals2(centers_white, normals_white, (0,0,0))
+        #self.detector.drawNormals2(centers_yellow, normals_yellow, (255,0,0))
+        #self.detector.drawNormals2(centers_red, normals_red, (0,255,0))
 
         tk.completed('drawn')
 
         # SegmentList constructor
-        segmentList = Segment#List()
+        segmentList = SegmentList()
         segmentList.header.stamp = image_msg.header.stamp
         
         # Convert to normalized pixel coordinates, and add segments to segmentList

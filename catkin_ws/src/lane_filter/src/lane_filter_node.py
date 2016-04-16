@@ -21,22 +21,8 @@ class LaneFilterNode(object):
     def __init__(self):
         self.node_name = "Lane Filter"
         self.active = True
-        self.mean_0 = [self.setupParam("~mean_d_0",0) , self.setupParam("~mean_phi_0",0)]
-        self.cov_0  = [ [self.setupParam("~sigma_d_0",0.1) , 0] , [0, self.setupParam("~sigma_phi_0",0.01)] ]
-        self.delta_d     = self.setupParam("~delta_d",0.02) # in meters
-        self.delta_phi   = self.setupParam("~delta_phi",0.02) # in radians
-        self.d_max       = self.setupParam("~d_max",0.5)
-        self.d_min       = self.setupParam("~d_min",-0.7)
-        self.phi_min     = self.setupParam("~phi_min",-pi/2)
-        self.phi_max     = self.setupParam("~phi_max",pi/2)
-
-        self.cov_v       = self.setupParam("~cov_v",0.5) # linear velocity "input"
-        self.cov_omega   = self.setupParam("~cov_omega",0.01) # angular velocity "input"
-        self.linewidth_white = self.setupParam("~linewidth_white",0.04)
-        self.linewidth_yellow = self.setupParam("~linewidth_yellow",0.02)
-        self.lanewidth        = self.setupParam("~lanewidth",0.4)
-        self.min_max = self.setupParam("~min_max", 0.3) # nats
-
+        self.updateParams(None)
+        
         self.d,self.phi = np.mgrid[self.d_min:self.d_max:self.delta_d,self.phi_min:self.phi_max:self.delta_phi]
         self.beliefRV=np.empty(self.d.shape)
         self.initializeBelief()
@@ -44,27 +30,11 @@ class LaneFilterNode(object):
         self.lanePose.d=self.mean_0[0]
         self.lanePose.phi=self.mean_0[1]
 
-        # For use of distance weighting (dw) function
-        self.use_distance_weighting = self.setupParam("~use_distance_weighting",False)
-        self.zero_val    = self.setupParam("~zero_val",1)
-        self.l_peak      = self.setupParam("~l_peak",1)
-        self.peak_val    = self.setupParam("~peak_val",10)
-        self.l_max       = self.setupParam("~l_max",2)
         self.dwa = -(self.zero_val*self.l_peak**2 + self.zero_val*self.l_max**2 - self.l_max**2*self.peak_val - 2*self.zero_val*self.l_peak*self.l_max + 2*self.l_peak*self.l_max*self.peak_val)/(self.l_peak**2*self.l_max*(self.l_peak - self.l_max)**2)
         self.dwb = (2*self.zero_val*self.l_peak**3 + self.zero_val*self.l_max**3 - self.l_max**3*self.peak_val - 3*self.zero_val*self.l_peak**2*self.l_max + 3*self.l_peak**2*self.l_max*self.peak_val)/(self.l_peak**2*self.l_max*(self.l_peak - self.l_max)**2)
         self.dwc = -(self.zero_val*self.l_peak**3 + 2*self.zero_val*self.l_max**3 - 2*self.l_max**3*self.peak_val - 3*self.zero_val*self.l_peak*self.l_max**2 + 3*self.l_peak*self.l_max**2*self.peak_val)/(self.l_peak*self.l_max*(self.l_peak - self.l_max)**2)
 
-        # For use of maximum segment distance
-        self.use_max_segment_dist = self.setupParam("~use_max_segment_dist",False)
-        self.max_segment_dist = self.setupParam("~max_segment_dist",1.0)
 
-        # For use of minimum segment count
-        self.use_min_segs = self.setupParam("~use_min_segs",False)
-        self.min_segs = self.setupParam("~min_segs", 10)
-
-        # For propagation
-        self.use_propagation = self.setupParam("~use_propagation",False)
-        self.cov_mask = [self.setupParam("~sigma_d_mask",0.05) , self.setupParam("~sigma_phi_mask",0.05)]
         self.t_last_update = rospy.get_time()
         self.v_current = 0
         self.w_current = 0
@@ -86,11 +56,43 @@ class LaneFilterNode(object):
         self.pub_in_lane    = rospy.Publisher("~in_lane",BoolStamped, queue_size=1)
         self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
 
-    def setupParam(self,param_name,default_value):
-        value = rospy.get_param(param_name,default_value)
-        rospy.set_param(param_name,value) #Write to parameter server for transparancy
-        rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
-        return value
+        self.timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
+
+
+    def updateParams(self, event):
+        self.mean_0 = [rospy.get_param("~mean_d_0",0) , rospy.get_param("~mean_phi_0",0)]
+        self.cov_0  = [ [rospy.get_param("~sigma_d_0",0.1) , 0] , [0, rospy.get_param("~sigma_phi_0",0.01)] ]
+        self.delta_d     = rospy.get_param("~delta_d",0.02) # in meters
+        self.delta_phi   = rospy.get_param("~delta_phi",0.02) # in radians
+        self.d_max       = rospy.get_param("~d_max",0.5)
+        self.d_min       = rospy.get_param("~d_min",-0.7)
+        self.phi_min     = rospy.get_param("~phi_min",-pi/2)
+        self.phi_max     = rospy.get_param("~phi_max",pi/2)
+
+        self.cov_v       = rospy.get_param("~cov_v",0.5) # linear velocity "input"
+        self.cov_omega   = rospy.get_param("~cov_omega",0.01) # angular velocity "input"
+        self.linewidth_white = rospy.get_param("~linewidth_white",0.04)
+        self.linewidth_yellow = rospy.get_param("~linewidth_yellow",0.02)
+        self.lanewidth        = rospy.get_param("~lanewidth",0.4)
+        self.min_max = rospy.get_param("~min_max", 0.3) # nats
+        # For use of distance weighting (dw) function
+        self.use_distance_weighting = rospy.get_param("~use_distance_weighting",False)
+        self.zero_val    = rospy.get_param("~zero_val",1)
+        self.l_peak      = rospy.get_param("~l_peak",1)
+        self.peak_val    = rospy.get_param("~peak_val",10)
+        self.l_max       = rospy.get_param("~l_max",2)
+
+        # For use of maximum segment distance
+        self.use_max_segment_dist = rospy.get_param("~use_max_segment_dist",False)
+        self.max_segment_dist = rospy.get_param("~max_segment_dist",1.0)
+
+        # For use of minimum segment count
+        self.use_min_segs = rospy.get_param("~use_min_segs",False)
+        self.min_segs = rospy.get_param("~min_segs", 10)
+
+        # For propagation
+        self.use_propagation = rospy.get_param("~use_propagation",False)
+        self.cov_mask = [rospy.get_param("~sigma_d_mask",0.05) , rospy.get_param("~sigma_phi_mask",0.05)]
 
     def cbSwitch(self, switch_msg):
         self.active = switch_msg.data

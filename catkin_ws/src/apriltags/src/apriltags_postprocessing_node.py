@@ -38,6 +38,7 @@ class AprilPostPros(object):
             "T-intersection": self.info.T_INTERSECTION,
             "do-not-enter": self.info.DO_NOT_ENTER,
             "pedestrian": self.info.PEDESTRIAN,
+            "t-light-ahead": self.info.T_LIGHT_AHEAD,
             "duck-crossing": self.info.DUCK_CROSSING}
 
         self.sub_prePros        = rospy.Subscriber("~apriltags_in", AprilTags, self.callback, queue_size=1)

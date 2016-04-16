@@ -44,9 +44,9 @@ test-camera:
 	raspistill -t 1000 -o test-camera.jpg
 
 
-test-led:	
+test-led: 
+	echo "Calibration blinking pattern"
 	bash -c "source environment.sh; rosrun rgb_led blink test_all_1"
-
 
 
 
@@ -54,22 +54,25 @@ test-led:
 
 vehicle_name=$(shell hostname)
 
-demo-joystick:	
-	bash -c "source environment.sh; source set_ros_master.sh;  roslaunch duckietown joystick.launch veh:=$(vehicle_name)"
+demo-joystick: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown joystick.launch veh:=$(vehicle_name)"
 
-demo-joystick-camera:
+demo-joystick-camera: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown joystick_camera.launch veh:=$(vehicle_name)"
 
-demo-line_detector:
-	bash -c "source environment.sh; roslaunch duckietown line_detector.launch veh:=emma"
-  
-demo-led-blink-%:	
-	bash -c "source environment.sh; rosrun rgb_led blink $*"
+demo-line_detector: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown line_detector.launch veh:=$(vehicle_name)"
 
-demo-led-fancy1:	
+demo-joystick-perception: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos master.launch fsm_file_name:=joystick"
+  
+
+demo-led-fancy1: unittests-environment
 	bash -c "source environment.sh; rosrun rgb_led fancy1"
 
-demo-led-fancy2:	
+demo-led-fancy2: unittests-environment
 	bash -c "source environment.sh; rosrun rgb_led fancy2"
 
+demo-led-blink-%: unittests-environment
+	bash -c "source environment.sh; rosrun rgb_led blink $*"
 

@@ -4,11 +4,11 @@ dilation_kernel_size: 3
 canny_thresholds: [60,150]
 sobel_threshold: 40.
 
-hsv_white1:  [0,0,50]
-hsv_white2:  [180,120,255]
-hsv_yellow1: [25,150,50]
+hsv_white1:  [0,0,150]
+hsv_white2:  [180,100,255]
+hsv_yellow1: [25,100,100]
 hsv_yellow2: [45,255,255]
-hsv_red1:    [0,200,50]
+hsv_red1:    [0,100,100]
 hsv_red2:    [15,255,255]
-hsv_red3:    [165,200,50]
+hsv_red3:    [165,100,100]
 hsv_red4:    [180,255,255]

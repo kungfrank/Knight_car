@@ -41,6 +41,8 @@ class AntiInstagramNode():
 
 		self.numFramesSeen = 0
 
+		#self.timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
+
 		# pull status from Antiinstagram class
 		self.getStatus()
 

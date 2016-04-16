@@ -3,8 +3,8 @@
 import sys
 import rospy
 from navigation.srv import *
-from navigation.msg import SourceTargetNodes
-from duckietown_msgs.msg import FSMState
+#from navigation.msg import SourceTargetNodes
+from duckietown_msgs.msg import FSMState, SourceTargetNodes
 from std_msgs.msg import Int16, String
 
 #adding logic because FSM publishes our state at a high rate

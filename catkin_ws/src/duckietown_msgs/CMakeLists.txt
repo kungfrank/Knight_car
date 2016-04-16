@@ -73,6 +73,7 @@ add_message_files(
   Rect.msg
   Rects.msg
   SceneSegments.msg
+  SourceTargetNodes.msg
   CoordinationClearance.msg
 #  IntersectionDetection.msg
 #  CoordinationSignal.msg

@@ -16,6 +16,38 @@ def image_cv_from_jpg_fn(fn):
         return image_cv_from_jpg(f.read())
 
 
+# Second option: use PIL
+
+    
+import numpy as np
+from PIL import ImageFile  # @UnresolvedImport
+def rgb_from_jpg_by_PIL(data):
+    """ Warning: this returns RGB """
+    parser = ImageFile.Parser()
+    parser.feed(data)
+    res = parser.close() 
+    res = np.asarray(res)
+    return res
+
+# third option: jpeg library
+import StringIO
+
+def rgb_from_jpg_by_JPEG_library(data):
+    try:
+        import jpeg4py as jpeg
+    except ImportError as e:
+        installation = """
+sudo apt-get install -y libturbojpeg  python-cffi
+sudo pip install jpeg4py
+"""
+        logger.error(installation)
+        raise
+
+    jpg_data = np.fromstring(data, dtype=np.uint8)
+    image_cv = jpeg.JPEG(jpg_data).decode()
+    return image_cv
+
+
 def image_clip_255(image_float):
     """ Clips to 0,255 and converts to uint8 """
     h,w,_ = image_float.shape

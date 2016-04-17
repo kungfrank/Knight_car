@@ -19,7 +19,7 @@ fix-time2:
 clean-pyc:
 	find catkin_ws/src/ -name '*.pyc' | xargs rm 
 
-catkin-clean: clean-pyc:
+catkin-clean: clean-pyc
 	rm -rf $(catkin_ws)/build
 
 build-parallel:
@@ -93,9 +93,9 @@ demo-line_detector-%: unittests-environment
 
 # openhouse demos
 
+# make openhouse-dp3-default
 # make openhouse-dp3-guy
 # make openhouse-dp3-default_ld2
-# make openhouse-dp3-default
 # make openhouse-dp3-universal
 
 openhouse-dp3-%: unittests-environment

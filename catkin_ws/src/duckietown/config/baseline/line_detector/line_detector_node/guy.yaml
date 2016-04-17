@@ -24,7 +24,7 @@ detector:
   hsv_red3:    [165,140,100]
   hsv_red4:    [180,255,255]
 
-#rgb_white:  [240,240,240]
-#rgb_red:    [240,20,20]
-#rgb_yellow: [240,240,60]
-#rgb_road:   [60,60,60]
+  #rgb_white:  [240,240,240]
+  #rgb_red:    [240,20,20]
+  #rgb_yellow: [240,240,60]
+  #rgb_road:   [60,60,60]

@@ -52,7 +52,7 @@ class LineDetectorNode(object):
         # Verbose option 
         if self.verbose:
             self.pub_edge = rospy.Publisher("~edge", Image, queue_size=1)
-            self.pub_segment = rospy.Publisher("~segment", Image, queue_size=1)
+            self.pub_colorSegment = rospy.Publisher("~colorSegment", Image, queue_size=1)
             
         if False:
             self.timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
@@ -199,12 +199,11 @@ class LineDetectorNode(object):
         if self.verbose:
             #rospy.loginfo("[%s] Latency sent = %.3f ms" %(self.node_name, (rospy.get_time()-image_msg.header.stamp.to_sec()) * 1000.0))
       
-            segment = np.zeros((self.image_size[0],self.image_size[1], 3), dtype=np.uint8) 
-
+            colorSegment = color_segment(area_white, area_red, area_yellow) 
             edge_msg_out = self.bridge.cv2_to_imgmsg(self.detector.edges, "mono8")
-            segment_msg_out = self.bridge.cv2_to_imgmsg(segment, "bgr8")
+            colorSegment_msg_out = self.bridge.cv2_to_imgmsg(colorSegment, "bgr8")
             self.pub_edge.publish(edge_msg_out)
-            self.pub_segment.publish(segment_msg_out)
+            self.pub_colorSegment.publish(colorSegment_msg_out)
 
         tk.completed('pub_edge/pub_segment')
 

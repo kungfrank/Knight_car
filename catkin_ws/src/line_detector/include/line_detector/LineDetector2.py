@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import sys
+from line_detector.line_detector_interface import Detections
 
 class LineDetector2(object):
     def __init__(self):
@@ -96,7 +97,7 @@ class LineDetector2(object):
     def detectLines2(self, color):
         bw, edge_color = self._colorFilter(color)
         lines, normals, centers = self._lineFilter(bw, edge_color)
-        return lines, normals, centers, bw
+        return Detections(lines=lines, normals=normals, area=bw, centers=centers)
 
     def setImage(self, bgr):
         self.bgr = np.copy(bgr)

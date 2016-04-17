@@ -71,8 +71,12 @@ class LineDetectorNode(object):
         self.image_size = rospy.get_param('~img_size')
         self.top_cutoff = rospy.get_param('~top_cutoff')
 
-        detector_params = rospy.get_param('~detector')
-        rospy.loginfo('detector_params: %s' % detector_params)
+        c = rospy.get_param('~detector')
+        assert isinstance(c, list) and len(c) == 2, c
+        
+        klassname = c[0]
+        detector_params = c[1]
+
         self.detector = LineDetector(detector_params)
 
     def cbSwitch(self, switch_msg):
@@ -136,13 +140,13 @@ class LineDetectorNode(object):
         self.detector.setImage(image_cv_corr)
 
         # Detect lines and normals
-        lines_white, normals_white, area_white = self.detector.detectLines('white')
-        lines_yellow, normals_yellow, area_yellow = self.detector.detectLines('yellow')
-        lines_red, normals_red, area_red = self.detector.detectLines('red')
+
+        white = self.detector.detectLines('white')
+        yellow = self.detector.detectLines('yellow')
+        red = self.detector.detectLines('red')
 
         tk.completed('detected')
      
-
         # SegmentList constructor
         segmentList = SegmentList()
         segmentList.header.stamp = image_msg.header.stamp
@@ -150,18 +154,18 @@ class LineDetectorNode(object):
         # Convert to normalized pixel coordinates, and add segments to segmentList
         arr_cutoff = np.array((0, self.top_cutoff, 0, self.top_cutoff))
         arr_ratio = np.array((1./self.image_size[1], 1./self.image_size[0], 1./self.image_size[1], 1./self.image_size[0]))
-        if len(lines_white)>0:
-            lines_normalized_white = ((lines_white + arr_cutoff) * arr_ratio)
-            segmentList.segments.extend(self.toSegmentMsg(lines_normalized_white, normals_white, Segment.WHITE))
-        if len(lines_yellow)>0:
-            lines_normalized_yellow = ((lines_yellow + arr_cutoff) * arr_ratio)
-            segmentList.segments.extend(self.toSegmentMsg(lines_normalized_yellow, normals_yellow, Segment.YELLOW))
-        if len(lines_red)>0:
-            lines_normalized_red = ((lines_red + arr_cutoff) * arr_ratio)
-            segmentList.segments.extend(self.toSegmentMsg(lines_normalized_red, normals_red, Segment.RED))
+        if len(white.lines) > 0:
+            lines_normalized_white = ((white.lines + arr_cutoff) * arr_ratio)
+            segmentList.segments.extend(self.toSegmentMsg(lines_normalized_white, white.normals, Segment.WHITE))
+        if len(yellow.lines) > 0:
+            lines_normalized_yellow = ((yellow.lines + arr_cutoff) * arr_ratio)
+            segmentList.segments.extend(self.toSegmentMsg(lines_normalized_yellow, yellow.normals, Segment.YELLOW))
+        if len(red.lines) > 0:
+            lines_normalized_red = ((red.lines + arr_cutoff) * arr_ratio)
+            segmentList.segments.extend(self.toSegmentMsg(lines_normalized_red, red.normals, Segment.RED))
         
-        self.intermittent_log('# segments: white %3d yellow %3d red %3d' % (len(lines_white),
-                len(lines_yellow), len(lines_red)))
+        self.intermittent_log('# segments: white %3d yellow %3d red %3d' % (len(white.lines),
+                len(yellow.lines), len(red.lines)))
         
         tk.completed('prepared')
 
@@ -173,9 +177,9 @@ class LineDetectorNode(object):
         
         # Draw lines and normals
         image_with_lines = np.copy(image_cv_corr)
-        drawLines(image_with_lines, lines_white, (0,0,0))
-        drawLines(image_with_lines, lines_yellow, (255,0,0))
-        drawLines(image_with_lines, lines_red, (0,255,0))
+        drawLines(image_with_lines, white.lines, (0, 0, 0))
+        drawLines(image_with_lines, yellow.lines, (255, 0, 0))
+        drawLines(image_with_lines, red.lines, (0, 255, 0))
         #drawNormals(image_with_lines, lines_white, normals_white)
         #drawNormals(image_with_lines, lines_yellow, normals_yellow)
         #drawNormals(image_with_lines, lines_red, normals_red)

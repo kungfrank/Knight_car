@@ -1,9 +1,11 @@
 import numpy as np
 import cv2
 from duckietown_utils.parameters import Configurable
+from line_detector.line_detector_interface import LineDetectorInterface, \
+    Detections
 
 
-class LineDetector(Configurable):
+class LineDetector(Configurable, LineDetectorInterface):
     """ LineDetectorHSV """
 
     def __init__(self, configuration):
@@ -196,7 +198,7 @@ class LineDetector(Configurable):
         bw, edge_color = self._colorFilter(color)
         lines = self._HoughLine(edge_color)
         normals = self._findNormal(bw, lines)
-        return lines, normals, bw
+        return Detections(lines=lines, normals=normals, area=bw, centers=None)
 
     def setImage(self, bgr):
         self.bgr = np.copy(bgr)

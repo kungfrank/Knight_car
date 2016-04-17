@@ -3,6 +3,7 @@ from cv_bridge import CvBridge, CvBridgeError
 from duckietown_msgs.msg import BoolStamped, Segment, SegmentList, Vector2D, AntiInstagramTransform
 from geometry_msgs.msg import Point
 from line_detector.LineDetector2 import *
+from line_detector.LineDetectorPlot import *
 from anti_instagram.AntiInstagram import *
 from sensor_msgs.msg import CompressedImage, Image
 from visualization_msgs.msg import Marker
@@ -167,17 +168,18 @@ class LineDetectorNode2(object):
         # Publish the frame with lines
 
         # Draw lines and normals
-        self.detector.drawLines(lines_white, (0,0,0))
-        self.detector.drawLines(lines_yellow, (255,0,0))
-        self.detector.drawLines(lines_red, (0,255,0))
-        #self.detector.drawNormals2(centers_white, normals_white, (0,0,0))
-        #self.detector.drawNormals2(centers_yellow, normals_yellow, (255,0,0))
-        #self.detector.drawNormals2(centers_red, normals_red, (0,255,0))
+        image_with_lines = np.copy(image_cv_corr)
+        drawLines(image_with_lines, lines_white, (0,0,0))
+        drawLines(image_with_lines, lines_yellow, (255,0,0))
+        drawLines(image_with_lines, lines_red, (0,255,0))
+        #drawNormals2(image_with_lines, centers_white, normals_white, (0,0,0))
+        #drawNormals2(image_with_lines, centers_yellow, normals_yellow, (255,0,0))
+        #drawNormals2(image_with_lines, centers_red, normals_red, (0,255,0))
 
         tk.completed('drawn')
 
 
-        image_msg_out = self.bridge.cv2_to_imgmsg(self.detector.getImage(), "bgr8")
+        image_msg_out = self.bridge.cv2_to_imgmsg(image_with_lines, "bgr8")
         image_msg_out.header.stamp = image_msg.header.stamp
         self.pub_image.publish(image_msg_out)
 

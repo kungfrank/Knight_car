@@ -106,7 +106,8 @@ class LineDetector2(object):
   
     def getImage(self):
         return self.bgr
- 
+
+    """ 
     def drawLines(self, lines, paint):
         if len(lines)>0:
             for x1,y1,x2,y2 in lines:
@@ -154,8 +155,8 @@ class LineDetector2(object):
 
             for j in [0, 1, 2]:
                 res[:,:,j] = (1-nz) * res[:,:,j].copy() + (nz) * m[:,:,j]
-
         return res
+    """
 
 def _main():
     detector = LineDetector2()

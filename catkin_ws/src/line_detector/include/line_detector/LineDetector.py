@@ -175,7 +175,8 @@ class LineDetector(object):
   
     def getImage(self):
         return self.bgr
- 
+
+    """ 
     def drawLines(self, lines, paint):
         if len(lines)>0:
             for x1,y1,x2,y2 in lines:
@@ -192,10 +193,7 @@ class LineDetector(object):
                 y4 = int((y1+y2)/2. + 4.*dy)
                 cv2.circle(self.bgr, (x3,y3), 3, (0,255,0))
                 cv2.circle(self.bgr, (x4,y4), 3, (0,0,255))
-
-    def getColorPixels(self, color):
-        bw, _edge_color = self._colorFilter(color)
-        return bw
+    """
 #
 # def _main():
 #     detector = LineDetector()

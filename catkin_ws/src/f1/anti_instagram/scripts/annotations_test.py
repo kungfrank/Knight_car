@@ -1,17 +1,16 @@
 #!/usr/bin/env python
-from anti_instagram import  logger, wrap_test_main
+from anti_instagram import logger, wrap_test_main
 from anti_instagram.AntiInstagram import ScaleAndShift, calculate_transform
 from duckietown_utils.expand_variables import expand_environment
 from duckietown_utils.jpg import (image_clip_255, image_cv_from_jpg_fn,
     make_images_grid)
 from duckietown_utils.locate_files_impl import locate_files
-from line_detector.LineDetector import LineDetector
-from line_detector.LineDetector2 import LineDetector2
+from line_detector.LineDetectorPlot import drawLines
 import cv2
+import numpy as np
 import os
 import scipy.io
 import yaml
-from line_detector.LineDetectorPlot import drawLines
 
 def examine_dataset(dirname, out):
     logger.info(dirname)
@@ -86,15 +85,6 @@ def examine_dataset(dirname, out):
                               interpolation=interpolation, name=name,
                               LineDetectorClass=LineDetectorClass)
             summaries.append(s)
-
-        name = 'line_detector2'
-        LineDetectorClass = LineDetector2
-        s=run_detection(transform, j, out, shape=shape,
-                      interpolation=interpolation, name=name,
-                      LineDetectorClass=LineDetectorClass)
-        summaries.append(s)
-        
-        
         
         
         together = make_images_grid(summaries, cols=1, pad=10, bgcolor=[.5, .5, .5])
@@ -253,7 +243,6 @@ def line_detection(LineDetectorClass, bgr):
 
 #    cv2.imwrite('lines_with_normal.png', detector.getImage())
 
-import numpy as np
 def gray2rgb(gray):
     ''' 
         Converts a H x W grayscale into a H x W x 3 RGB image 

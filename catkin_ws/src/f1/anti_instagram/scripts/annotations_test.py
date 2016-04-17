@@ -73,9 +73,15 @@ def examine_dataset(dirname, out):
                 raise ValueError(msg)
 
             detector = stuff['detector']
+            logger.info(detector)
+            if not isinstance(detector, list) and len(detector) == 2:
+                raise ValueError(detector)
+            
+            from duckietown_utils.instantiate_utils import instantiate
             
             def LineDetectorClass():
-                return LineDetector(detector)
+                return instantiate(detector[0], detector[1])
+    
             s = run_detection(transform, j, out, shape=shape,
                               interpolation=interpolation, name=name,
                               LineDetectorClass=LineDetectorClass)

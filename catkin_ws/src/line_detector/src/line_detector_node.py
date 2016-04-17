@@ -14,6 +14,7 @@ import threading
 from duckietown_utils.jpg import image_cv_from_jpg
 
 from line_detector.timekeeper import TimeKeeper
+from duckietown_utils.instantiate_utils import instantiate
 
 class LineDetectorNode(object):
     def __init__(self):
@@ -76,8 +77,7 @@ class LineDetectorNode(object):
         
         klassname = c[0]
         detector_params = c[1]
-
-        self.detector = LineDetector(detector_params)
+        self.detector = instantiate(klassname, detector_params)
 
     def cbSwitch(self, switch_msg):
         self.active = switch_msg.data

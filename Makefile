@@ -99,4 +99,4 @@ demo-line_detector-%: unittests-environment
 # make openhouse-dp3-universal
 
 openhouse-dp3-%: unittests-environment
-	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch  line_detector_param_file_name:=$*"
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch  line_detector_param_file_name:=$* verbose:=true"

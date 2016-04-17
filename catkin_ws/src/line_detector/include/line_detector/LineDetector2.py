@@ -83,10 +83,10 @@ class LineDetector2(object):
     def _synthesizeLines(self, centers, normals):
         lines = []
         if len(centers)>0:
-            x1 = (centers[:,0:1] + normals[:, 1:2] * 3.).astype('int')
-            y1 = (centers[:,1:2] - normals[:, 0:1] * 3.).astype('int')
-            x2 = (centers[:,0:1] - normals[:, 1:2] * 3.).astype('int')
-            y2 = (centers[:,1:2] + normals[:, 0:1] * 3.).astype('int')
+            x1 = (centers[:,0:1] + normals[:, 1:2] * 6.).astype('int')
+            y1 = (centers[:,1:2] - normals[:, 0:1] * 6.).astype('int')
+            x2 = (centers[:,0:1] - normals[:, 1:2] * 6.).astype('int')
+            y2 = (centers[:,1:2] + normals[:, 0:1] * 6.).astype('int')
             x1 = self._checkBounds(x1, self.bgr.shape[1])
             y1 = self._checkBounds(y1, self.bgr.shape[0])
             x2 = self._checkBounds(x2, self.bgr.shape[1])

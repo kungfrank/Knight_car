@@ -97,8 +97,8 @@ class LineDetectorNode(object):
     def cbTransform(self, transform_msg):
         self.ai.shift = transform_msg.s[0:3]
         self.ai.scale = transform_msg.s[3:6]
-        if self.verbose:
-            rospy.loginfo("[AntiInstagram] transform received")
+#         if self.verbose:
+        rospy.loginfo("[AntiInstagram] transform received")
 
     def intermittent_log(self, s):
         if self.intermittent_counter % self.intermittent_interval != 1:

@@ -83,10 +83,10 @@ demo-led-fancy2: unittests-environment
 demo-led-blink-%: unittests-environment
 	bash -c "source environment.sh; rosrun rgb_led blink $*"
 
-# make demo-line_detector-guy
-# make demo-line_detector-default_ld2
 # make demo-line_detector-default
+# make demo-line_detector-guy
 # make demo-line_detector-universal
+# make demo-line_detector-default_ld2
 
 demo-line_detector-%: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; roslaunch duckietown line_detector.launch veh:=$(vehicle_name) line_detector_config:=$*"

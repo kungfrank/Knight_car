@@ -15,7 +15,6 @@ class LineDetector(Configurable, LineDetectorInterface):
         self.edges = np.empty(0)
 
         param_names = [
-
             'hsv_white1',
             'hsv_white2',
             'hsv_yellow1',

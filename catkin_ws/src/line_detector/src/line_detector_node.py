@@ -24,7 +24,7 @@ class LineDetectorNode(object):
        
         # Constructor of line detector 
         self.bridge = CvBridge()
-        self.detector = LineDetector()
+
 
         self.active = True
 
@@ -71,23 +71,24 @@ class LineDetectorNode(object):
         self.image_size = rospy.get_param('~img_size')
         self.top_cutoff = rospy.get_param('~top_cutoff')
 
-        detector = np.array(rospy.get_param('~detector'))
-        rospy.loginfo('detector: %s' % detector)
-
-        self.detector.hsv_white1 = np.array(rospy.get_param('~hsv_white1'))
-        self.detector.hsv_white2 = np.array(rospy.get_param('~hsv_white2'))
-        self.detector.hsv_yellow1 = np.array(rospy.get_param('~hsv_yellow1'))
-        self.detector.hsv_yellow2 = np.array(rospy.get_param('~hsv_yellow2'))
-        self.detector.hsv_red1 = np.array(rospy.get_param('~hsv_red1'))
-        self.detector.hsv_red2 = np.array(rospy.get_param('~hsv_red2'))
-        self.detector.hsv_red3 = np.array(rospy.get_param('~hsv_red3'))
-        self.detector.hsv_red4 = np.array(rospy.get_param('~hsv_red4'))
-
-        self.detector.dilation_kernel_size = rospy.get_param('~dilation_kernel_size')
-        self.detector.canny_thresholds = rospy.get_param('~canny_thresholds')
-        self.detector.hough_min_line_length = rospy.get_param('~hough_min_line_length')
-        self.detector.hough_max_line_gap    = rospy.get_param('~hough_max_line_gap')
-        self.detector.hough_threshold = rospy.get_param('~hough_threshold')
+        detector_params = np.array(rospy.get_param('~detector'))
+        rospy.loginfo('detector_params: %s' % detector_params)
+        self.detector = LineDetector(detector_params)
+#
+#         self.detector.hsv_white1 = np.array(rospy.get_param('~hsv_white1'))
+#         self.detector.hsv_white2 = np.array(rospy.get_param('~hsv_white2'))
+#         self.detector.hsv_yellow1 = np.array(rospy.get_param('~hsv_yellow1'))
+#         self.detector.hsv_yellow2 = np.array(rospy.get_param('~hsv_yellow2'))
+#         self.detector.hsv_red1 = np.array(rospy.get_param('~hsv_red1'))
+#         self.detector.hsv_red2 = np.array(rospy.get_param('~hsv_red2'))
+#         self.detector.hsv_red3 = np.array(rospy.get_param('~hsv_red3'))
+#         self.detector.hsv_red4 = np.array(rospy.get_param('~hsv_red4'))
+#
+#         self.detector.dilation_kernel_size = rospy.get_param('~dilation_kernel_size')
+#         self.detector.canny_thresholds = rospy.get_param('~canny_thresholds')
+#         self.detector.hough_min_line_length = rospy.get_param('~hough_min_line_length')
+#         self.detector.hough_max_line_gap    = rospy.get_param('~hough_max_line_gap')
+#         self.detector.hough_threshold = rospy.get_param('~hough_threshold')
 
     def cbSwitch(self, switch_msg):
         self.active = switch_msg.data

@@ -121,7 +121,7 @@ class LineDetectorNode(object):
 
         skipped_perc = (100.0 * self.nskipped / self.nreceived)
         m = ('Received %d processed %d skipped %d (%1.f%%)' %
-             (self.nreceived, self.nprocessed, skipped_perc))
+             (self.nreceived, self.nprocessed, self.nskipped, skipped_perc))
 
         self.intermittent_log(m)
         tk = TimeKeeper(image_msg)

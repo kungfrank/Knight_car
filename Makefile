@@ -19,7 +19,7 @@ fix-time2:
 clean-pyc:
 	find catkin_ws/src/ -name '*.pyc' | xargs rm 
 
-catkin-clean: clean-pyc:
+catkin-clean: clean-pyc
 	rm -rf $(catkin_ws)/build
 
 build-parallel:

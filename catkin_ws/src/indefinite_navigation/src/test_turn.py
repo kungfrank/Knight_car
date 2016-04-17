@@ -21,11 +21,12 @@ class IndefNavigationTurnNode(object):
         mode_topic = "/" + veh_name + "/open_loop_intersection_control_node/mode"
         left_service = "/" + veh_name + "/open_loop_intersection_control_node/turn_left"
         right_service = "/" + veh_name + "/open_loop_intersection_control_node/turn_right"
-
+        wheels_cmd = "/" + veh_name + "/inverse_kinematics_node/car_cmd"
         self.lane = None
         self.done = None
 
         self.publish_mode = rospy.Publisher(mode_topic, FSMState, queue_size=1)
+        self.pub_wheels = rospy.Publisher(wheels_cmd, Twist2DStamped, queue_size=1)
         self.sub_lane = rospy.Subscriber(lane_topic, LanePose, self.cbLane, queue_size=1)
         self.sub_done = rospy.Subscriber(done_topic, BoolStamped, self.cbDone, queue_size=1)
         rospy.loginfo("[%s] Initialzed." %(self.node_name))
@@ -56,6 +57,10 @@ class IndefNavigationTurnNode(object):
             rospy.loginfo("Waiting for intersection_done")
             rospy.sleep(1)
 
+        stop = Twist2DStamped()
+        stop.v = 0
+        stop.omega = 0
+        self.pub_wheels(stop)
         self.final = self.lane
         self.calculate()
 

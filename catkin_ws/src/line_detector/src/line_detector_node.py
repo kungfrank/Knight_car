@@ -1,20 +1,20 @@
 #!/usr/bin/env python
-from cv_bridge import CvBridge, CvBridgeError
-from duckietown_msgs.msg import BoolStamped, Segment, SegmentList, Vector2D, AntiInstagramTransform
-from geometry_msgs.msg import Point
-from line_detector.LineDetector import *
-from line_detector.LineDetectorPlot import *
 from anti_instagram.AntiInstagram import *
+from cv_bridge import CvBridge, CvBridgeError
+from duckietown_msgs.msg import (AntiInstagramTransform, BoolStamped, Segment,
+    SegmentList, Vector2D)
+from duckietown_utils.instantiate_utils import instantiate
+from duckietown_utils.jpg import image_cv_from_jpg
+from geometry_msgs.msg import Point
 from sensor_msgs.msg import CompressedImage, Image
 from visualization_msgs.msg import Marker
+from line_detector.LineDetectorPlot import *
+from line_detector.timekeeper import TimeKeeper
 import cv2
 import numpy as np
 import rospy
 import threading
-from duckietown_utils.jpg import image_cv_from_jpg
 
-from line_detector.timekeeper import TimeKeeper
-from duckietown_utils.instantiate_utils import instantiate
 
 class LineDetectorNode(object):
     def __init__(self):

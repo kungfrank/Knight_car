@@ -89,7 +89,7 @@ demo-led-blink-%: unittests-environment
 # make demo-line_detector-default_ld2
 
 demo-line_detector-%: unittests-environment
-	bash -c "source environment.sh; source set_ros_master.sh; roslaunch duckietown line_detector.launch veh:=$(vehicle_name) line_detector_config:=$*"
+	bash -c "source environment.sh; source set_ros_master.sh; roslaunch duckietown line_detector.launch veh:=$(vehicle_name) line_detector_param_file_name:=$*"
 
 # openhouse demos
 

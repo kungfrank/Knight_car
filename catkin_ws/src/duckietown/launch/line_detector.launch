@@ -8,7 +8,7 @@
 	<arg name="camera" default="true" doc="If set to false, won't launch the camera. This is for easier relaunching of the line_detector_node only "/>
     <arg name="verbose" default="false" />
 
-    <arg name="line_detector_config" default='default' />
+    <arg name="line_detector_param_file_name" default='default' />
 
 	<!-- Camera -->
 	<include if="$(arg camera)" file="$(find duckietown)/launch/camera.launch">
@@ -28,7 +28,7 @@
 	    <arg name="local" value="$(arg local)"/>
 	    <arg name="config" value="$(arg config)"/>
 	    <!-- <arg name="param_file_name" value="$(arg param_file_name)"/> -->
-	    <arg name="param_file_name" value="$(arg line_detector_config)"/>
+	    <arg name="param_file_name" value="$(arg line_detector_param_file_name)"/>
 
         <arg name="verbose" value="$(arg verbose)" />
 	</include>	

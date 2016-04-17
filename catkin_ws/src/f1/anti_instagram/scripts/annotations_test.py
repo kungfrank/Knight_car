@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from anti_instagram import AntiInstagram, logger, wrap_test_main
+from anti_instagram import  logger, wrap_test_main
 from anti_instagram.AntiInstagram import ScaleAndShift, calculate_transform
 from duckietown_utils.expand_variables import expand_environment
 from duckietown_utils.jpg import (image_clip_255, image_cv_from_jpg_fn,
@@ -10,6 +10,7 @@ from line_detector.LineDetector2 import LineDetector2
 import cv2
 import os
 import scipy.io
+import yaml
 
 def examine_dataset(dirname, out):
     logger.info(dirname)
@@ -48,16 +49,35 @@ def examine_dataset(dirname, out):
     transform = ScaleAndShift(**parameters)
     
     for j in jpgs:
+        summaries =[]
+        
         shape = (200, 160)
         interpolation = cv2.INTER_NEAREST
-        name = 'line_detector'
- 
-        summaries =[]
-        LineDetectorClass = LineDetector
-        s =run_detection(transform, j, out, shape=shape,
-                      interpolation=interpolation, name=name,
-                      LineDetectorClass=LineDetectorClass)
-        summaries.append(s)
+        
+        config_dir = '${DUCKIETOWN_ROOT}/catkin_ws/src/duckietown/config/baseline/line_detector/line_detector_node/'
+        config_dir = expand_environment(config_dir)
+        configurations = locate_files(config_dir, '*.yaml')
+        logger.info('configurations: %r' % configurations)
+        for c in configurations:
+            name = os.path.splitext(os.path.basename(c))[0]
+#             if name not in ['default']:
+#                 continue
+#
+            with open(c) as f:
+                stuff = yaml.load(f)
+
+            if not 'detector' in stuff:
+                msg = 'Cannot find "detector" section in %r' % c
+                raise ValueError(msg)
+
+            detector = stuff['detector']
+            
+            def LineDetectorClass():
+                return LineDetector(detector)
+            s = run_detection(transform, j, out, shape=shape,
+                              interpolation=interpolation, name=name,
+                              LineDetectorClass=LineDetectorClass)
+            summaries.append(s)
 
         name = 'line_detector2'
         LineDetectorClass = LineDetector2
@@ -66,9 +86,10 @@ def examine_dataset(dirname, out):
                       LineDetectorClass=LineDetectorClass)
         summaries.append(s)
         
+        
+        
+        
         together = make_images_grid(summaries, cols=1, pad=10, bgcolor=[.5, .5, .5])
-
-        # 
         bn = os.path.splitext(os.path.basename(j))[0]
         fn = os.path.join(out, '%s.all.png' % (bn))
         cv2.imwrite(fn, zoom_image(together, 4))

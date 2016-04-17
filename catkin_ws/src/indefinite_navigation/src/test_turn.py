@@ -38,7 +38,7 @@ class IndefNavigationTurnNode(object):
         
         self.rate = rospy.Rate(30) # 10hz
         mode = FSMState()
-        mode.mode = "INTERSECTION_CONTROL"
+        mode.state = "INTERSECTION_CONTROL"
         self.publish_mode.publish(mode)
 
     def cbLane(self, data):

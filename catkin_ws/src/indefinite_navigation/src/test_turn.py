@@ -60,7 +60,7 @@ class IndefNavigationTurnNode(object):
         stop = Twist2DStamped()
         stop.v = 0
         stop.omega = 0
-        self.pub_wheels(stop)
+        self.pub_wheels.publish(stop)
         self.final = self.lane
         self.calculate()
 

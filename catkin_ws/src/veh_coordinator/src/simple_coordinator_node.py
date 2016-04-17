@@ -60,7 +60,7 @@ class VehicleCoordinator():
         self.pub_intersection_go = rospy.Publisher('~intersection_go', BoolStamped, queue_size=1)
         self.pub_coord_cmd = rospy.Publisher('~car_cmd',Twist2DStamped, queue_size=1)
 
-        self.roof_light = CoordinationSignal.SIGNAL_A
+        self.roof_light = CoordinationSignal.OFF
         self.roof_light_pub = rospy.Publisher('~change_color_pattern', CoordinationSignal, queue_size=10)
 
         while not rospy.is_shutdown():

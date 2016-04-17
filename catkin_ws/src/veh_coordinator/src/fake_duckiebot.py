@@ -28,7 +28,7 @@ class FakeDuckiebot:
                                                     self.clearance_to_go_callback)
 
         self.emitted_signal = CoordinationSignal.OFF
-        self.clearance_to_go_sub = rospy.Subscriber('~coordination_signal',
+        self.clearance_to_go_sub = rospy.Subscriber('~change_color_pattern',
                                                     CoordinationSignal,
                                                     self.emitted_signal_callback)
 

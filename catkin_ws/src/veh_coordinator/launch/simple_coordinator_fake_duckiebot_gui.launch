@@ -18,7 +18,7 @@
 
     <remap from="fake_duckiebot_node/mode" to="simple_coordinator_node/mode" />
     <remap from="fake_duckiebot_node/signals_detection" to="simple_coordinator_node/signals_detection" />
-    <remap from="fake_duckiebot_node/coordination_signal" to="simple_coordinator_node/coordination_signal" />
+    <remap from="fake_duckiebot_node/change_color_pattern" to="simple_coordinator_node/change_color_pattern" />
     <remap from="fake_duckiebot_node/clearance_to_go" to="simple_coordinator_node/clearance_to_go"  />
 
     <!-- Fake inputs for Vehicle Coordinator -->

@@ -93,9 +93,9 @@ demo-line_detector-%: unittests-environment
 
 # openhouse demos
 
+# make openhouse-dp3-default
 # make openhouse-dp3-guy
 # make openhouse-dp3-default_ld2
-# make openhouse-dp3-default
 # make openhouse-dp3-universal
 
 openhouse-dp3-%: unittests-environment

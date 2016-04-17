@@ -3,13 +3,13 @@ import rospy
 import math
 from intersection_control.util import HelloGoodbye #Imports module. Not limited to modules in this pkg. 
 from duckietown_msgs.msg import LanePose, StopLineReading
-from std_srvs.srv import Empty
+from std_srvs.srv import Empty, EmptyRequest
 from std_msgs.msg import String #Imports msg
 from std_msgs.msg import Bool #Imports msg
 #from duckietown_msgs.msg import messages to command the wheels
 from duckietown_msgs.msg import Twist2DStamped, BoolStamped
 
-class IndefNavigatioTurnNode(object):
+class IndefNavigationTurnNode(object):
     def __init__(self):
         # Save the name of the node
         self.node_name = rospy.get_name()
@@ -44,9 +44,9 @@ class IndefNavigatioTurnNode(object):
 
     def turn(self, type):
         if type.lower() == 'left':
-            self.turn_left_serv(Empty)
+            self.turn_left_serv()
         else:
-            self.turn_right_serv(Empty)
+            self.turn_right_serv()
         while not self.done:
             pass
 

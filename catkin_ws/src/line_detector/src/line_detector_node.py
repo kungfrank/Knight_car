@@ -208,7 +208,7 @@ class LineDetectorNode(object):
         if self.verbose:
             #rospy.loginfo("[%s] Latency sent = %.3f ms" %(self.node_name, (rospy.get_time()-image_msg.header.stamp.to_sec()) * 1000.0))
       
-            colorSegment = color_segment(area_white, area_red, area_yellow) 
+            colorSegment = color_segment(white.area, red.area, yellow.area) 
             edge_msg_out = self.bridge.cv2_to_imgmsg(self.detector.edges, "mono8")
             colorSegment_msg_out = self.bridge.cv2_to_imgmsg(colorSegment, "bgr8")
             self.pub_edge.publish(edge_msg_out)

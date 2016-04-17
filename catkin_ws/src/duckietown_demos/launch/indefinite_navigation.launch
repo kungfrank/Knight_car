@@ -11,5 +11,6 @@
 		<arg name="line_detector_param_file_name" default="default" />
 		<arg name="/lane_following/line_detection" default="true" />
 		<arg name="/lane_following/line_detection2" default="false" />
+		<arg name="anti_instagram" default="false" />
 	</include>
 </launch>

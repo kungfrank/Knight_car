@@ -61,7 +61,8 @@ class IndefNavigationTurnNode(object):
         stop.v = 0
         stop.omega = 0
         startTime = rospy.Time.now()
-        while rospy.Time.now() - startTime < 1:
+	end_time = startTime + rospy.Duration.from_sec(1)
+        while rospy.Time.now() < end_time:
             self.pub_wheels.publish(stop)
             rospy.sleep(0.1)
         self.final = self.lane

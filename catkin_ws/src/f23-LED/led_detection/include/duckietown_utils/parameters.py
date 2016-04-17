@@ -28,5 +28,9 @@ class Configurable():
             # if the list is 3 numbers, we convert to array
             if isinstance(value, list) and len(value) == 3:
                 value = np.array(value)
+            configuration[p] = value
             
-            setattr(self, p, value)
+        for p in param_names:
+            setattr(self, p, configuration[p])
+            
+        return configuration

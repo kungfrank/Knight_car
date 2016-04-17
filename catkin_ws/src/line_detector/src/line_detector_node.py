@@ -54,7 +54,8 @@ class LineDetectorNode(object):
             self.pub_edge = rospy.Publisher("~edge", Image, queue_size=1)
             self.pub_segment = rospy.Publisher("~segment", Image, queue_size=1)
             
-        self.timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
+        if False:
+            self.timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
 
         # Publishers
         self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
@@ -78,6 +79,7 @@ class LineDetectorNode(object):
         klassname = c[0]
         detector_params = c[1]
         self.detector = instantiate(klassname, detector_params)
+        rospy.loginfo('detector_params: %r' % detector_params)
 
     def cbSwitch(self, switch_msg):
         self.active = switch_msg.data

@@ -67,7 +67,16 @@ demo-joystick-camera: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh;  roslaunch duckietown joystick_camera.launch veh:=$(vehicle_name)"
 
 demo-line_detector: unittests-environment
-	bash -c "source environment.sh; source set_ros_master.sh;  roslaunch duckietown line_detector.launch veh:=$(vehicle_name)"
+	bash -c "source environment.sh; source set_ros_master.sh; roslaunch duckietown line_detector.launch veh:=$(vehicle_name)"
+
+# make demo-line_detector-guy
+# make demo-line_detector-default_ld2
+# make demo-line_detector-default
+# make demo-line_detector-universal
+
+demo-line_detector-%: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; roslaunch duckietown line_detector.launch veh:=$(vehicle_name) line_detector_config:=$*"
+
 
 demo-joystick-perception: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos master.launch fsm_file_name:=joystick"

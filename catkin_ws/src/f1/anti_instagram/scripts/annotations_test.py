@@ -62,7 +62,7 @@ def examine_dataset(dirname, out):
         for c in configurations:
             logger.info('Trying %r' % c)
             name = os.path.splitext(os.path.basename(c))[0]
-            if name in ['oreo', 'myrtle', 'bad_lighting']:
+            if name in ['oreo', 'myrtle', 'bad_lighting', '226-night']:
                 continue
 #
             with open(c) as f:

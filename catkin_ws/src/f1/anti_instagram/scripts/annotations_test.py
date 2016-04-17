@@ -62,8 +62,8 @@ def examine_dataset(dirname, out):
         for c in configurations:
             logger.info('Trying %r' % c)
             name = os.path.splitext(os.path.basename(c))[0]
-#             if name not in ['default']:
-#                 continue
+            if name in ['oreo', 'myrtle', 'bad_lighting']:
+                continue
 #
             with open(c) as f:
                 stuff = yaml.load(f)

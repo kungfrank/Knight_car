@@ -1,12 +1,28 @@
- # self.hsv_white1 = np.array([0, 0, 150])
- #        self.hsv_white2 = np.array([180, 50, 255]) 
- #        self.hsv_yellow1 = np.array([25, 120, 90])
- #        self.hsv_yellow2 = np.array([45, 255, 255]) 
- #        self.hsv_red1 = np.array([0, 140, 100])
- #        self.hsv_red2 = np.array([15, 255, 255]) 
- #        self.hsv_red3 = np.array([165, 140, 100])
- #        self.hsv_red4 = np.array([180, 255, 255]) 
- #        self.rgb_red = np.array([240, 20, 20])
- #        self.rgb_yellow = np.array([240, 240,60])
- #        self.rgb_white = np.array([240, 240, 240])
- #        self.rgb_road = np.array([60,60,60])
+img_size: [120,160]
+top_cutoff: 40
+dilation_kernel_size: 3
+canny_thresholds: [80,200]
+hough_threshold: 20
+hough_min_line_length: 3
+hough_max_line_gap:    1
+
+hough_min_line_length_white: 3
+hough_max_line_gap_white:    1
+hough_min_line_length_yellow: 3
+hough_max_line_gap_yellow:    1
+hough_min_line_length_red: 2
+hough_max_line_gap_red:    1
+
+hsv_white1:  [0,0,150]
+hsv_white2:  [180,50,255]
+hsv_yellow1: [25,120,90]
+hsv_yellow2: [45,255,255]
+hsv_red1:    [0,140,100]
+hsv_red2:    [15,255,255]
+hsv_red3:    [165,140,100]
+hsv_red4:    [180,255,255]
+
+#rgb_white:  [240,240,240]
+#rgb_red:    [240,20,20]
+#rgb_yellow: [240,240,60]
+#rgb_road:   [60,60,60]

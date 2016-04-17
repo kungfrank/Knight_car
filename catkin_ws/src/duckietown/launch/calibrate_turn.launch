@@ -47,9 +47,14 @@
          <arg name="veh" value="$(arg veh)"/>
     </include>
     
-    <remap from="inverse_kinematics_node/car_cmd" to="open_loop_intersection_controller_node/car_cmd"/> 
+    <remap from="inverse_kinematics_node/car_cmd" to="open_loop_intersection_control_node/car_cmd"/> 
     <include file="$(find dagu_car)/launch/inverse_kinematics_node.launch">
       <arg name="veh" value="$(arg veh)"/>
     </include>
     
+    <!-- Wheel Driver -->
+    <remap from="wheels_driver_node/wheels_cmd" to="inverse_kinematics_node/wheels_cmd" />
+    <include file="$(find dagu_car)/launch/wheels_driver_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+    </include>
 </launch>   

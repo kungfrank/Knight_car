@@ -69,13 +69,6 @@ demo-joystick-camera: unittests-environment
 demo-line_detector: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; roslaunch duckietown line_detector.launch veh:=$(vehicle_name)"
 
-# make demo-line_detector-guy
-# make demo-line_detector-default_ld2
-# make demo-line_detector-default
-# make demo-line_detector-universal
-
-demo-line_detector-%: unittests-environment
-	bash -c "source environment.sh; source set_ros_master.sh; roslaunch duckietown line_detector.launch veh:=$(vehicle_name) line_detector_config:=$*"
 
 
 demo-joystick-perception: unittests-environment
@@ -90,7 +83,20 @@ demo-led-fancy2: unittests-environment
 demo-led-blink-%: unittests-environment
 	bash -c "source environment.sh; rosrun rgb_led blink $*"
 
+# make demo-line_detector-guy
+# make demo-line_detector-default_ld2
+# make demo-line_detector-default
+# make demo-line_detector-universal
+
+demo-line_detector-%: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; roslaunch duckietown line_detector.launch veh:=$(vehicle_name) line_detector_config:=$*"
+
 # openhouse demos
 
-openhouse-dp3-ld1a: unittests-environment
-	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch  line_detector_param_file_name:=default"
+# make openhouse-dp3-guy
+# make openhouse-dp3-default_ld2
+# make openhouse-dp3-default
+# make openhouse-dp3-universal
+
+openhouse-dp3-%: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch  line_detector_param_file_name:=$*"

@@ -71,7 +71,8 @@ class LineDetectorNode(object):
         self.image_size = rospy.get_param('~img_size')
         self.top_cutoff = rospy.get_param('~top_cutoff')
 
-#         self.detector = np.array(rospy.get_param('~detector'))
+        detector = np.array(rospy.get_param('~detector'))
+        rospy.loginfo('detector: %s' % detector)
 
         self.detector.hsv_white1 = np.array(rospy.get_param('~hsv_white1'))
         self.detector.hsv_white2 = np.array(rospy.get_param('~hsv_white2'))

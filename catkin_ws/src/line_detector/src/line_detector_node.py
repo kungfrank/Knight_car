@@ -85,6 +85,9 @@ class LineDetectorNode(object):
         self.active = switch_msg.data
 
     def cbImage(self, image_msg):
+        if self.nreceived == 0:
+            rospy.loginfo('line_detector_node received first image.')
+
         self.nreceived += 1
         if not self.active:
             return 
@@ -111,7 +114,7 @@ class LineDetectorNode(object):
             self.nskipped += 1
             # Return immediately if the thread is locked
             return
-        if self.nprocess == 0:
+        if self.nprocessed == 0:
             rospy.loginfo('line_detector_node processing first image.')
 
         self.nprocessed += 1

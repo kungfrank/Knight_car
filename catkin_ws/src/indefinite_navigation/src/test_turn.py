@@ -40,15 +40,25 @@ class IndefNavigationTurnNode(object):
         self.lane = data
 
     def cbDone(self, data):
-        self.done = data.data
+        self.done = data.data or self.done
 
     def turn(self, type):
+        #move forward
+        for i in range(3):
+            if self.done == None:
+                rospy.loginfo("still waiting for open_loop_intersection_control_node")
+                rospy.sleep(1)
+        if self.done==None:
+            rospy.loginfo("could not subscribe to open_loop_intersection_control_node")
+            return
+
         if type.lower() == 'left':
             self.turn_left_serv()
         else:
             self.turn_right_serv()
         while not self.done:
-            pass
+            rospy.loginfo("Waiting for intersection_done")
+            rospy.sleep(1)
 
         self.final = self.lane
         self.calculate()

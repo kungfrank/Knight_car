@@ -58,6 +58,7 @@ def examine_dataset(dirname, out):
         config_dir = expand_environment(config_dir)
         configurations = locate_files(config_dir, '*.yaml')
         logger.info('configurations: %r' % configurations)
+        
         for c in configurations:
             logger.info('Trying %r' % c)
             name = os.path.splitext(os.path.basename(c))[0]
@@ -206,28 +207,27 @@ def line_detection(LineDetectorClass, bgr):
     detector.setImage(bgr)
     image_with_lines = bgr.copy()
 
-    if isinstance(detector, LineDetector):
-        # detect lines and normals
-        lines_white, normals_white, area_white = detector.detectLines('white')
-        lines_yellow, normals_yellow, area_yellow = detector.detectLines('yellow')
-        lines_red, normals_red, area_red = detector.detectLines('red')
+    # detect lines and normals
+    white = detector.detectLines('white')
+    yellow = detector.detectLines('yellow')
+    red = detector.detectLines('red')
 
-        # draw lines
-        drawLines(image_with_lines, lines_white, (0, 0, 0))
-        drawLines(image_with_lines, lines_yellow, (255, 0, 0))
-        drawLines(image_with_lines, lines_red, (0, 255, 0))
+    # draw lines
+    drawLines(image_with_lines, white.lines, (0, 0, 0))
+    drawLines(image_with_lines, yellow.lines, (255, 0, 0))
+    drawLines(image_with_lines, red.lines, (0, 255, 0))
     
-    elif isinstance(detector, LineDetector2):
-        # detect lines and normals
-        lines_white, normals_white, centers_white, area_white = detector.detectLines2('white')
-        lines_yellow, normals_yellow, centers_yellow, area_yellow = detector.detectLines2('yellow')
-        lines_red, normals_red, centers_red, area_red = detector.detectLines2('red')
-
-        # draw lines
-        drawLines(image_with_lines, lines_white, (0, 0, 0))
-        drawLines(image_with_lines, lines_yellow, (255, 0, 0))
-        drawLines(image_with_lines, lines_red, (0, 255, 0))
-    
+#     elif isinstance(detector, LineDetector2):
+#         # detect lines and normals
+#         lines_white, normals_white, centers_white, area_white = detector.detectLines2('white')
+#         lines_yellow, normals_yellow, centers_yellow, area_yellow = detector.detectLines2('yellow')
+#         lines_red, normals_red, centers_red, area_red = detector.detectLines2('red')
+# 
+#         # draw lines
+#         drawLines(image_with_lines, lines_white, (0, 0, 0))
+#         drawLines(image_with_lines, lines_yellow, (255, 0, 0))
+#         drawLines(image_with_lines, lines_red, (0, 255, 0))
+#     
         # draw normals
         #detector.drawNormals2(centers_white, normals_white, (0, 0, 0))
         #detector.drawNormals2(centers_yellow, normals_yellow, (255, 0, 0))
@@ -235,9 +235,9 @@ def line_detection(LineDetectorClass, bgr):
         
     res = {}
     res['annotated'] = image_with_lines
-    res['area_white'] = area_white
-    res['area_red'] = area_red
-    res['area_yellow'] = area_yellow
+    res['area_white'] = white.area
+    res['area_red'] = red.area
+    res['area_yellow'] = yellow.area
     res['edges'] = detector.edges
     return res
 
@@ -263,12 +263,15 @@ def gray2rgb(gray):
 
 
 def anti_instagram_annotations_test():
-    #base = "${DUCKIETOWN_DATA}/phase3-misc-files/so1/"
-    base = "/home/hang/duckietown-data/phase3-misc-files/so1/"
+    base = "${DUCKIETOWN_DATA}/phase3-misc-files/so1/"
+#     base = "/home/hang/duckietown-data/phase3-misc-files/so1/"
 
     base = expand_environment(base)
     dirs = locate_files(base, '*.iids1', alsodirs=True)
 
+    if not dirs:
+        raise ValueError('No IIDS1 directories')
+    
     for d in dirs:
         import getpass
         uname = getpass.getuser()

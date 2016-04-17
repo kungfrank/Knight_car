@@ -59,6 +59,7 @@ def examine_dataset(dirname, out):
         configurations = locate_files(config_dir, '*.yaml')
         logger.info('configurations: %r' % configurations)
         for c in configurations:
+            logger.info('Trying %r' % c)
             name = os.path.splitext(os.path.basename(c))[0]
 #             if name not in ['default']:
 #                 continue

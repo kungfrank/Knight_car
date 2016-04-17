@@ -111,7 +111,16 @@ class LineDetectorNode(object):
             self.nskipped += 1
             # Return immediately if the thread is locked
             return
+        if self.nprocess == 0:
+            rospy.loginfo('line_detector_node processing first image.')
+
         self.nprocessed += 1
+
+        skipped_perc = (100.0 * self.nskipped / self.nreceived)
+        m = ('Received %d processed %d skipped %d (%1.f%%)' %
+             (self.nreceived, self.nprocessed, skipped_perc))
+
+        self.intermittent_log(m)
         tk = TimeKeeper(image_msg)
         
         self.intermittent_counter += 1

@@ -113,6 +113,8 @@ def run_detection(transform, jpg, out, shape, interpolation,
     image = image_cv_from_jpg_fn(jpg)
 
     image = cv2.resize(image, shape, interpolation=interpolation)
+    
+    
 #     bgr = bgr[bgr.shape[0] / 2:, :, :]
 
     image_detections = line_detection(LineDetectorClass, image)
@@ -141,6 +143,8 @@ def run_detection(transform, jpg, out, shape, interpolation,
                        ], 
                                 
                                 cols=4, pad=10, bgcolor=[1, 1, 1])
+    
+    # TODO: write the string "name" in the upper left of image together
     write('together', together)
     return together
 

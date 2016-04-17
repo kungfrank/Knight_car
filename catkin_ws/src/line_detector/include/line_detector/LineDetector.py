@@ -20,10 +20,6 @@ class LineDetector(Configurable):
             'hsv_red2',
             'hsv_red3',
             'hsv_red4',
-            'rgb_red',
-            'rgb_yellow',
-            'rgb_white',
-            'rgb_road',
             'dilation_kernel_size',
             'canny_thresholds',
             'hough_threshold',
@@ -32,6 +28,10 @@ class LineDetector(Configurable):
             'max_color_dist',
             'coeff_yellow',
             'coeff_white',
+#             'rgb_red',
+#             'rgb_yellow',
+#             'rgb_white',
+#             'rgb_road',
         ]
 
         Configurable.__init__(self, param_names, configuration)

@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-import sys
+
 from .line_detector_interface import Detections
 from duckietown_utils.parameters import Configurable
 from line_detector.line_detector_interface import LineDetectorInterface
@@ -259,6 +259,6 @@ class LineDetector2(Configurable, LineDetectorInterface):
 #
 #     else:
 #         return -1
-
-if __name__ == '__main__':
-    _main()
+#
+# if __name__ == '__main__':
+#     _main()

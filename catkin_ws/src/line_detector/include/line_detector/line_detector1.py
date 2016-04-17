@@ -24,15 +24,6 @@ class LineDetector(Configurable, LineDetectorInterface):
             'hsv_red2',
             'hsv_red3',
             'hsv_red4',
-#
-#             'rgb_red',
-#             'rgb_yellow',
-#             'rgb_white',
-#             'rgb_road',
-#             'max_color_dist',
-#             'coeff_yellow',
-#             'coeff_white',
-
             'dilation_kernel_size',
             'canny_thresholds',
             'hough_threshold',

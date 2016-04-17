@@ -264,7 +264,6 @@ def gray2rgb(gray):
 
 def anti_instagram_annotations_test():
     base = "${DUCKIETOWN_DATA}/phase3-misc-files/so1/"
-#     base = "/home/hang/duckietown-data/phase3-misc-files/so1/"
 
     base = expand_environment(base)
     dirs = locate_files(base, '*.iids1', alsodirs=True)

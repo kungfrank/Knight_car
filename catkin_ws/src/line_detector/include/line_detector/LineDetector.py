@@ -27,15 +27,15 @@ class LineDetector(Configurable):
 #             'rgb_yellow',
 #             'rgb_white',
 #             'rgb_road',
+#             'max_color_dist',
+#             'coeff_yellow',
+#             'coeff_white',
 
             'dilation_kernel_size',
             'canny_thresholds',
             'hough_threshold',
             'hough_min_line_length',
             'hough_max_line_gap',
-            'max_color_dist',
-            'coeff_yellow',
-            'coeff_white',
         ]
 
         Configurable.__init__(self, param_names, configuration)

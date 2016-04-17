@@ -1,4 +1,5 @@
 import yaml
+import numpy as np
 
 class Configurable():
     
@@ -21,4 +22,9 @@ class Configurable():
 
         assert set(given) == set(required)
         for p in param_names:
-            setattr(self, p, stuff[p])
+            value =  configuration[p]
+            # if the list is 3 numbers, we convert to array
+            if isinstance(value, list) and len(value) == 3:
+                value = np.array(value)
+            
+            setattr(self, p,value)

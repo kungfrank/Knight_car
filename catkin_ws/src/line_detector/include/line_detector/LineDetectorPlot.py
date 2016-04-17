@@ -1,6 +1,5 @@
 import numpy as np
 import cv2
-import sys
 
 # draw line segments
 def drawLines(bgr, lines, paint):

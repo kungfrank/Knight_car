@@ -11,6 +11,7 @@ import cv2
 import os
 import scipy.io
 import yaml
+from line_detector.LineDetectorPlot import drawLines
 
 def examine_dataset(dirname, out):
     logger.info(dirname)
@@ -207,6 +208,7 @@ def test_pair(transform, jpg, mat, out):
 def line_detection(LineDetectorClass, bgr):
     detector = LineDetectorClass()
     detector.setImage(bgr)
+    image_with_lines = bgr.copy()
 
     if isinstance(detector, LineDetector):
         # detect lines and normals
@@ -215,9 +217,9 @@ def line_detection(LineDetectorClass, bgr):
         lines_red, normals_red, area_red = detector.detectLines('red')
 
         # draw lines
-        detector.drawLines(lines_white, (0, 0, 0))
-        detector.drawLines(lines_yellow, (255, 0, 0))
-        detector.drawLines(lines_red, (0, 255, 0))
+        drawLines(image_with_lines, lines_white, (0, 0, 0))
+        drawLines(image_with_lines, lines_yellow, (255, 0, 0))
+        drawLines(image_with_lines, lines_red, (0, 255, 0))
     
     elif isinstance(detector, LineDetector2):
         # detect lines and normals
@@ -226,9 +228,9 @@ def line_detection(LineDetectorClass, bgr):
         lines_red, normals_red, centers_red, area_red = detector.detectLines2('red')
 
         # draw lines
-        detector.drawLines(lines_white, (0, 0, 0))
-        detector.drawLines(lines_yellow, (255, 0, 0))
-        detector.drawLines(lines_red, (0, 255, 0))
+        drawLines(image_with_lines, lines_white, (0, 0, 0))
+        drawLines(image_with_lines, lines_yellow, (255, 0, 0))
+        drawLines(image_with_lines, lines_red, (0, 255, 0))
     
         # draw normals
         #detector.drawNormals2(centers_white, normals_white, (0, 0, 0))

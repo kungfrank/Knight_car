@@ -1,7 +1,7 @@
 img_size: [120,160]
 top_cutoff: 40
 
-  detector:
+detector:
   dilation_kernel_size: 3
   canny_thresholds: [80,200]
   hough_threshold: 20

@@ -238,7 +238,7 @@ def line_detection(LineDetectorClass, bgr):
         #detector.drawNormals2(centers_red, normals_red, (0, 255, 0))
         
     res = {}
-    res['annotated'] = detector.getImage()
+    res['annotated'] = image_with_lines
     res['area_white'] = area_white
     res['area_red'] = area_red
     res['area_yellow'] = area_yellow

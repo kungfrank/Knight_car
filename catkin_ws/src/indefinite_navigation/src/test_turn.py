@@ -7,7 +7,7 @@ from std_srvs.srv import Empty, EmptyRequest
 from std_msgs.msg import String #Imports msg
 from std_msgs.msg import Bool #Imports msg
 #from duckietown_msgs.msg import messages to command the wheels
-from duckietown_msgs.msg import Twist2DStamped, BoolStamped
+from duckietown_msgs.msg import Twist2DStamped, BoolStamped, FSMState
 
 class IndefNavigationTurnNode(object):
     def __init__(self):
@@ -18,12 +18,14 @@ class IndefNavigationTurnNode(object):
         veh_name= rospy.get_param("veh")['duckiebot_visualizer']['veh_name']
         lane_topic = "/" + veh_name + "/lane_filter_node/lane_pose"
         done_topic = "/" + veh_name + "/open_loop_intersection_control_node/intersection_done"
+        mode_topic = "/" + veh_name + "/open_loop_intersection_control_node/mode"
         left_service = "/" + veh_name + "/open_loop_intersection_control_node/turn_left"
         right_service = "/" + veh_name + "/open_loop_intersection_control_node/turn_right"
 
         self.lane = None
         self.done = None
 
+        self.publish_mode = rospy.Publisher(mode_topic, FSMState, queue_size=1)
         self.sub_lane = rospy.Subscriber(lane_topic, LanePose, self.cbLane, queue_size=1)
         self.sub_done = rospy.Subscriber(done_topic, BoolStamped, self.cbDone, queue_size=1)
         rospy.loginfo("[%s] Initialzed." %(self.node_name))
@@ -35,6 +37,9 @@ class IndefNavigationTurnNode(object):
         self.turn_right_serv = rospy.ServiceProxy(right_service, Empty)
         
         self.rate = rospy.Rate(30) # 10hz
+        mode = FSMState()
+        mode.mode = "INTERSECTION_CONTROL"
+        self.publish_mode.publish(mode)
 
     def cbLane(self, data):
         self.lane = data
@@ -43,15 +48,6 @@ class IndefNavigationTurnNode(object):
         self.done = data.data or self.done
 
     def turn(self, type):
-        #move forward
-        for i in range(3):
-            if self.done == None:
-                rospy.loginfo("still waiting for open_loop_intersection_control_node")
-                rospy.sleep(1)
-        if self.done==None:
-            rospy.loginfo("could not subscribe to open_loop_intersection_control_node")
-            return
-
         if type.lower() == 'left':
             self.turn_left_serv()
         else:

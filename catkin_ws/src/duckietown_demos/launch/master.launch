@@ -8,6 +8,7 @@
 	<arg name="verbose" default="true" />
 	<arg name="statistics" default="false"/>
 	<arg name="loc" default="-1"/>
+	<arg name="line_detector_param_file_name" default="$(arg param_file_name)"
 	<!-- end basic args -->
  
 <!-- the things that are "on" by default: 
@@ -503,6 +504,12 @@
 			<arg name="param_file_name" value="$(arg param_file_name)"/>        
 		</include>
 	</group>
+
+	<group unless="$(arg coordination">
+	  <!-- TODO need to fake the coordination if we aren't actually doing it -->
+
+	</group>
+
 	<!-- End Coordination -->
 
 	<!-- Start Navigation -->

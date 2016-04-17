@@ -88,7 +88,7 @@ states:
       at_stop_line: "COORDINATION"
       vehicle_detection: "AVOID_VEHICLE"
       obstacle_detection: "AVOID_OBSTACLE"
-      lost_lane: "LANE_RECOVERY"
+#      lost_lane: "LANE_RECOVERY"
     active_nodes:
       - vehicle_detector_node
       - static_object_detector_node

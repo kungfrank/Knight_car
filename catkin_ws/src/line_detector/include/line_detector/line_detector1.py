@@ -148,14 +148,17 @@ class LineDetector(Configurable, LineDetectorInterface):
  
     def _findNormal(self, bw, lines):
         normals = []
+        centers = []
         if len(lines)>0:
             length = np.sum((lines[:, 0:2] -lines[:, 2:4])**2, axis=1, keepdims=True)**0.5
             dx = 1.* (lines[:,3:4]-lines[:,1:2])/length
             dy = 1.* (lines[:,0:1]-lines[:,2:3])/length
-            x3 = ((lines[:,0:1]+lines[:,2:3])/2 - 3.*dx).astype('int')
-            y3 = ((lines[:,1:2]+lines[:,3:4])/2 - 3.*dy).astype('int')
-            x4 = ((lines[:,0:1]+lines[:,2:3])/2 + 3.*dx).astype('int')
-            y4 = ((lines[:,1:2]+lines[:,3:4])/2 + 3.*dy).astype('int')
+
+            centers = np.hstack([(lines[:,0:1]+lines[:,2:3])/2, (lines[:,1:2]+lines[:,3:4])/2])
+            x3 = (centers[:,0:1] - 3.*dx).astype('int')
+            y3 = (centers[:,1:2] - 3.*dy).astype('int')
+            x4 = (centers[:,0:1] + 3.*dx).astype('int')
+            y4 = (centers[:,1:2] + 3.*dy).astype('int')
             x3 = self._checkBounds(x3, bw.shape[1])
             y3 = self._checkBounds(y3, bw.shape[0])
             x4 = self._checkBounds(x4, bw.shape[1])
@@ -182,13 +185,13 @@ class LineDetector(Configurable, LineDetectorInterface):
                     normals[cnt,:] = [-dx, -dy]
             """
             self._correctPixelOrdering(lines, normals)
-        return normals
+        return centers, normals
 
     def detectLines(self, color):
         bw, edge_color = self._colorFilter(color)
         lines = self._HoughLine(edge_color)
-        normals = self._findNormal(bw, lines)
-        return Detections(lines=lines, normals=normals, area=bw, centers=None)
+        centers, normals = self._findNormal(bw, lines)
+        return Detections(lines=lines, normals=normals, area=bw, centers=centers)
 
     def setImage(self, bgr):
         self.bgr = np.copy(bgr)

@@ -13,12 +13,15 @@ fix-time:
 	echo "Calling ntpdate to fix time"
 	sudo ntpdate -u us.pool.ntp.org 
 
+fix-time2:
+	sudo ntpdate -s time.nist.gov
+
 catkin-clean:
 	rm -rf $(catkin_ws)/build
 
 build-parallel:
 	catkin_make -C $(catkin_ws) --make-args "-j4"
-	
+
 build:
 	catkin_make -C $(catkin_ws) 
 
@@ -55,17 +58,16 @@ test-led:
 vehicle_name=$(shell hostname)
 
 demo-joystick: unittests-environment
-	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown joystick.launch veh:=$(vehicle_name)"
+	bash -c "source environment.sh; source set_ros_master.sh;  roslaunch duckietown joystick.launch veh:=$(vehicle_name)"
 
 demo-joystick-camera: unittests-environment
-	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown joystick_camera.launch veh:=$(vehicle_name)"
+	bash -c "source environment.sh; source set_ros_master.sh;  roslaunch duckietown joystick_camera.launch veh:=$(vehicle_name)"
 
 demo-line_detector: unittests-environment
-	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown line_detector.launch veh:=$(vehicle_name)"
+	bash -c "source environment.sh; source set_ros_master.sh;  roslaunch duckietown line_detector.launch veh:=$(vehicle_name)"
 
 demo-joystick-perception: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos master.launch fsm_file_name:=joystick"
-  
 
 demo-led-fancy1: unittests-environment
 	bash -c "source environment.sh; rosrun rgb_led fancy1"
@@ -76,3 +78,7 @@ demo-led-fancy2: unittests-environment
 demo-led-blink-%: unittests-environment
 	bash -c "source environment.sh; rosrun rgb_led blink $*"
 
+# openhouse demos
+
+openhouse-dp3-ld1a: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch  line_detector_param_file_name:=default"

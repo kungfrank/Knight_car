@@ -8,13 +8,14 @@
 	<arg name="verbose" default="true" />
 	<arg name="statistics" default="false"/>
 	<arg name="loc" default="-1"/>
+	<arg name="line_detector_param_file_name" default="$(arg param_file_name)"/>
 	<!-- end basic args -->
  
 <!-- the things that are "on" by default: 
- - camera
- - wheels
- - joystick
- - lane_following stack
+ - camera stack (raw imagery defaults to false)
+ - wheels stack
+ - joystick stack
+ - lane_following stack (old version of line detector only)
  - fsm
 -->
 
@@ -34,6 +35,7 @@
 
 	<arg name="lane_following" default="true"/>
 	<arg name="/lane_following/line_detection" default="true"/>
+	<arg name="/lane_following/line_detection2" default="false"/> <!-- new line detection node -->
 	<arg name="/lane_following/ground_projection" default="true"/>
 	<arg name="/lane_following/lane_filter" default="true"/>
 	<arg name="/lane_following/stop_line_filter" default="true"/>
@@ -214,6 +216,19 @@
 				<arg name="verbose" value="$(arg verbose)" />
 			</include>	
 		</group>
+
+		<!-- Line Detector -->
+		<group if="$(arg /lane_following/line_detection2)">
+			<remap from="line_detector_node/image" to="camera_node/image/compressed"/>
+			<include file="$(find line_detector)/launch/line_detector2_node.launch">
+				<arg name="veh" value="$(arg veh)"/>
+				<arg name="config" value="$(arg config)"/>
+				<arg name="param_file_name" value="$(arg param_file_name)"/>
+				<arg name="verbose" value="$(arg verbose)" />
+			</include>	
+		</group>
+
+
 		
 		<!-- Ground projection -->
 		<group if="$(arg /lane_following/ground_projection)">
@@ -489,6 +504,12 @@
 			<arg name="param_file_name" value="$(arg param_file_name)"/>        
 		</include>
 	</group>
+
+	<group unless="$(arg coordination)">
+	  <!-- TODO need to fake the coordination if we aren't actually doing it -->
+
+	</group>
+
 	<!-- End Coordination -->
 
 	<!-- Start Navigation -->

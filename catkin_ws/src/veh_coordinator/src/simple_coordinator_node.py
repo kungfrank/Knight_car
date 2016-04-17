@@ -43,11 +43,10 @@ class VehicleCoordinator():
 
         self.intersection_go_published = False
 
-
         self.node = rospy.init_node('veh_coordinator', anonymous=True)
 
         # Subscriptions
-        self.mode = "LANE_FOLLOWING"
+        self.mode = FSMState.LANE_FOLLOWING
         rospy.Subscriber('~mode', FSMState, lambda msg: self.set('mode', msg.state))
 
         self.traffic_light = SignalsDetection.NO_TRAFFIC_LIGHT
@@ -125,7 +124,7 @@ class VehicleCoordinator():
     def reconsider(self):
 
         if self.state == State.LANE_FOLLOWING:
-            if self.mode == "COORDINATION":
+            if self.mode == FSMState.COORDINATION:
                 if self.traffic_light == SignalsDetection.NO_TRAFFIC_LIGHT:
                     self.set_state(State.AT_STOP)
                 else:
@@ -159,7 +158,7 @@ class VehicleCoordinator():
                     self.set_state(State.GO)
 
         elif self.state == State.GO:
-            if self.mode == "LANE_FOLLOWING":
+            if self.mode == FSMState.LANE_FOLLOWING:
                 self.set_state(State.LANE_FOLLOWING)
 
         elif self.state == State.CONFLICT:

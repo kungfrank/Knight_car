@@ -78,6 +78,7 @@ class LineDetectorNode(object):
         klassname = c[0]
         detector_params = c[1]
         self.detector = instantiate(klassname, detector_params)
+        rospy.loginfo('detector_params: %r' % detector_params)
 
     def cbSwitch(self, switch_msg):
         self.active = switch_msg.data

@@ -30,6 +30,7 @@ class Configurable():
                 value = np.array(value)
             configuration[p] = value
             
-        print('configuration: %r' % configuration)
         for p in param_names:
             setattr(self, p, configuration[p])
+            
+        return configuration

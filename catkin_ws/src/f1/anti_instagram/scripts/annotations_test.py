@@ -142,12 +142,12 @@ def run_detection(transform, jpg, out, shape, interpolation,
                                  transformed_detections['annotated'],
                        ], 
                                 
-                                cols=4, pad=10, bgcolor=[1, 1, 1])
+                                cols=4, pad=35, bgcolor=[1, 1, 1])
     
     # write the string "name" in the upper left of image together
     cv2.putText(together, name, (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
 
-    write('together', together)
+    #write('together', together)
     return together
 
 def merge_masks_res(res):

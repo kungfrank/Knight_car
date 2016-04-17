@@ -2,7 +2,6 @@ import numpy as np
 import cv2
 import sys
 
-
 class LineDetector2(object):
     def __init__(self):
         # Images to be processed

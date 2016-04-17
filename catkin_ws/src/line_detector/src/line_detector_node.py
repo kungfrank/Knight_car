@@ -65,12 +65,13 @@ class LineDetectorNode(object):
         self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
         rospy.loginfo("[%s] Initialized (verbose = %s)." %(self.node_name, self.verbose))
 
-    def updateParams(self, event):
+    def updateParams(self, _event):
         self.verbose = rospy.get_param('~verbose',True)
 
         self.image_size = rospy.get_param('~img_size')
         self.top_cutoff = rospy.get_param('~top_cutoff')
-  
+
+#         self.detector = np.array(rospy.get_param('~detector'))
 
         self.detector.hsv_white1 = np.array(rospy.get_param('~hsv_white1'))
         self.detector.hsv_white2 = np.array(rospy.get_param('~hsv_white2'))

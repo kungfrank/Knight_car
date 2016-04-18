@@ -43,13 +43,6 @@ class LineDetectorNode(object):
         # color correction
         self.ai = AntiInstagram()
 
-        # Publishers
-        self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
-        self.pub_image = rospy.Publisher("~image_with_lines", Image, queue_size=1)
-        # Subscribers
-        self.sub_image = rospy.Subscriber("~image", CompressedImage, self.cbImage, queue_size=1)
-        self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
-        
         # Verbose option 
         if self.verbose:
             self.pub_edge = rospy.Publisher("~edge", Image, queue_size=1)

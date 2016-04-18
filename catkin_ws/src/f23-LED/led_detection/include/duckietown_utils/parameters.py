@@ -4,7 +4,9 @@ import numpy as np
 class Configurable():
     
     def __init__(self, param_names, configuration):
-
+        if not isinstance(configuration, dict):
+            msg = 'Expecting a dict, obtained %r' % configuration
+            raise ValueError(msg)
         # check that we set all parameters
         given = list(configuration)
         
@@ -22,9 +24,13 @@ class Configurable():
 
         assert set(given) == set(required)
         for p in param_names:
-            value =  configuration[p]
+            value = configuration[p]
             # if the list is 3 numbers, we convert to array
             if isinstance(value, list) and len(value) == 3:
                 value = np.array(value)
+            configuration[p] = value
             
-            setattr(self, p,value)
+        for p in param_names:
+            setattr(self, p, configuration[p])
+            
+        return configuration

@@ -8,13 +8,14 @@
 	<arg name="verbose" default="true" />
 	<arg name="statistics" default="false"/>
 	<arg name="loc" default="-1"/>
+	<arg name="line_detector_param_file_name" default="$(arg param_file_name)"/>
 	<!-- end basic args -->
  
 <!-- the things that are "on" by default: 
- - camera
- - wheels
- - joystick
- - lane_following stack
+ - camera stack (raw imagery defaults to false)
+ - wheels stack
+ - joystick stack
+ - lane_following stack (old version of line detector only)
  - fsm
 -->
 
@@ -82,7 +83,6 @@
 
 	<arg name="SLAM" default="false"/>
 
-	<arg name="anti_instagram" default="false"/>
 	<!-- end switch args -->
 	
 	<!-- Enable statistics -->
@@ -204,13 +204,23 @@
 	<!-- Start Lane Following -->
 	<group if="$(arg lane_following)">
 
+
+		<!-- Start anti-instagram -->
+		<!-- <group if="$(arg anti_instagram)"> -->
+
+			<include file="$(find anti_instagram)/launch/anti_instagram_node.launch">
+			</include>	
+		
+		<!-- </group> -->
+
 		<!-- Line Detector -->
 		<group if="$(arg /lane_following/line_detection)">
 			<remap from="line_detector_node/image" to="camera_node/image/compressed"/>
 			<include file="$(find line_detector)/launch/line_detector_node.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
-				<arg name="param_file_name" value="$(arg param_file_name)"/>
+				<!-- NOTE: "line_detector_param_file_name" as special case -->
+				<arg name="param_file_name" value="$(arg line_detector_param_file_name)"/>
 				<arg name="verbose" value="$(arg verbose)" />
 			</include>	
 		</group>
@@ -489,6 +499,12 @@
 			<arg name="param_file_name" value="$(arg param_file_name)"/>        
 		</include>
 	</group>
+
+	<group unless="$(arg coordination)">
+	  <!-- TODO need to fake the coordination if we aren't actually doing it -->
+
+	</group>
+
 	<!-- End Coordination -->
 
 	<!-- Start Navigation -->
@@ -558,11 +574,5 @@
 	</group>
 	<!-- End SLAM -->
 
-
-	<!-- Start anti-instagram -->
-	<group if="$(arg anti_instagram)">
-		<!-- TODO -->
-	</group>
-	<!-- End anti-instagram -->
 
 </launch>

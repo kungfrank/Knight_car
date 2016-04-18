@@ -1,13 +1,13 @@
 #!/usr/bin/env python
-from anti_instagram import  logger, wrap_test_main
+from anti_instagram import logger, wrap_test_main
 from anti_instagram.AntiInstagram import ScaleAndShift, calculate_transform
 from duckietown_utils.expand_variables import expand_environment
 from duckietown_utils.jpg import (image_clip_255, image_cv_from_jpg_fn,
     make_images_grid)
 from duckietown_utils.locate_files_impl import locate_files
-from line_detector.LineDetector import LineDetector
-from line_detector.LineDetector2 import LineDetector2
+from line_detector.LineDetectorPlot import drawLines
 import cv2
+import numpy as np
 import os
 import scipy.io
 import yaml
@@ -69,11 +69,12 @@ def examine_dataset(dirname, out):
         config_dir = expand_environment(config_dir)
         configurations = locate_files(config_dir, '*.yaml')
         logger.info('configurations: %r' % configurations)
+        
         for c in configurations:
             logger.info('Trying %r' % c)
             name = os.path.splitext(os.path.basename(c))[0]
-#             if name not in ['default']:
-#                 continue
+            if name in ['oreo', 'myrtle', 'bad_lighting', '226-night']:
+                continue
 #
             with open(c) as f:
                 stuff = yaml.load(f)
@@ -83,22 +84,19 @@ def examine_dataset(dirname, out):
                 raise ValueError(msg)
 
             detector = stuff['detector']
+            logger.info(detector)
+            if not isinstance(detector, list) and len(detector) == 2:
+                raise ValueError(detector)
+            
+            from duckietown_utils.instantiate_utils import instantiate
             
             def LineDetectorClass():
-                return LineDetector(detector)
+                return instantiate(detector[0], detector[1])
+    
             s = run_detection(transform, j, out, shape=shape,
                               interpolation=interpolation, name=name,
                               LineDetectorClass=LineDetectorClass)
             summaries.append(s)
-
-        name = 'line_detector2'
-        LineDetectorClass = LineDetector2
-        s=run_detection(transform, j, out, shape=shape,
-                      interpolation=interpolation, name=name,
-                      LineDetectorClass=LineDetectorClass)
-        summaries.append(s)
-        
-        
         
         
         together = make_images_grid(summaries, cols=1, pad=10, bgcolor=[.5, .5, .5])
@@ -136,6 +134,8 @@ def run_detection(transform, jpg, out, shape, interpolation,
     image = image_cv_from_jpg_fn(jpg)
 
     image = cv2.resize(image, shape, interpolation=interpolation)
+    
+    
 #     bgr = bgr[bgr.shape[0] / 2:, :, :]
 
     image_detections = line_detection(LineDetectorClass, image)
@@ -163,8 +163,12 @@ def run_detection(transform, jpg, out, shape, interpolation,
                                  transformed_detections['annotated'],
                        ], 
                                 
-                                cols=4, pad=10, bgcolor=[1, 1, 1])
-    write('together', together)
+                                cols=4, pad=35, bgcolor=[1, 1, 1])
+    
+    # write the string "name" in the upper left of image together
+    cv2.putText(together, name, (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
+
+    #write('together', together)
     return together
 
 def merge_masks_res(res):
@@ -247,28 +251,27 @@ def line_detection(LineDetectorClass, bgr):
     detector.setImage(bgr)
     image_with_lines = bgr.copy()
 
-    if isinstance(detector, LineDetector):
-        # detect lines and normals
-        lines_white, normals_white, area_white = detector.detectLines('white')
-        lines_yellow, normals_yellow, area_yellow = detector.detectLines('yellow')
-        lines_red, normals_red, area_red = detector.detectLines('red')
+    # detect lines and normals
+    white = detector.detectLines('white')
+    yellow = detector.detectLines('yellow')
+    red = detector.detectLines('red')
 
-        # draw lines
-        drawLines(image_with_lines, lines_white, (0, 0, 0))
-        drawLines(image_with_lines, lines_yellow, (255, 0, 0))
-        drawLines(image_with_lines, lines_red, (0, 255, 0))
+    # draw lines
+    drawLines(image_with_lines, white.lines, (0, 0, 0))
+    drawLines(image_with_lines, yellow.lines, (255, 0, 0))
+    drawLines(image_with_lines, red.lines, (0, 255, 0))
     
-    elif isinstance(detector, LineDetector2):
-        # detect lines and normals
-        lines_white, normals_white, centers_white, area_white = detector.detectLines2('white')
-        lines_yellow, normals_yellow, centers_yellow, area_yellow = detector.detectLines2('yellow')
-        lines_red, normals_red, centers_red, area_red = detector.detectLines2('red')
-
-        # draw lines
-        drawLines(image_with_lines, lines_white, (0, 0, 0))
-        drawLines(image_with_lines, lines_yellow, (255, 0, 0))
-        drawLines(image_with_lines, lines_red, (0, 255, 0))
-    
+#     elif isinstance(detector, LineDetector2):
+#         # detect lines and normals
+#         lines_white, normals_white, centers_white, area_white = detector.detectLines2('white')
+#         lines_yellow, normals_yellow, centers_yellow, area_yellow = detector.detectLines2('yellow')
+#         lines_red, normals_red, centers_red, area_red = detector.detectLines2('red')
+# 
+#         # draw lines
+#         drawLines(image_with_lines, lines_white, (0, 0, 0))
+#         drawLines(image_with_lines, lines_yellow, (255, 0, 0))
+#         drawLines(image_with_lines, lines_red, (0, 255, 0))
+#     
         # draw normals
         #detector.drawNormals2(centers_white, normals_white, (0, 0, 0))
         #detector.drawNormals2(centers_yellow, normals_yellow, (255, 0, 0))
@@ -276,15 +279,14 @@ def line_detection(LineDetectorClass, bgr):
         
     res = {}
     res['annotated'] = image_with_lines
-    res['area_white'] = area_white
-    res['area_red'] = area_red
-    res['area_yellow'] = area_yellow
+    res['area_white'] = white.area
+    res['area_red'] = red.area
+    res['area_yellow'] = yellow.area
     res['edges'] = detector.edges
     return res
 
 #    cv2.imwrite('lines_with_normal.png', detector.getImage())
 
-import numpy as np
 def gray2rgb(gray):
     ''' 
         Converts a H x W grayscale into a H x W x 3 RGB image 
@@ -306,12 +308,15 @@ def gray2rgb(gray):
 
 def anti_instagram_annotations_test():
     base = "${DUCKIETOWN_DATA}/phase3-misc-files/so1/"
-    #base = "/home/hang/duckietown-data/phase3-misc-files/so1/"
 
     base = expand_environment(base)
     dirs = locate_files(base, '*.iids1', alsodirs=True)
     directory_results={}
     overall_results=[]
+
+    if not dirs:
+        raise ValueError('No IIDS1 directories')
+    
     for d in dirs:
         import getpass
         uname = getpass.getuser()

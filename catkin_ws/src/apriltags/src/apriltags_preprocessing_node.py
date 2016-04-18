@@ -61,7 +61,6 @@ class AprilPrePros(object):
         self.fast_x_down     = rospy.get_param("~fast_x_down")
         self.global_x_down   = rospy.get_param("~global_x_down")
         
-        rospy.loginfo("[%s] Parameters Loaded " %(self.node_name))
         
         
     def init_timers(self):

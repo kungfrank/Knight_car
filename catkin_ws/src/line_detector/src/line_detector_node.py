@@ -1,19 +1,20 @@
 #!/usr/bin/env python
-from cv_bridge import CvBridge, CvBridgeError
-from duckietown_msgs.msg import BoolStamped, Segment, SegmentList, Vector2D, AntiInstagramTransform
-from geometry_msgs.msg import Point
-from line_detector.LineDetector import *
-from line_detector.LineDetectorPlot import *
 from anti_instagram.AntiInstagram import *
+from cv_bridge import CvBridge, CvBridgeError
+from duckietown_msgs.msg import (AntiInstagramTransform, BoolStamped, Segment,
+    SegmentList, Vector2D)
+from duckietown_utils.instantiate_utils import instantiate
+from duckietown_utils.jpg import image_cv_from_jpg
+from geometry_msgs.msg import Point
 from sensor_msgs.msg import CompressedImage, Image
 from visualization_msgs.msg import Marker
+from line_detector.LineDetectorPlot import *
+from line_detector.timekeeper import TimeKeeper
 import cv2
 import numpy as np
 import rospy
 import threading
-from duckietown_utils.jpg import image_cv_from_jpg
 
-from line_detector.timekeeper import TimeKeeper
 
 class LineDetectorNode(object):
     def __init__(self):
@@ -24,7 +25,7 @@ class LineDetectorNode(object):
        
         # Constructor of line detector 
         self.bridge = CvBridge()
-        self.detector = LineDetector()
+
 
         self.active = True
 
@@ -51,9 +52,10 @@ class LineDetectorNode(object):
         # Verbose option 
         if self.verbose:
             self.pub_edge = rospy.Publisher("~edge", Image, queue_size=1)
-            self.pub_segment = rospy.Publisher("~segment", Image, queue_size=1)
+            self.pub_colorSegment = rospy.Publisher("~colorSegment", Image, queue_size=1)
             
-        self.timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
+        if False:
+            self.timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
 
         # Publishers
         self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
@@ -71,28 +73,21 @@ class LineDetectorNode(object):
         self.image_size = rospy.get_param('~img_size')
         self.top_cutoff = rospy.get_param('~top_cutoff')
 
-        detector = np.array(rospy.get_param('~detector'))
-        rospy.loginfo('detector: %s' % detector)
-
-        self.detector.hsv_white1 = np.array(rospy.get_param('~hsv_white1'))
-        self.detector.hsv_white2 = np.array(rospy.get_param('~hsv_white2'))
-        self.detector.hsv_yellow1 = np.array(rospy.get_param('~hsv_yellow1'))
-        self.detector.hsv_yellow2 = np.array(rospy.get_param('~hsv_yellow2'))
-        self.detector.hsv_red1 = np.array(rospy.get_param('~hsv_red1'))
-        self.detector.hsv_red2 = np.array(rospy.get_param('~hsv_red2'))
-        self.detector.hsv_red3 = np.array(rospy.get_param('~hsv_red3'))
-        self.detector.hsv_red4 = np.array(rospy.get_param('~hsv_red4'))
-
-        self.detector.dilation_kernel_size = rospy.get_param('~dilation_kernel_size')
-        self.detector.canny_thresholds = rospy.get_param('~canny_thresholds')
-        self.detector.hough_min_line_length = rospy.get_param('~hough_min_line_length')
-        self.detector.hough_max_line_gap    = rospy.get_param('~hough_max_line_gap')
-        self.detector.hough_threshold = rospy.get_param('~hough_threshold')
+        c = rospy.get_param('~detector')
+        assert isinstance(c, list) and len(c) == 2, c
+        
+        klassname = c[0]
+        detector_params = c[1]
+        self.detector = instantiate(klassname, detector_params)
+        rospy.loginfo('detector_params: %r' % detector_params)
 
     def cbSwitch(self, switch_msg):
         self.active = switch_msg.data
 
     def cbImage(self, image_msg):
+        if self.nreceived == 0:
+            rospy.loginfo('line_detector_node received first image.')
+
         self.nreceived += 1
         if not self.active:
             return 
@@ -105,8 +100,8 @@ class LineDetectorNode(object):
     def cbTransform(self, transform_msg):
         self.ai.shift = transform_msg.s[0:3]
         self.ai.scale = transform_msg.s[3:6]
-        if self.verbose:
-            rospy.loginfo("[AntiInstagram] transform received")
+#         if self.verbose:
+        rospy.loginfo("[AntiInstagram] transform received")
 
     def intermittent_log(self, s):
         if self.intermittent_counter % self.intermittent_interval != 1:
@@ -119,7 +114,16 @@ class LineDetectorNode(object):
             self.nskipped += 1
             # Return immediately if the thread is locked
             return
+        if self.nprocessed == 0:
+            rospy.loginfo('line_detector_node processing first image.')
+
         self.nprocessed += 1
+
+        skipped_perc = (100.0 * self.nskipped / self.nreceived)
+        m = ('Received %d processed %d skipped %d (%1.f%%)' %
+             (self.nreceived, self.nprocessed, self.nskipped, skipped_perc))
+
+        self.intermittent_log(m)
         tk = TimeKeeper(image_msg)
         
         self.intermittent_counter += 1
@@ -150,13 +154,13 @@ class LineDetectorNode(object):
         self.detector.setImage(image_cv_corr)
 
         # Detect lines and normals
-        lines_white, normals_white, area_white = self.detector.detectLines('white')
-        lines_yellow, normals_yellow, area_yellow = self.detector.detectLines('yellow')
-        lines_red, normals_red, area_red = self.detector.detectLines('red')
+
+        white = self.detector.detectLines('white')
+        yellow = self.detector.detectLines('yellow')
+        red = self.detector.detectLines('red')
 
         tk.completed('detected')
      
-
         # SegmentList constructor
         segmentList = SegmentList()
         segmentList.header.stamp = image_msg.header.stamp
@@ -164,18 +168,18 @@ class LineDetectorNode(object):
         # Convert to normalized pixel coordinates, and add segments to segmentList
         arr_cutoff = np.array((0, self.top_cutoff, 0, self.top_cutoff))
         arr_ratio = np.array((1./self.image_size[1], 1./self.image_size[0], 1./self.image_size[1], 1./self.image_size[0]))
-        if len(lines_white)>0:
-            lines_normalized_white = ((lines_white + arr_cutoff) * arr_ratio)
-            segmentList.segments.extend(self.toSegmentMsg(lines_normalized_white, normals_white, Segment.WHITE))
-        if len(lines_yellow)>0:
-            lines_normalized_yellow = ((lines_yellow + arr_cutoff) * arr_ratio)
-            segmentList.segments.extend(self.toSegmentMsg(lines_normalized_yellow, normals_yellow, Segment.YELLOW))
-        if len(lines_red)>0:
-            lines_normalized_red = ((lines_red + arr_cutoff) * arr_ratio)
-            segmentList.segments.extend(self.toSegmentMsg(lines_normalized_red, normals_red, Segment.RED))
+        if len(white.lines) > 0:
+            lines_normalized_white = ((white.lines + arr_cutoff) * arr_ratio)
+            segmentList.segments.extend(self.toSegmentMsg(lines_normalized_white, white.normals, Segment.WHITE))
+        if len(yellow.lines) > 0:
+            lines_normalized_yellow = ((yellow.lines + arr_cutoff) * arr_ratio)
+            segmentList.segments.extend(self.toSegmentMsg(lines_normalized_yellow, yellow.normals, Segment.YELLOW))
+        if len(red.lines) > 0:
+            lines_normalized_red = ((red.lines + arr_cutoff) * arr_ratio)
+            segmentList.segments.extend(self.toSegmentMsg(lines_normalized_red, red.normals, Segment.RED))
         
-        self.intermittent_log('# segments: white %3d yellow %3d red %3d' % (len(lines_white),
-                len(lines_yellow), len(lines_red)))
+        self.intermittent_log('# segments: white %3d yellow %3d red %3d' % (len(white.lines),
+                len(yellow.lines), len(red.lines)))
         
         tk.completed('prepared')
 
@@ -187,9 +191,9 @@ class LineDetectorNode(object):
         
         # Draw lines and normals
         image_with_lines = np.copy(image_cv_corr)
-        drawLines(image_with_lines, lines_white, (0,0,0))
-        drawLines(image_with_lines, lines_yellow, (255,0,0))
-        drawLines(image_with_lines, lines_red, (0,255,0))
+        drawLines(image_with_lines, white.lines, (0, 0, 0))
+        drawLines(image_with_lines, yellow.lines, (255, 0, 0))
+        drawLines(image_with_lines, red.lines, (0, 255, 0))
         #drawNormals(image_with_lines, lines_white, normals_white)
         #drawNormals(image_with_lines, lines_yellow, normals_yellow)
         #drawNormals(image_with_lines, lines_red, normals_red)
@@ -207,12 +211,11 @@ class LineDetectorNode(object):
         if self.verbose:
             #rospy.loginfo("[%s] Latency sent = %.3f ms" %(self.node_name, (rospy.get_time()-image_msg.header.stamp.to_sec()) * 1000.0))
       
-            segment = np.zeros((self.image_size[0],self.image_size[1], 3), dtype=np.uint8) 
-
+            colorSegment = color_segment(white.area, red.area, yellow.area) 
             edge_msg_out = self.bridge.cv2_to_imgmsg(self.detector.edges, "mono8")
-            segment_msg_out = self.bridge.cv2_to_imgmsg(segment, "bgr8")
+            colorSegment_msg_out = self.bridge.cv2_to_imgmsg(colorSegment, "bgr8")
             self.pub_edge.publish(edge_msg_out)
-            self.pub_segment.publish(segment_msg_out)
+            self.pub_colorSegment.publish(colorSegment_msg_out)
 
         tk.completed('pub_edge/pub_segment')
 

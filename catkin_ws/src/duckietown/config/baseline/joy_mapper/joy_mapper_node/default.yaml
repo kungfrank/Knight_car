@@ -3,3 +3,5 @@
 speed_gain: 0.41
 # steer_gain: 8.586
 steer_gain: 8.3
+steer_angle_gain: 1.0
+bicycle_kinematics: 0

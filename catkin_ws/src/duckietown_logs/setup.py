@@ -14,4 +14,7 @@ setup_args = generate_distutils_setup(
     ]
 )
 
+#print(setup_args)
+
+#raise ValueError('are you even executing this?')
 setup(**setup_args)

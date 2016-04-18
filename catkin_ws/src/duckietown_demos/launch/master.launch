@@ -83,7 +83,6 @@
 
 	<arg name="SLAM" default="false"/>
 
-	<arg name="anti_instagram" default="false"/>
 	<!-- end switch args -->
 	
 	<!-- Enable statistics -->
@@ -207,15 +206,12 @@
 
 
 		<!-- Start anti-instagram -->
-		<group if="$(arg anti_instagram)">
+		<!-- <group if="$(arg anti_instagram)"> -->
+
 			<include file="$(find anti_instagram)/launch/anti_instagram_node.launch">
-				<arg name="veh" value="$(arg veh)"/>
-				<arg name="config" value="$(arg config)"/>
-				<arg name="param_file_name" value="$(arg param_file_name)"/>
-				<arg name="verbose" value="$(arg verbose)" />
 			</include>	
-		</group>
-		<!-- End anti-instagram -->
+		
+		<!-- </group> -->
 
 		<!-- Line Detector -->
 		<group if="$(arg /lane_following/line_detection)">

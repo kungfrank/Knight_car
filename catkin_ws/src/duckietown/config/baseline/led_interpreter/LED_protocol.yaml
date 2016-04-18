@@ -4,8 +4,7 @@ LED_protocol:
   #f2: 4.1 
   #f3: 5.0
 
-  # Color and frequencies aof all sig
-naling states
+  # Color and frequencies aof all signaling states
   CAR_SIGNAL_A:
     frequency_idx: 2.8
     color: "green"

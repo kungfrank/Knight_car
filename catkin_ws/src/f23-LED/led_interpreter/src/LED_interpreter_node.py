@@ -21,7 +21,7 @@ class LEDInterpreterNode(object):
 		self.trafficLightIntersection = True
 
 		self.protocol = rospy.get_param("~LED_protocol") #should be a list of tuples
-		self.label = rospy.get_param("~location") # should be a list
+		self.label = rospy.get_param("~location_config") # should be a list
 		# self._traffic = True
 		# self._light = None
 		# self._freq = None
@@ -112,11 +112,11 @@ class LEDInterpreterNode(object):
 
 
 
-	#def setupParam(self,param_name,default_value):
-	#		value = rospy.get_param(param_name,default_value)
-	#		rospy.set_param(param_name,value) #Write to parameter server for transparancy
-	#		# rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
-	#		return value
+	# def setupParam(self,param_name,default_value):
+	# 		value = rospy.get_param(param_name,default_value)
+	# 		rospy.set_param(param_name,value) #Write to parameter server for transparancy
+	# 		# rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
+	# 		return value
 
 
 	def onShutdown(self):

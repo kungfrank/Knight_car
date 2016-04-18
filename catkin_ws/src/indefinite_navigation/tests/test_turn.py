@@ -82,7 +82,7 @@ class IndefNavigationTurnNode(unittest.TestCase):
             count += 1
             rospy.loginfo("Waiting for intersection_done")
             rospy.sleep(0.2)
-            if count > 20:
+            if count > 50:
                 self.assertEquals(True, False, "Timed out waiting for intersection")
                 return
 

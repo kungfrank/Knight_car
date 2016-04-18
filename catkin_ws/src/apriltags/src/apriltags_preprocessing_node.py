@@ -17,6 +17,11 @@ class AprilPrePros(object):
         rospy.loginfo("[%s] Initializing " %(self.node_name))
         self.bridge = CvBridge()
 
+        # Initial enabled status from param file, then can update using switch topic
+        self.fast_enabled    = ( rospy.get_param("~fast_enabled") == 1 )
+        self.global_enabled  = ( rospy.get_param("~global_enabled") == 1 )
+
+
         self.pub_ToApril_global = rospy.Publisher( "~global_image_raw", Image, queue_size=1)
         self.pub_ToApril_fast   = rospy.Publisher( "~fast_image_raw", Image, queue_size=1)
         
@@ -31,14 +36,7 @@ class AprilPrePros(object):
         self.camera_msg  = None
         
         self.load_params( None )
-        
-        # Initial enabled status from param file, then can update using switch topic
-        self.fast_enabled    = ( rospy.get_param("~fast_enabled") == 1 )
-        self.global_enabled  = ( rospy.get_param("~global_enabled") == 1 )
-        
         self.init_timers()
-        
-        
         
     def load_params(self, event):
         """ """

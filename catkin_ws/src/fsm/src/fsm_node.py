@@ -26,7 +26,7 @@ class FSMNode(object):
         self.state_msg.state = rospy.get_param("~initial_state","")
         self.state_msg.header.stamp = rospy.Time.now()
         # Setup publisher and publish initial state
-        self.pub_state = rospy.Publisher("~mode",FSMState,queue_size=1,latch=True)
+        self.pub_state = rospy.Publisher("~mode",FSMState,queue_size=5,latch=True)
     
         # Provide service
         self.srv_state = rospy.Service("~set_state",SetFSMState,self.cbSrvSetState)
@@ -37,7 +37,7 @@ class FSMNode(object):
 
         self.active_nodes = None
         for node_name, topic_name in nodes.items():
-            self.pub_dict[node_name] = rospy.Publisher(topic_name, BoolStamped, queue_size=1, latch=True)
+            self.pub_dict[node_name] = rospy.Publisher(topic_name, BoolStamped, queue_size=50, latch=True)
 
         # Process events definition
         param_events_dict = rospy.get_param("~events",{})

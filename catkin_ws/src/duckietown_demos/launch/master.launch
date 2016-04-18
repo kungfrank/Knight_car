@@ -218,18 +218,6 @@
 			</include>	
 		</group>
 
-		<!-- Line Detector -->
-		<group if="$(arg /lane_following/line_detection2)">
-			<remap from="line_detector_node/image" to="camera_node/image/compressed"/>
-			<include file="$(find line_detector)/launch/line_detector2_node.launch">
-				<arg name="veh" value="$(arg veh)"/>
-				<arg name="config" value="$(arg config)"/>
-				<arg name="param_file_name" value="$(arg param_file_name)"/>
-				<arg name="verbose" value="$(arg verbose)" />
-			</include>	
-		</group>
-
-
 		
 		<!-- Ground projection -->
 		<group if="$(arg /lane_following/ground_projection)">

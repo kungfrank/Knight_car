@@ -74,6 +74,9 @@ demo-line_detector: unittests-environment
 demo-joystick-perception: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos master.launch fsm_file_name:=joystick"
 
+demo-lane-following-%: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos lane_following.launch line_detector_param_file_name:=$*"
+
 demo-led-fancy1: unittests-environment
 	bash -c "source environment.sh; rosrun rgb_led fancy1"
 
@@ -91,9 +94,9 @@ demo-led-blink-%: unittests-environment
 demo-line_detector-%: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; roslaunch duckietown line_detector.launch veh:=$(vehicle_name) line_detector_param_file_name:=$* verbose:=true"
 
+# ==========
 # openhouse demos
 
-# make openhouse-dp3-default
 # make openhouse-dp3-guy
 # make openhouse-dp3-default_ld2
 # make openhouse-dp3-universal
@@ -103,3 +106,31 @@ openhouse-dp3-%-verbose: unittests-environment
 
 openhouse-dp3-%-notverbose: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch  line_detector_param_file_name:=$* verbose:=false"
+# =========
+
+openhouse-dp3: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch"
+
+openhouse-dp3-ld1a: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch  line_detector_param_file_name:=default"
+
+openhouse-dp3-1d1b: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch  line_detector_param_file_name:=Guy anti_instagram:=true"
+
+openhouse-dp3-1d1c: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch  line_detector_param_file_name:=universal anti_instagram:=true"
+
+openhouse-dp3-1d2a: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch  line_detector_param_file_name:=default anti_instagram:=true /lane_following/line_detection:=false /lane_following/line_detection2:=true"
+
+openhouse-dp3-1d2b: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch  line_detector_param_file_name:=universal anti_instagram:=true /lane_following/line_detection:=false /lane_following/line_detection2:=true"
+
+openhouse-dp2: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos obstacle_vehicle_avoid.launch"
+
+openhouse-dp2-vehicle: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos vehicle_avoid.launch"
+
+openhouse-dp2-obstacle: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos obstacle_avoid.launch"

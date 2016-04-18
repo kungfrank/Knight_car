@@ -26,6 +26,8 @@ class CarCmdSwitchNode(object):
         self.current_src_name = self.mappings.get(fsm_state_msg.state)
         if self.current_src_name is None:
             rospy.logwarn("[%s] FSMState %s not handled. No msg pass through the switch." %(self.node_name,fsm_state_msg.state))
+        else: 
+            rospy.loginfo("[%s] Car cmd switched to %s in state %s." %(self.node_name,self.current_src_name,fsm_state_msg.state))
 
     def cbWheelsCmd(self,msg,src_name):
         if src_name == self.current_src_name:

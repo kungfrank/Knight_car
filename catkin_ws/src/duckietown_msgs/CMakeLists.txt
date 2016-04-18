@@ -81,7 +81,7 @@ add_message_files(
 #  TrafficLightDetection.msg
   VehicleCorners.msg
   VehiclePose.msg
-  VehicleDetection.msg
+#  VehicleDetection.msg
   FSMState.msg
   BoolStamped.msg
   StopLineReading.msg

@@ -265,7 +265,7 @@ class Stats():
         else:
 		skipped_perc = 0
 	def fps(x):
-            return '%.1 fps' % (x / delta)
+            return '%.1f fps' % (x / delta)
 
         m = ('In the last %.1f s: received %d (%s) processed %d (%s) skipped %d (%s) (%1.f%%)' %
              (delta, self.nreceived, fps(self.nreceived),

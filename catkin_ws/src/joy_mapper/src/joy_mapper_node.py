@@ -54,6 +54,10 @@ class JoyMapper(object):
         car_cmd_msg.omega = self.joy.axes[3] * self.omega_gain
         self.pub_car_cmd.publish(car_cmd_msg)
 
+# Button List index of joy.buttons array:
+# a = 0, b=1, x=2. y=3, lb=4, rb=5, back = 6, start =7,
+# logitek = 8, left joy = 9, right joy = 10
+
     def processButtons(self, joy_msg):
         if (joy_msg.buttons[6] == 1): #The back button
             override_msg = BoolStamped()

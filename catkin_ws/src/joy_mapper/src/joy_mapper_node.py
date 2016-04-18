@@ -15,13 +15,13 @@ class JoyMapper(object):
         self.last_pub_msg = None
         self.last_pub_time = rospy.Time.now()
 
-        self.simulated_vehicle_length = 0.18
 
         # Setup Parameters
         self.v_gain = self.setupParam("~speed_gain", 0.41)
         self.omega_gain = self.setupParam("~steer_gain", 8.3)
-        self.steer_angle_gain = self.setupParam("~steer_angle_gain", 1)
         self.bicycle_kinematics = self.setupParam("~bicycle_kinematics", 0)
+        self.steer_angle_gain = self.setupParam("~steer_angle_gain", 1)
+        self.simulated_vehicle_length = self.setupParam("~simulated_vehicle_length", 0.18)
 
         # Publications
         self.pub_car_cmd = rospy.Publisher("~car_cmd", Twist2DStamped, queue_size=1)

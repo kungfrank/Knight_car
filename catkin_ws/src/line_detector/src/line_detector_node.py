@@ -14,6 +14,8 @@ import cv2
 import numpy as np
 import rospy
 import threading
+import time
+
 
 
 class LineDetectorNode(object):
@@ -29,13 +31,12 @@ class LineDetectorNode(object):
 
         self.active = True
 
+        self.stats = Stats()
+
         # Only be verbose every 10 cycles
         self.intermittent_interval = 100
         self.intermittent_counter = 0
 
-        self.nreceived = 0
-        self.nskipped = 0
-        self.nprocessed = 0
 
         self.updateParams(None)
 
@@ -88,7 +89,8 @@ class LineDetectorNode(object):
         if self.nreceived == 0:
             rospy.loginfo('line_detector_node received first image.')
 
-        self.nreceived += 1
+        self.stats.received()
+
         if not self.active:
             return 
         # Start a daemon thread to process the image
@@ -100,30 +102,32 @@ class LineDetectorNode(object):
     def cbTransform(self, transform_msg):
         self.ai.shift = transform_msg.s[0:3]
         self.ai.scale = transform_msg.s[3:6]
-#         if self.verbose:
+
         rospy.loginfo("[AntiInstagram] transform received")
 
+    def intermittent_log_now(self):
+        return self.intermittent_counter % self.intermittent_interval == 1
+    
     def intermittent_log(self, s):
-        if self.intermittent_counter % self.intermittent_interval != 1:
+        if not self.intermittent_log_now():
             return
         n = self.node_name
         rospy.loginfo('[%s]%3d:%s' % (n, self.intermittent_counter, s))
 
     def processImage(self, image_msg):
         if not self.thread_lock.acquire(False):
-            self.nskipped += 1
+            self.stats.skipped()
             # Return immediately if the thread is locked
             return
-        if self.nprocessed == 0:
+        if self.stats.nprocessed == 0:
             rospy.loginfo('line_detector_node processing first image.')
 
-        self.nprocessed += 1
+        self.stats.processed()
 
-        skipped_perc = (100.0 * self.nskipped / self.nreceived)
-        m = ('Received %d processed %d skipped %d (%1.f%%)' %
-             (self.nreceived, self.nprocessed, self.nskipped, skipped_perc))
+        if self.intermittent_log_now():
+            self.stats.reset()
+            self.intermittent_log(self.stats.info())
 
-        self.intermittent_log(m)
         tk = TimeKeeper(image_msg)
         
         self.intermittent_counter += 1
@@ -249,3 +253,34 @@ if __name__ == '__main__':
     line_detector_node = LineDetectorNode()
     rospy.on_shutdown(line_detector_node.onShutdown)
     rospy.spin()
+
+
+
+class Stats():
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.t0 = time.time()
+        self.nreceived = 0
+        self.nskipped = 0
+        self.nprocessed = 0
+
+    def received(self):
+        self.nreceived += 1
+    def skipped(self):
+        self.nskipped += 1
+    def processed(self):
+        self.nprocessed += 1
+
+    def info(self):
+        delta = time.time() - self.t0
+        skipped_perc = (100.0 * self.nskipped / self.nreceived)
+        def fps(x):
+            return '%s fps' % (x / delta)
+
+        m = ('%.1f s: Received %d (%s) processed %d (%s) skipped %d (%s) (%1.f%%)' %
+             (delta, self.nreceived, fps(self.nreceived),
+              self.nprocessed, fps(self.nprocessed),
+              self.nskipped, fps(self.nskipped), skipped_perc))
+        return m

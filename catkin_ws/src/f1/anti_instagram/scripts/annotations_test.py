@@ -11,7 +11,17 @@ import cv2
 import os
 import scipy.io
 import yaml
+import IPython
 from line_detector.LineDetectorPlot import drawLines
+
+def merge_comparison_results(comparison_results,overall_results):
+    if (comparison_results):
+        if (not overall_results):
+            overall_results={'total_pixels':0.,'total_error':0.}
+        # IPython.embed()
+        overall_results['total_error']=overall_results['total_error']+comparison_results['total_error']
+        overall_results['total_pixels']=overall_results['total_pixels']+comparison_results['total_pixels']
+    return overall_results
 
 def examine_dataset(dirname, out):
     logger.info(dirname)
@@ -95,7 +105,9 @@ def examine_dataset(dirname, out):
         bn = os.path.splitext(os.path.basename(j))[0]
         fn = os.path.join(out, '%s.all.png' % (bn))
         cv2.imwrite(fn, zoom_image(together, 4))
-
+    # IPython.embed()
+    overall_results=[]
+    comparison_results={}
     for m in mats:
         logger.debug(m)
         jpg = os.path.splitext(m)[0] + '.jpg'
@@ -103,7 +115,15 @@ def examine_dataset(dirname, out):
             msg = 'JPG %r for mat %r does not exist' % (jpg, m)
             logger.error(msg)
         else:
-            test_pair(transform, jpg, m, out)
+            frame_results=test_pair(transform, jpg, m, out)
+            comparison_results[m]=frame_results
+            overall_results=merge_comparison_results(comparison_results[m],overall_results)
+            print "comparison_results[m]=frame_results"
+            # IPython.embed()
+    print "finished mats: "+dirname
+    if (overall_results):
+        IPython.embed()
+    return overall_results
         
 def zoom_image(im, zoom):
     zoom = 4
@@ -191,19 +211,36 @@ def test_pair(transform, jpg, mat, out):
 
     data = scipy.io.loadmat(mat)
     regions = data['regions'].flatten()
+    result_stats={'average_abs_err':[],'total_pixels':0,'total_error':0}
     for r in regions:
         logger.info('region')
         x = r['x'][0][0].flatten()
         y = r['y'][0][0].flatten()
         mask = r['mask'][0][0]
+        mask3=cv2.merge([mask,mask,mask])
         print 'x', x
         print 'y', y
         print 'mask shape', mask.shape
         print 'type', r['type'][0][0][0][0] # type in 1- based / matlab-based indices from the list of region types (i.e road, white, yellow, red, or what ever types were annotated) 
         print 'color', r['color'][0] # color in [r,g,b] where [r,g,b]are between 0 and 1
         # print 'guy look here'
-        # IPython.embed()
+        region_color=r['color'][0];region_color=region_color[0][0]
+        rval=region_color[0]*255.;
+        gval=region_color[1]*255.;
+        bval=region_color[2]*255.;
+        image = image_cv_from_jpg_fn(jpg)
+        transformed = transform(image)
+        absdiff_img=cv2.absdiff(transformed,np.array([bval,gval,rval,0.]))
+        masked_diff=cv2.multiply(np.array(absdiff_img,'float32'),np.array(mask3,'float32'))
+        num_pixels=cv2.sumElems(mask)[0];
+        region_error=cv2.sumElems(cv2.sumElems(masked_diff))[0];
+        avg_abs_err=region_error/(num_pixels+1.);
+        print 'Average abs. error', avg_abs_err
+        result_stats['average_abs_err'].append(avg_abs_err)
+        result_stats['total_pixels']=result_stats['total_pixels']+num_pixels
+        result_stats['total_error']=result_stats['total_error']+region_error
         # XXX: to finish
+    return result_stats
 
 def line_detection(LineDetectorClass, bgr):
     detector = LineDetectorClass()
@@ -273,15 +310,23 @@ def anti_instagram_annotations_test():
 
     base = expand_environment(base)
     dirs = locate_files(base, '*.iids1', alsodirs=True)
-
+    directory_results={}
+    overall_results=[]
     for d in dirs:
         import getpass
         uname = getpass.getuser()
         out = os.path.join(os.path.dirname(d), uname, os.path.basename(d) + '.v')
         if not os.path.exists(out):
             os.makedirs(out)
-        examine_dataset(d, out)
+        results=examine_dataset(d, out)
+        overall_results=merge_comparison_results(results,overall_results)
+        directory_results[d]=results
+    db=shelve.open('tests_results',flag='w')
+    db['directory_results'] = directory_results
+    db['overall_results'] = overall_results
+    db.close()
 
+    IPython.embed()
 
 if __name__ == '__main__':
     wrap_test_main(anti_instagram_annotations_test) 

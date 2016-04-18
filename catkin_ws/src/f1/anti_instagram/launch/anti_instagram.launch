@@ -1,9 +1,0 @@
-<launch>
-	<arg name="veh"/>
-
-	<group ns="$(arg veh)">
-        <remap from="~uncorrected_image" to="$(arg veh)/camera_node/image/raw"/>
-	    <include file="$(find anti_instagram)/launch/anti_instagram_node.launch"/>
-    </group>
-
-</launch>

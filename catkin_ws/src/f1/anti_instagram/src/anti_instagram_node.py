@@ -15,17 +15,16 @@ class AntiInstagramNode():
 		self.node_name = rospy.get_name()
 
 		self.active = True
-		# Initialize publishers and subscribers
+		self.image_pub_switch = rospy.get_param("~publish_corrected_image",False)
+		
+        # Initialize publishers and subscribers
 		self.pub_image = rospy.Publisher("~corrected_image",Image,queue_size=1)
 		self.pub_health = rospy.Publisher("~health",AntiInstagramHealth,queue_size=1,latch=True)
-		#self.sub_switch = rospy.Subscriber("~switch",BoolStamped, self.cbSwitch, queue_size=1)
-		self.sub_image = rospy.Subscriber("~uncorrected_image",Image,self.cbNewImage,queue_size=1)
 		self.pub_transform = rospy.Publisher("~transform",AntiInstagramTransform,queue_size=1,latch=True)
 
+		#self.sub_switch = rospy.Subscriber("~switch",BoolStamped, self.cbSwitch, queue_size=1)
+		self.sub_image = rospy.Subscriber("~uncorrected_image",Image,self.cbNewImage,queue_size=1)
 		self.sub_click = rospy.Subscriber("~click", BoolStamped, self.cbClick, queue_size=1)
-
-		# publish corrected image as well as transform
-		self.image_pub_switch = rospy.get_param("~publish_corrected_image",False)
 
 		# Verbose option 
 		self.verbose = rospy.get_param('~verbose',True)  
@@ -84,7 +83,6 @@ class AntiInstagramNode():
 		to how good of a transformation it is.
 		'''
 
-
 		rospy.loginfo('ai: Computing color transform...')
 		tk = TimeKeeper(msg)
 
@@ -110,7 +108,8 @@ class AntiInstagramNode():
 
 			self.pub_health.publish(self.health)
 			self.pub_transform.publish(self.transform)
-
+			rospy.loginfo('ai: Color transform published!!!')
+		
 
 if __name__ == '__main__':
 	# Initialize the node with rospy

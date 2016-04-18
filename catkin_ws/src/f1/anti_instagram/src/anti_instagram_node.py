@@ -35,15 +35,13 @@ class AntiInstagramNode():
 
 		# Initialize transform message
 		self.transform = AntiInstagramTransform()
+		# FIXME: read default from configuration and publish it
 
 		self.ai = AntiInstagram()
 		self.corrected_image = Image()
 		self.bridge = CvBridge()
 
 		self.image_msg = None
-
-		# pull status from Antiinstagram class
-		self.getStatus()
 
 
 	def cbNewImage(self,image_msg):

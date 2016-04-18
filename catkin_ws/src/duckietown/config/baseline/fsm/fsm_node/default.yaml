@@ -70,7 +70,7 @@ nodes:
   apriltag_global_node: "apriltags_preprocessing_node/global_switch"
   apriltag_fast_node: "apriltags_preprocessing_node/fast_switch"
   vehicle_detector_node: "vehicle_detection_node/switch"
-  led_detector_node: "LED_detection_node/switch"
+  led_detector_node: "LED_detector_node/switch"
   static_object_detector_node: "static_object_detector_node/switch"
   line_detector_node: "line_detector_node/switch"
   lane_filter_node: "lane_filter_node/switch"
@@ -102,6 +102,7 @@ states:
       intersection_go: "INTERSECTION_CONTROL"
     active_nodes:
       - apriltag_global_node
+      - led_detector_node
       - decoder_node
     lights: ["coordination"]
   INTERSECTION_CONTROL:

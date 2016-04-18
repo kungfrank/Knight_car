@@ -92,3 +92,6 @@ openhouse-dp3-1d2a: unittests-environment
 
 openhouse-dp3-1d2b: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch  line_detector_param_file_name:=universal anti_instagram:=true /lane_following/line_detection:=false /lane_following/line_detection2:=true"
+
+openhouse-dp2: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos obstacle_vehicle_avoid.launch"

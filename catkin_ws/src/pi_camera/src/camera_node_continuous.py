@@ -48,7 +48,6 @@ class CameraNode(object):
         self.camera.framerate = self.framerate
         self.camera.resolution = (self.res_w,self.res_h)
 
-        self.camera.awb_mode= 'off'
         # TODO setup other parameters of the camera such as exposure and white balance etc
 
         # Setup timer

@@ -44,6 +44,8 @@ class CameraNode(object):
         self.camera.framerate = self.framerate
         self.camera.resolution = (self.res_w,self.res_h)
 
+        self.camera.awb_mode = 'off'
+
         self.is_shutdown = False
         # Setup timer
         self.gen = self.grabAndPublish(self.stream,self.pub_img)

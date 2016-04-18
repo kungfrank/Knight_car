@@ -83,7 +83,6 @@
 
 	<arg name="SLAM" default="false"/>
 
-	<arg name="anti_instagram" default="false"/>
 	<!-- end switch args -->
 	
 	<!-- Enable statistics -->

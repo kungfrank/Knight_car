@@ -7,12 +7,12 @@ __all__ = [
 ]
 
 class LEDDetectionUnitTest():
-    
+
     def __init__(self, data, query, expected):
         self.data = data
         self.query = query
         self.expected = expected
-        
+
         query['frequencies_to_detect']
         query['min_distance_between_LEDs_pixels']
 
@@ -21,24 +21,25 @@ class LEDDetectionUnitTest():
         filename = self.data['bag']
         interval = self.data['interval']
         t0, t1 = interval[0], interval[1]
+        print('t0:%s, t1:%s'%(t0, t1))
         from duckietown_utils.bag_logs import d8n_read_images_interval
         data = d8n_read_images_interval(filename, t0, t1)
         return data
 
     def get_query(self):
-        """ 
+        """
         Returns a dictionary with fields equivalent
         to the signature of detect_led()
-        
+
             images,
             mask,
             frequencies_to_detect,
             min_distance_between_LEDs_pixels
         """
-        
+
         images = self._get_images()
         mask = np.ones(dtype='bool', shape=images[0]['rgb'].shape)
-        d = dict(images=images, 
+        d = dict(images=images,
                  mask=mask,
                  frequencies_to_detect=self.query['frequencies_to_detect'],
                  min_distance_between_LEDs_pixels=self.query['min_distance_between_LEDs_pixels'])
@@ -49,7 +50,7 @@ def LEDDetectionUnitTest_from_yaml(s):
         Returns an instance of LEDDetectionUnitTest from YAML.
     """
     data = s['data']
-    
+
     data['bag']
     data['interval']
 
@@ -69,9 +70,9 @@ def LEDDetectionUnitTest_from_yaml(s):
     return LEDDetectionUnitTest(data=data, query=query, expected=expected)
 
 def load_tests(filename):
-    """ 
+    """
         Reads tests from a YAML file.
-    
+
         Returns a dict str -> LEDDetectionUnitTest() """
     import yaml
     with open(filename) as f:
@@ -84,7 +85,7 @@ def load_tests(filename):
             logger.error('Error while reading:')
             logger.error(v)
             raise
-            
+
     return contents
 
 # example YAML:

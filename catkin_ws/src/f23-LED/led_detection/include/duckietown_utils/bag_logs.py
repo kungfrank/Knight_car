@@ -14,7 +14,7 @@ def d8n_read_images_interval(filename, t0, t1):
         Reads all the RGB data from the bag,
         in the interval [t0, t1], where t0 = 0 indicates
         the first image.
-    
+
     """
     data = d8n_read_all_images(filename, t0, t1)
     logger.info('Read %d images from %s.' % (len(data), filename))
@@ -23,25 +23,17 @@ def d8n_read_images_interval(filename, t0, t1):
     first = data['timestamp'][0]
     timestamps -= first
     logger.info('Sequence has length %.2f seconds.' % timestamps[-1])
-    selection = np.logical_and(timestamps >= t0, timestamps <= t1)
-    nselected = np.sum(selection)
+    return data
 
-    if nselected == 0:
-        msg = 'The slice of time is empty.'
-        raise ValueError(msg)
-    
-    selected = data[selection]
-    return selected
-    
 def d8n_read_all_images(filename, t0=None, t1=None):
-    """ 
-    
+    """
+
         Raises a ValueError if not data could be read.
-    
-        Returns a numpy array. 
-        
+
+        Returns a numpy array.
+
         data = d8n_read_all_images(bag)
-                
+
         print data.shape # (928,)
         print data.dtype # [('timestamp', '<f8'), ('rgb', 'u1', (480, 640, 3))]
 
@@ -62,7 +54,7 @@ def d8n_read_all_images(filename, t0=None, t1=None):
                 float_time = t.to_sec()
                 if first_timestamp is None:
                     first_timestamp = float_time
-                
+
                 rel_time = float_time - first_timestamp
                 if t0 is not None:
                     if rel_time < t0:
@@ -79,7 +71,7 @@ def d8n_read_all_images(filename, t0=None, t1=None):
     print('Returned %d images' % len(data))
     if not data:
         raise ValueError('no data found')
-    
+
     H, W, _ = rgb.shape  # (480, 640, 3)
     print('Detected image shape: %s x %s' % (W, H))
     n = len(data)
@@ -111,7 +103,7 @@ def d8n_get_all_images_topic(bag_filename):
 # meraInfo', message_count=649, connections=1, frequency=8.231283478868388), '/rosberrypi_cam/image_raw/theora/parameter_desc
 # riptions': TopicTuple(msg_type='dynamic_reconfigure/ConfigDescription', message_count=1, connections=1, frequency=None), '/
 # joy': TopicTuple(msg_type='sensor_msgs/Joy', message_count=1512, connections=1, frequency=182.16304017372423), '/rosout_agg
-# ': TopicTuple(msg_type='rosgraph_msgs/Log', message_count=2, connections=1, frequency=12122.265895953757), '/diagnostics': 
+# ': TopicTuple(msg_type='rosgraph_msgs/Log', message_count=2, connections=1, frequency=12122.265895953757), '/diagnostics':
 # TopicTuple(msg_type='diagnostic_msgs/DiagnosticArray', message_count=65, connections=1, frequency=0.9251713284731169), '/ca
 # r_supervisor/car_control': TopicTuple(msg_type='duckietown_msgs/CarControl', message_count=3886, connections=1, frequency=5
 # 0.09799097011538), '/joy_mapper/joy_control': TopicTuple(msg_type='duckietown_msgs/CarControl', message_count=3881, connect
@@ -147,7 +139,7 @@ def get_image_topic(bag):
     topics = bag.get_type_and_topic_info()[1].keys()
     for t in topics:
         if 'camera_node/image/compressed' in t:
-            return t 
+            return t
     msg = 'Cannot find the topic: %s' % topics
     raise ValueError(msg)
 
@@ -165,5 +157,3 @@ def pil_from_CompressedImage(msg):
 
 def rgb_from_pil(im):
     return np.asarray(im).astype(np.uint8)
-
-

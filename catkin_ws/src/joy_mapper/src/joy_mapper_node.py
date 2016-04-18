@@ -14,13 +14,14 @@ class JoyMapper(object):
         self.joy = None
         self.last_pub_msg = None
         self.last_pub_time = rospy.Time.now()
-        self.bicycle_kinematics = True
+
         self.simulated_vehicle_length = 0.18
 
         # Setup Parameters
         self.v_gain = self.setupParam("~speed_gain", 0.41)
         self.omega_gain = self.setupParam("~steer_gain", 8.3)
-        self.delta_gain = self.setupParam("~delta_gain", 1)
+        self.steer_angle_gain = self.setupParam("~steer_angle_gain", 1)
+        self.bicycle_kinematics = self.setupParam("~bicycle_kinematics", 0)
 
         # Publications
         self.pub_car_cmd = rospy.Publisher("~car_cmd", Twist2DStamped, queue_size=1)
@@ -55,9 +56,12 @@ class JoyMapper(object):
         car_cmd_msg.header.stamp = self.joy.header.stamp
         car_cmd_msg.v = self.joy.axes[1] * self.v_gain #Left stick V-axis. Up is positive
         if self.bicycle_kinematics:
-            steering_delta = self.joy.axes[3] * self.delta_gain
-            car_cmd_msg.omega = car_cmd_msg.v / self.simulated_vehicle_length * math.tan(steering_delta)
+            # Implements Bicycle Kinematics - Nonholonomic Kinematics
+            # see https://inst.eecs.berkeley.edu/~ee192/sp13/pdf/steer-control.pdf
+            steering_angle = self.joy.axes[3] * self.steer_angle_gain
+            car_cmd_msg.omega = car_cmd_msg.v / self.simulated_vehicle_length * math.tan(steering_angle)
         else:
+            # Holonomic Kinematics for Normal Driving
             car_cmd_msg.omega = self.joy.axes[3] * self.omega_gain
         self.pub_car_cmd.publish(car_cmd_msg)
 

@@ -1,0 +1,8 @@
+<launch>
+        <arg name ="veh"/>	
+	<remap from="input"  to="/pipquack/camera_node/image/compressed"/>
+	<remap from="output" to="/pipquack/virtual_mirror_node/raw"/>
+        <node ns="$(arg veh)" name="virtual_mirror_node" pkg="virtual_mirror_samcerq" type="virtual_mirror_node.py" />
+</launch>
+
+

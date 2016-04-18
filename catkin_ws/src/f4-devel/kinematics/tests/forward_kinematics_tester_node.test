@@ -1,0 +1,16 @@
+<launch>
+    <arg name="pkg_name" value="kinematics"/>
+    <arg name="node_name" default="forward_kinematics_tester_node"/>
+
+    <arg name="veh" default="testbot" doc="Name of vehicle. ex: megaman"/>
+    <arg name="param_file_name" default="test_default" doc="Specify a param file. ex:megaman."/>
+
+    <!-- Run the node -->
+    <include file="$(find kinematics)/launch/forward_kinematics_node.launch" >
+        <arg name="veh" value="$(arg veh)" />
+        <arg name="param_file_name" value="$(arg param_file_name)" />
+    </include>
+
+    <!-- Run unit test -->
+    <test test-name="test_forward_kinematics_node" pkg="kinematics" type="forward_kinematics_tester_node.py" ns="$(arg veh)"/>
+</launch>

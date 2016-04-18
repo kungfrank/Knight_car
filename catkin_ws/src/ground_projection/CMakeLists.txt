@@ -17,7 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   image_geometry
 )
 
-find_package(OpenCV 2.4.8 EXACT REQUIRED)
+find_package(OpenCV 2.4.8 REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(PkgConfig)
 
@@ -85,6 +85,7 @@ include_directories(${YAML_CPP_INCLUDE_DIRS})
 add_service_files(
   FILES
   GetGroundCoord.srv
+  GetImageCoord.srv
   EstimateHomography.srv
 )
 

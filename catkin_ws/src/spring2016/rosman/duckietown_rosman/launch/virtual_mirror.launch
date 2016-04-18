@@ -1,0 +1,6 @@
+<launch>
+	<remap from="virtual_mirror_node/topic_in" to="/duckmobile/camera_node/image/raw"/>
+	<remap from="virtual_mirror_node/topic_out" to="/duckmobile/inverted_image"/>
+	<node ns="$(arg veh)" pkg="virtual_mirror_rosman" type="virtual_mirror_node.py" name="virtual_mirror_node" output="screen">
+	</node>
+</launch>

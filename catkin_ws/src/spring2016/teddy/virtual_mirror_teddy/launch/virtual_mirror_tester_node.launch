@@ -1,0 +1,21 @@
+<launch>
+    <arg name="pkg_name" value="virtual_mirror_teddy"/>
+    <arg name="node_name" default="virtual_mirror_tester_node"/>
+    <arg name="veh"  default="starducks" doc="Name of vehicle. ex: megaman"/>
+
+    <arg name="orig_path" value="$(find virtual_mirror_teddy)/test_images/01_orig.png" />
+    <arg name="horz_path" value="$(find virtual_mirror_teddy)/test_images/01_horz.png" />
+    <arg name="vert_path" value="$(find virtual_mirror_teddy)/test_images/01_vert.png" />
+
+
+    <group ns="$(arg veh)">
+        <!--<remap from="~image_out" to="camera_node/image/compressed" />-->
+        <!--<remap from="~image_in" to="virtual_mirror_node/image_out" />-->
+        <!-- run local -->
+        <node name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen" >
+            <param name="orig_path" value="$(arg orig_path)"/>
+            <param name="horz_path" value="$(arg horz_path)"/>
+            <param name="vert_path" value="$(arg vert_path)"/>
+        </node>
+    </group>
+</launch>

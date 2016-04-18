@@ -1,0 +1,375 @@
+digraph D {
+	fontname="sans";
+	
+	penwidth="2.0"
+	edge [penwidth=1.5]
+	node [penwidth=2.0]
+
+	subgraph cluster_legend{
+		label="legend";
+		missing     [!NODE:missing!,     label="missing"];
+		designed    [!NODE:designed!,    label="designed"];
+		development [!NODE:development!, label="development"];
+		compiled    [!NODE:compiled!,    label="compiled"];
+		documented  [!NODE:documented!,  label="documented"];
+		tested      [!NODE:tested!,      label="tested"];
+		missing->designed->development->compiled->documented->tested;
+	}
+
+	subgraph cluster_sensors {
+		label = "Sensors";
+		camera_node [!NODE:compiled!, label="pi_camera\ncamera_node (SY,AC)"];
+		joy_node [!NODE:tested!, label="joy_node"];
+ 		
+ 		joy[!TOPIC!, label="joy\nsensor_msgs/Joy.msg"];
+ 		image_compressed[!TOPIC!, label="~image/compressed\nsensor_msgs/CompressedImage.msg"];
+	}
+
+	subgraph cluster_camera {
+		label = "Camera";
+		decoder_node[!NODE:compiled!, label="pi_camera\ndecoder_node (SY)"];
+		cam_info_reader_node[!NODE:compiled!, label="pi_camera\ncam_info_reader_node (SY)"];
+		
+		camera_info[!TOPIC!, label="camera_node/camera_info\nsensor_msgs/CameraInfo.msg"];
+ 		image_raw[!TOPIC!, label="camera_node/image/raw\nsensor_msgs/Image.msg"];
+		
+		intrinsic_calibration_file[!CONFIG!, label="calibration/camera_intrinsic"];
+	}
+
+	subgraph cluster_actuators {
+		label = "Actuators";
+		LED_emitter_node     [!NODE:development!, label="led_emitter\nled_emitter_node"    ];
+		wheels_driver_node[!NODE:compiled!, label="dagu_car\nwheels_driver_node (DY,SY)"];
+
+		wheels_command[!TOPIC!, label="wheels_driver_node/wheels_cmd\nduckietown_msgs/WheelsCmdStamped.msg"];
+		change_color_pattern [!TOPIC!, label="~change_color_pattern\nString"];
+	}
+
+	subgraph cluster_visualization {
+		label = "Visualization for operator";
+		image_with_lines[!TOPIC!, label="~image_with_lines\nsensor_msgs/Image.msg"];
+		object_detection_markers[!TOPIC!, label="~object_detection_markers\nvisualization_msgs/MarkerArray.msg"];
+	}
+
+	subgraph cluster_line_detection {
+		label = "Line Detection and Projection";
+		line_detector_node[!NODE:compiled!, label="line_detector\nline_detector_node (LP,HZ)"];
+		ground_projection_node[!NODE:compiled!, label="ground_projection\nground_projection_node (CC)"];
+
+		segment_list[!TOPIC!, label="~segment_list\nduckietown_msgs/SegmentList.msg"];
+		segment_list_proj[!TOPIC!, label="~segment_list_proj\nduckietown_msgs/SegmentList.msg"];
+
+		extrinsic_calibration_file[!CONFIG!, label="calibration/camera_extrinsic"];	
+	}
+
+	subgraph cluster_parallel_autonomy {
+		label = "Parallel Autonomy";
+		joy_mapper_node[!NODE:compiled!, label="joy_mapper\njoy_mapper_node (SY)"];
+		lane_supervisor_node[!NODE:compiled!, label="lane_control\nlane_supervisor_node (LP)"];
+		
+		lane_control_sup[!TOPIC!, label="~lane_control_supervised\nduckietown_msgs/Twist2DStamped.msg"];
+		joy_control[!TOPIC!, label="~joy_control\nduckietown_msgs/Twist2DStamped.msg"];
+	}
+
+
+	subgraph cluster_fsm {
+		label = "Finate State Machine";
+		fsm_node[!NODE:development!,  label="fsm\nfsm_node (MN)"];	
+		car_cmd_switch_node[!NODE:compiled!, label="dagu_car\ncar_cmd_switch (SY)"]			
+		
+		mode[!TOPIC!, label="~mode\nduckietown_msgs/FSMState.msg"];
+	}
+
+	
+	subgraph cluster_intersection_nav{
+		label="Intersection Navigation"; 
+		open_loop_intersection_control_node[!NODE:development!,  label="intersection_control\nopen_loop_intersection_control_node (MN)"];
+		random_april_tag_turns_node[!NODE:development!,  label="navigation\nrandom_april_tag_turns_node (MN)"];
+		graph_planner_node[!NODE:development!, label="navigation\ngraph_planner_node (MN)"];
+		action_dispatcher_node[!NODE:development!, label="navigation\naction_dispatcher_node (MN)"];
+
+		intersection_control[!TOPIC!, label="~intersection_control\nduckietown_msgs/Twist2DStamped.msg"];
+		intersection_done[!TOPIC!, label="~intersection_done\nduckietown_msgs/BoolStamped.msg"];
+		random_turn_type[!TOPIC!, label="~turn_type\nstd_msgs/Int16.msg"];
+		graph_turn_type[!TOPIC!, label="~turn_type\nstd_msgs/Int16.msg"];
+	}
+
+	subgraph cluster_coordination{
+		label="Coordination"; 
+		veh_coordinator_node        [!NODE:designed!,  label="veh_coordinator_node (DH)"]
+
+		intersection_go[!TOPIC!, label="~intersection_go\nduckietown_msgs/BoolStamped.msg"];
+	}
+
+	subgraph cluster_f1{
+		!FEATURE!
+		label="F1: Illumination Robustness"; 
+		anti_instagram_node[!NODE:development!,  label="anti_instagram\nanti_instagram_node (F1)"];
+
+		corrected_image[!TOPIC!, label="~corrected_image/raw\nsensor_msgs/Image.msg"];
+		image_health[!TOPIC!, label="~image_health\nduckietown_msgs/AntiInstagramHealth.msg"];
+	}
+
+	subgraph cluster_f23 {
+		!FEATURE!
+		label="F2-3: LED Detection";
+
+		LED_detector_node    [!NODE:development!, label="led_detection\nLED_detector_node"   ];
+		LED_interpreter_node [!NODE:missing!, label="led_interpreter\nLED_interpreter_node"];
+		LED_joy_mapper_node    [!NODE:development!, label="led_joy_mapper\nled_joy_mapper_node"   ];
+		
+		raw_led_detection       [!TOPIC!, label="~raw_led_detection\nled_detection/LEDDetectionArray.msg"];
+		signals_detection       [!TOPIC!, label="~signals_detection\nled_detection/SignalsDetection.msg"];
+		desired_signaling_state [!TOPIC!, label="~desired_signaling_state\nstd_msgs/String.msg"];
+	}
+
+	subgraph cluster_f4 {
+		!FEATURE!
+		label="F4: Odometry Calibration from Sensor Measurements";
+		odometry_training_pairs_node[!NODE:development!,  label="visual_odometry\nodometry_training_pairs_node (F4)"];
+		kinematics_learning_node[!NODE:development!,  label="kinematics\nkinematics_learning_node (F4)"];
+		inverse_kinematics_node[!NODE:development!,  label="kinematics\ninverse_kinematics_node (F4)"];
+		forward_kinematics_node[!NODE:development!,  label="kinematics\nforward_kinematics_node (F4)"];
+
+		inverse_kinematics_file[!CONFIG!, label="calibration/inverse_kinematics"];
+		kinematics_file[!CONFIG!, label="calibration/forward_kinematics"];
+		odometry_training_pairs_file[!CONFIG!, label="odometry_training_pairs"];
+	
+		forward_kinematics_pose[!TOPIC!, label="~pose\nduckietown_msgs/Pose2DStamped.msg"];
+		forward_kinematics_velocity[!TOPIC!, label="~velocity\nduckietown_msgs/Twist2DStamped.msg"];
+		car_command_switch[!TOPIC!, label="~car_command_switch\nduckietown_msgs/Twist2DStamped.msg"];	
+	}
+
+	subgraph cluster_f5 {
+		!FEATURE!
+		label="F5: Lane Filter and Control"; 
+		lane_filter_node[!NODE:compiled!, label="lane_filter\nlane_filter_node (LP)"]; 
+		stop_line_filter_node[!NODE:development!,  label="stop_line_filter\nstop_line_filter_node (LP)"];
+		lane_controller_node[!NODE:compiled!, label="lane_control\nlane_controller_node (SY,SC)"];
+
+		lane_pose[!TOPIC!, label="~lane_pose\nduckietown_msgs/LanePose.msg"]; //LaneReading: y, phi, sigma_y, sigma_phi, status
+		lane_control[!TOPIC!, label="~lane_control\nduckietown_msgs/Twist2DStamped.msg"];
+		at_stop_line[!TOPIC!, label="~at_stop_line\nduckietown_msgs/BoolStamped.msg"];
+		stop_line_dist[!TOPIC!, label="~stop_line_dist\nstd_msgs/Float32.msg"];
+		in_lane[!TOPIC!, label="~in_lane\nduckietown_msgs/BoolStamped.msg"];
+	}
+
+
+	subgraph cluster_f6 { 
+		!FEATURE!
+		label="F6: Vehicle Detection"; 
+
+		vehicle_detector_node[!NODE:development!,  label="veh_detector\nvehicle_detector_node (F6)"];
+		vehicle_filter_node[!NODE:development!,  label="veh_detector\nvehicle_filter_node (F6)"];
+		vehicle_avoidance_control_node[!NODE:development!,  label="veh_detector\nvehicle_avoidance_control_node (F6)"];
+
+		veh_corners[!TOPIC!, label="~corners\nduckietown_msgs/ObstacleCorners.msg"];
+		veh_pose[!TOPIC!, label="~vehicle_pose\nduckietown_msgs/VehiclePose.msg"];
+		veh_avoidance_control[!TOPIC!, label="~control\nduckietown_msgs/Twist2DStamped.msg"];
+		veh_avoidance_flag[!TOPIC!, label="~flag\nduckietown_msgs/BoolStamped.msg"];
+	}
+
+	subgraph cluster_f8 { 
+		!FEATURE!
+		label="F8: Apriltags"; 
+		april_pre_pros_node [!NODE:development!, label="apriltags\n april_pre_pros_node (F8)"];
+		apriltags_fast_node [!NODE:development!, label="apriltags\n apriltags_fast_node (F8)"];
+		apriltags_global_node [!NODE:development!, label="apriltags\n apriltags_global_node (F8)"];
+		apriltags_postprocessing_fast_node [!NODE:development!, label="apriltags\n apriltags_postprocessing_fast_node (F8)"];
+		apriltags_postprocessing_global_node [!NODE:development!, label="apriltags\n apriltags_postprocessing_global_node (F8)"];
+		
+		april_pre_pros_fast_image [!TOPIC!, label="~fast/image_raw \n sensor_msgs/Image.msg"];
+		april_pre_pros_global_image [!TOPIC!, label="~global/image_raw \n sensor_msgs/Image.msg"];
+		apriltags_fast_tags_image [!TOPIC!, label="~tags_image \n sensor_msgs/Image.msg"];
+		apriltags_global_tags_image [!TOPIC!, label="~tags_image \n sensor_msgs/Image.msg"];
+		apriltags_fast_tags_detection [!TOPIC!, label="~apriltags \n duckietown_msgs/apriltags.msg"];
+		apriltags_global_tags_detection [!TOPIC!, label="~apriltags \n duckietown_msgs/apriltags.msg"];
+		apriltags_fast_tags_detection_processed [!TOPIC!, label="~apriltags \n duckietown_msgs/apriltags.msg"];
+		apriltags_global_tags_detection_processed [!TOPIC!, label="~apriltags \n duckietown_msgs/apriltags.msg"];
+
+		apriltags_db_file [!CONFIG!, label="apriltagsDB.yaml"];
+	}
+
+	subgraph cluster_f9 { 
+		!FEATURE!
+		label="F9: MDOAP"; 
+		object_image_detection_list[!TOPIC!, label="~detection_list\nduckietown_msgs/ObjectImageDetectionList.msg"];
+		object_too_close[!TOPIC!, label="~object_too_close\nduckietown_msgs/BoolStamped.msg"];
+		object_projected_detection_list[!TOPIC!, label="~detection_list_proj\nduckietown_msgs/ObjectProjectedDetectionList.msg"];
+		simple_stop_control[!TOPIC!, label="~control\nduckietown_msgs/Twist2DStamped.msg"];
+
+		static_object_detector_node[!NODE:development!,  label="mdoap\nstatic_object_detector_node (F9)"];
+		obstacle_safety_node       [!NODE:development!,  label="mdoap\nobstacle_safety_node (F9)"];
+		simple_stop_controller_node[!NODE:development!,  label="mdoap\nsimple_stop_controller_node (F9)"];
+	}
+
+
+	// ==== Connections ====
+	
+	// == camera_node == //
+	camera_node->image_compressed;
+
+	// == fsm_node == //
+	{intersection_go,intersection_done,at_stop_line, veh_avoidance_flag, object_too_close} -> fsm_node;
+	fsm_node->mode;
+	
+	// == open_loop_intersection_control_node == //
+	open_loop_intersection_control_node->{intersection_control, intersection_done};
+	{mode,in_lane,graph_turn_type}->open_loop_intersection_control_node;
+	random_turn_type -> open_loop_intersection_control_node[style="dashed"];
+
+	// == random_april_tag_turns_node == //
+	apriltags_global_tags_detection_processed -> random_april_tag_turns_node;
+	random_april_tag_turns_node -> random_turn_type;
+
+	// == action_dispatcher_node == //
+	graph_planner_node -> action_dispatcher_node[style="dashed",label="navigation/GraphSearch.srv"];
+	action_dispatcher_node -> graph_turn_type;
+
+	// == stop_line_filter_node == //
+	stop_line_filter_node -> {at_stop_line, stop_line_dist};
+	segment_list_proj->stop_line_filter_node;
+
+	// == cam_info_reader_node == //
+	intrinsic_calibration_file->cam_info_reader_node[style="dotted"];
+	image_compressed->cam_info_reader_node;
+	cam_info_reader_node->camera_info;
+	
+	// == decoder_node == //
+	image_compressed->decoder_node;
+	decoder_node->image_raw;	
+		
+	// == line_detector_node == //
+	line_detector_node -> {segment_list, image_with_lines};
+	image_compressed -> line_detector_node;
+
+	// == joy_mapper_node == //
+	joy_node->joy->joy_mapper_node->joy_control;
+
+	// == lane_supervisor_node == //
+	{joy_control, lane_control}-> lane_supervisor_node;
+	lane_supervisor_node-> lane_control_sup;
+
+	// == ground_projection_node == //
+	extrinsic_calibration_file->ground_projection_node[style="dotted"];
+	{camera_info,segment_list}->ground_projection_node;
+	ground_projection_node->segment_list_proj;
+	
+	// == veh_coordinator_node == //
+	{signals_detection,mode} -> veh_coordinator_node;
+	veh_coordinator_node->intersection_go;
+	veh_coordinator_node->change_color_pattern;
+
+	// == car_cmd_switch_node == //
+	{mode, lane_control, intersection_control, veh_avoidance_control, simple_stop_control, joy_control, lane_control_sup}->car_cmd_switch_node;	
+	car_cmd_switch_node->car_command_switch;
+	
+	// == wheels_driver_node == //
+	wheels_command->wheels_driver_node;
+
+	// == F1 == //
+	// == anti_instagram_node == //
+	image_compressed->anti_instagram_node;
+	anti_instagram_node->{corrected_image,image_health};
+
+	// == F2-3 == //
+
+	// == LED_joy_mapper_node == //
+	// the joystick is connected to LED_joy_mapper_node, which produces a desired_signaling_state
+	joy->LED_joy_mapper_node;
+	LED_joy_mapper_node->desired_signaling_state[style="dashed"]; // dashed = only for testing
+
+	// == LED_emitter_node == //
+	// LED_emitter_node reads change_color_pattern and activates the LED
+	change_color_pattern->LED_emitter_node;
+
+	// == LED_detector_node == //
+	// Image goes to LED_detector_node which produces "raw" led detections
+	image_compressed->LED_detector_node->raw_led_detection;
+	
+	// == LED_interpreter_node == //
+	// These are interpreted by LED_interpreter_node
+	raw_led_detection->LED_interpreter_node->signals_detection;
+	// the node also needs to know where the vehicle is
+	{stop_line_dist, lane_pose} -> LED_interpreter_node;
+	{intrinsic_calibration_file, extrinsic_calibration_file}->LED_interpreter_node[style="dotted"];
+ 
+	// == F4 == //
+
+	// == odometry_training_pairs_node == //
+	{apriltags_global_tags_detection_processed ,segment_list_proj, car_command_switch} -> odometry_training_pairs_node;
+	odometry_training_pairs_node -> odometry_training_pairs_file[style="dotted"];
+
+	// == kinematics_learning_node == //
+	odometry_training_pairs_file -> kinematics_learning_node[style="dotted"]
+	kinematics_learning_node -> {inverse_kinematics_file, kinematics_file}[style="dotted"];
+
+	// == inverse_kinematics_node == //
+	inverse_kinematics_file -> inverse_kinematics_node[style="dotted"];
+	car_command_switch -> inverse_kinematics_node;
+	inverse_kinematics_node -> wheels_command;
+
+	// == forward_kinematics_node == //
+	kinematics_file -> forward_kinematics_node[style="dotted"];
+	wheels_command -> forward_kinematics_node;
+	forward_kinematics_node -> {forward_kinematics_pose,forward_kinematics_velocity};
+
+	// == F5 == //
+
+	// == lane_controller_node == //
+	lane_pose->lane_controller_node;
+	lane_controller_node->lane_control;
+
+	// == lane_filter_node == //
+	{segment_list_proj, car_command_switch} -> lane_filter_node;
+	lane_filter_node -> {lane_pose, in_lane};
+
+	// == F6 == //
+
+	// == vehicle_detector_node == //
+	image_raw -> vehicle_detector_node;
+	vehicle_detector_node -> veh_corners;
+	// == vehicle_filter_node == //
+	{veh_corners, camera_info} -> vehicle_filter_node;
+	vehicle_filter_node -> {veh_pose};
+	// == vehicle_avoidance_control_node == //
+	veh_pose -> vehicle_avoidance_control_node;
+	vehicle_avoidance_control_node -> {veh_avoidance_control, veh_avoidance_flag};
+
+	// == F8 == //
+
+	// == april_pre_pros_node == //
+	image_raw -> april_pre_pros_node;
+	april_pre_pros_node -> {april_pre_pros_global_image, april_pre_pros_fast_image};
+	
+	// == apriltags_fast_node == //
+	april_pre_pros_fast_image -> apriltags_fast_node;
+	apriltags_fast_node -> {apriltags_fast_tags_image,apriltags_fast_tags_detection};
+
+	// == apriltags_global_node == // 
+	{april_pre_pros_global_image, camera_info} -> apriltags_global_node;	
+	apriltags_global_node -> {apriltags_global_tags_image,apriltags_global_tags_detection};
+
+	// == apriltags_postprocessing_fast_node == // 
+	apriltags_fast_tags_detection -> apriltags_postprocessing_fast_node ;
+	apriltags_postprocessing_fast_node -> apriltags_fast_tags_detection_processed ;
+	apriltags_db_file -> apriltags_postprocessing_fast_node [style="dashed"];
+
+	// == apriltags_postprocessing_global_node == // 
+	apriltags_global_tags_detection -> apriltags_postprocessing_global_node ;
+	apriltags_postprocessing_global_node -> apriltags_global_tags_detection_processed ;
+	apriltags_db_file -> apriltags_postprocessing_global_node [style="dashed"];
+
+	// == F9 == //
+	// == static_object_detector_node ==//
+	image_raw->static_object_detector_node;
+	static_object_detector_node->object_image_detection_list;
+	// == obstacle_safety_node == //
+	object_image_detection_list -> obstacle_safety_node;
+	obstacle_safety_node -> {object_too_close,object_projected_detection_list,object_detection_markers};
+	// == simple_stop_controller_node == //
+	{object_projected_detection_list, object_too_close} -> simple_stop_controller_node;
+	simple_stop_controller_node -> simple_stop_control;
+
+}
+

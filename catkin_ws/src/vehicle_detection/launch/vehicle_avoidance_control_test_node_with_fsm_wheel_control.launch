@@ -1,0 +1,27 @@
+<launch>
+
+	<arg name="veh" doc="Name of vehicle" />
+
+    <remap from="fsm_node/vehicle_detected" to="vehicle_avoidance_control_node/flag" />
+    <remap from="fsm_node/in_lane" to="vehicle_avoidance_control_node_test/in_lane" />
+    <remap from="vehicle_avoidance_control_node_test/mode" to="fsm_node/mode" />
+    <remap from="vehicle_avoidance_control_node_test/switch_commands" to="wheels_cmd_switch_node/wheels_cmd" />
+
+    <remap from="wheels_cmd_switch_node/mode" to="fsm_node/mode"/>
+    <remap from="wheels_cmd_switch_node/wheels_cmd_avoidance" to="vehicle_avoidance_control_node/wheels_cmd" />
+
+    <include file="$(find vehicle_detection)/launch/vehicle_avoidance_control_test_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+    </include>
+
+    <include file="$(find dagu_car)/launch/wheels_cmd_switch_node.launch">
+    	<arg name="veh" value="$(arg veh)"/>
+        <arg name="local" value="true" />
+    </include>
+
+    <include file="$(find fsm)/launch/fsm_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="local" value="true" />
+    </include>
+
+</launch>

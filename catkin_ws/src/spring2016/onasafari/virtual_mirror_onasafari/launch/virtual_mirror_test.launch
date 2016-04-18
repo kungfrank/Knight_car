@@ -1,0 +1,12 @@
+<launch>
+    <arg name="veh"/>
+    <arg name="bagin" doc="the full path to the input bag" />
+    <arg name="bagout" doc="the full path to the output bag" /> 
+            
+    <node pkg="virtual_mirror_onasafari" type="virtual_mirror.py" name="virtual_mirror_node" output="screen" >
+    <remap from="~image_raw" to="$(arg veh)/camera_node/image/compressed"/>
+    </node>
+    <node  pkg="rosbag" type="play" name="rosbag_play" args="$(arg bagin)"/>
+    <node  pkg="rosbag" type="record" name="rosbag_record" args="-a  -O $(arg bagout)"/> 
+
+</launch>

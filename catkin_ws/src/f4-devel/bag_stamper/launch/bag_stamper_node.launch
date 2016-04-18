@@ -1,0 +1,18 @@
+<launch>
+    <arg name="pkg_name" value="bag_stamper"/>
+    <arg name="node_name" default="bag_stamper_node"/>
+    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
+    <arg name="bagin" doc="The path to the input bag to be processed" />
+    <arg name="bagout" default="$(arg bagin).stamped.bag" doc="The path to the output bag file after processing."/>
+    <arg name="topicin" doc="The name of the WheesCmd topic in the bag that needs to be converted to WheelsCmdStamped"/>
+    <arg name="topicout" doc="The name of the new topic which will be created"/>
+
+    <group ns="$(arg veh)">
+        <node name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen" >
+            <param name="bagin" value="$(arg bagin)"/>
+            <param name="bagout" value="$(arg bagout)" />
+            <param name="topicin" value="$(arg topicin)" />
+            <param name="topicout" value="$(arg topicout)" />
+        </node>
+    </group>
+</launch>

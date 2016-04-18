@@ -8,6 +8,7 @@
 	<arg name="visualization" default="true" />
 	<arg name="verbose" default="false" />
 	<arg name="statistics" default="false"/>
+	<arg name="anti_instagram" default="false"/>
 	<arg name="loc" default="-1"/>
 	<arg name="line_detector_param_file_name" default="$(arg param_file_name)"/>
 	<!-- end basic args -->

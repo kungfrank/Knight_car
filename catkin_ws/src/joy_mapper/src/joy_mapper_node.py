@@ -22,7 +22,7 @@ class JoyMapper(object):
         self.pub_car_cmd = rospy.Publisher("~car_cmd", Twist2DStamped, queue_size=1)
         self.pub_joy_override = rospy.Publisher("~joystick_override", BoolStamped, queue_size=1)
         self.pub_parallel_autonomy = rospy.Publisher("~parallel_autonomy",BoolStamped, queue_size=1)
-        self.pub_anti_instagram = rospy.Publisher("~anti_instagram",BoolStamped, queue_size=1)
+        self.pub_anti_instagram = rospy.Publisher("anti_instagram/click",BoolStamped, queue_size=1)
         self.pub_e_stop = rospy.Publisher("wheels_driver_node/emergency_stop",BoolStamped,queue_size=1)
 
         # Subscriptions

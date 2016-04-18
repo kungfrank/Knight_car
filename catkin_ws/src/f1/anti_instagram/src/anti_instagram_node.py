@@ -83,6 +83,8 @@ class AntiInstagramNode():
 		and publishes the corrected image and the health state. Health somehow corresponds
 		to how good of a transformation it is.
 		'''
+        
+        rospy.loginfo('ai: Computing color transform... \n')
 
 		tk = TimeKeeper(msg)
 		

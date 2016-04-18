@@ -13,7 +13,7 @@ def ipython_if_guy():
     import getpass
     user = getpass.getuser()
 
-    I_am_the_Guy = user in ['guy']
+    I_am_the_Guy = user in ['rosman']
 
     if I_am_the_Guy:
         import IPython

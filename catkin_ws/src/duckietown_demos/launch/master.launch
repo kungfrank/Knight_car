@@ -206,13 +206,6 @@
 	<group if="$(arg lane_following)">
 
 
-		<!-- Start anti-instagram -->
-		<!-- <group if="$(arg anti_instagram)"> -->
-
-			<include file="$(find anti_instagram)/launch/anti_instagram_node.launch">
-			</include>	
-		
-		<!-- </group> -->
 
 		<!-- Line Detector -->
 		<group if="$(arg /lane_following/line_detection)">

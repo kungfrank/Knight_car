@@ -12,15 +12,17 @@ import os
 import scipy.io
 import yaml
 import IPython
-from line_detector.LineDetectorPlot import drawLines
+import shelve
 
 def merge_comparison_results(comparison_results,overall_results):
     if (comparison_results):
         if (not overall_results):
-            overall_results={'total_pixels':0.,'total_error':0.}
+            overall_results={'total_pixels':0.,'total_error':0.,'total_regions':0.}
         # IPython.embed()
         overall_results['total_error']=overall_results['total_error']+comparison_results['total_error']
         overall_results['total_pixels']=overall_results['total_pixels']+comparison_results['total_pixels']
+        overall_results['total_regions']=overall_results['total_regions']+comparison_results['total_regions']
+        
     return overall_results
 
 def examine_dataset(dirname, out):
@@ -119,8 +121,6 @@ def examine_dataset(dirname, out):
             print "comparison_results[m]=frame_results"
             # IPython.embed()
     print "finished mats: "+dirname
-    if (overall_results):
-        IPython.embed()
     return overall_results
         
 def zoom_image(im, zoom):
@@ -215,7 +215,7 @@ def test_pair(transform, jpg, mat, out):
 
     data = scipy.io.loadmat(mat)
     regions = data['regions'].flatten()
-    result_stats={'average_abs_err':[],'total_pixels':0,'total_error':0}
+    result_stats={'average_abs_err':[],'total_pixels':0,'total_error':0,'total_regions':0}
     for r in regions:
         logger.info('region')
         x = r['x'][0][0].flatten()
@@ -243,6 +243,7 @@ def test_pair(transform, jpg, mat, out):
         result_stats['average_abs_err'].append(avg_abs_err)
         result_stats['total_pixels']=result_stats['total_pixels']+num_pixels
         result_stats['total_error']=result_stats['total_error']+region_error
+        result_stats['total_regions']=result_stats['total_regions']+1
         # XXX: to finish
     return result_stats
 
@@ -326,11 +327,13 @@ def anti_instagram_annotations_test():
         results=examine_dataset(d, out)
         overall_results=merge_comparison_results(results,overall_results)
         directory_results[d]=results
-    db=shelve.open('tests_results',flag='w')
+    db=shelve.open('tests_results',flag='n')
     db['directory_results'] = directory_results
     db['overall_results'] = overall_results
     db.close()
 
+    print("overall average error: %f"%(overall_results['total_error']/overall_results['total_pixels']))
+    print("overall regions checked: %f"%(overall_results['total_regions']))
     IPython.embed()
 
 if __name__ == '__main__':

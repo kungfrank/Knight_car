@@ -84,8 +84,10 @@ class AntiInstagramNode():
 		to how good of a transformation it is.
 		'''
 
+
+		rospy.loginfo('ai: Computing color transform...')
 		tk = TimeKeeper(msg)
-		
+
 		cv_image = self.bridge.imgmsg_to_cv2(msg,"bgr8")
 
 		tk.completed('converted')

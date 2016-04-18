@@ -3,6 +3,7 @@
 	<!-- start basic args -->
 	<include file="$(find duckietown_demos)/launch/master.launch">
 		<arg name="veh" value="$(arg veh)"/>
+        <arg name="/camera/raw" default="true"/>
 		<arg name="visualization" default="false" />
 		<arg name="verbose" default="true" />
 		<arg name="param_file_name" default="default" />

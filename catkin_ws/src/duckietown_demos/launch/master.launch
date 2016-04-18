@@ -205,12 +205,25 @@
 	<!-- Start Lane Following -->
 	<group if="$(arg lane_following)">
 
+
+		<!-- Start anti-instagram -->
+		<group if="$(arg anti_instagram)">
+			<include file="$(find anti_instagram)/launch/anti_instagram_node.launch">
+				<arg name="veh" value="$(arg veh)"/>
+				<arg name="config" value="$(arg config)"/>
+				<arg name="param_file_name" value="$(arg param_file_name)"/>
+				<arg name="verbose" value="$(arg verbose)" />
+			</include>	
+		</group>
+		<!-- End anti-instagram -->
+
 		<!-- Line Detector -->
 		<group if="$(arg /lane_following/line_detection)">
 			<remap from="line_detector_node/image" to="camera_node/image/compressed"/>
 			<include file="$(find line_detector)/launch/line_detector_node.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
+				<!-- NOTE: "line_detector_param_file_name" as special case -->
 				<arg name="param_file_name" value="$(arg line_detector_param_file_name)"/>
 				<arg name="verbose" value="$(arg verbose)" />
 			</include>	
@@ -565,11 +578,5 @@
 	</group>
 	<!-- End SLAM -->
 
-
-	<!-- Start anti-instagram -->
-	<group if="$(arg anti_instagram)">
-		<!-- TODO -->
-	</group>
-	<!-- End anti-instagram -->
 
 </launch>

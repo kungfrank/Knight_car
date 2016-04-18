@@ -542,6 +542,11 @@
 			<arg name="config" value="$(arg config)"/>
 			<arg name="param_file_name" value="$(arg param_file_name)"/>        
 		</include>
+		<include file="$(find parallel_autonomy)/launch/parallel_autonomy_node.launch">
+			<arg name="veh" value="$(arg veh)"/>
+			<arg name="config" value="$(arg config)"/>
+			<arg name="param_file_name" value="$(arg param_file_name)"/>        
+		</include>
 	</group>
 	<!-- End Parallel Autonomy -->
 

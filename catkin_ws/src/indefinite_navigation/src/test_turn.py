@@ -21,7 +21,7 @@ class IndefNavigationTurnNode(object):
         mode_topic = "/" + veh_name + "/open_loop_intersection_control_node/mode"
         left_service = "/" + veh_name + "/open_loop_intersection_control_node/turn_left"
         right_service = "/" + veh_name + "/open_loop_intersection_control_node/turn_right"
-        wheels_cmd = "/" + veh_name + "/inverse_kinematics_node/car_cmd"
+        wheels_cmd = "/" + veh_name + "/open_loop_intersection_control_node/car_cmd"
         self.lane = None
         self.done = None
 
@@ -62,6 +62,7 @@ class IndefNavigationTurnNode(object):
         stop.omega = 0
         startTime = rospy.Time.now()
 	end_time = startTime + rospy.Duration.from_sec(1)
+        rospy.loginfo("start_time = %s, end_time=%s" %(startTime, end_time))
         while rospy.Time.now() < end_time:
             self.pub_wheels.publish(stop)
             rospy.sleep(0.1)

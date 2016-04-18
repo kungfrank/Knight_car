@@ -213,9 +213,11 @@ class LEDDetector():
                 fig, ax2 = plt.subplots()
                 ax2.plot(f,y_f)
                 plt.show()
+                
+        if(self.ploteverything):
+            plt.imshow(rgb0)
+            ax = plt.gca()
 
-        plt.imshow(rgb0)
-        ax = plt.gca()
 
         font = {'family': 'serif',
                 'color':  'red',

@@ -96,7 +96,7 @@ class LineDetectorNode(object):
         self.ai.shift = transform_msg.s[0:3]
         self.ai.scale = transform_msg.s[3:6]
 
-        rospy.loginfo("[AntiInstagram] transform received")
+        rospy.loginfo("AntiInstagram transform received")
 
     def intermittent_log_now(self):
         return self.intermittent_counter % self.intermittent_interval == 1
@@ -112,6 +112,14 @@ class LineDetectorNode(object):
             self.stats.skipped()
             # Return immediately if the thread is locked
             return
+
+        try:
+            self.processImage_(image_msg)
+        finally:
+            # Release the thread lock
+            self.thread_lock.release()
+
+    def processImage_(self, image_msg):
         if self.stats.nprocessed == 0:
             rospy.loginfo('line_detector_node processing first image.')
 
@@ -126,7 +134,11 @@ class LineDetectorNode(object):
         self.intermittent_counter += 1
 
         # Decode from compressed image with OpenCV
-        image_cv = image_cv_from_jpg(image_msg.data)
+        try:
+            image_cv = image_cv_from_jpg(image_msg.data)
+        except ValueError as e:
+            rospy.loginfo('line detector could not decode image: %s' % e)
+            return
 
         tk.completed('decoded')
 
@@ -191,9 +203,6 @@ class LineDetectorNode(object):
         drawLines(image_with_lines, white.lines, (0, 0, 0))
         drawLines(image_with_lines, yellow.lines, (255, 0, 0))
         drawLines(image_with_lines, red.lines, (0, 255, 0))
-        #drawNormals(image_with_lines, lines_white, normals_white)
-        #drawNormals(image_with_lines, lines_yellow, normals_yellow)
-        #drawNormals(image_with_lines, lines_red, normals_red)
 
         tk.completed('drawn')
 
@@ -204,10 +213,7 @@ class LineDetectorNode(object):
 
         tk.completed('pub_image')
 
-        # Verbose
         if self.verbose:
-            #rospy.loginfo("[%s] Latency sent = %.3f ms" %(self.node_name, (rospy.get_time()-image_msg.header.stamp.to_sec()) * 1000.0))
-      
             colorSegment = color_segment(white.area, red.area, yellow.area) 
             edge_msg_out = self.bridge.cv2_to_imgmsg(self.detector.edges, "mono8")
             colorSegment_msg_out = self.bridge.cv2_to_imgmsg(colorSegment, "bgr8")
@@ -219,8 +225,6 @@ class LineDetectorNode(object):
 
         self.intermittent_log(tk.getall())
 
-        # Release the thread lock
-        self.thread_lock.release()
 
     def onShutdown(self):
         rospy.loginfo("[LineDetectorNode] Shutdown.")

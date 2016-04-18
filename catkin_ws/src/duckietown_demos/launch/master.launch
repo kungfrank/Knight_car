@@ -411,7 +411,7 @@
 	<group if="$(arg LED)">
 		
 		<!-- Detection -->
-		<group if="$(arg /LED/detection)">
+		<group if="$(arg /LED/detector)">
 			<include file="$(find led_detection)/launch/LED_detection.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>

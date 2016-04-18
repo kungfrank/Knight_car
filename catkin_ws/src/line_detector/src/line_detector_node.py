@@ -86,7 +86,7 @@ class LineDetectorNode(object):
         self.active = switch_msg.data
 
     def cbImage(self, image_msg):
-        if self.nreceived == 0:
+        if self.stats.nreceived == 0:
             rospy.loginfo('line_detector_node received first image.')
 
         self.stats.received()
@@ -125,8 +125,8 @@ class LineDetectorNode(object):
         self.stats.processed()
 
         if self.intermittent_log_now():
-            self.stats.reset()
             self.intermittent_log(self.stats.info())
+            self.stats.reset()
 
         tk = TimeKeeper(image_msg)
         
@@ -248,14 +248,6 @@ class LineDetectorNode(object):
             segmentMsgList.append(segment)
         return segmentMsgList
 
-if __name__ == '__main__': 
-    rospy.init_node('line_detector',anonymous=False)
-    line_detector_node = LineDetectorNode()
-    rospy.on_shutdown(line_detector_node.onShutdown)
-    rospy.spin()
-
-
-
 class Stats():
     def __init__(self):
         self.reset()
@@ -275,12 +267,28 @@ class Stats():
 
     def info(self):
         delta = time.time() - self.t0
-        skipped_perc = (100.0 * self.nskipped / self.nreceived)
-        def fps(x):
-            return '%s fps' % (x / delta)
+	if self.nreceived:
+        	skipped_perc = (100.0 * self.nskipped / self.nreceived)
+        else:
+		skipped_perc = 0
+	def fps(x):
+            return '%.1 fps' % (x / delta)
 
-        m = ('%.1f s: Received %d (%s) processed %d (%s) skipped %d (%s) (%1.f%%)' %
+        m = ('In the last %.1f s: received %d (%s) processed %d (%s) skipped %d (%s) (%1.f%%)' %
              (delta, self.nreceived, fps(self.nreceived),
               self.nprocessed, fps(self.nprocessed),
               self.nskipped, fps(self.nskipped), skipped_perc))
         return m
+
+
+
+
+
+if __name__ == '__main__': 
+    rospy.init_node('line_detector',anonymous=False)
+    line_detector_node = LineDetectorNode()
+    rospy.on_shutdown(line_detector_node.onShutdown)
+    rospy.spin()
+
+
+

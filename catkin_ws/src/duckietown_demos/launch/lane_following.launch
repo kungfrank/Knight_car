@@ -4,7 +4,7 @@
 	<include file="$(find duckietown_demos)/launch/master.launch">
 		<arg name="veh" value="$(arg veh)"/>
 		<arg name="visualization" default="false" />
-		<arg name="verbose" defaule="true" />
+		<arg name="verbose" default="true" />
 		<arg name="param_file_name" default="default" />
 		<arg name="line_detector_param_file_name" default="default" />
 		<arg name="anti_instagram" default="true" />

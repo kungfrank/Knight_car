@@ -2,7 +2,7 @@ img_size: [120,160]
 top_cutoff: 40
 
 detector: 
-  - line_detector.LineDetector
+  - line_detector.LineDetectorHSV
   - configuration:
       dilation_kernel_size: 3
       canny_thresholds: [60,150]

@@ -5,7 +5,7 @@ from .line_detector_interface import Detections
 from duckietown_utils.parameters import Configurable
 from line_detector.line_detector_interface import LineDetectorInterface
 
-class LineDetector2(Configurable, LineDetectorInterface):
+class LineDetector2Dense(Configurable, LineDetectorInterface):
     def __init__(self, configuration):
         # Images to be processed
         self.bgr = np.empty(0)

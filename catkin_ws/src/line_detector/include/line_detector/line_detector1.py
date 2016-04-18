@@ -5,7 +5,7 @@ from line_detector.line_detector_interface import LineDetectorInterface, \
     Detections
 
 
-class LineDetector(Configurable, LineDetectorInterface):
+class LineDetectorHSV(Configurable, LineDetectorInterface):
     """ LineDetectorHSV """
 
     def __init__(self, configuration):

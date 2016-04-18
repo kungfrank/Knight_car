@@ -42,13 +42,13 @@ class RandomAprilTagTurnsNode(object):
                     #go through possible intersection types
                     signType = taginfo.traffic_sign_type
                     if(signType == taginfo.NO_RIGHT_TURN or signType == taginfo.LEFT_T_INTERSECT):
-                        availableTurns = [1,2]
+                        availableTurns = [0,2]
                     elif (signType == taginfo.NO_LEFT_TURN or signType == taginfo.RIGHT_T_INTERSECT):
-                        availableTurns = [0,1]
+                        availableTurns = [1,2]
                     elif (signType== taginfo.FOUR_WAY):
                         availableTurns = [0,1,2]
                     elif (signType == taginfo.T_INTERSECTION):
-                        availableTurns = [0,2]
+                        availableTurns = [0,1]
 
                     #now randomly choose a possible direction
                     if(len(availableTurns)>0):

@@ -1,4 +1,4 @@
 # Parameters for joy_mapper/joy_mapper
-speed_gain: 0.5
-steer_gain: 10
+speed_gain: 0.4293
+steer_gain: 8.586
 

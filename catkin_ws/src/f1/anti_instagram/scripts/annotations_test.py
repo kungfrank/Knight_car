@@ -275,7 +275,7 @@ def test_pair(transform, jpg, mat, out):
         transformed = transform(image)
         [b2,g2,r2]=cv2.split(transformed)
         thsv=cv2.cvtColor(transformed,cv2.cv.CV_BGR2HSV)
-        [h2,s2,v2]=cv2.split(transformed)
+        [h2,s2,v2]=cv2.split(thsv)
         r2_=r2[mask.nonzero()];g2_=g2[mask.nonzero()];b2_=b2[mask.nonzero()]
         h2_=h2[mask.nonzero()];s2_=s2[mask.nonzero()];v2_=v2[mask.nonzero()]
         # IPython.embed()

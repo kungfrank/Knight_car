@@ -5,7 +5,7 @@ from duckietown_utils.expand_variables import expand_environment
 from duckietown_utils.jpg import (image_clip_255, image_cv_from_jpg_fn,
     make_images_grid)
 from duckietown_utils.locate_files_impl import locate_files
-from line_detector.LineDetectorPlot import drawLines
+from line_detector.line_detector_plot import drawLines
 import cv2
 import numpy as np
 import os

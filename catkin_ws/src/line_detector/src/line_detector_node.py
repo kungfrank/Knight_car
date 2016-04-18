@@ -8,7 +8,7 @@ from duckietown_utils.jpg import image_cv_from_jpg
 from geometry_msgs.msg import Point
 from sensor_msgs.msg import CompressedImage, Image
 from visualization_msgs.msg import Marker
-from line_detector.LineDetectorPlot import *
+from line_detector.line_detector_plot import *
 from line_detector.timekeeper import TimeKeeper
 import cv2
 import numpy as np

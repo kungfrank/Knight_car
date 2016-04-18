@@ -12,8 +12,8 @@ mappings: #Mapping from FSMStates.state to cmd source names. Allows different FS
   INTERSECTION_CONTROL: "intersection"
   COORDINATION: "coordination"
   JOYSTICK_CONTROL: "joystick"
-  AVOID_OBSTACLE: "vehicle"
-  AVOID_VEHICLE:    "obstacle"
+  AVOID_OBSTACLE: "obstacle"
+  AVOID_VEHICLE:    "vehicle"
   LANE_RECOVERY:     "recovery"
   INTERSECTION_RECOVERY: "recovery"
   

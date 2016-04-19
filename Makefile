@@ -21,7 +21,7 @@ catkin-clean:
 
 build-parallel:
 	catkin_make -C $(catkin_ws) --make-args "-j4"
-	
+
 build:
 	catkin_make -C $(catkin_ws) 
 
@@ -46,6 +46,17 @@ test-led:
 	echo "Calibration blinking pattern"
 	bash -c "source environment.sh; rosrun rgb_led blink test_all_1"
 
+test-turn-right:
+	echo "Calibrating right turn"
+	bash -c "rostest indefinite_navigation calibrate_turn.test veh:=$(vehicle_name) type:=right"
+
+test-turn-left:
+	echo "Calibrating left turn"
+	bash -c "rostest indefinite_navigation calibrate_turn.test veh:=$(vehicle_name) type:=left"
+
+test-turn-forward:
+	echo "Calibrating forward turn"
+	bash -c "rostest indefinite_navigation calibrate_turn.test veh:=$(vehicle_name) type:=forward"
 
 
 # Basic demos
@@ -53,17 +64,19 @@ test-led:
 vehicle_name=$(shell hostname)
 
 demo-joystick: unittests-environment
-	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown joystick.launch veh:=$(vehicle_name)"
+	bash -c "source environment.sh; source set_ros_master.sh;  roslaunch duckietown joystick.launch veh:=$(vehicle_name)"
 
 demo-joystick-camera: unittests-environment
-	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown joystick_camera.launch veh:=$(vehicle_name)"
+	bash -c "source environment.sh; source set_ros_master.sh;  roslaunch duckietown joystick_camera.launch veh:=$(vehicle_name)"
 
 demo-line_detector: unittests-environment
-	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown line_detector.launch veh:=$(vehicle_name)"
+	bash -c "source environment.sh; source set_ros_master.sh;  roslaunch duckietown line_detector.launch veh:=$(vehicle_name)"
 
 demo-joystick-perception: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos master.launch fsm_file_name:=joystick"
-  
+
+demo-lane-following-%: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos lane_following.launch line_detector_param_file_name:=$*"
 
 demo-led-fancy1: unittests-environment
 	bash -c "source environment.sh; rosrun rgb_led fancy1"
@@ -74,3 +87,28 @@ demo-led-fancy2: unittests-environment
 demo-led-blink-%: unittests-environment
 	bash -c "source environment.sh; rosrun rgb_led blink $*"
 
+# openhouse demos
+
+openhouse-dp3: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch"
+
+openhouse-dp3-%: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch  line_detector_param_file_name:=$*"
+
+openhouse-dp2: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos obstacle_vehicle_avoid.launch"
+
+openhouse-dp2-%: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos obstacle_vehicle_avoid.launch line_detector_param_file_name:=$*"
+
+openhouse-dp2-vehicle: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos vehicle_avoid.launch"
+
+openhouse-dp2-obstacle: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos obstacle_avoid.launch"
+
+openhouse-dp1: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos parallel_autonomy.launch"
+
+openhouse-dp1-%: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos parallel_autonomy.launch line_detector_param_file_name:=$*"

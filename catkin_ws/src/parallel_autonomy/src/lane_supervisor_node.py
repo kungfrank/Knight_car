@@ -10,8 +10,8 @@ class lane_supervisor(object):
     def __init__(self):
         self.node_name = rospy.get_name()
         self.lane_reading = LanePose()
-        self.lane_control = Twist2DStamped()
-        self.joy_control  = Twist2DStamped()
+        self.car_control_lane = Twist2DStamped()
+        self.car_control_joy  = Twist2DStamped()
         self.safe = True
         self.in_lane = True
         self.at_stop_line = False
@@ -24,13 +24,13 @@ class lane_supervisor(object):
         self.max_steer=self.setupParameter("~max_steer",0.2)
 
         # Publicaiton
-        self.pub_wheels_cmd = rospy.Publisher("~car_cmd",Twist2DStamped,queue_size=1)
+        self.pub_car_cmd = rospy.Publisher("~car_cmd",Twist2DStamped,queue_size=1)
         self.pub_safe       = rospy.Publisher("~safe",Bool,queue_size=1)
 
         # Subscriptions
         self.sub_lane_pose    = rospy.Subscriber("~lane_pose", LanePose, self.cbLanePose, queue_size=1)
-        self.sub_lane_control = rospy.Subscriber("~wheels_control_lane",Twist2DStamped,self.cbLaneControl, queue_size=1)
-        self.sub_joy_control  = rospy.Subscriber("~wheels_control_joy",Twist2DStamped,self.cbJoyControl, queue_size=1)
+        self.sub_lane_control = rospy.Subscriber("~car_cmd_lane",Twist2DStamped,self.cbLaneControl, queue_size=1)
+        self.sub_joy_control  = rospy.Subscriber("~car_cmd_joy",Twist2DStamped,self.cbJoyControl, queue_size=1)
         self.sub_at_stop_line = rospy.Subscriber("~stop_line_reading",StopLineReading, self.cbStopLine, queue_size=1)
 
         self.params_update = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
@@ -72,35 +72,38 @@ class lane_supervisor(object):
         self.pub_safe.publish(self.safe)
 
     def cbLaneControl(self,lane_control_msg):
-        self.lane_control = lane_control_msg
+        self.car_control_lane = lane_control_msg
 
     def cbJoyControl(self,joy_control_msg):
-        self.joy_control = joy_control_msg
-        wheels_cmd_msg = self.mergeJoyAndLaneControl()
-        self.pub_wheels_cmd.publish(wheels_cmd_msg)
+        self.car_control_joy = joy_control_msg
+        car_cmd_msg = self.mergeJoyAndLaneControl()
+        self.pub_car_cmd.publish(car_cmd_msg)
 
     def mergeJoyAndLaneControl(self):
         car_cmd_msg = Twist2DStamped()
         if self.stop:
+            rospy.loginfo("[PA] stopped at stop line")
             car_cmd_msg.v=0
             car_cmd_msg.omega=0
-        elif self.safe or not self.in_lane:
-            car_control_joy.v = min(car_control_joy.v,self.max_speed)
-            car_control_joy.omega = np.clip(car_control_joy.omega, -self.max_steer, self.max_steer)
-            car_cmd_msg = car_control_joy
-            car_cmd_msg.header.stamp = car_control_joy.header.stamp
+        elif self.safe: #or not self.in_lane:
+            rospy.loginfo("[PA] in safe mode") 
+            self.car_control_joy.v = min(self.car_control_joy.v,self.max_speed)
+            self.car_control_joy.omega = np.clip(self.car_control_joy.omega, -self.max_steer, self.max_steer)
+            car_cmd_msg = self.car_control_joy
+            car_cmd_msg.header.stamp = self.car_control_joy.header.stamp
         else:
+            rospy.loginfo("[PA] not safe - merge control inputs")
             car_control_merged = Twist2DStamped()
-            car_control_merged.v = min(car_control_joy.speed,self.max_speed) # take the speed from the joystick 
-            car_control_merged.omega = car_control_lane.steering # take the heading from the lane controller
+            car_control_merged.v = min(self.car_control_joy.v,self.max_speed) # take the speed from the joystick 
+            car_control_merged.omega = self.car_control_lane.omega # take the heading from the lane controller
             car_cmd_msg = car_control_merged
-            car_cmd_msg.header.stamp = car_control_joy.header.stamp
-        if car_control.v >= 0:
-            new_theta = -car_control.omega - 0.3
-            if type(new_theta) is np.float64:
-                new_theta = new_theta.item()
-            rospy.set_param("lane_controller_node/k_theta",new_theta)
-        return wheels_cmd_msg
+            car_cmd_msg.header.stamp = self.car_control_joy.header.stamp
+#        if car_cmd_msg.v >= 0:
+#            new_theta = -car_cmd_msg.omega - 
+#            if type(new_theta) is np.float64:
+#                new_theta = new_theta.item()
+#            rospy.set_param("lane_controller_node/k_theta",new_theta) 
+        return car_cmd_msg
 
 
 if __name__ == "__main__":

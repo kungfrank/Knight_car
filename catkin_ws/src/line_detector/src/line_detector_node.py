@@ -42,7 +42,7 @@ class LineDetectorNode(object):
         self.pub_edge = None
         self.pub_colorSegment = None
 
-        self.detector_config = None
+        self.detector = None
         self.verbose = None
         self.updateParams(None)
             
@@ -70,14 +70,15 @@ class LineDetectorNode(object):
         self.image_size = rospy.get_param('~img_size')
         self.top_cutoff = rospy.get_param('~top_cutoff')
 
-        c = rospy.get_param('~detector')
-        assert isinstance(c, list) and len(c) == 2, c
+        if self.detector is None:
+            c = rospy.get_param('~detector')
+            assert isinstance(c, list) and len(c) == 2, c
         
-        if str(self.detector_config) != str(c):
+#         if str(self.detector_config) != str(c):
             self.loginfo('new detector config: %s' % str(c))
 
             self.detector = instantiate(c[0], c[1])
-            self.detector_config = c
+#             self.detector_config = c
 
         if self.verbose and self.pub_edge is None:
             self.pub_edge = rospy.Publisher("~edge", Image, queue_size=1)

@@ -12,12 +12,23 @@ class TrafficLight(object):
         self.led = RGB_LED()
         self.node_name = rospy.get_name()
         self.cycle = None
-
+        self.protocol =self.setupParameter("~LED_protocol",[]) #should be a list of tuples
+        #self.label = rospy.get_param("~location_config") # should be a list
+                # self._traffic = True
+                # self._light = None
+                # self._freq = None
+        self.greenlight_freq = self.protocol['signals']['traffic_light_go']['frequency']
+        self.redlight_freq = self.protocol['signals']['traffic_light_stop']['frequency']
+                #self.carSignalA = self.protocol['signals']['CAR_SIGNAL_A']['frequency']
+                #self.carSignalB = self.protocol['signals']['CAR_SIGNAL_B']['frequency']
+                #self.carSignalC = self.protocol['signals']['CAR_SIGNAL_C']['frequency']
+                #self.signalFrequencies = [self.carSignalA, self.carSignalB,self.carSignalC]
+                #self.vehicleSignals = [SignalsDetection.SIGNAL_A,SignalsDetection.SIGNAL_B,SignalsDetection.SIGNAL_C] 
         self.traffic_light_list = self.setupParameter("~traffic_light_list",[0,2,3,1]); #order of lights
         self.greenlight_duration = self.setupParameter("~greenlight_duration",3) #in seconds
         self.allred_duration = self.setupParameter("~allred_duration",7) #in seconds
-        self.redlight_freq  = self.setupParameter("~redlight_freq",2) # in Hz
-        self.greenlight_freq = self.setupParameter("~greenlight_freq",4) # in Hz
+        #self.redlight_freq  = self.setupParameter("~redlight_freq",2) # in Hz
+        #self.greenlight_freq = self.setupParameter("~greenlight_freq",4) # in Hz
         
         self.redlight_t = 1.0/self.redlight_freq
         self.greenlight_t = 1.0/self.greenlight_freq

@@ -71,10 +71,12 @@ class LineDetectorNode(object):
         self.top_cutoff = rospy.get_param('~top_cutoff')
 
         c = rospy.get_param('~detector')
+        assert isinstance(c, list) and len(c) == 2, c
+        c = tuple(c)  # make it comparable
         
         if self.detector_config != c:
             self.loginfo('new detector config: %r' % c)
-            assert isinstance(c, list) and len(c) == 2, c
+
             self.detector = instantiate(c[0], c[1])
             self.detector_config = c
 

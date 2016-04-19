@@ -7,6 +7,7 @@ from sensor_msgs.msg import CameraInfo, Image
 from cv_bridge import CvBridge
 import cv2
 from tf import transformations as tr
+import numpy as np
 
 class ApriltagsTesterNode(unittest.TestCase):
     def setup(self):
@@ -38,7 +39,7 @@ class ApriltagsTesterNode(unittest.TestCase):
 
     # This test fails even though the integration test passes. Preprocessing must be doing something to the image that
     # Required for a good detection. Find out if this node is expected to give incorrect distances when run alone.
-    def donot_test_with_known_image(self):
+    def test_with_known_image(self):
         filename = rospy.get_param("~filename")
         self.setup()    # Setup the node
 
@@ -65,22 +66,31 @@ class ApriltagsTesterNode(unittest.TestCase):
         self.assertLess(rospy.Time.now(), timeout, "Waiting for apriltag detection timed out.")
 
         # Check that an apriltag with id=60 was detected
-        found = False
+        found = 0
         for tag in self.msg_tags.detections:
             if tag.id == 60:
-                found = True
-                break
-        self.assertTrue(found, "Expected apriltag with id=60 not found.")
+                found +=1
+                self.assertAlmostEqual(tag.transform.translation.x, 0.7, delta=0.1) # Allow 10 cm of error margin
+                self.assertAlmostEqual(tag.transform.translation.y, -0.185, delta=0.1) # Allow 10 cm of error margin
+                self.assertAlmostEqual(tag.transform.translation.z, 0.13, delta=0.1) # Allow 10 cm of error margin
+                # Convert the quat to an angle about z
+                rot = tag.transform.rotation
+                ang = tr.euler_from_quaternion((rot.x, rot.y, rot.z, rot.w))[2] #z axis angle only
+                self.assertAlmostEqual(ang, 0, delta=15*np.pi/180) # Allow up to 15 degrees of error margin
 
-        self.assertEqual(tag.id, 60, "Unexpected tag id found.")
-        self.assertAlmostEqual(tag.transform.translation.x, 0.7, delta=0.1) # Allow 10 cm of error margin
-        self.assertAlmostEqual(tag.transform.translation.y, -0.185, delta=0.1) # Allow 10 cm of error margin
-        self.assertAlmostEqual(tag.transform.translation.z, 0.13, delta=0.1) # Allow 10 cm of error margin
+            elif tag.id == 24:
+                found += 1
+                self.assertAlmostEqual(tag.transform.translation.x, 0.7, delta=0.1) # Allow 10 cm of error margin
+                self.assertAlmostEqual(tag.transform.translation.y, -0.41, delta=0.1) # Allow 10 cm of error margin
+                self.assertAlmostEqual(tag.transform.translation.z, 0.13, delta=0.1) # Allow 10 cm of error margin
+                # Convert the quat to an angle about z
+                rot = tag.transform.rotation
+                ang = tr.euler_from_quaternion((rot.x, rot.y, rot.z, rot.w))[2] #z axis angle only
+                self.assertAlmostEqual(ang, 0, delta=15*np.pi/180) # Allow up to 15 degrees of error margin
+                
+        self.assertGreaterEqual(found,3, "Expected apriltags with ids=24,60, and 78 not found.")
 
-        # Convert the quat to an angle about z
-        rot = tag.transform.rotation
-        ang = tr.euler_from_quaternion((rot.x, rot.y, rot.z, rot.w))[2] #z axis angle only
-        self.assertAlmostEqual(ang, 0, delta=15) # Allow up to 15 degrees of error margin
+
 
 if __name__ == '__main__':
     rostest.rosrun('apriltags', 'apriltags_tester_node', ApriltagsTesterNode)

@@ -80,6 +80,8 @@ class ApriltagsIntegrationTester(unittest.TestCase):
                 if tag.id == expected_id:
                     found = True
                     msg = "Error in file: {file}    ".format(file=file)
+                    msg += "Actual: [" + str(tag.transform.translation.x) + ", " + str(tag.transform.translation.y) + ", " + str(tag.transform.translation.z) + "]"
+                    msg += "   Expected: [" + str(self.annotations[file]['x']) + ", " + str(self.annotations[file]['y'])+ ", " + str(self.annotations[file]['z']) + "]"
                     try:self.assertAlmostEqual(tag.transform.translation.x, self.annotations[file]['x'], delta=0.15)
                     except AssertionError,e: tag_errs.append(msg + str(e))
                     try:self.assertAlmostEqual(tag.transform.translation.y, self.annotations[file]['y'], delta=0.15)

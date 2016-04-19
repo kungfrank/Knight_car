@@ -43,6 +43,7 @@ class LineDetectorNode(object):
         self.pub_colorSegment = None
 
         self.detector_config = None
+        self.verbose = None
         self.updateParams(None)
             
         # Publishers

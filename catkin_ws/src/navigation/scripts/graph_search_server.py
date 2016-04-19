@@ -6,36 +6,23 @@ from graph_search import GraphSearchProblem
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 from navigation.srv import *
+from generate_duckietown_map import graph_creator
 
 class graph_search_server():
     def __init__(self):
         print 'Graph Search Service Started'
 
-        # Inputs
+        # Input: csv file
         self.map_name = rospy.get_param('/map_name')
 
         # Loading map
         self.script_dir = os.path.dirname(__file__)
         self.map_path = self.script_dir + '/maps/' + self.map_name
-        try:
-	        file2 = open(self.map_path + '.pkl', 'r')
-        except IOError:
-	        print "Couldn't find your map:", self.map_path, ". Closing program..."
-	        sys.exit(0)
-	
-        map_data = pickle.load(file2)
-        file2.close()
 
-        # Create graph
-        self.duckietown_graph = Graph()
-        edges = map_data[0]
-        node_locations = map_data[1]
-        for edge in edges:
-	        self.duckietown_graph.add_edge(edge[0], edge[1], edge[2], edge[3])
-	
-        self.duckietown_graph.set_node_positions(node_locations)
+        gc = graph_creator()
+        self.duckietown_graph = gc.build_graph_from_csv(csv_filename=self.map_name)
         self.duckietown_problem = GraphSearchProblem(self.duckietown_graph, None, None)
-
+    
         print "Map loaded successfully!\n"
 
         self.image_pub = rospy.Publisher("~map_graph",Image, queue_size = 1, latch=True)

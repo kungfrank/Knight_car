@@ -89,10 +89,10 @@ class Graph(object):
                 g.node(name=node_name, pos=node_pos, color='green')
             elif highlight_nodes and node == start_node:
                 g.node(name=node_name, pos=node_pos, color='blue')
-            elif len(node_name) == 2:
-                g.node(name=node_name, pos=node_pos)
-            elif len(node_name) == 3:
+            elif node_name[0:4] == 'turn':
                 g.node(name=node_name, pos=node_pos, fixedsize='true', width='0', height='0', style='invis', label="")
+            else:
+                g.node(name=node_name, pos=node_pos)
         for src_node, edges in self._edges.items():
             for e in edges:
                 if show_weights:

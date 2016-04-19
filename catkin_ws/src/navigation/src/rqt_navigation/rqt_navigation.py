@@ -4,6 +4,9 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from python_qt_binding.QtGui import QWidget
 from navigation.msg import SourceTargetNodes
+path_dir = os.path.dirname(__file__) + '/../../scripts/'
+sys.path.append(path_dir)
+from generate_duckietown_map import graph_creator
 
 class RQTNavigation(Plugin):
 
@@ -38,19 +41,15 @@ class RQTNavigation(Plugin):
 
     def loadComboBoxItems(self):
         # Loading map
-        self.map_name = 'duckietown_map'
+        self.map_name = rospy.get_param('/map_name', 'tiles_226')
         self.script_dir = os.path.dirname(__file__)
         self.map_path = self.script_dir + '/../../scripts/maps/' + self.map_name
-        try:
-            file2 = open(self.map_path + '.pkl', 'r')
-            map_data = pickle.load(file2)
-            file2.close()
-        except IOError:
-	        print "Couldn't find your map:", self.map_path, ". Closing program..."
-	        sys.exit(0)
+        gc = graph_creator()
+        gc.build_graph_from_csv(csv_filename=self.map_name)
 
-        node_locations = map_data[1]
-        comboBoxList = sorted([key for key in node_locations if len(key) == 2])
+        node_locations = gc.node_locations
+        comboBoxList = sorted([int(key) for key in node_locations if key[0:4]!='turn'])
+        comboBoxList = [str(key) for key in comboBoxList]
         self._widget.comboBoxDestination.addItems(comboBoxList)
         self._widget.comboBoxStart.addItems(comboBoxList)
 

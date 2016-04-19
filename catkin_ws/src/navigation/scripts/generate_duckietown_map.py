@@ -1,6 +1,47 @@
-import pickle, csv
+import pickle, csv, os
 import numpy as np
 from graph import Graph
+
+class Node():
+	n = 1
+	def __init__(self, pos, direction,name='default'):
+		if name == 'default':
+			self.name = str(Node.n)
+			Node.n = Node.n + 1
+		else:
+			self.name = name
+		self.pos = pos
+		self.direction = direction
+		
+
+	def flow(self, node):
+		return (self.direction[0]+node.direction[0])**2 + (self.direction[1]+node.direction[1])**2
+
+	def rotateDirection(self,theta):
+		theta = np.deg2rad(theta)
+		vec = np.matrix(self.direction).transpose()
+		rotMatrix = np.matrix([[np.cos(theta), -np.sin(theta)],
+			[np.sin(theta), np.cos(theta)]])
+		res = np.dot(rotMatrix,vec)
+		res = res.tolist()
+		return (int(res[0][0]),int(res[1][0]))
+
+	def rotateAndTranslatePos(self,theta,x,y):
+		theta = np.deg2rad(theta)
+		vec = np.matrix(self.pos).transpose()
+		vec = np.append(vec,[[1]],axis=0)
+		rotMatrix = np.matrix([[np.cos(theta), -np.sin(theta), x+0.5],
+			[np.sin(theta), np.cos(theta), y+0.5],
+			[0,0,1]])
+		
+		res = np.dot(rotMatrix,vec)
+		res = res[0:2,0]
+		res = res.tolist()
+
+		return (res[0][0],res[1][0])
+
+	def globalPosAndDirection(self,theta,x,y,name='default'):
+		return Node(self.rotateAndTranslatePos(theta,x,y), self.rotateDirection(theta),name)
 
 class Tile():
 	def __init__(self, csv_row):
@@ -8,183 +49,15 @@ class Tile():
 		self.y = float(csv_row[1])
 		self.type = csv_row[2]
 		self.rotation = float(csv_row[3])
-		self.node1 = 0
-		self.node2 = 0
-		self.node3 = 0
-		self.node4 = 0
-		self.node5 = 0
-		self.node6 = 0
-		self.node7 = 0
-		self.node8 = 0
-	
+
 	def create_nodes(self):
-		if self.type == 'turn':
-			return self.create_turn_nodes()
-		elif self.type == '3way':
-			return self.create_3way_nodes()
-		elif self.type == '4way':	
-			return self.create_4way_nodes()
-		else:
-			return {},[]
-
-	def create_turn_nodes(self):
-		x = self.x
-		y = self.y
-		theta = self.rotation
-		node1_default_pos = (-0.25, 0.25)
-		node1_default_dir = (-1, 0)
-		node2_default_pos = (0.25,-0.25)
-		node2_default_dir = (0, 1)
-		node1_pos = self.rotateAndTranslate(theta,x,y,node1_default_pos)
-		node2_pos = self.rotateAndTranslate(theta,x,y,node2_default_pos)
-		node1_dir = self.rotate(theta, node1_default_dir)
-		node2_dir = self.rotate(theta, node2_default_dir)
-		self.node1 = Node(node1_pos, node1_dir)
-		self.node2 = Node(node2_pos	, node2_dir)
-		node_loc = {self.node1.name:self.node1.pos, self.node2.name:self.node2.pos}
-		edges = []
-		return node_loc, edges
-
-	def create_3way_nodes(self):
-		x = self.x
-		y = self.y
-		theta = self.rotation
-		node1_default_pos = (0.5, 0.25)
-		node1_default_dir = (-1, 0)
-		node2_default_pos = (0.25, 0.5)
-		node2_default_dir = (0, 1)
-		node3_default_pos = (-0.25,0.5)
-		node3_default_dir = (0, -1)
-		node4_default_pos = (-0.5, 0.25)
-		node4_default_dir = (-1, 0)
-		node5_default_pos = (-0.5, -0.25)
-		node5_default_dir = (1, 0)
-		node6_default_pos = (0.5, -0.25)
-		node6_default_dir = (1, 0)
-		node1_pos = self.rotateAndTranslate(theta,x,y,node1_default_pos)
-		node2_pos = self.rotateAndTranslate(theta,x,y,node2_default_pos)
-		node3_pos = self.rotateAndTranslate(theta,x,y,node3_default_pos)
-		node4_pos = self.rotateAndTranslate(theta,x,y,node4_default_pos)
-		node5_pos = self.rotateAndTranslate(theta,x,y,node5_default_pos)
-		node6_pos = self.rotateAndTranslate(theta,x,y,node6_default_pos)
-		node1_dir = self.rotate(theta, node1_default_dir)
-		node2_dir = self.rotate(theta, node2_default_dir)
-		node3_dir = self.rotate(theta, node3_default_dir)
-		node4_dir = self.rotate(theta, node4_default_dir)
-		node5_dir = self.rotate(theta, node5_default_dir)
-		node6_dir = self.rotate(theta, node6_default_dir)
-		self.node1 = Node(node1_pos, node1_dir)
-		self.node2 = Node(node2_pos, node2_dir)
-		self.node3 = Node(node3_pos, node3_dir)
-		self.node4 = Node(node4_pos, node4_dir)
-		self.node5 = Node(node5_pos, node5_dir)
-		self.node6 = Node(node6_pos, node6_dir)
-		node_loc = {self.node1.name:self.node1.pos, self.node2.name:self.node2.pos,
-			self.node3.name:self.node3.pos, self.node4.name:self.node4.pos,
-			self.node5.name:self.node5.pos, self.node6.name:self.node6.pos}
-
-		edges = [[self.node1.name, self.node2.name, 'r'],
-        	[self.node1.name, self.node4.name, 's'],
-        	[self.node3.name, self.node4.name, 'r'],
-        	[self.node3.name, self.node6.name, 'l'],
-        	[self.node5.name, self.node2.name, 'l'],
-        	[self.node5.name, self.node6.name, 's']]
-
-		return node_loc,edges
-	def create_4way_nodes(self):
-		x = self.x
-		y = self.y
-		theta = self.rotation
-		node1_default_pos = (0.5, 0.25)
-		node1_default_dir = (-1, 0)
-		node2_default_pos = (0.25, 0.5)
-		node2_default_dir = (0, 1)
-		node3_default_pos = (-0.25,0.5)
-		node3_default_dir = (0, -1)
-		node4_default_pos = (-0.5, 0.25)
-		node4_default_dir = (-1, 0)
-		node5_default_pos = (-0.5, -0.25)
-		node5_default_dir = (1, 0)
-		node6_default_pos = (-0.25, -0.5)
-		node6_default_dir = (0, -1)
-		node7_default_pos = (0.25, -0.5)
-		node7_default_dir = (0, 1)
-		node8_default_pos = (0.5, -0.25)
-		node8_default_dir = (1, 0)
-		node1_pos = self.rotateAndTranslate(theta,x,y,node1_default_pos)
-		node2_pos = self.rotateAndTranslate(theta,x,y,node2_default_pos)
-		node3_pos = self.rotateAndTranslate(theta,x,y,node3_default_pos)
-		node4_pos = self.rotateAndTranslate(theta,x,y,node4_default_pos)
-		node5_pos = self.rotateAndTranslate(theta,x,y,node5_default_pos)
-		node6_pos = self.rotateAndTranslate(theta,x,y,node6_default_pos)
-		node7_pos = self.rotateAndTranslate(theta,x,y,node7_default_pos)
-		node8_pos = self.rotateAndTranslate(theta,x,y,node8_default_pos)
-		node1_dir = self.rotate(theta, node1_default_dir)
-		node2_dir = self.rotate(theta, node2_default_dir)
-		node3_dir = self.rotate(theta, node3_default_dir)
-		node4_dir = self.rotate(theta, node4_default_dir)
-		node5_dir = self.rotate(theta, node5_default_dir)
-		node6_dir = self.rotate(theta, node6_default_dir)
-		node7_dir = self.rotate(theta, node7_default_dir)
-		node8_dir = self.rotate(theta, node8_default_dir)
-		self.node1 = Node(node1_pos, node1_dir)
-		self.node2 = Node(node2_pos, node2_dir)
-		self.node3 = Node(node3_pos, node3_dir)
-		self.node4 = Node(node4_pos, node4_dir)
-		self.node5 = Node(node5_pos, node5_dir)
-		self.node6 = Node(node6_pos, node6_dir)
-		self.node7 = Node(node7_pos, node7_dir)
-		self.node8 = Node(node8_pos, node8_dir)
-		node_loc = {self.node1.name:self.node1.pos, self.node2.name:self.node2.pos,
-			self.node3.name:self.node3.pos, self.node4.name:self.node4.pos,
-			self.node5.name:self.node5.pos, self.node6.name:self.node6.pos,
-			self.node7.name:self.node7.pos, self.node8.name:self.node8.pos}
-
-		edges = [[self.node1.name, self.node2.name, 'r'],
-        	[self.node1.name, self.node4.name, 's'],
-        	[self.node1.name, self.node6.name, 'l'],
-        	[self.node3.name, self.node4.name, 'r'],
-        	[self.node3.name, self.node8.name, 'l'],
-        	[self.node3.name, self.node6.name, 's'],
-        	[self.node5.name, self.node2.name, 'l'],
-        	[self.node5.name, self.node8.name, 's'],
-        	[self.node5.name, self.node6.name, 'r'],
-        	[self.node7.name, self.node8.name, 'r'],
-        	[self.node7.name, self.node2.name, 's'],
-        	[self.node7.name, self.node4.name, 'l']]
-
-		return node_loc,edges
+		return {},[]
 
 	def create_edges(self,tile_map):
-		if self.type == 'turn':
-			return self.create_turn_edges(tile_map)
-		elif self.type == '3way':
-			return self.create_3way_edges(tile_map)
-		elif self.type == '4way':	
-			return self.create_4way_edges(tile_map)
-		else:
-			return []
+		return []
 
-	def create_turn_edges(self,tile_map):
-		edges = []
-		edges.append(self.connect_node(self.node1,tile_map))
-		edges.append(self.connect_node(self.node2,tile_map))
-		return edges
-
-	def create_3way_edges(self,tile_map):
-		edges = []
-		edges.append(self.connect_node(self.node2,tile_map))
-		edges.append(self.connect_node(self.node4,tile_map))
-		edges.append(self.connect_node(self.node6,tile_map))
-		return edges
-	def create_4way_edges(self,tile_map):
-		edges = []
-		edges.append(self.connect_node(self.node2,tile_map))
-		edges.append(self.connect_node(self.node4,tile_map))
-		edges.append(self.connect_node(self.node6,tile_map))
-		edges.append(self.connect_node(self.node8,tile_map))
-		return edges
 	def connect_node(self, node,tile_map):
+
 		next_tile_pos_x = self.x + node.direction[0]
 		next_tile_pos_y = self.y + node.direction[1]
 		t = self.get_tile(next_tile_pos_x,next_tile_pos_y,tile_map)
@@ -220,42 +93,117 @@ class Tile():
 			if tile.x == x and tile.y == y:
 				return tile
 
+class TurnTile(Tile):
+	name = 1000
+	node1_default = Node((-0.25,  0.25), (-1, 0), 'node1_default')
+	node2_default = Node(( 0.25, -0.25), ( 0, 1), 'node2_default')
+	def create_nodes(self):
+		x = self.x
+		y = self.y
+		theta = self.rotation
+		self.node1 = TurnTile.node1_default.globalPosAndDirection(theta, x, y, self.getNodeName())
+		self.node2 = TurnTile.node2_default.globalPosAndDirection(theta, x, y, self.getNodeName())
+		node_loc = {self.node1.name:self.node1.pos, self.node2.name:self.node2.pos}
+		edges = []
+		return node_loc, edges
+	def create_edges(self,tile_map):
+		edges = []
+		edges.append(self.connect_node(self.node1,tile_map))
+		edges.append(self.connect_node(self.node2,tile_map))
+		return edges
 
-	def rotate(self,theta,vec):
-		theta = np.deg2rad(theta)
-		vec = np.matrix(vec).transpose()
-		rotMatrix = np.matrix([[np.cos(theta), -np.sin(theta)],
-			[np.sin(theta), np.cos(theta)]])
-		res = np.dot(rotMatrix,vec)
-		res = res.tolist()
-		return (int(res[0][0]),int(res[1][0]))
+	def getNodeName(self):
+		res = 'turn'+str(TurnTile.name)
+		TurnTile.name = TurnTile.name + 1
+		return res
 
-	def rotateAndTranslate(self,theta,x,y,vec):
-		theta = np.deg2rad(theta)
-		vec = np.matrix(vec).transpose()
-		vec = np.append(vec,[[1]],axis=0)
-		rotMatrix = np.matrix([[np.cos(theta), -np.sin(theta), x+0.5],
-			[np.sin(theta), np.cos(theta), y+0.5],
-			[0,0,1]])
-		
-		res = np.dot(rotMatrix,vec)
-		res = res[0:2,0]
-		res = res.tolist()
+class ThreeWayTile(Tile):
+	node1_default = Node(( 0.50,  0.25), (-1,  0), 'node1_default')
+	node2_default = Node(( 0.25,  0.50), ( 0,  1), 'node2_default')
+	node3_default = Node((-0.25,  0.50), ( 0, -1), 'node3_default')
+	node4_default = Node((-0.50,  0.25), (-1,  0), 'node4_default')
+	node5_default = Node((-0.50, -0.25), ( 1,  0), 'node5_default')
+	node6_default = Node(( 0.50, -0.25), ( 1,  0), 'node6_default')
+	def create_nodes(self):
+		x = self.x
+		y = self.y
+		theta = self.rotation
+		self.node1 = ThreeWayTile.node1_default.globalPosAndDirection(theta, x, y)
+		self.node2 = ThreeWayTile.node2_default.globalPosAndDirection(theta, x, y)
+		self.node3 = ThreeWayTile.node3_default.globalPosAndDirection(theta, x, y)
+		self.node4 = ThreeWayTile.node4_default.globalPosAndDirection(theta, x, y)
+		self.node5 = ThreeWayTile.node5_default.globalPosAndDirection(theta, x, y)
+		self.node6 = ThreeWayTile.node6_default.globalPosAndDirection(theta, x, y)
+		node_loc = {self.node1.name:self.node1.pos, self.node2.name:self.node2.pos,
+			        self.node3.name:self.node3.pos, self.node4.name:self.node4.pos,
+			        self.node5.name:self.node5.pos, self.node6.name:self.node6.pos}
 
-		return (res[0][0],res[1][0])
+		edges = [[self.node1.name, self.node2.name, 'r'],
+				 [self.node1.name, self.node4.name, 's'],
+				 [self.node3.name, self.node4.name, 'r'],
+				 [self.node3.name, self.node6.name, 'l'],
+				 [self.node5.name, self.node2.name, 'l'],
+				 [self.node5.name, self.node6.name, 's']]
+		return node_loc,edges
 
+	def create_edges(self,tile_map):
+		edges = []
+		edges.append(self.connect_node(self.node2,tile_map))
+		edges.append(self.connect_node(self.node4,tile_map))
+		edges.append(self.connect_node(self.node6,tile_map))
+		return edges
 
-class Node():
-	n = 10
-	def __init__(self, pos, direction):
-		self.name = str(Node.n)
-		self.pos = pos
-		self.direction = direction
-		Node.n = Node.n + 1
+class FourWayTile(Tile):
+	node1_default = Node(( 0.50,  0.25), (-1,  0), 'node1_default')
+	node2_default = Node(( 0.25,  0.50), ( 0,  1), 'node2_default')
+	node3_default = Node((-0.25,  0.50), ( 0, -1), 'node3_default')
+	node4_default = Node((-0.50,  0.25), (-1,  0), 'node4_default')
+	node5_default = Node((-0.50, -0.25), ( 1,  0), 'node5_default')
+	node6_default = Node((-0.25, -0.50), ( 0, -1), 'node6_default')
+	node7_default = Node(( 0.25, -0.50), ( 0,  1), 'node7_default')
+	node8_default = Node(( 0.50, -0.25), ( 1,  0), 'node8_default')
 
-	def flow(self, node):
-		return (self.direction[0]+node.direction[0])**2 + (self.direction[1]+node.direction[1])**2
+	def create_nodes(self):
+		x = self.x
+		y = self.y
+		theta = self.rotation
+		self.node1 = FourWayTile.node1_default.globalPosAndDirection(theta, x, y)
+		self.node2 = FourWayTile.node2_default.globalPosAndDirection(theta, x, y)
+		self.node3 = FourWayTile.node3_default.globalPosAndDirection(theta, x, y)
+		self.node4 = FourWayTile.node4_default.globalPosAndDirection(theta, x, y)
+		self.node5 = FourWayTile.node5_default.globalPosAndDirection(theta, x, y)
+		self.node6 = FourWayTile.node6_default.globalPosAndDirection(theta, x, y)
+		self.node7 = FourWayTile.node7_default.globalPosAndDirection(theta, x, y)
+		self.node8 = FourWayTile.node8_default.globalPosAndDirection(theta, x, y)
+		node_loc = {self.node1.name:self.node1.pos, self.node2.name:self.node2.pos,
+			        self.node3.name:self.node3.pos, self.node4.name:self.node4.pos,
+			        self.node5.name:self.node5.pos, self.node6.name:self.node6.pos,
+			        self.node7.name:self.node7.pos, self.node8.name:self.node8.pos}
 
+		edges = [[self.node1.name, self.node2.name, 'r'],
+        		 [self.node1.name, self.node4.name, 's'],
+        		 [self.node1.name, self.node6.name, 'l'],
+        		 [self.node3.name, self.node4.name, 'r'],
+        		 [self.node3.name, self.node8.name, 'l'],
+        		 [self.node3.name, self.node6.name, 's'],
+        		 [self.node5.name, self.node2.name, 'l'],
+        		 [self.node5.name, self.node8.name, 's'],
+        		 [self.node5.name, self.node6.name, 'r'],
+        		 [self.node7.name, self.node8.name, 'r'],
+        		 [self.node7.name, self.node2.name, 's'],
+        		 [self.node7.name, self.node4.name, 'l']]
+
+		return node_loc,edges
+	def create_edges(self,tile_map):
+		edges = []
+		edges.append(self.connect_node(self.node2,tile_map))
+		edges.append(self.connect_node(self.node4,tile_map))
+		edges.append(self.connect_node(self.node6,tile_map))
+		edges.append(self.connect_node(self.node8,tile_map))
+		return edges
+
+class StraightTile(Tile):
+	pass
 
 class graph_creator():
 	def __init__(self):
@@ -272,28 +220,36 @@ class graph_creator():
 			action = edge[2]
 			manhattan_dist = abs(self.node_locations[source][0] - self.node_locations[target][0]) + abs(self.node_locations[source][1] - self.node_locations[target][1])
 			self.edges.append([source, target, manhattan_dist, action])
-	def save(self, name='duckietown_map.pkl'):
+	def pickle_save(self, name='duckietown_map.pkl'):
 		afile = open(r'maps/duckietown_map.pkl', 'w+')
 		pickle.dump([self.edges, self.node_locations], afile)
-		afile.close()
-	def draw(self):
-	    # Create graph
-		duckietown_graph = Graph()
-		for edge in self.edges:
-			duckietown_graph.add_edge(edge[0], edge[1], edge[2], edge[3])
+		afile.close()		
 
-		duckietown_graph.set_node_positions(self.node_locations)
-		duckietown_graph.draw(map_name='duckietown_map')
-
-	def build_tile_map_from_csv(self):
-		with open('maps/tiles_226.csv', 'rb') as f:
+	def build_graph_from_csv(self, csv_filename='tiles_226.csv'):
+		script_dir = os.path.dirname(__file__)
+		map_path = script_dir + '/maps/' + csv_filename
+		with open(map_path + '.csv', 'rb') as f:
 			spamreader = csv.reader(f,skipinitialspace=True)
 			for i,row in enumerate(spamreader):
 				if i != 0:
 					row_ = [element.strip() for element in row] # remove white spaces
-					self.tile_map.append(Tile(row_))
+					if row_[2] == 'turn':
+						self.tile_map.append(TurnTile(row_))
+					elif row_[2] == '3way':
+						self.tile_map.append(ThreeWayTile(row_))
+					elif row_[2] == '4way':
+						self.tile_map.append(FourWayTile(row_))
+					elif row_[2] == 'straight':
+						self.tile_map.append(StraightTile(row_))
 		self.generate_node_locations()
 		self.generate_edges()
+
+		duckietown_graph = Graph()
+		for edge in self.edges:
+			duckietown_graph.add_edge(edge[0], edge[1], edge[2], edge[3])
+		duckietown_graph.set_node_positions(self.node_locations)
+
+		return duckietown_graph
 	def generate_node_locations(self):
 		for tile in self.tile_map:
 			node_loc,edges = tile.create_nodes()
@@ -387,13 +343,13 @@ class graph_creator():
  
 if __name__ == "__main__":
     gc = graph_creator()
-    gc.build_tile_map_from_csv()
+    duckietown_graph = gc.build_graph_from_csv(csv_filename='tiles_226.csv')
     # Node locations (for visual representation) and heuristics calculation
     #node_locations, edges = gc.get_map_226()
     #gc.add_node_locations(node_locations)
     #gc.add_edges(edges)
-    gc.save()
-    gc.draw()
+    #gc.pickle_save()
+    duckietown_graph.draw(map_name='duckietown_226')
 
 
 

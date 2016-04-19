@@ -57,7 +57,7 @@ class LineDetectorNode(object):
 
         rospy.loginfo("[%s] Initialized (verbose = %s)." %(self.node_name, self.verbose))
 
-        # self.timer = rospy.Timer(rospy.Duration.from_sec(2.0), self.updateParams)
+        rospy.Timer(rospy.Duration.from_sec(2.0), self.updateParams)
 
 
     def updateParams(self, _event):

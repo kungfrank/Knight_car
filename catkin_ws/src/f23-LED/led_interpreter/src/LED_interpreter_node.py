@@ -28,11 +28,11 @@ class LEDInterpreterNode(object):
 		# self._light = None
 		# self._freq = None
 
-		self.lightGo = self.protocol['traffic_light_go']['frequency_idx']
-		self.lightStop = self.protocol['traffic_light_stop']['frequency_idx']
-		self.carSignalA = self.protocol['CAR_SIGNAL_A']['frequency_idx']
-		self.carSignalB = self.protocol['CAR_SIGNAL_B']['frequency_idx']
-		self.carSignalC = self.protocol['CAR_SIGNAL_C']['frequency_idx']
+		self.lightGo = self.protocol['signals']['traffic_light_go']['frequency']
+		self.lightStop = self.protocol['signals']['traffic_light_stop']['frequency']
+		self.carSignalA = self.protocol['signals']['CAR_SIGNAL_A']['frequency']
+		self.carSignalB = self.protocol['signals']['CAR_SIGNAL_B']['frequency']
+		self.carSignalC = self.protocol['signals']['CAR_SIGNAL_C']['frequency']
 
 		self.signalFrequencies = [self.carSignalA, self.carSignalB,self.carSignalC]
 		self.vehicleSignals = [SignalsDetection.SIGNAL_A,SignalsDetection.SIGNAL_B,SignalsDetection.SIGNAL_C] 

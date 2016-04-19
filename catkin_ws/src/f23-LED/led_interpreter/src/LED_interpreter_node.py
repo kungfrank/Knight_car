@@ -77,6 +77,7 @@ class LEDInterpreterNode(object):
 
 
 	def Interpreter(self, msg):
+		rospy.loginfo("[%s] Read a message from Detector" %(self.node_name))
 		if self.active:
 			if self.setIntersectionType:
 				self.hasObservedSignals = True

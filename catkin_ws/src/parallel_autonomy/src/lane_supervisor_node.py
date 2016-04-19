@@ -98,11 +98,11 @@ class lane_supervisor(object):
             car_control_merged.omega = self.car_control_lane.omega # take the heading from the lane controller
             car_cmd_msg = car_control_merged
             car_cmd_msg.header.stamp = self.car_control_joy.header.stamp
-#        if car_cmd_msg.v >= 0:
-#            new_theta = -car_cmd_msg.omega - 
-#            if type(new_theta) is np.float64:
-#                new_theta = new_theta.item()
-#            rospy.set_param("lane_controller_node/k_theta",new_theta) 
+       if car_cmd_msg.v >= 0:
+           new_theta = -car_cmd_msg.omega - 2.57
+           if type(new_theta) is np.float64:
+               new_theta = new_theta.item()
+           rospy.set_param("lane_controller_node/k_theta",new_theta)
         return car_cmd_msg
 
 

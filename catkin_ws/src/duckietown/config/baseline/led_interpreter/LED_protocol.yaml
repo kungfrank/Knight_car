@@ -29,7 +29,7 @@ LED_protocol:
       color: "yellow"
 
     light_off:
-      frequency: *f1
+      frequency: *f3
       color: "black"
 
     traffic_light_go:

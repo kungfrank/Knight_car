@@ -227,7 +227,7 @@ class graph_creator():
 
 	def build_graph_from_csv(self, csv_filename='tiles_226.csv'):
 		script_dir = os.path.dirname(__file__)
-		map_path = script_dir + '../../src/maps/' + csv_filename
+		map_path = script_dir + '/../../src/maps/' + csv_filename
 		with open(map_path + '.csv', 'rb') as f:
 			spamreader = csv.reader(f,skipinitialspace=True)
 			for i,row in enumerate(spamreader):

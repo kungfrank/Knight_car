@@ -1,6 +1,6 @@
 <launch>
 	<arg name="veh"/>
-    <arg name="map_name" default="duckietown_map" />
+    <arg name="map_name" default="tiles_226" />
 	<arg name="config" default="baseline"/>
 	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman"/>
 	<arg name="local" default="false" doc="true to launch locally on laptop. false to launch of vehicle"/>

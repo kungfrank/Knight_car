@@ -43,20 +43,9 @@ class RQTNavigation(Plugin):
         # Loading map
         self.map_name = rospy.get_param('/map_name', 'tiles_226')
         self.script_dir = os.path.dirname(__file__)
-<<<<<<< HEAD:catkin_ws/src/navigation/src/rqt_navigation/rqt_navigation.py
-        self.map_path = self.script_dir + '/../../scripts/maps/' + self.map_name
+        self.map_path = self.script_dir + '/../../src/maps/' + self.map_name
         gc = graph_creator()
         gc.build_graph_from_csv(csv_filename=self.map_name)
-=======
-        self.map_path = self.script_dir + '/../../src/maps/' + self.map_name
-        try:
-            file2 = open(self.map_path + '.pkl', 'r')
-            map_data = pickle.load(file2)
-            file2.close()
-        except IOError:
-	        print "Couldn't find your map:", self.map_path, ". Closing program..."
-	        sys.exit(0)
->>>>>>> dp6b-joe-cleanup:catkin_ws/src/navigation/include/rqt_navigation/rqt_navigation.py
 
         node_locations = gc.node_locations
         comboBoxList = sorted([int(key) for key in node_locations if key[0:4]!='turn'])

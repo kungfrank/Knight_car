@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
 import rospy, sys, os, cv2, pickle
-from graph import Graph
-from graph_search import GraphSearchProblem
+from navigation.graph import Graph
+from navigation.graph_search import GraphSearchProblem
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 from navigation.srv import *
-from generate_duckietown_map import graph_creator
+from navigation.generate_duckietown_map import graph_creator
 
 class graph_search_server():
     def __init__(self):
@@ -29,7 +29,7 @@ class graph_search_server():
         self.bridge = CvBridge()
 
         # Send graph through publisher
-        self.duckietown_graph.draw(highlight_edges=None, map_name = self.map_name)
+        self.duckietown_graph.draw(self.script_dir, highlight_edges=None, map_name = self.map_name)
         cv_image = cv2.imread(self.map_path + '.png', cv2.CV_LOAD_IMAGE_COLOR)
         self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
 
@@ -37,6 +37,7 @@ class graph_search_server():
 	    # Checking if nodes exists
         if (req.source_node not in self.duckietown_graph) or (req.target_node not in self.duckietown_graph):
             print "Source or target node do not exist."
+            self.publishImage(req, [])
             return GraphSearchResponse([])
 
         # Running A*
@@ -45,15 +46,20 @@ class graph_search_server():
         path = self.duckietown_problem.astar_search()
 
         # Publish graph solution
-        if path:
-            self.duckietown_graph.draw(highlight_edges=path.edges(), map_name = self.map_name, highlight_nodes = [req.source_node, req.target_node])
-            cv_image = cv2.imread(self.map_path + '.png', cv2.CV_LOAD_IMAGE_COLOR)
-            self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
+        self.publishImage(req, path)
 
         return GraphSearchResponse(path.actions)        
 
+    def publishImage(self, req, path):
+        if path:
+            self.duckietown_graph.draw(self.script_dir, highlight_edges=path.edges(), map_name = self.map_name, highlight_nodes = [req.source_node, req.target_node])
+        else:
+            self.duckietown_graph.draw(self.script_dir, highlight_edges=None, map_name = self.map_name)
+        cv_image = cv2.imread(self.map_path + '.png', cv2.CV_LOAD_IMAGE_COLOR)
+        self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
+
 if __name__ == "__main__":	
-    rospy.init_node('graph_search_server')
+    rospy.init_node('graph_search_server_node')
     gss = graph_search_server()
     print 'Starting server...\n'
     s = rospy.Service('graph_search', GraphSearch, gss.handle_graph_search)

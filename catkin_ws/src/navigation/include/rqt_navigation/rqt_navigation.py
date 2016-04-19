@@ -3,10 +3,10 @@ import os, sys, pickle, rospy
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from python_qt_binding.QtGui import QWidget
-from navigation.msg import SourceTargetNodes
-path_dir = os.path.dirname(__file__) + '/../../scripts/'
-sys.path.append(path_dir)
-from generate_duckietown_map import graph_creator
+from duckietown_msgs.msg import SourceTargetNodes
+#path_dir = os.path.dirname(__file__) + '/../../scripts/'
+#sys.path.append(path_dir)
+from navigation.generate_duckietown_map import graph_creator
 
 class RQTNavigation(Plugin):
 
@@ -34,7 +34,7 @@ class RQTNavigation(Plugin):
 
         # ROS stuff
         self.veh = rospy.get_param('/veh')
-        self.topic_name = '/' + self.veh + '/actions_dispatcher/plan_request'
+        self.topic_name = '/' + self.veh + '/actions_dispatcher_node/plan_request'
         self.pub = rospy.Publisher(self.topic_name,SourceTargetNodes, queue_size = 1, latch=True)
         self._widget.buttonFindPlan.clicked.connect(self.requestPlan)
 
@@ -43,9 +43,20 @@ class RQTNavigation(Plugin):
         # Loading map
         self.map_name = rospy.get_param('/map_name', 'tiles_226')
         self.script_dir = os.path.dirname(__file__)
+<<<<<<< HEAD:catkin_ws/src/navigation/src/rqt_navigation/rqt_navigation.py
         self.map_path = self.script_dir + '/../../scripts/maps/' + self.map_name
         gc = graph_creator()
         gc.build_graph_from_csv(csv_filename=self.map_name)
+=======
+        self.map_path = self.script_dir + '/../../src/maps/' + self.map_name
+        try:
+            file2 = open(self.map_path + '.pkl', 'r')
+            map_data = pickle.load(file2)
+            file2.close()
+        except IOError:
+	        print "Couldn't find your map:", self.map_path, ". Closing program..."
+	        sys.exit(0)
+>>>>>>> dp6b-joe-cleanup:catkin_ws/src/navigation/include/rqt_navigation/rqt_navigation.py
 
         node_locations = gc.node_locations
         comboBoxList = sorted([int(key) for key in node_locations if key[0:4]!='turn'])

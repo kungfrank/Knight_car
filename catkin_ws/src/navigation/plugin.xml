@@ -1,4 +1,4 @@
-<library path="src">
+<library path="include">
   <class name="My Plugin" type="rqt_navigation.rqt_navigation.RQTNavigation" base_class_type="rqt_gui_py::Plugin">
     <description>
       An example Python GUI plugin to create a great user interface.

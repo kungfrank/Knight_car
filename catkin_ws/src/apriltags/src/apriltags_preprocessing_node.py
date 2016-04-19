@@ -17,6 +17,11 @@ class AprilPrePros(object):
         rospy.loginfo("[%s] Initializing " %(self.node_name))
         self.bridge = CvBridge()
 
+        # Initial enabled status from param file, then can update using switch topic
+        self.fast_enabled    = ( rospy.get_param("~fast_enabled") == 1 )
+        self.global_enabled  = ( rospy.get_param("~global_enabled") == 1 )
+
+
         self.pub_ToApril_global = rospy.Publisher( "~global_image_raw", Image, queue_size=1)
         self.pub_ToApril_fast   = rospy.Publisher( "~fast_image_raw", Image, queue_size=1)
         
@@ -31,14 +36,7 @@ class AprilPrePros(object):
         self.camera_msg  = None
         
         self.load_params( None )
-        
-        # Initial enabled status from param file, then can update using switch topic
-        self.fast_enabled    = ( rospy.get_param("~fast_enabled") == 1 )
-        self.global_enabled  = ( rospy.get_param("~global_enabled") == 1 )
-        
         self.init_timers()
-        
-        
         
     def load_params(self, event):
         """ """
@@ -61,7 +59,6 @@ class AprilPrePros(object):
         self.fast_x_down     = rospy.get_param("~fast_x_down")
         self.global_x_down   = rospy.get_param("~global_x_down")
         
-        rospy.loginfo("[%s] Parameters Loaded " %(self.node_name))
         
         
     def init_timers(self):
@@ -72,17 +69,17 @@ class AprilPrePros(object):
         
 
     def global_switch( self , msg ):
-        """ """
         self.global_enabled = msg.data
         
         
     def fast_switch( self , msg ):
-        """ """ 
         self.fast_enabled = msg.data
         
 
     def callback( self , msg ):
         """ Save camera IMG """ 
+        if not self.global_enabled and not self.fast_enabled:
+            return
 
         # Load message
         cv_img = self.bridge.imgmsg_to_cv2( msg , desired_encoding="passthrough" )

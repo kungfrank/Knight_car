@@ -72,23 +72,26 @@ class Graph(object):
             raise NodeNotInGraph(node)
         return self._edges.get(node, set())        
 
-    def draw(self, highlight_edges=None, show_weights=None, map_name = 'duckietown', highlight_nodes = None):
+    def draw(self, script_dir, highlight_edges=None, show_weights=None, map_name = 'duckietown', highlight_nodes = None):
         if highlight_nodes:        
             start_node = highlight_nodes[0]
             target_node = highlight_nodes[1]        
 
         g = graphviz.Digraph(name="duckietown", engine="neato")
-        g.edge_attr.update(fontsize = '8', arrowsize = '0.4', arrowhead = 'open')
-        g.node_attr.update(shape="circle", fontsize='10',margin="0", height='0')
+        g.edge_attr.update(fontsize = '8', arrowsize = '0.5', arrowhead = 'open')
+        g.node_attr.update(shape="circle", fontsize='14',margin="0", height='0')
         #g.graph_attr.update(ratio = '0.7', inputscale = '1.3')
+
+        g.body.append(r'label = "\nduckiegraph"')
+        g.body.append('fontsize=16')
 
         for node in self._nodes:
             node_name = self.node_label_fn(node)
             node_pos = "%f,%f!" % (self.node_positions[node][0], self.node_positions[node][1])
             if highlight_nodes and node == target_node:
-                g.node(name=node_name, pos=node_pos, color='green')
+                g.node(name=node_name, pos=node_pos, color='green', shape='doublecircle')
             elif highlight_nodes and node == start_node:
-                g.node(name=node_name, pos=node_pos, color='blue')
+                g.node(name=node_name, pos=node_pos, color='blue', shape='doublecircle')
             elif node_name[0:4] == 'turn':
                 g.node(name=node_name, pos=node_pos, fixedsize='true', width='0', height='0', style='invis', label="")
             else:
@@ -107,7 +110,7 @@ class Graph(object):
                     
                 g.edge(self.node_label_fn(src_node), self.node_label_fn(e.target), taillabel=t , color = c)
         
-        script_dir = os.path.dirname(__file__)
+        #script_dir = os.path.dirname(__file__)
         map_path = script_dir + '/maps/'
         g.format = 'png'
         g.render(filename=map_name, directory=map_path, view=False, cleanup=True)

@@ -4,6 +4,7 @@ import numpy as np
 from duckietown_msgs.msg import  Twist2DStamped, BoolStamped
 from sensor_msgs.msg import Joy
 import time
+from __builtin__ import True
 
 class JoyMapper(object):
     def __init__(self):
@@ -32,6 +33,9 @@ class JoyMapper(object):
         # self.pub_timer = rospy.Timer(rospy.Duration.from_sec(self.pub_timestep),self.publishControl)
         self.param_timer = rospy.Timer(rospy.Duration.from_sec(1.0),self.cbParamTimer)
         self.has_complained = False
+
+        self.state_parallel_autonomy = False
+        self.state_verbose = False
 
     def cbParamTimer(self,event):
         self.v_gain = rospy.get_param("~speed_gain", 1.0)
@@ -71,14 +75,16 @@ class JoyMapper(object):
             override_msg.data = False
             self.pub_joy_override.publish(override_msg)
         elif (joy_msg.buttons[5] == 1): # Right back button
-            parallel_autonomy_msg = BoolStamped()
-            parallel_autonomy_msg.header.stamp = self.joy.header.stamp
-            parallel_autonomy_msg.data = True
-            self.pub_parallel_autonomy.publish(parallel_autonomy_msg)
+            self.state_verbose ^= True
+            rospy.loginfo('state_verbose = %s' % self.state_verbose)
+            rospy.param_set('/emma/line_detector_node/verbose', self.state_verbose)
+
         elif (joy_msg.buttons[4] == 1): #Left back button
+            self.state_parallel_autonomy ^= True
+            rospy.loginfo('state_parallel_autonomy = %s' % self.state_parallel_autonomy)
             parallel_autonomy_msg = BoolStamped()
             parallel_autonomy_msg.header.stamp = self.joy.header.stamp
-            parallel_autonomy_msg.data = False
+            parallel_autonomy_msg.data = self.state_parallel_autonomy
             self.pub_parallel_autonomy.publish(parallel_autonomy_msg)
         elif (joy_msg.buttons[3] == 1):
             anti_instagram_msg = BoolStamped()
@@ -90,6 +96,8 @@ class JoyMapper(object):
             e_stop_msg.header.stamp = self.joy.header.stamp
             e_stop_msg.data = True # note that this is toggle (actual value doesn't matter)
             self.pub_e_stop.publish(e_stop_msg)
+        else:
+            rospy.loginfo('No binding for joy_msg.buttons = %s' % str(joy_msg.buttons))
                                           
 
 if __name__ == "__main__":

@@ -18,7 +18,6 @@ class LEDEmitter(object):
         self.is_on = False
 
         self.protocol = rospy.get_param("~LED_protocol") #should be a list of tuples
-        print(self.protocol)
 
         self.pattern_off = [[0,0,0]] * 5
 
@@ -49,11 +48,11 @@ class LEDEmitter(object):
         if pattern_name:#  in ['light_off', 'CAR_SIGNAL_A', 'CAR_SIGNAL_B',   'CAR_SIGNAL_C']:
             color = self.protocol['signals'][pattern_name]['color']
             self.cycle = self.protocol['signals'][pattern_name]['frequency']
-            print("COLOR: %s, CYCLE: %s "%(color, self.cycle))
+            print("color: %s, freq (Hz): %s "%(color, self.cycle))
 
             self.pattern = [[0,0,0]] * 5
             self.pattern[2] = self.protocol['colors'][color]
-            print(self.pattern)
+            #print(self.pattern)
 
         if pattern_name in ['traffic_light_go', 'traffic_light_stop']:
             self.pattern = [self.protocol['colors'][color]] * 5

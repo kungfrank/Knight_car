@@ -51,12 +51,12 @@ test-turn-right:
 	bash -c "rostest indefinite_navigation calibrate_turn.test veh:=$(vehicle_name) type:=right"
 
 test-turn-left:
-        echo "Calibrating left turn"
-        bash -c "rostest indefinite_navigation calibrate_turn.test veh:=$(vehicle_name) type:=left"
+	echo "Calibrating left turn"
+	bash -c "rostest indefinite_navigation calibrate_turn.test veh:=$(vehicle_name) type:=left"
 
 test-turn-forward:
-        echo "Calibrating forward turn"
-        bash -c "rostest indefinite_navigation calibrate_turn.test veh:=$(vehicle_name) type:=forward"
+	echo "Calibrating forward turn"
+	bash -c "rostest indefinite_navigation calibrate_turn.test veh:=$(vehicle_name) type:=forward"
 
 
 # Basic demos
@@ -117,4 +117,7 @@ openhouse-dp2-obstacle: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos obstacle_avoid.launch"
 
 openhouse-dp6b: unittests-environment
-    bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos mission_planning.launch"
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos mission_planning.launch"
+
+openhouse-dp6b-laptop-%:
+	bash -c "source set_ros_master.sh $*; rqt --force-discover"

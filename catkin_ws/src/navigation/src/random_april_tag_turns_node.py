@@ -42,9 +42,9 @@ class RandomAprilTagTurnsNode(object):
                     #go through possible intersection types
                     signType = taginfo.traffic_sign_type
                     if(signType == taginfo.NO_RIGHT_TURN or signType == taginfo.LEFT_T_INTERSECT):
-                        availableTurns = [1,2]
+                        availableTurns = [0,1] # these mystical numbers correspond to the array ordering in open_loop_intersection_control_node (very bad)
                     elif (signType == taginfo.NO_LEFT_TURN or signType == taginfo.RIGHT_T_INTERSECT):
-                        availableTurns = [0,1]
+                        availableTurns = [1,2]
                     elif (signType== taginfo.FOUR_WAY):
                         availableTurns = [0,1,2]
                     elif (signType == taginfo.T_INTERSECTION):

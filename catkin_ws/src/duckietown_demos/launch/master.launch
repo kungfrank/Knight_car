@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <launch>
 	<!-- start basic args -->
 	<arg name="veh" default="$(env VEHICLE_NAME)"/>
@@ -5,16 +6,17 @@
 	<arg name="param_file_name" default="default" />
 	<arg name="fsm_file_name" default="default" />
 	<arg name="visualization" default="true" />
-	<arg name="verbose" default="true" />
+	<arg name="verbose" default="false" />
 	<arg name="statistics" default="false"/>
 	<arg name="loc" default="-1"/>
+	<arg name="line_detector_param_file_name" default="$(arg param_file_name)"/>
 	<!-- end basic args -->
  
 <!-- the things that are "on" by default: 
- - camera
- - wheels
- - joystick
- - lane_following stack
+ - camera stack (raw imagery defaults to false)
+ - wheels stack
+ - joystick stack
+ - lane_following stack (old version of line detector only)
  - fsm
 -->
 
@@ -48,7 +50,6 @@
 
 	<arg name="vehicle_avoidance" default="false"/>
 	<arg name="/vehicle_avoidance/detection" default="true" />
-	<arg name="/vehicle_avoidance/filter" default="true" />
 	<arg name="/vehicle_avoidance/control" default="true"/>
 
 	<arg name="apriltags" default="false"/>
@@ -210,10 +211,11 @@
 			<include file="$(find line_detector)/launch/line_detector_node.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
-				<arg name="param_file_name" value="$(arg param_file_name)"/>
+				<arg name="param_file_name" value="$(arg line_detector_param_file_name)"/>
 				<arg name="verbose" value="$(arg verbose)" />
 			</include>	
 		</group>
+
 		
 		<!-- Ground projection -->
 		<group if="$(arg /lane_following/ground_projection)">
@@ -310,18 +312,9 @@
 				<arg name="veh" value="$(arg veh)"/>
 			</include>
 		</group>
-	
-		<!-- Vehicle Filter Node -->
-		<group if="$(arg /vehicle_avoidance/filter)">
-			<remap from="vehicle_filter_node/camera_info" to="camera_node/camera_info" />
-			<remap from="vehicle_filter_node/corners" to="vehicle_detection_node/corners" />	
-			<include file="$(find vehicle_detection)/launch/vehicle_filter.launch">
-				<arg name="veh" value="$(arg veh)"/>
-			</include>	
-		</group>
 		<!-- Vehicle Control Node -->
 		<group if="$(arg /vehicle_avoidance/control)">
-			<remap from="vehicle_avoidance_control_node/vehicle_pose" to="vehicle_filter_node/pose"/>
+			<remap from="vehicle_avoidance_control_node/detection" to="vehicle_detection_node/detection"/>
 			<include file="$(find vehicle_detection)/launch/vehicle_avoidance_control_node.launch" >
 				<arg name="veh" value="$(arg veh)"/>
 			</include>
@@ -489,6 +482,19 @@
 			<arg name="param_file_name" value="$(arg param_file_name)"/>        
 		</include>
 	</group>
+
+	<group unless="$(arg coordination)">
+	  <!-- Vehicle Coordinator-->
+	  <remap from="fake_coordinator_node/mode" to="fsm_node/mode" />
+	  <include file="$(find veh_coordinator)/launch/fake_coordinator_node.launch">
+	    <arg name="veh" value="$(arg veh)"/>        
+	    <arg name="config" value="$(arg config)"/>        
+	    <arg name="param_file_name" value="$(arg param_file_name)"/>        
+	  </include>
+	  <!-- Extra Remapping to make the fake coordination car cmds look real -->
+	  <remap from="fake_coordinator_node/car_cmd" to="simple_coordinator_node/car_cmd"/>
+	</group>
+
 	<!-- End Coordination -->
 
 	<!-- Start Navigation -->
@@ -534,8 +540,8 @@
 	<!-- Start Parallel Autonomy -->
 	<group if="$(arg parallel_autonomy)">
 		<remap from="lane_supervisor_node/lane_pose" to="lane_filter_node/lane_pose"/>
-		<remap from="lane_supervisor_node/wheels_control_joy" to="joy_mapper_node/car_cmd"/>
-		<remap from="lane_supervisor_node/wheels_control_lane" to="lane_controller_node/car_cmd"/>
+		<remap from="lane_supervisor_node/car_cmd_joy" to="joy_mapper_node/car_cmd"/>
+		<remap from="lane_supervisor_node/car_cmd_lane" to="lane_controller_node/car_cmd"/>
 		<remap from="lane_supervisor_node/stop_line_reading" to="stop_line_filter_node/stop_line_reading"/>
 		<include file="$(find parallel_autonomy)/launch/lane_supervisor_node.launch">
 			<arg name="veh" value="$(arg veh)"/>
@@ -561,7 +567,8 @@
 
 	<!-- Start anti-instagram -->
 	<group if="$(arg anti_instagram)">
-		<!-- TODO -->
+	  <!-- NOT LOADING PARAMS FROM A YAML FILE -->
+	  <node name="anti_instagram_node" pkg="anti_instagram" type="anti_instagram_node.py" output="screen"/>
 	</group>
 	<!-- End anti-instagram -->
 

@@ -68,9 +68,11 @@ class LEDInterpreterNode(object):
 				self.setIntersectionType = True
 
 	def seeSwitch(self, msg):
-		if msg.COORDINATION == True:
+		if msg.state == "COORDINATION":
+			rospy.loginfo("coordination mode active")
 			self.active = True
-		if msg.COORDINATION == False:
+		else: #reset parameters
+			rospy.loginfo("coordination mode inactive")
 			self.active = False
 			self.setIntersectionType = False
 			self.hasObservedSignals = False

@@ -46,6 +46,17 @@ test-led:
 	echo "Calibration blinking pattern"
 	bash -c "source environment.sh; rosrun rgb_led blink test_all_1"
 
+test-turn-right:
+	echo "Calibrating right turn"
+	bash -c "rostest indefinite_navigation calibrate_turn.test veh:=$(vehicle_name) type:=right"
+
+test-turn-left:
+        echo "Calibrating left turn"
+        bash -c "rostest indefinite_navigation calibrate_turn.test veh:=$(vehicle_name) type:=left"
+
+test-turn-forward:
+        echo "Calibrating forward turn"
+        bash -c "rostest indefinite_navigation calibrate_turn.test veh:=$(vehicle_name) type:=forward"
 
 
 # Basic demos

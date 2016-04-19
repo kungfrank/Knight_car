@@ -19,6 +19,10 @@ class LocalizationNode(object):
         self.node_name = 'localization_node'
         self.veh_name = self.setupParam("~veh", None)
 
+        # Constants
+        self.world_frame = "world"
+        self.duckiebot_frame = "duckiebot"
+
         # Setup the publishers and subscribers
         self.sub_april = rospy.Subscriber("~apriltags", AprilTags, self.tag_callback)
         self.pub_tf = rospy.Publisher("/tf", TFMessage, queue_size=1, latch=True)
@@ -49,12 +53,13 @@ class LocalizationNode(object):
 
         Tr_w =  avg.get_average() # Average of the opinions
         # Broadcast the robot transform
-        T = TransformStamped()
-        T.transform = Tr_w
-        T.header.frame_id = "world"
-        T.header.stamp = rospy.Time.now()
-        T.child_frame_id = "duckiebot"
-        self.pub_tf.publish(TFMessage([T]))
+        if Tr_w is not None:
+            T = TransformStamped()
+            T.transform = Tr_w
+            T.header.frame_id = self.world_frame
+            T.header.stamp = rospy.Time.now()
+            T.child_frame_id = self.duckiebot_frame
+            self.pub_tf.publish(TFMessage([T]))
 
     def transform_to_matrix(self, T):
         # Return the 4x4 homogeneous matrix for a TransformStamped.msg T from the geometry_msgs

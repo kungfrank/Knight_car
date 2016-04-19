@@ -10,6 +10,14 @@ events: #Maps from subscribing topic to singal ids
     topic: "joy_mapper_node/joystick_override"
     msg_type: "BoolStamped"
     trigger: False
+  parallel_autonomy_on:
+    topic: "joy_mapper_node/parallel_autonomy"
+    msg_type: "BoolStamped"
+    trigger: True
+  parallel_autonomy_off:
+    topic: "joy_mapper_node/parallel_autonomy"
+    msg_type: "BoolStamped"
+    trigger: False
   at_stop_line:
     topic: "stop_line_filter_node/at_stop_line"
     msg_type: "BoolStamped"
@@ -62,6 +70,7 @@ events: #Maps from subscribing topic to singal ids
 # Define global transitions. Available from all states.
 global_transitions:
   joystick_override_on: "JOYSTICK_CONTROL"
+  parallel_autonomy_on: "PARALLEL_AUTONOMY"
 
 # Define nodes 
 nodes:
@@ -83,6 +92,17 @@ states:
       joystick_override_off: "LANE_FOLLOWING"
     active_nodes: []
     lights: ["joystick"]
+  PARALLEL_AUTONOMY:
+    transitions:
+      parallel_autonomy_off: "JOYSTICK_CONTROL"
+    active_nodes:
+      - vehicle_detector_node
+      - static_object_detector_node
+      - lane_filter_node
+      - line_detector_node
+      - stop_line_filter_node
+      - decoder_node # remove if not doing vehicle / object avoidance
+    lights: ["parallel_autonomy"]
   LANE_FOLLOWING:
     transitions:
       at_stop_line: "COORDINATION"

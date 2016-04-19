@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<robot name="duckiebot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <link name="duckiebot">
+        <visual>
+            <origin xyz="0 0 0.04" />
+            <geometry>
+                <mesh filename="package://duckietown_description/urdf/meshes/duckiebot.dae" />
+            </geometry>
+        </visual>
+    </link>
+</robot> 

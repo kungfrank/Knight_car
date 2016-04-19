@@ -90,10 +90,10 @@ class AntiInstagramNode():
 
 		#cv_image = self.bridge.imgmsg_to_cv2(msg,"bgr8")
 		try:
-            cv_image = image_cv_from_jpg(msg.data)
-        except ValueError as e:
-            rospy.loginfo('Anti_instagram cannot decode image: %s' % e)
-            return
+			cv_image = image_cv_from_jpg(msg.data)
+		except ValueError as e:
+			rospy.loginfo('Anti_instagram cannot decode image: %s' % e)
+			return
 
 		tk.completed('converted')
 

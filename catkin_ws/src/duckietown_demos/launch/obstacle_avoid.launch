@@ -4,9 +4,8 @@
 	<include file="$(find duckietown_demos)/launch/master.launch">
 		<arg name="veh" value="$(arg veh)"/>
 		<arg name="visualization" value="false" />
-		<arg name="param_file_name" default="default" />
-		<arg name="line_detector_param_file_name" default="default" />
-		<arg name="anti_instagram" default="false" />
-		<arg name="parallel_autonomy" default="true" />
+		<arg name="/camera/raw" value="true"/>
+		<arg name="/lane_following/stop_line_filter" value="false" />
+		<arg name="obstacle_avoidance" value="true" />
 	</include>
 </launch>

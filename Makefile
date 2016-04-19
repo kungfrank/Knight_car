@@ -116,3 +116,5 @@ openhouse-dp2-vehicle: unittests-environment
 openhouse-dp2-obstacle: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos obstacle_avoid.launch"
 
+openhouse-dp6b: unittests-environment
+    bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos mission_planning.launch"

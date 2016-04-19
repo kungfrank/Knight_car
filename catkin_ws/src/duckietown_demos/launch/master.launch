@@ -409,6 +409,7 @@
 			</include>
 		</group>
 
+        <remap from="led_joy_mapper_node/change_color_pattern" to="led_emitter_node/change_color_pattern" />
 		<group if="$(arg /LED/joystick)">
 			<include file="$(find led_joy_mapper)/launch/led_joy_mapper_node.launch">
 				<arg name="veh" value="$(arg veh)"/>
@@ -416,7 +417,8 @@
 				<arg name="param_file_name" value="$(arg param_file_name)"/>
 			</include>
 		</group>
-
+        
+        
 		<group if="$(arg /LED/emitter)">
 			<include file="$(find led_emitter)/launch/led_emitter_node.launch">
 				<arg name="veh" value="$(arg veh)"/>
@@ -476,6 +478,7 @@
 	<group if="$(arg coordination)">
 		<!-- Vehicle Coordinator-->
 		<remap from="simple_coordinator_node/mode" to="fsm_node/mode" />
+        <remap from="simple_coordinator_node/change_color_pattern" to="led_emitter_node/change_color_pattern" />
 		<include file="$(find veh_coordinator)/launch/simple_coordinator_node.launch">
 			<arg name="veh" value="$(arg veh)"/>        
 			<arg name="config" value="$(arg config)"/>        

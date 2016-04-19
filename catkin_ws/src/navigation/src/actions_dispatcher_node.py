@@ -63,7 +63,7 @@ class ActionsDispatcherNode():
                 self.pub.publish(Int16(-1))    
     
             action_str = ''
-            for letter in actions:
+            for letter in self.actions:
                 action_str += letter
 
             self.pubList.publish(action_str)

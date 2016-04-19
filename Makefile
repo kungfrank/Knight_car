@@ -51,12 +51,12 @@ test-turn-right:
 	bash -c "rostest indefinite_navigation calibrate_turn.test veh:=$(vehicle_name) type:=right"
 
 test-turn-left:
-        echo "Calibrating left turn"
-        bash -c "rostest indefinite_navigation calibrate_turn.test veh:=$(vehicle_name) type:=left"
+	echo "Calibrating left turn"
+	bash -c "rostest indefinite_navigation calibrate_turn.test veh:=$(vehicle_name) type:=left"
 
 test-turn-forward:
-        echo "Calibrating forward turn"
-        bash -c "rostest indefinite_navigation calibrate_turn.test veh:=$(vehicle_name) type:=forward"
+	echo "Calibrating forward turn"
+	bash -c "rostest indefinite_navigation calibrate_turn.test veh:=$(vehicle_name) type:=forward"
 
 
 # Basic demos

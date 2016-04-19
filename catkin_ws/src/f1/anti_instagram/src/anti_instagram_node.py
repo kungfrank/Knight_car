@@ -4,6 +4,7 @@ from copy import deepcopy
 from sensor_msgs.msg import CompressedImage,Image
 from duckietown_msgs.msg import AntiInstagramHealth, BoolStamped, AntiInstagramTransform
 from anti_instagram.AntiInstagram import *
+from duckietown_utils.jpg import image_cv_from_jpg
 import numpy as np
 import threading
 import cv2
@@ -23,7 +24,8 @@ class AntiInstagramNode():
 		self.pub_transform = rospy.Publisher("~transform",AntiInstagramTransform,queue_size=1,latch=True)
 
 		#self.sub_switch = rospy.Subscriber("~switch",BoolStamped, self.cbSwitch, queue_size=1)
-		self.sub_image = rospy.Subscriber("~uncorrected_image",Image,self.cbNewImage,queue_size=1)
+		#self.sub_image = rospy.Subscriber("~uncorrected_image",Image,self.cbNewImage,queue_size=1)
+		self.sub_image = rospy.Subscriber("~uncorrected_image", CompressedImage, self.cbNewImage,queue_size=1)
 		self.sub_click = rospy.Subscriber("~click", BoolStamped, self.cbClick, queue_size=1)
 
 		# Verbose option 
@@ -86,7 +88,12 @@ class AntiInstagramNode():
 		rospy.loginfo('ai: Computing color transform...')
 		tk = TimeKeeper(msg)
 
-		cv_image = self.bridge.imgmsg_to_cv2(msg,"bgr8")
+		#cv_image = self.bridge.imgmsg_to_cv2(msg,"bgr8")
+		try:
+            cv_image = image_cv_from_jpg(msg.data)
+        except ValueError as e:
+            rospy.loginfo('Anti_instagram cannot decode image: %s' % e)
+            return
 
 		tk.completed('converted')
 

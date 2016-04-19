@@ -13,7 +13,6 @@ class LocalizationTesterNode(unittest.TestCase):
     def setup(self):
         # Setup the node
         rospy.init_node('localization_tester_node', anonymous=True)
-        self.veh_name = rospy.get_param("~veh")
 
         # Setup the publisher and subscriber
         self.pub_tag = rospy.Publisher("~apriltags", AprilTags, queue_size = 1, latch = True)
@@ -45,7 +44,7 @@ class LocalizationTesterNode(unittest.TestCase):
         tfbuf = tf2_ros.Buffer()
         tfl = tf2_ros.TransformListener(tfbuf)
         try:
-            Tr_w = tfbuf.lookup_transform("world", self.veh_name, rospy.Time(), rospy.Duration(5))
+            Tr_w = tfbuf.lookup_transform("world", "duckiebot", rospy.Time(), rospy.Duration(5))
         except(tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
             self.assertFalse(True, "Test timed out waiting for the transform to be broadcast.")
 
@@ -80,7 +79,7 @@ class LocalizationTesterNode(unittest.TestCase):
         tfbuf = tf2_ros.Buffer()
         tfl = tf2_ros.TransformListener(tfbuf)
         try:
-            Tr_w = tfbuf.lookup_transform("world", self.veh_name, rospy.Time(), rospy.Duration(5))
+            Tr_w = tfbuf.lookup_transform("world", "duckiebot", rospy.Time(), rospy.Duration(5))
         except(tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
             self.assertFalse(True, "Test timed out waiting for the transform to be broadcast.")
 

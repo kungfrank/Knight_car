@@ -17,7 +17,6 @@ from localization import PoseAverage
 class LocalizationNode(object):
     def __init__(self):
         self.node_name = 'localization_node'
-        self.veh_name = self.setupParam("~veh", None)
 
         # Constants
         self.world_frame = "world"
@@ -48,8 +47,9 @@ class LocalizationNode(object):
                     Mr_w=np.dot(Mt_w,Mr_t)
                     Tr_w = self.matrix_to_transform(Mr_w)
                     avg.add_pose(Tr_w)
-                except(tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-                    continue
+                except(tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as ex:
+                    rospy.logwarn("Error looking up transform for tag_%s", tag.id)
+                    rospy.logwarn(ex.message)
 
         Tr_w =  avg.get_average() # Average of the opinions
         # Broadcast the robot transform

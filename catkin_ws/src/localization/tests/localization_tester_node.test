@@ -17,9 +17,5 @@
 
     <!-- Run unit test -->
     <remap from="localization_tester_node/apriltags" to="localization_node/apriltags" />
-    <remap from="localization_tester_node/pose2d" to="localization_node/pose2d" />
-    <remap from="localization_tester_node/pose3d" to="localization_node/pose3d" />
-    <test test-name="localization_tester_node" pkg="localization" type="localization_tester_node.py" ns="$(arg veh)">
-        <param name="veh" value="$(arg veh)" />
-    </test>
+    <test test-name="localization_tester_node" pkg="localization" type="localization_tester_node.py" ns="$(arg veh)"/>
 </launch>

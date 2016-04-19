@@ -50,7 +50,7 @@ class graph_search_server():
 	    # Checking if nodes exists
         if (req.source_node not in self.duckietown_graph) or (req.target_node not in self.duckietown_graph):
             print "Source or target node do not exist."
-            self.publishImage([])
+            self.publishImage(req, [])
             return GraphSearchResponse([])
 
         # Running A*
@@ -59,11 +59,11 @@ class graph_search_server():
         path = self.duckietown_problem.astar_search()
 
         # Publish graph solution
-        self.publishImage(path)
+        self.publishImage(req, path)
 
         return GraphSearchResponse(path.actions)        
 
-    def publishImage(self, path):
+    def publishImage(self, req, path):
         if path:
             self.duckietown_graph.draw(self.script_dir, highlight_edges=path.edges(), map_name = self.map_name, highlight_nodes = [req.source_node, req.target_node])
         else:

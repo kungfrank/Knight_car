@@ -20,8 +20,9 @@ class lane_supervisor(object):
         # Params:
         self.max_cross_track_error=self.setupParameter("~max_cross_track_error",0.1)
         self.max_heading_error=self.setupParameter("~max_heading_error",math.pi/4)
-        self.max_speed=self.setupParameter("~max_speed",1.0)
-        self.max_steer=self.setupParameter("~max_steer",0.2)
+        self.min_speed=self.setupParameter("~min_speed", 0.1)
+        self.max_speed=self.setupParameter("~max_speed", 0.3)
+        self.max_steer=self.setupParameter("~max_steer", 0.2)
 
         # Publicaiton
         self.pub_car_cmd = rospy.Publisher("~car_cmd",Twist2DStamped,queue_size=1)
@@ -94,8 +95,8 @@ class lane_supervisor(object):
         else:
             rospy.loginfo("[PA] not safe - merge control inputs")
             car_control_merged = Twist2DStamped()
-            if abs(self.car_control_joy.v) < 0.05:
-                # set the speeds to 0:
+            if abs(self.car_control_joy.v) < self.min_speed:
+                # sets the speeds to 0:
                 car_control_merged.v = 0.0
                 car_control_merged.omega = 0.0
             else:

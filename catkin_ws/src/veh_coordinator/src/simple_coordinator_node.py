@@ -4,6 +4,7 @@ from random import random
 import rospy
 from duckietown_msgs.msg import CoordinationClearance, FSMState, BoolStamped, Twist2DStamped
 from duckietown_msgs.msg import SignalsDetection, CoordinationSignal
+from std_msgs.msg import String
 from time import time
 
 
@@ -37,6 +38,8 @@ class VehicleCoordinator():
     T_S = 2.0      # seconds
 
     def __init__(self):
+        rospy.loginfo('Coordination Mode Started')
+
         self.state = State.LANE_FOLLOWING
         self.last_state_transition = time()
         self.random_delay = 0
@@ -63,6 +66,8 @@ class VehicleCoordinator():
         self.roof_light = CoordinationSignal.OFF
         self.roof_light_pub = rospy.Publisher('~change_color_pattern', CoordinationSignal, queue_size=10)
 
+        self.coordination_state_pub = rospy.Publisher('~coordination_state', String, queue_size=10)
+
         while not rospy.is_shutdown():
             self.loop()
             rospy.sleep(0.1)
@@ -88,6 +93,7 @@ class VehicleCoordinator():
         else:
             self.clearance_to_go = CoordinationClearance.WAIT
 
+        rospy.loginfo('Transitioned to state' + self.get_state_str())
         print("Transitioned to state " + self.get_state_str())
 
     def time_at_current_state(self):
@@ -116,6 +122,7 @@ class VehicleCoordinator():
         car_cmd_msg = Twist2DStamped(v=0.0,omega=0.0)
         car_cmd_msg.header.stamp = now
         self.pub_coord_cmd.publish(car_cmd_msg)
+        self.coordination_state_pub.publish(data=self.get_state_str())
 
     def loop(self):
         self.reconsider()

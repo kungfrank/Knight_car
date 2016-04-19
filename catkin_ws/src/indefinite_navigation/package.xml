@@ -38,7 +38,7 @@
   <!-- Use run_depend for packages you need at runtime: -->
   <!--   <run_depend>message_runtime</run_depend> -->
   <!-- Use test_depend for packages you need only for testing: -->
-  <!--   <test_depend>gtest</test_depend> -->
+  <test_depend>unittest</test_depend>
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>duckietown_msgs</build_depend>
   <build_depend>roscpp</build_depend>

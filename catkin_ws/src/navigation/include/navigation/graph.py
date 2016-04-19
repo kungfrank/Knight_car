@@ -78,17 +78,20 @@ class Graph(object):
             target_node = highlight_nodes[1]        
 
         g = graphviz.Digraph(name="duckietown", engine="neato")
-        g.edge_attr.update(fontsize = '8', arrowsize = '0.4', arrowhead = 'open')
-        g.node_attr.update(shape="circle", fontsize='10',margin="0", height='0')
+        g.edge_attr.update(fontsize = '8', arrowsize = '0.5', arrowhead = 'open')
+        g.node_attr.update(shape="circle", fontsize='14',margin="0", height='0')
         #g.graph_attr.update(ratio = '0.7', inputscale = '1.3')
+
+        g.body.append(r'label = "\nduckiegraph"')
+        g.body.append('fontsize=16')
 
         for node in self._nodes:
             node_name = self.node_label_fn(node)
             node_pos = "%f,%f!" % (self.node_positions[node][0], self.node_positions[node][1])
             if highlight_nodes and node == target_node:
-                g.node(name=node_name, pos=node_pos, color='green')
+                g.node(name=node_name, pos=node_pos, color='green', shape='doublecircle')
             elif highlight_nodes and node == start_node:
-                g.node(name=node_name, pos=node_pos, color='blue')
+                g.node(name=node_name, pos=node_pos, color='blue', shape='doublecircle')
             elif len(node_name) == 2:
                 g.node(name=node_name, pos=node_pos)
             elif len(node_name) == 3:

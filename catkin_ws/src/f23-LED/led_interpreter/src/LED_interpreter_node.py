@@ -16,7 +16,7 @@ class LEDInterpreterNode(object):
 		self.node = rospy.init_node('LED_interpreter_node',anonymous=True)
 		self.node_name = rospy.get_name()
 
-		self.setIntersectionType = False
+		self.setIntersectionType = True
 		self.hasObservedSignals = False
 		self.trafficLightIntersection = True
 		self.active = True
@@ -44,7 +44,7 @@ class LEDInterpreterNode(object):
 
 		#publishers and subscribers
 		self.pub_interpret = rospy.Publisher("~signals_detection", SignalsDetection, queue_size = 1)
-		self.sub_tags = rospy.Subscriber("apriltags_postprocessing_fast_node/apriltags", AprilTags, self.CheckTags)
+		#self.sub_tags = rospy.Subscriber("apriltags_postprocessing_fast_node/apriltags", AprilTags, self.CheckTags)
 		self.sub_LEDs = rospy.Subscriber("~raw_led_detection", LEDDetectionArray, self.Interpreter, queue_size = 1)
 		#self.switch = rospy.Subscriber("~mode", FSMState, self.seeSwitch)
 		rospy.loginfo("Initialized.")

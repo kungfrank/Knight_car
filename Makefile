@@ -89,6 +89,9 @@ demo-led-blink-%: unittests-environment
 
 # openhouse demos
 
+openhouse-dp5: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos stop_sign_coordination.launch"
+
 openhouse-dp3: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch"
 

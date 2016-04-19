@@ -18,7 +18,6 @@ class ParallelAutonomyNode(object):
         self.turn_NONE = 3
 
         self.blink = False
-	rospy.loginfo("hello3")
         self.availableTurns = []
         self.turn_direction = self.turn_NONE
 
@@ -41,7 +40,7 @@ class ParallelAutonomyNode(object):
     def blinkTimer(self,event):
         self.led.setRGB(4, [.2, .2, .2])
         self.led.setRGB(2, [.2, .2, .2])
-        self.led.setRGB(3, [.3, 0, 1])
+        self.led.setRGB(3, [.3, 0, 0])
         self.led.setRGB(1, [.3, 0, 0])
         self.led.setRGB(0, [.2, .2, .2])
         if self.turn_direction == self.turn_LEFT:
@@ -65,7 +64,6 @@ class ParallelAutonomyNode(object):
 
 
     def cbJoy(self,msg):
-	rospy.loginfo("hello2")
         if msg.buttons[2] and self.turn_LEFT in self.availableTurns: # or self.joy.axes[3] > 0.2:
             if self.turn_direction == self.turn_LEFT:
                 self.turn_direction = self.turn_STRAIGHT
@@ -82,7 +80,7 @@ class ParallelAutonomyNode(object):
 
 
     def cbTag(self, tag_msgs):
-        if(self.fsm_mode == "WAITING_FOR_TURN_DIRECTION"):
+        if(self.fsm_mode == "WAITING_ON_TURN_DIRECTION"):
             #loop through list of april tags
             for taginfo in tag_msgs.infos:
                 print taginfo
@@ -101,16 +99,12 @@ class ParallelAutonomyNode(object):
                         self.availableTurns = [self.turn_RIGHT,self.turn_LEFT]
 
     def cbMode(self, mode_msg):
-        #print mode_msg
         self.fsm_mode = mode_msg.state
 
-	rospy.loginfo(self.fsm_mode)
-	print "hello"
+        if(self.fsm_mode == "WAITING_ON_TURN_DIRECTION"):
+            self.availableTurns = [0,1,2]#just to test without april tags, set to [] for actual
 
-        if(self.fsm_mode == "WAITING_FOR_TURN_DIRECTION"):
-	    rospy.loginfo("hello")
-            self.availableTurns = [0,1,2]
-            self.turn_direction = self.turn_RIGHT
+	    self.turn_direction = self.turn_NONE
             rospy.sleep(2)
             while self.turn_direction is self.turn_NONE:
                 pass
@@ -131,8 +125,6 @@ class ParallelAutonomyNode(object):
 if __name__ == '__main__':
     # Initialize the node with rospy
     rospy.init_node('parallel_autonomy_node', anonymous=False)
-    rospy.loginfo("hello1st")
-    print "hello1st"
     # Create the NodeName object
     node = ParallelAutonomyNode()
 

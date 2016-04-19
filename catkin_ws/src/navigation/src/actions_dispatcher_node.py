@@ -19,6 +19,7 @@ class ActionsDispatcherNode():
         # Parameters:
         self.fsm_mode = self.setupParameter("~initial_mode","JOYSTICK_CONTROL")
         self.trigger_mode = self.setupParameter("~trigger_mode","INTERSECTION_CONTROL")
+        self.reset_mode = self.setupParameter("~reset_mode","JOYSTICK_CONTROL")
         self.stop_line_wait_time("~stop_line_wait_time",2.0)
 
         # Subscribers:
@@ -37,6 +38,8 @@ class ActionsDispatcherNode():
 
     def updateMode(self, data):
         self.fsm_mode = data.state
+        if self.fsm_mode == self.reset_mode:
+            self.actions = []
         self.dispatcher()
 
     def dispatcher(self):

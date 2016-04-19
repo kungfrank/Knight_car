@@ -40,6 +40,8 @@ class ActionsDispatcherNode():
         self.fsm_mode = data.state
         if self.fsm_mode == self.reset_mode:
             self.actions = []
+            graph_search = rospy.ServiceProxy('graph_search', GraphSearch)
+            graph_search('0', '0')
         self.dispatcher()
 
     def dispatcher(self):

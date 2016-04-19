@@ -50,6 +50,7 @@ class graph_search_server():
 	    # Checking if nodes exists
         if (req.source_node not in self.duckietown_graph) or (req.target_node not in self.duckietown_graph):
             print "Source or target node do not exist."
+            self.publishImage([])
             return GraphSearchResponse([])
 
         # Running A*
@@ -58,12 +59,17 @@ class graph_search_server():
         path = self.duckietown_problem.astar_search()
 
         # Publish graph solution
-        if path:
-            self.duckietown_graph.draw(self.script_dir, highlight_edges=path.edges(), map_name = self.map_name, highlight_nodes = [req.source_node, req.target_node])
-            cv_image = cv2.imread(self.map_path + '.png', cv2.CV_LOAD_IMAGE_COLOR)
-            self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
+        self.publishImage(path)
 
         return GraphSearchResponse(path.actions)        
+
+    def publishImage(self, path):
+        if path:
+            self.duckietown_graph.draw(self.script_dir, highlight_edges=path.edges(), map_name = self.map_name, highlight_nodes = [req.source_node, req.target_node])
+        else:
+            self.duckietown_graph.draw(self.script_dir, highlight_edges=None, map_name = self.map_name)
+        cv_image = cv2.imread(self.map_path + '.png', cv2.CV_LOAD_IMAGE_COLOR)
+        self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
 
 if __name__ == "__main__":	
     rospy.init_node('graph_search_server_node')

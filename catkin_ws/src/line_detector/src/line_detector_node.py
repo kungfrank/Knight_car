@@ -63,7 +63,7 @@ class LineDetectorNode(object):
     def updateParams(self, _event):
         old_verbose = self.verbose
         self.verbose = rospy.get_param('~verbose', True)
-        self.loginfo('verbose = %r' % self.verbose)
+        # self.loginfo('verbose = %r' % self.verbose)
         if self.verbose != old_verbose:
             self.loginfo('Verbose is now %r' % self.verbose)
 

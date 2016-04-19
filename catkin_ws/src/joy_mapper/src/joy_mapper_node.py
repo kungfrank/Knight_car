@@ -77,7 +77,7 @@ class JoyMapper(object):
         elif (joy_msg.buttons[5] == 1): # Right back button
             self.state_verbose ^= True
             rospy.loginfo('state_verbose = %s' % self.state_verbose)
-            rospy.param_set('/emma/line_detector_node/verbose', self.state_verbose)
+            rospy.set_param('/emma/line_detector_node/verbose', self.state_verbose)
 
         elif (joy_msg.buttons[4] == 1): #Left back button
             self.state_parallel_autonomy ^= True
@@ -97,7 +97,9 @@ class JoyMapper(object):
             e_stop_msg.data = True # note that this is toggle (actual value doesn't matter)
             self.pub_e_stop.publish(e_stop_msg)
         else:
-            rospy.loginfo('No binding for joy_msg.buttons = %s' % str(joy_msg.buttons))
+            some_active = sum(joy_msg.buttons) > 0
+            if some_active:
+                rospy.loginfo('No binding for joy_msg.buttons = %s' % str(joy_msg.buttons))
                                           
 
 if __name__ == "__main__":

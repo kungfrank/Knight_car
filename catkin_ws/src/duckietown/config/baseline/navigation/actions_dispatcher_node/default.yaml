@@ -1,0 +1,4 @@
+
+initial_mode: JOYSTICK_CONTROL
+trigger_mode: INTERSECTION_CONTROL
+stop_line_wait_time: 2.0

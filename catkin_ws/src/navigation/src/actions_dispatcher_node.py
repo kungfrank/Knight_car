@@ -8,33 +8,44 @@ from std_msgs.msg import Int16, String
 
 class ActionsDispatcherNode():
     def __init__(self):
+        self.node_name = rospy.get_name()
 
         #adding logic because FSM publishes our state at a high rate
         #not just everytime the mode changes but multiple times in each mode
         self.first_update = True
 
         self.actions = []
-        self.mode = 'JOYSTICK_CONTROL'
+
+        # Parameters:
+        self.fsm_mode = self.setupParameter("~initial_mode","JOYSTICK_CONTROL")
+        self.trigger_mode = self.setupParameter("~trigger_mode","INTERSECTION_CONTROL")
+        self.stop_line_wait_time("~stop_line_wait_time",2.0)
 
         # Subscribers:
-        self.sub_mode = rospy.Subscriber("~mode", FSMState, self.updateMode, queue_size = 1)
+        self.sub_mode = rospy.Subscriber("~fsm_mode", FSMState, self.updateMode, queue_size = 1)
         self.sub_plan_request = rospy.Subscriber("~plan_request", SourceTargetNodes, self.graph_search)
 
         # Publishers:
         self.pub = rospy.Publisher("~turn_type", Int16, queue_size=1, latch=True)
         self.pubList = rospy.Publisher("~turn_plan", String, queue_size=1, latch=True)
 
+    def setupParameter(self,param_name,default_value):
+        value = rospy.get_param(param_name,default_value)
+        rospy.set_param(param_name,value) #Write to parameter server for transparancy
+        rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
+        return value
+
     def updateMode(self, data):
-        self.mode = data.state
+        self.fsm_mode = data.state
         self.dispatcher()
 
     def dispatcher(self):
-        if self.first_update == False and self.mode != 'INTERSECTION_CONTROL':
+        if self.first_update == False and self.fsm_mode != self.trigger_mode:
             self.first_update = True
 
-        if self.first_update == True and self.mode == 'INTERSECTION_CONTROL' and self.actions:
+        if self.first_update == True and self.fsm_mode == self.trigger_mode and self.actions:
             # Allow time for open loop controller to update state and allow duckiebot to stop at redline:
-            rospy.sleep(2)
+            rospy.sleep(self.stop_line_wait_time)
         
             # Proceed with action dispatching:
             action = self.actions.pop(0)

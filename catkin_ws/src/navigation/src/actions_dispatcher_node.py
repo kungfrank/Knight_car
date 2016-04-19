@@ -20,7 +20,7 @@ class ActionsDispatcherNode():
         self.fsm_mode = self.setupParameter("~initial_mode","JOYSTICK_CONTROL")
         self.trigger_mode = self.setupParameter("~trigger_mode","INTERSECTION_CONTROL")
         self.reset_mode = self.setupParameter("~reset_mode","JOYSTICK_CONTROL")
-        self.stop_line_wait_time("~stop_line_wait_time",2.0)
+        self.stop_line_wait_time = setupParameter("~stop_line_wait_time",2.0)
 
         # Subscribers:
         self.sub_mode = rospy.Subscriber("~fsm_mode", FSMState, self.updateMode, queue_size = 1)

@@ -39,8 +39,8 @@ class CamInfoReader(object):
 
         img_type = CompressedImage if self.image_type == "compressed" else Image
         typemsg = "CompressedImage" if self.image_type == "compressed" else "Image"
-        rospy.logwarn("==============",typemsg)
-        #self.sub_img_compressed = rospy.Subscriber("~compressed_image",CompressedImage,self.cbCompressedImage,queue_size=1)
+        rospy.logwarn("[%s] ==============%s",self.node_name, typemsg)
+        self.sub_img_compressed = rospy.Subscriber("~compressed_image",img_type,self.cbCompressedImage,queue_size=1)
     
     def cbCompressedImage(self,msg):
         if self.camera_info_msg is not None:

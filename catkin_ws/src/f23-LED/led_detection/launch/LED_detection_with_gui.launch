@@ -14,6 +14,7 @@
 
 	  <!-- Run detector on remote (vehicle) -->
 	  <node  machine="$(arg veh)" pkg="$(arg pkg_name)" type="LED_detector_node.py" name="LED_detector_node" output="screen">
+  			<rosparam command="load" file="$(find duckietown)/config/$(arg config)/led_interpreter/LED_protocol.yaml"/>
 	  </node>
 	</group>	
 

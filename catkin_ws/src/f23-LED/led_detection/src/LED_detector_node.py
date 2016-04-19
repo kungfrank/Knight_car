@@ -24,6 +24,9 @@ class LEDDetectorNode(object):
         self.pub_debug = rospy.Publisher("~debug_info",LEDDetectionDebugInfo,queue_size=1)
         self.veh_name = rospy.get_namespace().strip("/")
 
+        self.protocol = rospy.get_param("~LED_protocol")
+        self.frequencies = self.protocol['frequencies'].values()
+
         if not self.veh_name:
             # fall back on private param passed thru rosrun
             # syntax is: rosrun <pkg> <node> _veh:=<bot-id>
@@ -35,7 +38,7 @@ class LEDDetectorNode(object):
 
         rospy.loginfo('Vehicle: %s'%self.veh_name)
         self.sub_cam = rospy.Subscriber("camera_node/image/compressed",CompressedImage, self.camera_callback)
-        self.sub_cam = rospy.Subscriber("~trigger",Byte, self.trigger_callback)
+        self.sub_trig = rospy.Subscriber("~trigger",Byte, self.trigger_callback)
         self.sub_switch = rospy.Subscriber("~switch",BoolStamped,self.cbSwitch)
         print('Waiting for camera image...')
 
@@ -58,7 +61,7 @@ class LEDDetectorNode(object):
 
         elif self.capture_finished:
             self.node_state = 0
-            print('Waiting for trigger signal...')
+            #print('Waiting for trigger signal...')
 
         if self.first_timestamp > 0:
             # TODO sanity check rel_time positive, restart otherwise 
@@ -102,7 +105,7 @@ class LEDDetectorNode(object):
         rgb0 = self.data[0]['rgb']
         mask = np.ones(dtype='bool', shape=rgb0.shape)
         tic = time.time()
-        result = det.detect_led(images, mask, [2.8, 4.1, 5.0], 5)
+        result = det.detect_led(images, mask, self.frequencies, 5)
         self.pub_detections.publish(result)
         toc = time.time()-tic
         tac = time.time()-self.tinit

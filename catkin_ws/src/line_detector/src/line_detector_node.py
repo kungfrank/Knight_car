@@ -74,7 +74,7 @@ class LineDetectorNode(object):
         assert isinstance(c, list) and len(c) == 2, c
         c = tuple(c)  # make it comparable
         
-        if self.detector_config != c:
+        if str(self.detector_config) != str(c):
             self.loginfo('new detector config: %s' % str(c))
 
             self.detector = instantiate(c[0], c[1])

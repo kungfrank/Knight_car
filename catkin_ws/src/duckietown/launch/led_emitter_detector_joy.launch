@@ -41,7 +41,7 @@
 	    	<arg name="config" value="$(arg config)"/>
 	</include>
 	
-	<!-- april tags -->
+	<!-- <!-- april tags -->
 	<!-- Preprocessing -->
  	<include file="$(find apriltags)/launch/apriltags_preprocessing_node.launch">
  		<arg name="veh" value="$(arg veh)"/>
@@ -86,4 +86,5 @@
 		<arg name="param_file_name" value="$(arg pos_param_file_name)"/>
 		<arg name="config" value="$(arg config)"/>
  	</include>
+	-->
 </launch>

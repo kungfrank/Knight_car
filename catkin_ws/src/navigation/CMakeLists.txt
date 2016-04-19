@@ -9,7 +9,9 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   message_generation
   duckietown_msgs
-  rqt_gui_py
+
+## -- UNCOMMENT BELOW LINE FOR LAPTOP BUILD -- ##
+##  rqt_gui_py
 )
 
 ## System dependencies are found with CMake's conventions

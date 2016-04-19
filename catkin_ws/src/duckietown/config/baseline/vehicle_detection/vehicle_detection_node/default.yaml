@@ -4,3 +4,4 @@ circlepattern_dims:
   rows: 1
 blobdetector_min_area: 25
 blobdetector_min_dist_between_blobs: 2
+publish_circles: False

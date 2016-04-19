@@ -15,7 +15,7 @@ class graph_creator():
 	        manhattan_dist = abs(self.node_locations[source][0] - self.node_locations[target][0]) + abs(self.node_locations[source][1] - self.node_locations[target][1])
 	        self.edges.append([source, target, manhattan_dist, action])
     def save(self, name='duckietown_map.pkl'):
-        afile = open(r'maps/duckietown_map.pkl', 'w+')
+        afile = open(r'../../src/maps/duckietown_map.pkl', 'w+')
         pickle.dump([self.edges, self.node_locations], afile)
         afile.close()
     def draw(self):
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     ["31", "36",  'l'],
     ["32", "321",  'f'], ["321", "55",  'f'],
     ["33", "36",  's'],
-    ["33", "38",  'r'],
+    ["33", "38",  'l'],
     ["36", "23",  'f'],
     ["37", "32",  's'],
     ["37", "38",  'r'],

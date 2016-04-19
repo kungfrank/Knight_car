@@ -521,7 +521,7 @@
 		</group>
 
 		<group if="$(arg /navigation/graph_planner)">
-			<remap from="actions_dispatcher_node/mode" to="fsm_node/mode" />
+			<remap from="actions_dispatcher_node/fsm_mode" to="fsm_node/mode" />
 			<remap from="actions_dispatcher_node/turn_type" to="open_loop_intersection_control_node/turn_type" /> <!-- remapping outputs since there are two different possible turn types -->
 
 			<include file="$(find navigation)/launch/graph_search_server_node.launch">

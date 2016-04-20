@@ -98,7 +98,7 @@ class LEDInterpreterNode(object):
 				#case with stop sign intersection	
 				else:
 					for item in msg.detections:
-						rospy.loginfo("[%s]:\n pixel = %f\n right bound = %f\n left bound =%f\n measured frequence=%f\n" %(self.node_name, item.pixels_normalized.x,self.label['right'],slef.label['left'],item.frequency))
+						rospy.loginfo("[%s]:\n pixel = %f\n right bound = %f\n left bound =%f\n measured frequence=%f\n" %(self.node_name, item.pixels_normalized.x,self.label['right'],self.label['left'],item.frequency))
 						#check if front vehicle detection
 						if item.pixels_normalized.x > self.label['left'] and item.pixels_normalized.x < self.label['right'] and item.pixels_normalized.y > self.label['top']:
 							#check signal of that vehicle

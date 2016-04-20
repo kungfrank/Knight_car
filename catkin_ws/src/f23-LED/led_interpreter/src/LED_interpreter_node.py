@@ -110,7 +110,7 @@ class LEDInterpreterNode(object):
 									break
 
 						#check if right vehicle detection
-						if item.pixels_normalized.x > self.label['right'] and item.pixels_normalized.y > self.label['top']:
+						elif item.pixels_normalized.x > self.label['right'] and item.pixels_normalized.y > self.label['top']:
 							#check signal of that vehicle
 							detected_freq = item.frequency
 							for i in range(len(self.signalFrequencies)):

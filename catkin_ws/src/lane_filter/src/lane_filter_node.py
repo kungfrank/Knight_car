@@ -10,14 +10,23 @@ from scipy.ndimage.filters import gaussian_filter
 from math import floor, atan2, pi, cos, sin, sqrt
 import time
 
-# Lane Filter Node
-# Author: Liam Paull
-# Inputs: SegmentList from line detector
-# Outputs: LanePose - the d (lateral displacement) and phi (relative angle) of the car in the lane
-# For more info on algorithm and parameters please refer to the google doc: https://drive.google.com/open?id=0B49dGT7ubfmSX1k5ZVN1dEU4M2M
-
 
 class LaneFilterNode(object):
+    """
+    
+Lane Filter Node
+
+Author: Liam Paull
+
+Inputs: SegmentList from line detector
+
+Outputs: LanePose - the d (lateral displacement) and phi (relative angle) 
+of the car in the lane
+
+For more info on algorithm and parameters please refer to the google doc:
+ https://drive.google.com/open?id=0B49dGT7ubfmSX1k5ZVN1dEU4M2M
+
+    """
     def __init__(self):
         self.node_name = "Lane Filter"
         self.active = True
@@ -146,6 +155,7 @@ class LaneFilterNode(object):
         #print self.beliefRV.argmax()
 
         maxids = np.unravel_index(self.beliefRV.argmax(),self.beliefRV.shape)
+        # rospy.loginfo('maxids: %s' % maxids)
         self.lanePose.header.stamp = segment_list_msg.header.stamp
         self.lanePose.d = self.d_min + maxids[0]*self.delta_d
         self.lanePose.phi = self.phi_min + maxids[1]*self.delta_phi

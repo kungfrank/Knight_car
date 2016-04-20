@@ -29,12 +29,7 @@ class ForwardKinematicsNode(object):
         self.trim = self.setup_parameter("~trim", 0.0)
         self.baseline = self.setup_parameter("~baseline", 0.1)
         self.radius = self.setup_parameter("~radius", 0.0318)
-
-        # Prepare services
-        self.srv_set_gain = rospy.Service("~set_gain", SetValue, self.cbSrvSetGain)
-        self.srv_set_trim = rospy.Service("~set_trim", SetValue, self.cbSrvSetTrim)
-        self.srv_set_baseline = rospy.Service("~set_baseline", SetValue, self.cbSrvSetBaseline)
-        self.srv_save = rospy.Service("~save_calibration", Empty, self.cbSrvSaveCalibration)
+        self.k = self.setup_parameter("~k", 27.0)
 
         # Setup the publisher and subscribers
         self.pub_velocity = rospy.Publisher("~velocity", Twist2DStamped, queue_size=1)
@@ -62,7 +57,7 @@ class ForwardKinematicsNode(object):
         if yaml_dict is None:
             # Empty yaml file
             return
-        for param_name in ["gain", "trim", "baseline", "radius"]:
+        for param_name in ["gain", "trim", "baseline", "k", "radius"]:
             param_value = yaml_dict.get(param_name)
             if param_name is not None:
                 rospy.set_param("~" + param_name, param_value)
@@ -74,50 +69,13 @@ class ForwardKinematicsNode(object):
         rospack = rospkg.RosPack()
         return rospack.get_path('duckietown') + '/config/baseline/calibration/kinematics/' + name + ".yaml"
 
-    def saveCalibration(self):
-        # Write to yaml
-        data = {
-            "calibration_time": time.strftime("%Y-%m-%d-%H-%M-%S"),
-            "gain": self.gain,
-            "trim": self.trim,
-            "baseline": self.baseline,
-            "radius": self.radius,
-        }
-
-        # Write to file
-        file_name = self.getFilePath(self.veh_name)
-        with open(file_name, 'w') as outfile:
-            outfile.write(yaml.dump(data, default_flow_style=False))
-        # Printout
-        self.printValues()
-        rospy.loginfo("[%s] Saved to %s" % (self.node_name, file_name))
-
-    def cbSrvSaveCalibration(self, req):
-        self.saveCalibration()
-        return EmptyResponse()
-
-    def cbSrvSetGain(self, req):
-        self.gain = req.value
-        self.printValues()
-        return SetValueResponse()
-
-    def cbSrvSetTrim(self, req):
-        self.trim = req.value
-        self.printValues()
-        return SetValueResponse()
-
-    def cbSrvSetBaseline(self, req):
-        self.baseline = req.value
-        self.printValues()
-        return SetValueResponse()
-
     def printValues(self):
-        rospy.loginfo("[%s] gain: %s trim: %s baseline: %s" % (self.node_name, self.gain, self.trim, self.baseline))
+        rospy.loginfo("[%s] gain: %s trim: %s baseline: %s radius: %s k: %s" % (self.node_name, self.gain, self.trim, self.baseline, self.radius, self.k))
 
     def wheels_cmd_callback(self, msg_wheels_cmd):
         # compute duty cycle gain
-        k_r = 1 / self.radius
-        k_l = 1 / self.radius
+        k_r = self.k
+        k_l = self.k
 
         k_r_inv = (self.gain + self.trim) / k_r
         k_l_inv = (self.gain - self.trim) / k_l

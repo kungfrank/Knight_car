@@ -1,6 +1,6 @@
 from .kmeans import getparameters2, identifyColors, runKMeans
 from .scale_and_shift import scaleandshift
-from anti_instagram.kmeans import CENTERS
+from anti_instagram.kmeans import CENTERS,CENTERS2
 import numpy as np
 
 def calculate_transform(image):
@@ -13,8 +13,27 @@ def calculate_transform(image):
 		parameters['shift']
 	"""  
 		
-	centers = CENTERS
-	trained, counter = runKMeans(image, num_colors=3, init=centers)
+	centers4 = CENTERS2
+	trained4, counter4,score4 = runKMeans(image, num_colors=4, init=centers4)
+	trained4=trained4[[0,2,3],:]
+	counter4=[counter4[0],counter4[2],counter4[3]]
+	centers4=centers4[[0,2,3],:]
+	centers3 = CENTERS
+	trained3, counter3,score3 = runKMeans(image, num_colors=3, init=centers3)
+	decision34=(score3+3e7)>score4;
+	if (decision34):
+		print("picked 3 colors")
+		trained=trained3
+		counter=counter3
+		centers=centers3
+	else:
+		print("picked 4 colors")
+		trained=trained4
+		counter=counter4
+		centers=centers4
+
+	# IPython.embed()
+
 	mapping = identifyColors(trained, centers)
 	r, g, b, cost = getparameters2(mapping, trained, counter, centers)
 

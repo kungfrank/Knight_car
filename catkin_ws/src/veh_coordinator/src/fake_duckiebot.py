@@ -13,7 +13,7 @@ class FakeDuckiebot:
         self.node = rospy.init_node('fake_duckiebot', anonymous=True)
 
         # publishing
-        self.mode = FSMState.LANE_FOLLOWING
+        self.mode = None
         self.mode_pub = rospy.Publisher('~mode', FSMState, queue_size=10)
 
         self.signals_detection_pub = rospy.Publisher('~signals_detection', SignalsDetection, queue_size=10)
@@ -52,7 +52,8 @@ class FakeDuckiebot:
         self.publish()
 
     def publish(self):
-        self.mode_pub.publish(FSMState(state=self.mode))
+        if self.mode is not None:
+            self.mode_pub.publish(FSMState(state=self.mode))
         self.signals_detection_pub.publish(SignalsDetection(front=self.opposite_veh,
                                                             right=self.right_veh,
                                                             traffic_light_state=self.traffic_light))
@@ -94,12 +95,9 @@ class FakeDuckiebot:
         self.publish()
 
     def update_gui(self, gui):
-        if self.mode == FSMState.LANE_FOLLOWING:
-            gui.mode_var.set('Mode: LANE_FOLLOWING')
-        if self.mode == FSMState.COORDINATION:
-            gui.mode_var.set('Mode: COORDINATION_CONTROL')
-        if self.mode == FSMState.INTERSECTION_CONTROL:
-            gui.mode_var.set('Mode: INTERSECTION_CONTROL')
+
+        if self.mode is not None:
+            gui.mode_var.set(self.mode)
 
         gui.traffic_light_var.set(self.traffic_light)
 

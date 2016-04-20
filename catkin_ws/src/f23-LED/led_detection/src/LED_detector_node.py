@@ -10,14 +10,14 @@ import numpy as np
 
 class LEDDetectorNode(object):
     def __init__(self):
-        self.active = True
-        self.first_timestamp = -1 # won't start unless it's None
-        self.data = []
+        self.active = True # [INTERACTIVE MODE] Won't be overwritten if FSM isn't running, node always active 
+        self.first_timestamp = 0
         self.capture_time = 1.0 # capture time
         self.capture_finished = True
         self.tinit = None
         self.trigger = False
         self.node_state = 0
+        self.data = []
         
         self.node_name = rospy.get_name()
         self.pub_detections = rospy.Publisher("~raw_led_detection",LEDDetectionArray,queue_size=1)
@@ -25,6 +25,8 @@ class LEDDetectorNode(object):
         self.veh_name = rospy.get_namespace().strip("/")
 
         self.protocol = rospy.get_param("~LED_protocol")
+        self.continuous = rospy.get_param('~continuous', True) # Detect continuously as long as active
+                                                               # [INTERACTIVE MODE] set to False for manual trigger
         self.frequencies = self.protocol['frequencies'].values()
 
         if not self.veh_name:
@@ -36,32 +38,36 @@ class LEDDetectorNode(object):
         if not self.veh_name:
             raise ValueError('Vehicle name is not set.')
 
-        rospy.loginfo('Vehicle: %s'%self.veh_name)
+        rospy.loginfo('[%s] Vehicle: %s'%(self.node_name, self.veh_name))
         self.sub_cam = rospy.Subscriber("camera_node/image/compressed",CompressedImage, self.camera_callback)
         self.sub_trig = rospy.Subscriber("~trigger",Byte, self.trigger_callback)
         self.sub_switch = rospy.Subscriber("~switch",BoolStamped,self.cbSwitch)
-        print('Waiting for camera image...')
+        rospy.loginfo('[%s] Waiting for camera image...' %self.node_name)
 
-    def cbSwitch(self, switch_msg):
+    def cbSwitch(self, switch_msg): # active/inactive switch from FSM
         self.active = switch_msg.data
+        if(self.active):
+            self.trigger = True
 
     def camera_callback(self, msg):
         if not self.active:
             return
+
         float_time = msg.header.stamp.to_sec()
         debug_msg = LEDDetectionDebugInfo()
 
         if self.trigger:
+            rospy.loginfo('[%s] GOT TRIGGER! Starting...')
             self.trigger = False
             self.data = []
             self.capture_finished = False
-            rospy.loginfo('Start capturing frames')
+            rospy.loginfo('[%s] Start capturing frames'%self.node_name)
             self.first_timestamp = msg.header.stamp.to_sec()
             self.tinit = time.time()
 
         elif self.capture_finished:
             self.node_state = 0
-            #print('Waiting for trigger signal...')
+            rospy.loginfo('[%s] Waiting for trigger...' %self.node_name)
 
         if self.first_timestamp > 0:
             # TODO sanity check rel_time positive, restart otherwise 
@@ -69,20 +75,23 @@ class LEDDetectorNode(object):
 
             # Capturing
             if rel_time < self.capture_time:
-                rgb = numpy_from_ros_compressed(msg)
-                rospy.loginfo('Capturing frame %s' %rel_time)
-                self.data.append({'timestamp': float_time, 'rgb': rgb})
                 self.node_state = 1
+                rgb = numpy_from_ros_compressed(msg)
+                rospy.loginfo('[%s] Capturing frame %s' %(self.node_name, rel_time))
+                self.data.append({'timestamp': float_time, 'rgb': rgb})
                 debug_msg.capture_progress = 100.0*rel_time/self.capture_time
 
             # Start processing
             elif not self.capture_finished and self.first_timestamp > 0:
+                rospy.loginfo('[%s] Relative Time %s, processing' %(self.node_name, rel_time))
+                self.node_state = 2
                 self.capture_finished = True
                 self.first_timestamp = 0
-                self.node_state = 2
+                self.sub_cam.unregister() # IMPORTANT! Explicitly ignore messages  
+                                          # while processing, accumulates delay otherwise!
                 self.send_state(debug_msg)
                 self.process_and_publish()
-            
+
         self.send_state(debug_msg) # TODO move heartbeat to dedicated thread
 
     def trigger_callback(self, msg):
@@ -107,11 +116,16 @@ class LEDDetectorNode(object):
         tic = time.time()
         result = det.detect_led(images, mask, self.frequencies, 5)
         self.pub_detections.publish(result)
+
         toc = time.time()-tic
         tac = time.time()-self.tinit
-        print('Done. Processing Time: %.2f'%toc)
-        print('Total Time taken: %.2f'%tac)
+        rospy.loginfo('[%s] Detection done. Processing Time: %.2f'%(self.node_name, toc))
+        print('[%s] Total Time taken: %.2f'%(self.node_name, tac))
 
+        if(self.continuous):
+            self.trigger = True
+            self.sub_cam = rospy.Subscriber("camera_node/image/compressed",CompressedImage, self.camera_callback)
+    
     def send_state(self, msg):
         msg.state = self.node_state
         self.pub_debug.publish(msg) 

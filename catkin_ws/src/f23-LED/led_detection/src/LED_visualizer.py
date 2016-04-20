@@ -93,12 +93,14 @@ class LEDWindow(QWidget):
         if msg.state == 1:
             self.triggerBtn.setVisible(False)
             self.stateLabel.setText("Capture: ")
-            self.unfiltered_leds = None
+            #self.unfiltered_leds = None
         elif msg.state == 2:
             self.triggerBtn.setVisible(False)
             self.stateLabel.setText("Processing...")
         elif msg.state == 0:
             self.triggerBtn.setVisible(True)
+            if not len(msg.led_all_unfiltered.detections):
+                self.unfiltered_leds = None
             if self.unfiltered_leds is not None:
                 self.stateLabel.setText("Click on the squares for details or on image to toggle camera/variance map...")
             else:

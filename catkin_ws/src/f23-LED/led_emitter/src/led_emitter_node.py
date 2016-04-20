@@ -27,6 +27,7 @@ class LEDEmitter(object):
                 c[i] = c[i]  * scale
 
         self.cycle_timer = rospy.Timer(rospy.Duration.from_sec(.1), self.cycleTimer)
+        self.current_pattern_name = None
         self.changePattern_('CAR_SIGNAL_A')
 
     def cycleTimer(self,event):
@@ -43,9 +44,13 @@ class LEDEmitter(object):
         self.changePattern_(msg.data)
 
     def changePattern_(self, pattern_name):
-        rospy.loginfo('changePattern(%r)' % pattern_name)
+        if pattern_name:
+            if (self.current_pattern_name == pattern_name):
+                return
+            else:
+                self.current_pattern_name = pattern_name
 
-        if pattern_name:#  in ['light_off', 'CAR_SIGNAL_A', 'CAR_SIGNAL_B',   'CAR_SIGNAL_C']:
+            rospy.loginfo('changePattern(%r)' % pattern_name)
             color = self.protocol['signals'][pattern_name]['color']
             self.cycle = self.protocol['signals'][pattern_name]['frequency']
             print("color: %s, freq (Hz): %s "%(color, self.cycle))
@@ -54,10 +59,10 @@ class LEDEmitter(object):
             self.pattern[2] = self.protocol['colors'][color]
             #print(self.pattern)
 
-        if pattern_name in ['traffic_light_go', 'traffic_light_stop']:
-            self.pattern = [self.protocol['colors'][color]] * 5
+            if pattern_name in ['traffic_light_go', 'traffic_light_stop']:
+                self.pattern = [self.protocol['colors'][color]] * 5
 
-        self.changeFrequency()
+            self.changeFrequency()
 
     def changeFrequency(self): 
         try:
@@ -68,6 +73,7 @@ class LEDEmitter(object):
             self.cycle_timer = rospy.Timer(rospy.Duration.from_sec(d), self.cycleTimer)
         except ValueError as e:
             self.cycle = None
+            self.current_pattern_name = None
     	self.pub_state.publish(float(self.cycle))
 
 if __name__ == '__main__':

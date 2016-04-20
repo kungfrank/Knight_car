@@ -9,8 +9,8 @@
     </include>
 
     <!-- Run unit test -->
-    <remap from="apriltags_integration_tester/image_raw" to="camera_node/image/raw" />
-    <remap from="apriltags_integration_tester/camera_info" to="camera_node/camera_info" />
+    <remap from="apriltags_integration_tester/image_raw" to="camera_node/image/rect" />
+    <remap from="apriltags_integration_tester/camera_info" to="camera_node/raw_camera_info" />
     <remap from="apriltags_integration_tester/apriltags" to="apriltags_postprocessing_global_node/apriltags_out" />
     <test test-name="apriltags_integration_tester" pkg="apriltags" type="apriltags_integration_tester.py" ns="$(arg veh)">
         <param name="test_path" value="$(env DUCKIETOWN_DATA)/logs/20160400-phase3-logs/dp6a/apriltags" />

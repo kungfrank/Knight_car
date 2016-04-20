@@ -10,7 +10,7 @@ import numpy as np
 
 class LEDDetectorNode(object):
     def __init__(self):
-        self.active = True
+        self.active = True # [INTERACTIVE MODE] Won't be overwritten if FSM isn't running, node always active 
         self.first_timestamp = -1 # won't start unless it's None
         self.data = []
         self.capture_time = 1.0 # capture time
@@ -25,6 +25,8 @@ class LEDDetectorNode(object):
         self.veh_name = rospy.get_namespace().strip("/")
 
         self.protocol = rospy.get_param("~LED_protocol")
+        self.continuous = rospy.get_param('~continuous', True) # Detect continuously as long as active
+                                                               # [INTERACTIVE MODE] set to False for manual trigger
         self.frequencies = self.protocol['frequencies'].values()
 
         if not self.veh_name:
@@ -61,6 +63,8 @@ class LEDDetectorNode(object):
 
         elif self.capture_finished:
             self.node_state = 0
+            if(self.continuous):
+                self.trigger = True
             #print('Waiting for trigger signal...')
 
         if self.first_timestamp > 0:

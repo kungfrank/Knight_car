@@ -40,6 +40,9 @@ light3:
 light5:
   name: Chandan
 
+light7:
+  name: Chandan
+
 pontiac:
   name: Liam Paull
 
@@ -144,8 +147,14 @@ shamrock:
 ernie:
   name: Noam Buckman
 
+bill:
+  name: Brandon Araki
+
 maserati:
   name: Valerio Varricchio
+
+cepillo:
+  name: Jonathan GM
 
 trabant:
   name: Nick Wang

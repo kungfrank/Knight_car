@@ -10,8 +10,10 @@
  	<arg name="raw" default="true" doc="If set to true, also publish raw image using decoder."/>
  	<arg name="live" default="true" doc="live set to false means we don't run the actual camera (i.e. running from a log file" />
 	<arg name="camera" default="true"/>
- 
- 	
+    <arg name="fast" default="false"/>
+
+
+    <!-- Camera -->
  	<include if="$(arg camera)" file="$(find duckietown)/launch/camera.launch">
  		<arg name="veh" value="$(arg veh)"/>
  		<arg name="local" value="$(arg local)"/>
@@ -23,44 +25,19 @@
 		<arg name="rect" value="true" />
  	</include>
  
- 	<!-- Preprocessing-->
-<!--	<remap from="apriltags_preprocessing_node/image_in" to="camera_node/image/rect" />
- 	<include file="$(find apriltags)/launch/apriltags_preprocessing_node.launch">
- 		<arg name="veh" value="$(arg veh)"/>
- 		<arg name="config" value="$(arg config)"/>
- 		<arg name="param_file_name" value="$(arg pre_param_file_name)"/>
- 	</include>-->
-
  	<!-- AprilTags Detections -->
  	<remap from="apriltags_global_node/image_raw" to="camera_node/image/rect"/>
- 	<remap from="apriltags_fast_node/image_raw" to="camera_node/image/rect"/>
  	<remap from="apriltags_global_node/camera_info" to="camera_node/raw_camera_info"/>
- 	<remap from="apriltags_fast_node/camera_info" to="camera_node/raw_camera_info"/>
- 	<include file="$(find apriltags)/launch/apriltags_node.launch">
- 		<arg name="veh" value="$(arg veh)"/>
- 		<arg name="sub_node_name" value="fast"/>
- 		<arg name="local" value="$(arg local)"/>
- 		<arg name="config" value="$(arg config)"/>
- 		<arg name="param_file_name" value="$(arg param_file_name)"/>
- 	</include>
- 	<include file="$(find apriltags)/launch/apriltags_node.launch">
- 		<arg name="veh" value="$(arg veh)"/>
- 		<arg name="sub_node_name" value="global"/>
- 		<arg name="local" value="$(arg local)"/>
- 		<arg name="config" value="$(arg config)"/>
- 		<arg name="param_file_name" value="$(arg param_file_name)"/>
- 	</include>
+    <include file="$(find apriltags)/launch/apriltags_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="sub_node_name" value="global"/>
+        <arg name="local" value="$(arg local)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+    </include>
  
  	<!-- Postprocessing nodes -->
- 	<remap from="apriltags_postprocessing_fast_node/apriltags_in" to="apriltags_fast_node/apriltags"/>
  	<remap from="apriltags_postprocessing_global_node/apriltags_in" to="apriltags_global_node/apriltags"/>
- 	<include file="$(find apriltags)/launch/apriltags_postprocessing_node.launch">
- 		<arg name="veh" value="$(arg veh)"/>
- 		<arg name="sub_node_name" value="fast"/>
- 		<arg name="loc" value="$(arg loc)"/>
-		<arg name="param_file_name" value="$(arg pos_param_file_name)"/>
-		<arg name="config" value="$(arg config)"/>
- 	</include>
  	<include file="$(find apriltags)/launch/apriltags_postprocessing_node.launch">
  		<arg name="veh" value="$(arg veh)"/>
  		<arg name="sub_node_name" value="global"/>
@@ -70,15 +47,48 @@
  	</include>
 
  	<!-- Visualizer node -->
- 	<remap from="apriltags_visualizer_fast_node/apriltags_in" to="apriltags_postprocessing_fast_node/apriltags_out"/>
  	<remap from="apriltags_visualizer_global_node/apriltags_in" to="apriltags_postprocessing_global_node/apriltags_out"/>
-	<include file="$(find apriltags)/launch/apriltags_visualizer_node.launch">
- 		<arg name="veh" value="$(arg veh)"/>
- 		<arg name="sub_node_name" value="fast"/>
- 	</include>
  	<include file="$(find apriltags)/launch/apriltags_visualizer_node.launch">
  		<arg name="veh" value="$(arg veh)"/>
  		<arg name="sub_node_name" value="global"/>
  	</include>
 
+    <group if="$(arg fast)" doc="Launches the fast nodes with preprocessing">
+
+        <!-- Preprocessing-->
+        <remap from="apriltags_preprocessing_node/image_in" to="camera_node/image/rect" />
+        <include file="$(find apriltags)/launch/apriltags_preprocessing_node.launch">
+            <arg name="veh" value="$(arg veh)"/>
+            <arg name="config" value="$(arg config)"/>
+            <arg name="param_file_name" value="$(arg pre_param_file_name)"/>
+        </include>
+
+        <!-- AprilTags Detections -->
+        <remap from="apriltags_fast_node/image_raw" to="camera_node/image/rect"/>
+        <remap from="apriltags_fast_node/camera_info" to="camera_node/raw_camera_info"/>
+        <include file="$(find apriltags)/launch/apriltags_node.launch">
+            <arg name="veh" value="$(arg veh)"/>
+            <arg name="sub_node_name" value="fast"/>
+            <arg name="local" value="$(arg local)"/>
+            <arg name="config" value="$(arg config)"/>
+            <arg name="param_file_name" value="$(arg param_file_name)"/>
+        </include>
+
+        <!-- Postprocessing nodes -->
+        <remap from="apriltags_postprocessing_fast_node/apriltags_in" to="apriltags_fast_node/apriltags"/>
+        <include file="$(find apriltags)/launch/apriltags_postprocessing_node.launch">
+            <arg name="veh" value="$(arg veh)"/>
+            <arg name="sub_node_name" value="fast"/>
+            <arg name="loc" value="$(arg loc)"/>
+            <arg name="param_file_name" value="$(arg pos_param_file_name)"/>
+            <arg name="config" value="$(arg config)"/>
+        </include>
+
+        <!-- Visualizer node -->
+        <remap from="apriltags_visualizer_fast_node/apriltags_in" to="apriltags_postprocessing_fast_node/apriltags_out"/>
+        <include file="$(find apriltags)/launch/apriltags_visualizer_node.launch">
+            <arg name="veh" value="$(arg veh)"/>
+            <arg name="sub_node_name" value="fast"/>
+        </include>
+    </group>
 </launch>

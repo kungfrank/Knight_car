@@ -4,15 +4,11 @@ inputs:
     topic: "open_loop_intersection_control_node/intersection_done"
   in_lane:
     topic: "lane_filter_node/in_lane"
-  no_parallel_autonomy:
-    topic: "joy_mapper_node/no_parallel_autonomy"
 output_topic: "~intersection_done_and_in_lane"
 gate_type: "AND"
 inputs:
   intersection:
     topic: "open_loop_intersection_control_node/intersection_done"
-  in_lane:
-    topic: "lane_filter_node/in_lane"
   parallel_autonomy:
     topic: "joy_mapper_node/parallel_autonomy"
 output_topic: "~intersection_done_and_in_lane_and_parallel_autonomy"

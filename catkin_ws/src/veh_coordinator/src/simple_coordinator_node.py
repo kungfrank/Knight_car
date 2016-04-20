@@ -64,7 +64,7 @@ class VehicleCoordinator():
         self.pub_coord_cmd = rospy.Publisher('~car_cmd',Twist2DStamped, queue_size=1)
 
         self.roof_light = CoordinationSignal.OFF
-        self.roof_light_pub = rospy.Publisher('~change_color_pattern', CoordinationSignal, queue_size=10)
+        self.roof_light_pub = rospy.Publisher('~change_color_pattern', String, queue_size=10)
 
         self.coordination_state_pub = rospy.Publisher('~coordination_state', String, queue_size=10)
 
@@ -117,7 +117,7 @@ class VehicleCoordinator():
             msg.data = True
             self.pub_intersection_go.publish(msg)
             # TODO: publish intersection go only once.
-        self.roof_light_pub.publish(CoordinationSignal(signal=self.roof_light))
+        self.roof_light_pub.publish(self.roof_light)
 
         car_cmd_msg = Twist2DStamped(v=0.0,omega=0.0)
         car_cmd_msg.header.stamp = now

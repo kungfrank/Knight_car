@@ -11,6 +11,7 @@
 	<arg name="anti_instagram" default="false"/>
 	<arg name="loc" default="-1"/>
 	<arg name="line_detector_param_file_name" default="$(arg param_file_name)"/>
+	<arg name="intersectionType" default="trafficLight" />
 	<!-- end basic args -->
  
 <!-- the things that are "on" by default: 
@@ -64,7 +65,7 @@
 	<arg name="/LED/detector" default="true" />
 	<arg name="/LED/joystick" default="true" />
 	<arg name="/LED/emitter"  default="true" />
-	<arg name="/LED/interpreter" default="false" />
+	<arg name="/LED/interpreter" default="true" />
 
 	<arg name="odometry_learning" default="false"/>
 	<arg name="/odometry_learning/kinematics" default="true"/>
@@ -437,6 +438,7 @@
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
 				<arg name="param_file_name" value="$(arg param_file_name)"/>
+
 			</include>
 		</group>
 
@@ -446,6 +448,7 @@
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
 				<arg name="param_file_name" value="$(arg param_file_name)"/>
+				<arg name="intersectionType" default="trafficLight" />
 			</include>
 		</group>
 		

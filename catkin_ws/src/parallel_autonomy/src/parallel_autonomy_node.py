@@ -20,11 +20,12 @@ class ParallelAutonomyNode(object):
         self.blink = False
         self.availableTurns = []
         self.turn_direction = self.turn_NONE
-
+	self.joy_forward = 0;
         rospy.loginfo("[%s] Initialzing." %(self.node_name))
 
         # Setup publishers
         self.pub_turn_type = rospy.Publisher("~turn_type",Int16, queue_size=1, latch=True)
+	
 
         # Setup subscribers
         self.sub_topic_mode = rospy.Subscriber("~mode", FSMState, self.cbMode, queue_size=1)
@@ -64,6 +65,7 @@ class ParallelAutonomyNode(object):
 
 
     def cbJoy(self,msg):
+	self.joy_forward = msg.axes[1]
         if msg.buttons[2] and self.turn_LEFT in self.availableTurns: # or self.joy.axes[3] > 0.2:
             if self.turn_direction == self.turn_LEFT:
                 self.turn_direction = self.turn_STRAIGHT
@@ -101,16 +103,17 @@ class ParallelAutonomyNode(object):
     def cbMode(self, mode_msg):
         self.fsm_mode = mode_msg.state
 
-        if(self.fsm_mode == "WAITING_ON_TURN_DIRECTION"):
+        if(self.fsm_mode == "INTERSECTION_CONTROL"):
             self.availableTurns = [0,1,2]#just to test without april tags, set to [] for actual
 
 	    self.turn_direction = self.turn_NONE
             rospy.sleep(2)
-            while self.turn_direction is self.turn_NONE:
+            while self.turn_direction is self.turn_NONE or not self.joy_forward>0:
                 pass
             self.pub_turn_type.publish(self.turn_direction) # make sure mapping to turn_type is ok
             rospy.loginfo("[%s] Turn type: %i" %(self.node_name, self.turn_direction))
-            
+        if(self.fsm_mode == "LANE_FOLLOWING"):
+	    self.turn_direction = self.turn_NONE
     
 
     def setupParameter(self,param_name,default_value):

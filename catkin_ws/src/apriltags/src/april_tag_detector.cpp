@@ -103,21 +103,33 @@ public:
     double px = camera_info_.K[2];
     double py = camera_info_.K[5];
 
-    /* Extract relative translation rotation */
-    Eigen::Vector3d trans;
-    Eigen::Matrix3d rot;
-    detection.getRelativeTranslationRotation(tag_size_,fx,fy,px,py,trans,rot);
-    msg.transform.translation.x = trans(0);
-    msg.transform.translation.y = trans(1);
-    msg.transform.translation.z = trans(2);
-    tf::Matrix3x3 tf_matrix3x3;
-    tf::matrixEigenToTF(rot,tf_matrix3x3);
-    tf::Quaternion quat;
-    tf_matrix3x3.getRotation(quat);
+    Eigen::Matrix4d transform = detection.getRelativeTransform(tag_size_, fx, fy, px, py);
+    Eigen::Matrix3d rot = transform.block(0,0,3,3);
+    Eigen::Quaternion<double> quat = Eigen::Quaternion<double>(rot);
+    msg.transform.translation.x = transform(0,3);
+    msg.transform.translation.y = transform(1,3);
+    msg.transform.translation.z = transform(2,3);
     msg.transform.rotation.x = quat.x();
     msg.transform.rotation.y = quat.y();
     msg.transform.rotation.z = quat.z();
     msg.transform.rotation.w = quat.w();
+//  Switched to using getRelativeTransform instead of getRelativeTranslationRotation
+//    /* Extract relative translation rotation */
+//    Eigen::Vector3d trans;
+//    Eigen::Matrix3d rot;
+//    detection.getRelativeTranslationRotation(tag_size_,fx,fy,px,py,trans,rot);
+//
+//    msg.transform.translation.x = trans(0);
+//    msg.transform.translation.y = trans(1);
+//    msg.transform.translation.z = trans(2);
+//    tf::Matrix3x3 tf_matrix3x3;
+//    tf::matrixEigenToTF(rot,tf_matrix3x3);
+//    tf::Quaternion quat;
+//    tf_matrix3x3.getRotation(quat);
+//    msg.transform.rotation.x = quat.x();
+//    msg.transform.rotation.y = quat.y();
+//    msg.transform.rotation.z = quat.z();
+//    msg.transform.rotation.w = quat.w();
 
     return msg;
   }

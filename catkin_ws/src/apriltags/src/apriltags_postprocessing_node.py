@@ -5,6 +5,7 @@ import yaml
 from duckietown_msgs.msg import AprilTags, TagDetection, TagInfo, Vector2D
 import numpy as np
 import kinematic as k
+import tf.transformations as tr
 
 class AprilPostPros(object):
     """ """
@@ -97,61 +98,38 @@ class AprilPostPros(object):
             camera_y     = rospy.get_param("~camera_y")
             camera_z     = rospy.get_param("~camera_z")
             camera_theta = rospy.get_param("~camera_theta")
-            
-            
-            #Load translation
-            x = detection.transform.translation.x
-            y = detection.transform.translation.y
-            z = detection.transform.translation.z
-            
-            t_tc_Fc = k.Vector( x , y , z ) # translation tags(t) w/ camera(c) expressed in camera frame (Fc)
-            
-            #Load rotation
-            x = detection.transform.rotation.x
-            y = detection.transform.rotation.y 
-            z = detection.transform.rotation.z
-            w = detection.transform.rotation.w
-            e = k.Vector( x , y , z )
-            Q_Ftag_Fold = k.Quaternion( e , w )
-            
-            # New tag orientation reference (zero when facing camera) w/ to old tag ref used by the lib
-            C_Ft_Ftag = k.RotationMatrix( np.matrix([[0,0,-1],[-1,0,0],[0,1,0]]) )
-            Q_Ft_Ftag = C_Ft_Ftag.toQuaternion()
-            
-            # Rotation of old ref frame used by the lib w/ to camera frame
-            C_Fold_Fc = k.RotationMatrix( np.matrix([[0,-1,0],[0,0,-1],[1,0,0]]) )
-            Q_Fold_Fc = C_Fold_Fc.toQuaternion()
-            
-            # Camera localization
-            t_cv_Fv = k.Vector( camera_x , camera_y , camera_z ) # translation of camera w/ vehicle origin in vehicle frame
-            C_Fc_Fv = k.euler2RotationMatrix(0,camera_theta,0)   # Rotation   of camera frame w/ vehicle frame
-            Q_Fc_Fv = C_Fc_Fv.toQuaternion()
-            
-            # Compute tag orientation in vehicle frame
-            Q_Ft_Fv =  Q_Fc_Fv * Q_Fold_Fc * Q_Ftag_Fold * Q_Ft_Ftag
-            
-            # Compute position of tag in vehicle frame expressed in vehicle frame
-            C_Fv_Fc = - C_Fc_Fv # inverse transform
-            t_tc_Fv = C_Fv_Fc * t_tc_Fc
-            t_tv_Fv = t_tc_Fv + t_cv_Fv
-            
-            # Overwrite transformed value
-            detection.transform.translation.x = t_tv_Fv.x
-            detection.transform.translation.y = t_tv_Fv.y
-            detection.transform.translation.z = t_tv_Fv.z
-            detection.transform.rotation.x    = Q_Ft_Fv.e.x
-            detection.transform.rotation.y    = Q_Ft_Fv.e.y
-            detection.transform.rotation.z    = Q_Ft_Fv.e.z
-            detection.transform.rotation.w    = Q_Ft_Fv.n
-            
-            # Debug Print
-            #A_read       = Q_Ftag_Fold.toAngleAxis()
-            #A_Ft_Fv      = Q_Ft_Fv.toAngleAxis()
-            #print 'Rotation Read'
-            #A_read()
-            #print 'Rotation in Vehicle Frame'
-            #A_Ft_Fv()
+            scale_x     = rospy.get_param("~scale_x")
+            scale_y     = rospy.get_param("~scale_y")
+            scale_z     = rospy.get_param("~scale_z")
 
+            # Define the transforms
+            veh_t_camxout = tr.translation_matrix((camera_x, camera_y, camera_z))
+            veh_R_camxout = tr.euler_matrix(0, camera_theta*np.pi/180, 0, 'rxyz')
+            veh_T_camxout = tr.concatenate_matrices(veh_t_camxout, veh_R_camxout)   # 4x4 Homogeneous Transform Matrix
+
+            camxout_T_camzout = tr.euler_matrix(-np.pi/2,0,-np.pi/2,'rzyx')
+            veh_T_camzout = tr.concatenate_matrices(veh_T_camxout, camxout_T_camzout)
+
+            tagzout_T_tagxout = tr.euler_matrix(-np.pi/2, 0,-np.pi/2, 'rxyz')
+
+            #Load translation
+            trans = detection.transform.translation
+            rot = detection.transform.rotation
+            camzout_t_tagzout = tr.translation_matrix((trans.x*scale_x, trans.y*scale_y, trans.z*scale_z))
+            camzout_R_tagzout = tr.quaternion_matrix((rot.x, rot.y, rot.z, rot.w))
+            camzout_T_tagzout = tr.concatenate_matrices(camzout_t_tagzout, camzout_R_tagzout)
+
+            veh_T_tagxout = tr.concatenate_matrices(veh_T_camzout, camzout_T_tagzout, tagzout_T_tagxout)
+
+            # Overwrite transformed value
+            (trans.x, trans.y, trans.z) = tr.translation_from_matrix(veh_T_tagxout)
+            (rot.x, rot.y, rot.z, rot.w) = tr.quaternion_from_matrix(veh_T_tagxout)
+            detection.transform.translation = trans
+            detection.transform.rotation = rot
+
+            # Debug Print
+            (theta_x, theta_y, theta_z) = (np.array(tr.euler_from_quaternion((rot.x, rot.y, rot.z, rot.w),'rzyx'))*180/np.pi).tolist()
+            rospy.loginfo("[{0}] Translation: [x,y,z]: [{1:.3f}, {2:.3f}, {3:.3f}] Rotation [rx,ry,rz]: [{4:.3f}, {5:.3f}, {6:.3f}]".format("apriltags", trans.x,trans.y,trans.z,theta_x, theta_y, theta_z))
             tag_infos.append(new_info)
         
         new_tag_data = AprilTags()

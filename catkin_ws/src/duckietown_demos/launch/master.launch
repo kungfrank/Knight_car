@@ -227,6 +227,12 @@
 				<arg name="config" value="$(arg config)"/>
 				<arg name="param_file_name" value="$(arg param_file_name)"/>
 			</include>
+			<group if="$(arg visualization)">
+			  <remap from="duckibot_visualizer/segment_list" to="ground_projection/lineseglist_out"/>
+			  <include file="$(find duckiebot_visualizer)/launch/duckiebot_visualizer.launch">
+			    <arg name="veh" value="$(arg veh)" />
+			  </include>
+			</group>
 		</group>
 	
 		<!-- Lane Filter -->

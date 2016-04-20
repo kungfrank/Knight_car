@@ -1,9 +1,9 @@
 mode_topic: "fsm_node/mode"
 source_topics: #Mapping from cmd source name to topics
   coordination: "simple_coordinator_node/change_color_pattern"
-  joystick: "led_joy_mapper/change_color_pattern"
+  joystick: "led_joy_mapper_node/change_color_pattern"
 mappings: #Mapping from FSMStates.state to cmd source names. Allows different FSM mode to use the same source.
-  LANE_FOLLOWING: "joystick"
+  LANE_FOLLOWING: "coordination"
   INTERSECTION_CONTROL: "coordination"
   COORDINATION: "coordination"
   JOYSTICK_CONTROL: "joystick"

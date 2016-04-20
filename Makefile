@@ -31,7 +31,7 @@ build:
 # Unit tests
 # Teddy: make it so "make unittests" runs all unit tests
 
-unittests-environment:
+unittests-environment: $(machines)
 	bash -c "source environment.sh; source set_vehicle_name.sh; python setup/sanity_checks"
 
 unittests:

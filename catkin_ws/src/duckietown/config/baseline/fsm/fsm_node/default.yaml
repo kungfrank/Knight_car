@@ -90,7 +90,13 @@ states:
   JOYSTICK_CONTROL:
     transitions:
       joystick_override_off: "LANE_FOLLOWING"
-    active_nodes: []
+    active_nodes:
+      - vehicle_detector_node
+      - static_object_detector_node
+      - lane_filter_node
+      - line_detector_node
+      - stop_line_filter_node
+      - decoder_node # remove if not doing vehicle / object avoidance
     lights: ["joystick"]
   PARALLEL_AUTONOMY:
     transitions:

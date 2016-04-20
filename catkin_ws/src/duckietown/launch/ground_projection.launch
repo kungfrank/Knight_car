@@ -17,7 +17,6 @@
 		 <arg name="live" value="$(arg live)"/>
 	</include>
 
-    <remap from="ground_projection/lineseglist_in" to="line_detector_node/segment_list"/>
 	<include file="$(find ground_projection)/launch/ground_projection.launch">
 		 <arg name="veh" value="$(arg veh)"/>
 		 <arg name="local" value="$(arg local)"/>

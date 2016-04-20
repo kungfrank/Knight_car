@@ -32,6 +32,7 @@
 	    <arg name="veh" value="$(arg veh)"/>
 	    <arg name="local" value="$(arg local)"/>
 	    <arg name="config" value="$(arg config)"/>
+	    <arg name="continuous" value="$(arg live)"/>
 	</include>
 
 	<!-- LED interpreter --> 

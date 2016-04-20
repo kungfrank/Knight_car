@@ -35,7 +35,7 @@
 	</include>
 
 	<!-- LED interpreter --> 
-	<remap from="LED_detector_node/raw_led_detection" to="LED_interpreter_node/raw_led_detection" />
+	<remap from="LED_interpreter_node/raw_led_detection" to="LED_detector_node/raw_led_detection" />
 	<include file="$(find led_interpreter)/launch/LED_interpreter.launch">
 		<arg name="veh" value="$(arg veh)"/>
 	    	<arg name="local" value="$(arg local)"/>

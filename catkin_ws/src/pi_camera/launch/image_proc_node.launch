@@ -6,6 +6,7 @@
     <arg name="local" default="false"
          doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
 
+    <include file="$(find duckietown)/machines"/>
     <group ns="$(arg veh)">
 
         <!-- run local -->

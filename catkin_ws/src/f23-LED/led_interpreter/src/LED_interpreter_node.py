@@ -15,11 +15,11 @@ class LEDInterpreterNode(object):
 
 		self.node = rospy.init_node('LED_interpreter_node',anonymous=True)
 		self.node_name = rospy.get_name()
+		
+		self.trafficLightIntersection = False		
 
-		self.setIntersectionType = True
-		self.hasObservedSignals = False
-		self.trafficLightIntersection = False
-		self.active = True
+		if rospy.get_param("~intersectionType") == "trafficLight":
+			self.trafficLightIntersection = True
 
 
 		self.protocol = rospy.get_param("~LED_protocol") #should be a list of tuples
@@ -49,39 +49,41 @@ class LEDInterpreterNode(object):
 		#self.switch = rospy.Subscriber("~mode", FSMState, self.seeSwitch)
 		rospy.loginfo("Initialized.")
 
-		while not rospy.is_shutdown():
-            		self.publish_topics()
-            		rospy.sleep(0.1)
+		#while not rospy.is_shutdown():
+            	#	self.publish_topics()
+            	#	rospy.sleep(0.1)
 
 
-	def CheckTags(self, msg):
+	#def CheckTags(self, msg):
 	#task of this is to check on what type of intersection we are
-		if self.active:
-			if not self.setIntersectionType:
-				for info in msg.infos:
-					if info.traffic_sign_type == info.STOP:
-						self.trafficLightIntersection = False
-					break
-				self.setIntersectionType = True
+	#	if self.active:
+	#		if not self.setIntersectionType:
+	#			for info in msg.infos:
+	#				if info.traffic_sign_type == info.STOP:
+	#					self.trafficLightIntersection = False
+	#				break
+	#			self.setIntersectionType = True
 
-	def seeSwitch(self, msg):
-		if msg.state == "COORDINATION":
-			rospy.loginfo("coordination mode active")
-			self.active = True
-		else: #reset parameters
-			rospy.loginfo("coordination mode inactive")
-			self.active = False
-			self.setIntersectionType = False
-			self.hasObservedSignals = False
-			self.trafficLightIntersection = True
+	#def seeSwitch(self, msg):
+	#	if msg.state == "COORDINATION":
+	#		rospy.loginfo("coordination mode active")
+	#		self.active = True
+	#	else: #reset parameters
+	#		rospy.loginfo("coordination mode inactive")
+	#		self.active = False
+	#		self.setIntersectionType = False
+	#		self.hasObservedSignals = False
+	#		self.trafficLightIntersection = True
 
 
 	def Interpreter(self, msg):
 		rospy.loginfo("[%s] Read a message from Detector" %(self.node_name))
-		if self.active:
-			if self.setIntersectionType:
-				self.hasObservedSignals = True
+		#initialize the standard output message
+		self.front = SignalsDetection.NO_CAR
+		self.right = SignalsDetection.NO_CAR
+		self.left = SignalsDetection.NO_CAR
 
+		self.traffic_light_state = SignalsDetection.NO_TRAFFIC_LIGHT
 				#case with a traffic light
 				if self.trafficLightIntersection:
 					for item in msg.detections:
@@ -89,7 +91,6 @@ class LEDInterpreterNode(object):
 						if item.pixels_normalized.y < self.label['top']:
 							if abs(item.frequency - self.lightGo) < 0.1:
 								self.traffic_light_state = SignalsDetection.GO
-								rospy.loginfo("[%s] Pixel was above threshold" %(self.node_name))
 								break
 							else:
 								self.traffic_light_state = SignalsDetection.STOP
@@ -118,13 +119,14 @@ class LEDInterpreterNode(object):
 									break	
 			
 				rospy.loginfo("[%s] The observed LEDs are:\n Front = %s\n Right = %s\n Traffic light state = %s" %(self.node_name, self.front, self.right,self.traffic_light_state))
+				self.pub_interpret.publish(SignalsDetection(front=self.front,right=self.right,left=self.left,traffic_light_state=self.traffic_light_state))
 					
 					
 
-	def publish_topics(self):
-		if self.active:
-			if self.hasObservedSignals:
-				self.pub_interpret.publish(SignalsDetection(front=self.front,right=self.right,left=self.left,traffic_light_state=self.traffic_light_state))	
+	#def publish_topics(self):
+	#	if self.active:
+	#		if self.hasObservedSignals:
+	#			self.pub_interpret.publish(SignalsDetection(front=self.front,right=self.right,left=self.left,traffic_light_state=self.traffic_light_state))	
 
 
 

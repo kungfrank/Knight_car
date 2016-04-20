@@ -3,7 +3,7 @@
 	<arg name="config" default="baseline"/>
 	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman"/>
 	<arg name="local" default="false" doc="true to launch locally on laptop. false to launch of vehicle"/>
-	<arg name="pkg_name" default="lane_control" doc="name of the package"/>
+	<arg name="pkg_name" default="parallel_autonomy" doc="name of the package"/>
 	<arg name="node_name" default="lane_supervisor_node" doc="name of the node"/>
 	<group ns="$(arg veh)">
 	    <!-- Local -->

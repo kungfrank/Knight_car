@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from copy import deepcopy
 from cv_bridge import CvBridge, CvBridgeError
-from duckietown_msgs.msg import VehicleCorners, BoolStamped
+from duckietown_msgs.msg import BoolStamped
 from geometry_msgs.msg import Point32
 from mutex import mutex
 from sensor_msgs.msg import CompressedImage, Image
@@ -32,14 +32,12 @@ class VehicleDetectionNode(object):
 			rospy.logwarn("[%s] Can't find calibration file: %s.\n" 
 					% (self.node_name, self.cali_file))
 		self.loadConfig(self.cali_file)
-#		self.sub_image = rospy.Subscriber("~image", CompressedImage, 
-#				self.cbImage, queue_size=1)
 		self.sub_image = rospy.Subscriber("~image", Image, 
 				self.cbImage, queue_size=1)
 		self.sub_switch = rospy.Subscriber("~switch", BoolStamped,
 				self.cbSwitch, queue_size=1)
-		self.pub_corners = rospy.Publisher("~corners", 
-				VehicleCorners, queue_size=1)
+		self.pub_detection = rospy.Publisher("~detection", 
+				BoolStamped, queue_size=1)
 		self.pub_circlepattern_image = rospy.Publisher("~circlepattern_image", 
 				Image, queue_size=1)
 		self.pub_time_elapsed = rospy.Publisher("~detection_time",
@@ -57,15 +55,18 @@ class VehicleDetectionNode(object):
 		stream = file(filename, 'r')
 		data = yaml.load(stream)
 		stream.close()
-		self.circlepattern_dims = tuple(data['circlepattern_dims']['data'])
+                self.circlepattern_dims = tuple(data['circlepattern_dims']['data'])
 		self.blobdetector_min_area = data['blobdetector_min_area']
 		self.blobdetector_min_dist_between_blobs = data['blobdetector_min_dist_between_blobs']
-		rospy.loginfo('[%s] circlepattern_dim : %s' % (self.node_name, 
-				self.circlepattern_dims,))
+		self.publish_circles = data['publish_circles']
+                rospy.loginfo('[%s] circlepattern_dim : %s' % (self.node_name, 
+                               	self.circlepattern_dims,))
 		rospy.loginfo('[%s] blobdetector_min_area: %.2f' % (self.node_name, 
 				self.blobdetector_min_area))
 		rospy.loginfo('[%s] blobdetector_min_dist_between_blobs: %.2f' % (self.node_name, 
 				self.blobdetector_min_dist_between_blobs))
+		rospy.loginfo('[%s] publish_circles: %r' % (self.node_name, 
+				self.publish_circles))
 
 	def cbSwitch(self, switch_msg):
 		self.active = switch_msg.data
@@ -81,7 +82,7 @@ class VehicleDetectionNode(object):
 	
 	def processImage(self, image_msg):
 		if self.lock.testandset():
-			corners_msg_out = VehicleCorners()
+			vehicle_detected_msg_out = BoolStamped()
 			try:
 				image_cv=self.bridge.imgmsg_to_cv2(image_msg,"bgr8")
 			except CvBridgeError as e:
@@ -91,30 +92,18 @@ class VehicleDetectionNode(object):
 			params.minArea = self.blobdetector_min_area
 			params.minDistBetweenBlobs = self.blobdetector_min_dist_between_blobs
 			simple_blob_detector = cv2.SimpleBlobDetector(params)
-	
 			(detection, corners) = cv2.findCirclesGrid(image_cv,
 					self.circlepattern_dims, flags=cv2.CALIB_CB_SYMMETRIC_GRID,
 					blobDetector=simple_blob_detector)
 			elapsed_time = (rospy.Time.now() - start).to_sec()
 			self.pub_time_elapsed.publish(elapsed_time)
-			cv2.drawChessboardCorners(image_cv, 
-					self.circlepattern_dims, corners, detection)
-			image_msg_out = self.bridge.cv2_to_imgmsg(image_cv, "bgr8")
-			self.pub_circlepattern_image.publish(image_msg_out)
-			if not detection:
-				corners_msg_out.detection.data = False
-				self.pub_corners.publish(corners_msg_out)
-				elapsed_time = (rospy.Time.now() - start).to_sec()
-				self.pub_time_elapsed.publish(elapsed_time)
-				self.lock.unlock()
-				return
-			corners_msg_out.detection.data = True
-			(corners_msg_out.H, corners_msg_out.W) = self.circlepattern_dims
-			for i in np.arange(corners.shape[0]):
-				p = Point32()
-				p.x, p.y = corners[i][0]
-				corners_msg_out.corners.append(deepcopy(p))
-			self.pub_corners.publish(corners_msg_out)
+			vehicle_detected_msg_out.data = detection
+			self.pub_detection.publish(vehicle_detected_msg_out)
+			if self.publish_circles:
+				cv2.drawChessboardCorners(image_cv, 
+						self.circlepattern_dims, corners, detection)
+				image_msg_out = self.bridge.cv2_to_imgmsg(image_cv, "bgr8")
+				self.pub_circlepattern_image.publish(image_msg_out)
 			self.lock.unlock()
 
 if __name__ == '__main__': 

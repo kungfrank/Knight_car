@@ -7,7 +7,6 @@
 	<arg name="only" default="false" doc="Only run the ground_projection part when set to true."/>
 
 	<!-- Ground projection -->
-    <remap from="ground_projection/lineseglist_in" to="line_detector_node/segment_list"/>
 	<include unless="$(arg only)" file="$(find duckietown)/launch/ground_projection.launch">
 	    <arg name="veh" value="$(arg veh)"/>
 	    <arg name="local" value="$(arg local)"/>

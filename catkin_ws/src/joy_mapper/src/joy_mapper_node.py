@@ -77,7 +77,7 @@ class JoyMapper(object):
         elif (joy_msg.buttons[5] == 1): # Right back button
             self.state_verbose ^= True
             rospy.loginfo('state_verbose = %s' % self.state_verbose)
-            rospy.set_param('/emma/line_detector_node/verbose', self.state_verbose)
+            rospy.set_param('line_detector_node/verbose', self.state_verbose)
 
         elif (joy_msg.buttons[4] == 1): #Left back button
             self.state_parallel_autonomy ^= True

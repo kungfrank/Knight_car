@@ -35,7 +35,7 @@ class ApriltagsIntegrationTester(unittest.TestCase):
             rospy.sleep(0.1)
         self.assertLessEqual(rospy.Time.now(), timeout, "Test timed out while waiting for apriltags nodes to come up")
 
-    def notest_publisher_and_subscriber(self):
+    def test_publisher_and_subscriber(self):
         self.setup()    # Setup the node
         self.assertGreaterEqual(self.pub_raw.get_num_connections(), 1, "No connections found on image_raw topic")
         self.assertGreaterEqual(self.pub_info.get_num_connections(), 1, "No connections found on camera_info topic")
@@ -47,21 +47,29 @@ class ApriltagsIntegrationTester(unittest.TestCase):
 
     def send_test_messages(self, filename, id):
         self.msg_received = False
-        # Publish the camera info
+        # Publish the camera info TODO make this a field in the annotations file to dictate the source calibration file
         msg_info = CameraInfo()
         msg_info.height = 480
         msg_info.width = 640
+        msg_info.distortion_model = "plumb_bob"
+        msg_info.D = [-0.28048157543793056, 0.05674481026365553, -0.000988764087143394, -0.00026869128565781613, 0.0]
         msg_info.K = [315.128501, 0.0, 323.069638, 0.0, 320.096636, 218.012581, 0.0, 0.0, 1.0]
-        self.pub_info.publish(msg_info)
+        msg_info.R = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+        msg_info.P = [217.48876953125, 0.0, 321.3154072384932, 0.0, 0.0, 250.71084594726562, 202.30416165274983, 0.0, 0.0, 0.0, 1.0, 0.0]
+        msg_info.roi.do_rectify = False
+
         # Publish the test image
         img = cv2.imread(filename)
         cvb = CvBridge()
         msg_raw = cvb.cv2_to_imgmsg(img)
-        self.pub_raw.publish(msg_raw)
+
+
 
         # Wait for the message to be received
-        timeout = rospy.Time.now() + rospy.Duration(5) # Wait at most 5 seconds for the node to reply
+        timeout = rospy.Time.now() + rospy.Duration(10) # Wait at most 5 seconds for the node to reply
         while not self.msg_received and not rospy.is_shutdown() and rospy.Time.now() < timeout:
+            self.pub_info.publish(msg_info)
+            self.pub_raw.publish(msg_raw)
             rospy.sleep(0.1)
         self.assertLess(rospy.Time.now(), timeout, "Waiting for apriltag detection timed out.")
 
@@ -70,6 +78,7 @@ class ApriltagsIntegrationTester(unittest.TestCase):
         filepath = rospy.get_param("~test_path")
 
         tag_errs = []
+        id_errs = []
         for file in self.annotations:
             expected_id = self.annotations[file]['id']
             self.send_test_messages(filepath+"/"+file, expected_id)
@@ -94,8 +103,9 @@ class ApriltagsIntegrationTester(unittest.TestCase):
                     # Allow up to 15 degrees of error margin
                     try:self.assertAlmostEqual(ang, self.annotations[file]['theta'], delta=15*np.pi/180)
                     except AssertionError,e: tag_errs.append(msg + str(e))
-            self.assertTrue(found, "Expected apriltag with id={id} not found in file: {file}.".format(id=expected_id,file=file))
-
+            try:self.assertTrue(found, "Expected apriltag with id={id} not found in file: {file}.".format(id=expected_id,file=file))
+            except AssertionError,e: id_errs.append(str(e))
+        self.assertEqual([], id_errs)
         self.assertEqual([], tag_errs)
 
 if __name__ == '__main__':

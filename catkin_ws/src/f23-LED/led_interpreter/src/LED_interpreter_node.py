@@ -93,7 +93,7 @@ class LEDInterpreterNode(object):
 								break
 
 							else:
-								self.traffic_light_state = SingnalsDetection.STOP
+								self.traffic_light_state = SignalsDetection.STOP
 								break
 
 				#case with stop sign intersection	

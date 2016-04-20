@@ -87,7 +87,7 @@ class LEDInterpreterNode(object):
 					for item in msg.detections:
 						rospy.loginfo("[%s]:\n pixel = %f\n top bound = %f\n measured frequence=%f\n go frequency =%f" %(self.node_name, item.pixels_normalized.y,self.label['top'],item.frequency,self.lightGo))
 						if item.pixels_normalized.y < self.label['top']:
-							if item.frequency == self.lightGo:
+							if abs(item.frequency - self.lightGo) < 0.1:
 								self.traffic_light_state = SignalsDetection.GO
 								rospy.loginfo("[%s] Pixel was above threshold" %(self.node_name))
 								break

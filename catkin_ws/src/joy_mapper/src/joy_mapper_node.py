@@ -27,6 +27,7 @@ class JoyMapper(object):
         self.pub_car_cmd = rospy.Publisher("~car_cmd", Twist2DStamped, queue_size=1)
         self.pub_joy_override = rospy.Publisher("~joystick_override", BoolStamped, queue_size=1)
         self.pub_parallel_autonomy = rospy.Publisher("~parallel_autonomy",BoolStamped, queue_size=1)
+        self.pub_no_parallel_autonomy = rospy.Publisher("~no_parallel_autonomy", BoolStamped, queue_size=1)
         self.pub_e_stop = rospy.Publisher("wheels_driver_node/emergency_stop",BoolStamped,queue_size=1)
 
         # Subscriptions
@@ -82,11 +83,19 @@ class JoyMapper(object):
             parallel_autonomy_msg.header.stamp = self.joy.header.stamp
             parallel_autonomy_msg.data = True
             self.pub_parallel_autonomy.publish(parallel_autonomy_msg)
+            no_parallel_autonomy_msg = BoolStamped()
+            no_parallel_autonomy_msg.header.stamp = self.joy.header.stamp
+            no_parallel_autonomy_msg.data = False
+            self.pub_no_parallel_autonomy.publish(no_parallel_autonomy_msg)
         elif (joy_msg.buttons[4] == 1): #Left back button
             parallel_autonomy_msg = BoolStamped()
             parallel_autonomy_msg.header.stamp = self.joy.header.stamp
             parallel_autonomy_msg.data = False
             self.pub_parallel_autonomy.publish(parallel_autonomy_msg)
+            no_parallel_autonomy_msg = BoolStamped()
+            no_parallel_autonomy_msg.header.stamp = self.joy.header.stamp
+            no_parallel_autonomy_msg.data = True
+            self.pub_no_parallel_autonomy.publish(no_parallel_autonomy_msg)
         elif (joy_msg.buttons[8] == 1): #power button (middle)
             e_stop_msg = BoolStamped()
             e_stop_msg.header.stamp = self.joy.header.stamp

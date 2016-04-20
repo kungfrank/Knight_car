@@ -97,22 +97,22 @@ class LEDInterpreterNode(object):
 
 				#case with stop sign intersection	
 				else:
-					for item in msg:
+					for item in msg.detections:
 						#check if front vehicle detection
-						if item.pixels_normalized.x > self.label['left'] and item.pixels_normalized.x < self.label['right'] and item.pixels_normalized.y < self.label['top']:
+						if item.pixels_normalized.x > self.label['left'] and item.pixels_normalized.x < self.label['right'] and item.pixels_normalized.y > self.label['top']:
 							#check signal of that vehicle
 							detected_freq = item.frequency
 							for i in range(len(self.signalFrequencies)):
-								if self.signalFrequencies[i] == detected_freq:
+								if abs(self.signalFrequencies[i] - detected_freq) < 0.1:
 									self.front = self.vehicleSignals[i]
 									break
 
 						#check if right vehicle detection
-						if item.pixels_normalized.x > self.label['right'] and item.pixels_normalized.y < self.label['top']:
+						if item.pixels_normalized.x > self.label['right'] and item.pixels_normalized.y > self.label['top']:
 							#check signal of that vehicle
 							detected_freq = item.frequency
 							for i in range(len(self.signalFrequencies)):
-								if self.signalFrequencies[i] == detected_freq:
+								if abs(self.signalFrequencies[i] == detected_freq)< 0.1:
 									self.right = self.vehicleSignals[i]
 									break	
 			

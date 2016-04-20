@@ -45,7 +45,7 @@ nodes:
 states:
   JOYSTICK_CONTROL:
     transitions:
-      at_stop_line: "WAITING_ON_TURN_DIRECTION"
+      at_stop_line: "INTERSECTION_CONTROL"
       out_of_lane: "LANE_FOLLOWING"
       joystick_control_off: "LANE_FOLLOWING"
       # TODO add obj and veh detection
@@ -63,7 +63,7 @@ states:
 
   LANE_FOLLOWING:
     transitions:
-      at_stop_line: "WAITING_ON_TURN_DIRECTION"
+      at_stop_line: "INTERSECTION_CONTROL"
       joystick_control_on: "JOYSTICK_CONTROL"
       # TODO add obj and veh detection
 

@@ -3,7 +3,7 @@
     <!-- start basic args -->
     <include file="$(find duckietown_demos)/launch/master.launch">
         <arg name="veh" value="$(arg veh)"/>
-        <arg name="fsm_file_name" value="intersection" />
+        <arg name="fsm_file_name" value="default" />
         <arg name="map_name" value="tiles_226" />
         <arg name="visualization" value="false" />
         <arg name="navigation" value="true"/>

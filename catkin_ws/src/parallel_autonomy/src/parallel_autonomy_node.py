@@ -20,7 +20,7 @@ class ParallelAutonomyNode(object):
         self.blink = False
         self.availableTurns = []
         self.turn_direction = self.turn_NONE
-	self.joy_forward = 0;
+        self.joy_forward = 0;
         rospy.loginfo("[%s] Initialzing." %(self.node_name))
 
         # Setup publishers
@@ -38,8 +38,8 @@ class ParallelAutonomyNode(object):
 
         self.rate = rospy.Rate(30) # 10hz
 
-	# led setup
-	self.led.setRGB(4, [.2, .2, .2])
+        # led setup
+        self.led.setRGB(4, [.2, .2, .2])
         self.led.setRGB(2, [.2, .2, .2])
         self.led.setRGB(3, [.3, 0, 0])
         self.led.setRGB(1, [.3, 0, 0])
@@ -65,7 +65,12 @@ class ParallelAutonomyNode(object):
                 self.led.setRGB(3, [.3, 0, 0])
                 self.led.setRGB(4, [.2, .2, .2])
                 self.blink = True
-
+        if self.turn_direction == self.turn_STRAIGHT:
+            #lights back to normal
+            self.led.setRGB(0, [.2, .2, .2])
+            self.led.setRGB(4, [.2, .2, .2])
+            self.led.setRGB(3, [1, 0, 0])
+            self.led.setRGB(1, [1, 0, 0])
 
     def cbJoy(self,msg):
 	self.joy_forward = msg.axes[1]
@@ -108,19 +113,32 @@ class ParallelAutonomyNode(object):
 
         if(self.fsm_mode == "INTERSECTION_CONTROL"):
             self.availableTurns = [0,1,2]#just to test without april tags, set to [] for actual
-	    self.led.setRGB(3, [1, 0, 0])
-	    self.led.setRGB(1, [1, 0, 0])
-	    self.turn_direction = self.turn_STRAIGHT
+            #brake lights
+            self.led.setRGB(3, [1, 0, 0])
+            self.led.setRGB(1, [1, 0, 0])
+            #default to straight if nothing pressed
+            self.turn_direction = self.turn_STRAIGHT
+            #force to stop for 2 seconds
             rospy.sleep(2)
-            while not self.joy_forward>0:
+            #if no straight turn avaliable wait until another is choosen
+            #publish once user presses forward on joystick
+            while self.turn_direction == self.turn_NONE and not self.joy_forward>0:
                 pass
-	    self.led.setRGB(3, [.3, 0, 0])
+            #turn off brake lights
+            self.led.setRGB(3, [.3, 0, 0])
             self.led.setRGB(1, [.3, 0, 0])
             self.pub_turn_type.publish(self.turn_direction) # make sure mapping to turn_type is ok
             rospy.loginfo("[%s] Turn type: %i" %(self.node_name, self.turn_direction))
-        if(self.fsm_mode == "LANE_FOLLOWING"):
-	    self.turn_direction = self.turn_NONE
-    
+        if(self.fsm_mode != "INTERSECTION_CONTROL"):
+            #on exit intersection control, stop blinking
+            self.availableTurns = []
+            self.turn_direction = self.turn_NONE
+            # led setup
+            self.led.setRGB(4, [.2, .2, .2])
+            self.led.setRGB(2, [.2, .2, .2])
+            self.led.setRGB(3, [.3, 0, 0])
+            self.led.setRGB(1, [.3, 0, 0])
+            self.led.setRGB(0, [.2, .2, .2])
 
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

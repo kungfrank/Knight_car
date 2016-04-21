@@ -25,9 +25,14 @@ class LEDDetectorNode(object):
         self.veh_name = rospy.get_namespace().strip("/")
 
         self.protocol = rospy.get_param("~LED_protocol")
+        self.crop_rect_normalized = rospy.get_param("~crop_rect_normalized")
+        self.capture_time = rospy.get_param("~capture_time")
+        self.cell_size = rospy.get_param("~cell_size")
         self.continuous = rospy.get_param('~continuous', True) # Detect continuously as long as active
                                                                # [INTERACTIVE MODE] set to False for manual trigger
         self.frequencies = self.protocol['frequencies'].values()
+
+        rospy.loginfo('[%s] Config: \n\t crop_rect_normalized: %s, \n\t capture_time: %s, \n\t cell_size: %s'%(self.node_name, self.crop_rect_normalized, self.capture_time, self.cell_size))
 
         if not self.veh_name:
             # fall back on private param passed thru rosrun
@@ -78,7 +83,7 @@ class LEDDetectorNode(object):
                 self.node_state = 1
                 rgb = numpy_from_ros_compressed(msg)
                 rospy.loginfo('[%s] Capturing frame %s' %(self.node_name, rel_time))
-                self.data.append({'timestamp': float_time, 'rgb': rgb})
+                self.data.append({'timestamp': float_time, 'rgb': rgb[:,:,:]})
                 debug_msg.capture_progress = 100.0*rel_time/self.capture_time
 
             # Start processing
@@ -112,9 +117,9 @@ class LEDDetectorNode(object):
         
         det = LEDDetector(False, False, False, self.pub_debug)
         rgb0 = self.data[0]['rgb']
-        mask = np.ones(dtype='bool', shape=rgb0.shape)
+        #mask = np.ones(dtype='bool', shape=rgb0.shape)
         tic = time.time()
-        result = det.detect_led(images, mask, self.frequencies, 5)
+        result = det.detect_led(images, self.frequencies, self.cell_size, self.crop_rect_normalized)
         self.pub_detections.publish(result)
 
         toc = time.time()-tic

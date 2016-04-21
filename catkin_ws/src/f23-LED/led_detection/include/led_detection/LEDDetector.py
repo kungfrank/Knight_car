@@ -49,11 +49,11 @@ class LEDDetector():
 
     # ~~~~~~~~~~~~~~~~~~~ Downsample ~~~~~~~~~~~~~~~~~~~~~~~~
 
-    def downsample(self, channel, cell_width=20, cell_height=20):
+    def downsample(self, channel, cell_width=20, cell_height=20, additional_offset=[0,0]):
         W = channel.shape[2]
         H = channel.shape[1]
 
-        print('Original shape: {0}'.format(channel[0].shape))
+        print('Pre-downsampling shape: {0}'.format(channel[0].shape))
 
         # determine top-left offset to center the grid
         ncells_x = int(floor(1.0*W/cell_width))
@@ -73,9 +73,9 @@ class LEDDetector():
 
         if(self.publisher is not None):
             self.debug_msg.cell_size = [cell_width, cell_height]
-            #self.republish()
+            self.debug_msg.crop_rect_norm = crop_rect_norm
 
-        return (cell_values, [ceil(.5*rest_y), ceil(.5*rest_x)])
+        return (cell_values, [ceil(.5*rest_y)+additional_offset[1], ceil(.5*rest_x)+additional_offset[0]])
 
     # ~~~~~~~~~~~~~~~~~~~ Find local maxima ~~~~~~~~~~~~~~~~~~~~
 
@@ -116,9 +116,9 @@ class LEDDetector():
 
     def detect_led(self,
                    images,
-                   mask,
                    frequencies_to_detect,
-                   min_distance_between_LEDs_pixels):
+                   cell_size,
+                   crop_rect_norm=[0,0,1.0,1.0]):
 
         assert len(images.shape) == 1
         n = images.shape[0]
@@ -126,33 +126,27 @@ class LEDDetector():
             raise ValueError('No images provided')
 
         timestamps = images['timestamp']
-        # print('timestamps: {0}'.format(timestamps))
         rgb = images['rgb']
-
-        rgb0 = rgb[0]
-        if not mask.shape == rgb0.shape:
-            raise ValueError('Invalid mask')
+        H, W, _ = rgb[0].shape
 
         if not isinstance(frequencies_to_detect, list):
             raise ValueError(frequencies_to_detect)
 
-        if not min_distance_between_LEDs_pixels > 0:
-            raise ValueError(min_distance_between_LEDs_pixels)
-
-        #channel = images['rgb'][:,:,:,0] # just using first channel
-
-        # Go for the following lines if you want to use a grayscale image
-        # as an input instead of preferring one specific channel
-        channel = np.zeros(images['rgb'].shape[0:-1])
+        # Greyscale
+        tlx = floor(1.0*W*crop_rect_norm[0])
+        tly = floor(1.0*H*crop_rect_norm[1])
+        brx = ceil(1.0*W*crop_rect_norm[2])
+        bry = ceil(1.0*H*crop_rect_norm[3])
+        croppedshape = [images['rgb'].shape[0], bry-tly, brx-tlx] 
+        channel = np.zeros(croppedshape)
         for i in range(n):
-            channel[i,:,:] = cv2.cvtColor(images['rgb'][i,:,:,:], cv2.COLOR_BGR2GRAY)
+            channel[i,:,:] = cv2.cvtColor(images['rgb'][i,tly:bry,tlx:brx,:], cv2.COLOR_BGR2GRAY)
 
+        print('expected shape {0}'.format(croppedshape))
         print('channel.shape {0}'.format(channel.shape))
-        W = channel.shape[2]
-        H = channel.shape[1]
 
-        cell_width = 15
-        cell_height = 15
+        cell_width = cell_size[0]
+        cell_height = cell_size[1]
         var_threshold = 100
 
         (cell_vals, crop_offset) = self.downsample(channel, cell_width, cell_height)
@@ -162,22 +156,20 @@ class LEDDetector():
 
         if(self.publisher is not None):
             for idx in candidate_cells:
-                self.debug_msg.candidates.append(Vector2D(idx[0], idx[1]))
-            #self.republish()
+                self.debug_msg.candidates.append(Vector2D(idx[0]+crop_offset[1]+tly, idx[1]+crop_offset[0]+tlx))
 
         # Create result object
         result = LEDDetectionArray()
         unfiltered = LEDDetectionArray()
 
         # Detect frequencies and discard non-periodic signals
-        # ts_tolerance = 0.2 # unnecessary
         f_tolerance = 0.3
 
         for (i,j) in candidate_cells:
             signal = cell_vals[:,i,j]
             signal = signal-np.mean(signal)
 
-            led_img_coords = Vector2D((0.5+j)*cell_width+crop_offset[1], (0.5+i)*cell_height+crop_offset[0])
+            led_img_coords = Vector2D((0.5+j)*cell_width+crop_offset[1]+tlx, (0.5+i)*cell_height+crop_offset[0]+tly)
             led_img_coords_norm = Vector2D(1.0*led_img_coords.x/W, 1.0*led_img_coords.y/H)
 
             if(self.verbose):
@@ -215,7 +207,7 @@ class LEDDetector():
                 plt.show()
                 
         if(self.ploteverything):
-            plt.imshow(rgb0)
+            plt.imshow(rgb[0])
             ax = plt.gca()
 
 
@@ -234,6 +226,7 @@ class LEDDetector():
                 plt.text(pos.x-0.5*cell_width, pos.y-cell_height, str(r.frequency), fontdict=font)
 
             plt.show()
+
         if(self.publisher is not None):
             self.debug_msg.led_all_unfiltered = unfiltered
             self.debug_msg.state = 0

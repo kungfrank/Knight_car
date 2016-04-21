@@ -21,7 +21,7 @@ class ActionsDispatcherNode():
         self.localization_mode = self.setupParameter("~localization_mode","none")
         self.trigger_mode = self.setupParameter("~trigger_mode","INTERSECTION_CONTROL")
         self.reset_mode = self.setupParameter("~reset_mode","JOYSTICK_CONTROL")
-        self.localization_wait_time = setupParameter("~localization_wait_time",0.0)
+        self.localization_wait_time = self.setupParameter("~localization_wait_time",0.0)
         self.stop_line_wait_time = self.setupParameter("~stop_line_wait_time",2.0)
 
         # Subscribers:

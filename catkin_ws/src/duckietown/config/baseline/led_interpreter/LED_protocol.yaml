@@ -11,9 +11,9 @@ LED_protocol:
     black: [0,0,0]
 
   frequencies:
-    f1: &f1 2.8
-    f2: &f2 4.1 
-    f3: &f3 5.6
+    f1: &f1 2
+    f2: &f2 4
+    f3: &f3 5.7
 
   signals:
     CAR_SIGNAL_A:

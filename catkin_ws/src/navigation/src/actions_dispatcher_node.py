@@ -3,7 +3,7 @@
 import sys
 import rospy
 from navigation.srv import *
-from duckietown_msgs.msg import FSMState, SourceTargetNodes, BoolStamped
+from duckietown_msgs.msg import FSMState, SourceTargetNodes, BoolStamped, Twist2DStamped
 from std_msgs.msg import Int16, String
 
 class ActionsDispatcherNode():
@@ -31,8 +31,7 @@ class ActionsDispatcherNode():
         # Publishers:
         self.pub = rospy.Publisher("~turn_type", Int16, queue_size=1, latch=True)
         self.pubList = rospy.Publisher("~turn_plan", String, queue_size=1, latch=True)
-        if self.localization_mode != "none":
-            self.pub_localized = rospy.Publisher("~localized", BoolStamped, queue_size=1, latch=True)
+        self.pub_localized = rospy.Publisher("~localized", BoolStamped, queue_size=1, latch=True)
 
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

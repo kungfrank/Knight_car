@@ -23,7 +23,8 @@ class Csv2xacroNode(object):
         self.tag_map_csv = self.setupParam("~tag_map_csv", self.package_path + '/tags_default.csv')
         self.map_name = self.package_path + '/urdf/' + self.setupParam("~output_map_name", 'default_map') + '.urdf.xacro'
         self.tile_width = self.setupParam("~tile_width", 0.595)
-        self.tag_offset = self.setupParam("~tag_offset", 0.04)
+        self.tag_offset = self.setupParam("~tag_offset", 0.125)
+        self.tag_curb = self.setupParam("~tag_curb", 0.035)
 
         rospy.loginfo("[%s] has started", self.node_name)
 
@@ -34,7 +35,7 @@ class Csv2xacroNode(object):
         return value
 
     def createXacroMap(self):
-        writer = Csv2Xacro.Csv2Xacro(self.tile_map_csv, self.tag_map_csv, self.map_name, self.tile_width, self.tag_offset)
+        writer = Csv2Xacro.Csv2Xacro(self.tile_map_csv, self.tag_map_csv, self.map_name, self.tile_width, self.tag_offset, self.tag_curb)
         writer.writeXacro()
 
 

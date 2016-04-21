@@ -4,7 +4,7 @@
 	<include file="$(find duckietown_demos)/launch/master.launch">
         <arg name="joystick" value="true" />
 	<arg name="veh" value="$(arg veh)"/>
-	<arg name="visualization" value="true" />
+	<arg name="visualization" value="false" />
 	<arg name="navigation" value="true"/>
 	<arg name="apriltags" value="true" />
 	<arg name="/camera/raw" value="true"/>

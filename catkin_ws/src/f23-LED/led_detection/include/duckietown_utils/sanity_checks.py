@@ -21,6 +21,16 @@ def check_import(package):
     f.__name__ = 'import-%s' % package
     return f
 
+def check_import_messages():
+    try:
+        from duckietown_msgs.msg import (AntiInstagramTransform, BoolStamped, Segment,
+    SegmentList, Vector2D)  # @UnresolvedImport @UnusedImport
+    except ImportError as e:
+        msg = str(e)
+        msg += '\n\n This can usually be fixed by building everything ("make build").'
+        msg += '\nOr in extreme cases, "make catkin-clean build".'
+        raise Exception(msg)
+
 def check_failure():
     raise ValueError('error')
 
@@ -43,7 +53,10 @@ The environment variable DUCKIETOWN_DATA must either:
     (containing a subdirectory 'logs')
                 """, 
         'VEHICLE_NAME':
-            "VEHICLE_NAME must be the name of your robot (if you are on the robot)."
+            "The environment variable VEHICLE_NAME must be the name of your robot \n"
+            " (if you are on the robot). Please add this line to ~/.bashrc: \n"
+            " \n"
+            "  export VEHICLE_NAME=<your vehicle name>\n"
     }
 
     # Only check this if we are on the robot
@@ -84,6 +97,8 @@ def do_all_checks():
         check_import('scipy'),
         check_import('scipy.io'),
         check_import('sklearn'),
+
+        check_import_messages,
     ]
 
     results = []

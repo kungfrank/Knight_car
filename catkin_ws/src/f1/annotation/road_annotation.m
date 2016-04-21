@@ -73,10 +73,10 @@ ud.filename=ud.files_list{ud.file_idx};
 iparser = inputParser;
 iparser.CaseSensitive=false;
 default_classes={};
-default_classes{end+1}=struct('name','road','color',[0 0 0]);
-default_classes{end+1}=struct('name','red','color',[1 0 0]);
+default_classes{end+1}=struct('name','road','color',[1 1 1]*60/255);
+default_classes{end+1}=struct('name','red','color',[240 60 60]/255);
 default_classes{end+1}=struct('name','white','color',[1 1 1]);
-default_classes{end+1}=struct('name','yellow','color',[1 1 0]);
+default_classes{end+1}=struct('name','yellow','color',[240 240 50]/255);
 iparser.addParameter('classes',default_classes);
 iparser.parse(varargin{2:end});
 

@@ -14,7 +14,7 @@ def scaleandshift(img, scale, shift):
     assert len(shift) == 3, shift
 
     if SASParams.algorithm == 1:
-        res =  scaleandshift1(img, scale, shift)
+        res = scaleandshift1(img, scale, shift)
     elif SASParams.algorithm == 2:
         res = scaleandshift2(img, scale, shift)
     else:

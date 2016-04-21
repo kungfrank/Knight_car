@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from duckietown_msgs.msg import Twist2DStamped, VehiclePose, BoolStamped
+from duckietown_msgs.msg import Twist2DStamped, BoolStamped
 
 import os
 import rospkg
@@ -10,23 +10,13 @@ class VehicleAvoidanceControlNode(object):
 
 	def __init__(self):
 		self.node_name = rospy.get_name()
-		self.config	= self.setupParam("~config", "baseline")
-		self.cali_file_name = self.setupParam("~cali_file_name", "default")
 		rospack = rospkg.RosPack()
-		self.cali_file = rospack.get_path('duckietown') + \
-				"/config/" + self.config + \
-				"/vehicle_detection/vehicle_avoidance_control_node/" +  \
-				self.cali_file_name + ".yaml"
-		if not os.path.isfile(self.cali_file):
-			rospy.logwarn("[%s] Can't find calibration file: %s.\n" 
-					% (self.node_name, self.cali_file))
-		self.loadConfig(self.cali_file)
 		self.car_cmd_pub = rospy.Publisher("~car_cmd",
 				Twist2DStamped, queue_size = 1)
 		self.vehicle_detected_pub = rospy.Publisher("~vehicle_detected",
 				BoolStamped, queue_size=1)
-		self.subscriber = rospy.Subscriber("~vehicle_pose",
-				VehiclePose, self.callback,  queue_size = 1)
+		self.subscriber = rospy.Subscriber("~detection",
+				BoolStamped, self.callback,  queue_size = 1)
 
 	def setupParam(self, param_name, default_value):
 		value = rospy.get_param(param_name, default_value)
@@ -34,19 +24,10 @@ class VehicleAvoidanceControlNode(object):
 		rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
 		return value
 
-	def loadConfig(self, filename):
-		stream = file(filename, 'r')
-		data = yaml.load(stream)
-		rospy.loginfo('[%s] data: %s' % (self.node_name, data,))
-		stream.close()
-		self.distance_threshold = data['distance_threshold']
-		rospy.loginfo('[%s] distance_threshold: %.4f', self.node_name, 
-				self.distance_threshold)
-
 	def callback(self, data):
                 vehicle_too_close = BoolStamped()
                 vehicle_too_close.header.stamp = data.header.stamp
-		if not data.detection.data:
+		if not data.data:
 			vehicle_too_close.data = False
 		else:
 			vehicle_too_close.data = True

@@ -39,6 +39,7 @@ class FSMNode(object):
         for node_name, topic_name in nodes.items():
             self.pub_dict[node_name] = rospy.Publisher(topic_name, BoolStamped, queue_size=1, latch=True)
 
+        # print self.pub_dict
         # Process events definition
         param_events_dict = rospy.get_param("~events",{})
         # Validate events definition
@@ -147,19 +148,22 @@ class FSMNode(object):
         rospy.loginfo("[%s] FSMState: %s" %(self.node_name, self.state_msg.state))
 
     def publishBools(self):
-        msg = BoolStamped()
-        msg.header.stamp = self.state_msg.header.stamp
         active_nodes = self._getActiveNodesOfState(self.state_msg.state)
         for node_name, node_pub in self.pub_dict.items():
+            msg = BoolStamped()
+            msg.header.stamp = self.state_msg.header.stamp
+            msg.data = bool(node_name in active_nodes)
+            node_state = "ON" if msg.data else "OFF"
+            rospy.loginfo("[%s] Node %s is %s in %s" %(self.node_name, node_name, node_state, self.state_msg.state))
             if self.active_nodes is not None:
                 if (node_name in active_nodes) == (node_name in self.active_nodes):
                     continue
-
-            msg.data = bool(node_name in active_nodes)
-            node_state = "ON" if msg.data else "OFF"
+            # else:
+            #     rospy.logwarn("[%s] self.active_nodes is None!" %(self.node_name))
+                # continue
             node_pub.publish(msg)
-            rospy.loginfo("[%s] Node %s set to %s." %(self.node_name, node_name, node_state))
-
+            # rospy.loginfo("[%s] node %s msg %s" %(self.node_name, node_name, msg))
+            # rospy.loginfo("[%s] Node %s set to %s." %(self.node_name, node_name, node_state))
         self.active_nodes = copy.deepcopy(active_nodes)
 
     def cbEvent(self,msg,event_name):

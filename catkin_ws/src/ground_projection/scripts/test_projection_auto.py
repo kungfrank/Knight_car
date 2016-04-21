@@ -131,14 +131,13 @@ class GroundProjectionTest:
       print "Service call failed: %s" % e
 
 if __name__ == "__main__":
-  veh = rospy.get_param("~veh", "porsche911")
-  print('Using vehicle name %r.' % veh)
-  veh = "/" + veh
-
   bridge = CvBridge()
 
   rospy.init_node("test_projection")
 
+  veh = rospy.get_param("~veh", "porsche911")
+  print('Using vehicle name %r.' % veh)
+  veh = "/" + veh
   gpt = GroundProjectionTest(veh)
 
   try:

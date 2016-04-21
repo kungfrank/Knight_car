@@ -47,8 +47,8 @@ class IndefNavigationNode(object):
             rospy.loginfo("could not subscribe to lane and stop line")
             return
         
-        #Measured dist for stop as 145 cm physically
-        self.init = self.lane, -0.145
+        #Measured dist for stop as 146+8cm cm physically
+        self.init = self.lane, -1.54
         forward_for_time = self.forward_time
         starting_time = rospy.Time.now()
         while((rospy.Time.now() - starting_time) < rospy.Duration(forward_for_time)):
@@ -82,7 +82,8 @@ class IndefNavigationNode(object):
 
         velocity = abs(init_stop_y - final_stop_y) / self.forward_time
         result_vel = "FAILED"
-        if abs(velocity - 0.030833333333333333333)< 0.009:
+        vel_diff = abs(velocity - 0.304166666666666666666666666666666666)
+        if vel_diff < 0.015:
             result_vel = "PASSED"
         info = """
         LANE OFFSET SUMMARY
@@ -100,11 +101,12 @@ class IndefNavigationNode(object):
         initial stop sign y offset: %.4f
         final stop sign y offset: %.4f
         velocity computed: %.4f
+        velocity diff from expected: %.4f
         VELOCITY TEST: %s
 
         """ % ( init_d, init_phi, final_d, final_phi, \
                 off_d, off_phi, result_trim,\
-                init_stop_y, final_stop_y, velocity, result_vel
+                init_stop_y, final_stop_y, velocity, vel_diff, result_vel
                 )
         print info
 

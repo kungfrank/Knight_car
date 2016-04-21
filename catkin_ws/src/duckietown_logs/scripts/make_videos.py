@@ -71,10 +71,19 @@ def visualize_topic(bag_filename, model, topic, out, tmpdir):
     if os.path.exists(md):
         os.unlink(md)
     # copy out_tmp to out
-    if False: # only AC
+    if True: # only AC
+        dn = os.path.dirname(out)
+        if not os.path.exists(dn):
+            os.makedirs(dn)
+        print('copying to %r' % out)
         shutil.copyfile(out_tmp, out)
+
+    info = bag_filename + '.info.yaml'
+    if os.path.exists(info):
+        os.unlink(info)
 
 
 if __name__ == '__main__':
     app_example_main = MakeVideo.get_sys_main()
     app_example_main()
+

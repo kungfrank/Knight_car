@@ -122,7 +122,7 @@ class ParallelAutonomyNode(object):
             rospy.sleep(2)
             #if no straight turn avaliable wait until another is choosen
             #publish once user presses forward on joystick
-            while self.turn_direction == self.turn_NONE and not self.joy_forward>0:
+            while self.turn_direction == self.turn_NONE or not self.joy_forward>0:
                 pass
             #turn off brake lights
             self.led.setRGB(3, [.3, 0, 0])

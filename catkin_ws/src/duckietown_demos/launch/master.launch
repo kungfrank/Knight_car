@@ -4,7 +4,7 @@
 	<arg name="veh" default="$(env VEHICLE_NAME)"/>
 	<arg name="config" default="baseline" />
 	<arg name="param_file_name" default="default" />
-	<arg name="apriltags_param_file_name" default="param_file_name" />
+	<arg name="apriltags_param_file_name" default="$(arg param_file_name)" />
 	<arg name="fsm_file_name" default="default" />
 	<arg name="visualization" default="true" />
 	<arg name="verbose" default="false" />

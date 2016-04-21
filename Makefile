@@ -118,3 +118,9 @@ openhouse-dp1: unittests-environment
 
 openhouse-dp1-%: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos parallel_autonomy.launch line_detector_param_file_name:=$*"
+
+openhouse-dp6: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos localization_navigation.launch"
+
+openhouse-dp6-laptop-%: unittests-environment
+	bash -c "source set_ros_master.sh $*; rqt --force-discover"

@@ -69,8 +69,8 @@ class ParallelAutonomyNode(object):
             #lights back to normal
             self.led.setRGB(0, [.2, .2, .2])
             self.led.setRGB(4, [.2, .2, .2])
-            self.led.setRGB(3, [1, 0, 0])
-            self.led.setRGB(1, [1, 0, 0])
+            self.led.setRGB(3, [.3, 0, 0])
+            self.led.setRGB(1, [.3, 0, 0])
 
     def cbJoy(self,msg):
 	self.joy_forward = msg.axes[1]
@@ -90,7 +90,7 @@ class ParallelAutonomyNode(object):
 
 
     def cbTag(self, tag_msgs):
-        if(self.fsm_mode == "WAITING_ON_TURN_DIRECTION"):
+        if(self.fsm_mode == "INTERSECTION_CONTROL"):
             #loop through list of april tags
             for taginfo in tag_msgs.infos:
                 print taginfo
@@ -112,14 +112,14 @@ class ParallelAutonomyNode(object):
         self.fsm_mode = mode_msg.state
 
         if(self.fsm_mode == "INTERSECTION_CONTROL"):
-            self.availableTurns = [0,1,2]#just to test without april tags, set to [] for actual
+            #self.availableTurns = [0,1,2]#just to test without april tags, set to [] for actual
             #brake lights
             self.led.setRGB(3, [1, 0, 0])
             self.led.setRGB(1, [1, 0, 0])
-            #default to straight if nothing pressed
-            self.turn_direction = self.turn_STRAIGHT
             #force to stop for 2 seconds
             rospy.sleep(2)
+            #default to straight if nothing pressed
+            self.turn_direction = self.turn_STRAIGHT
             #if no straight turn avaliable wait until another is choosen
             #publish once user presses forward on joystick
             while self.turn_direction == self.turn_NONE or not self.joy_forward>0:

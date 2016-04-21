@@ -63,12 +63,12 @@ class ApriltagsIntegrationTester(unittest.TestCase):
         img = cv2.imread(filename)
         cvb = CvBridge()
         msg_raw = cvb.cv2_to_imgmsg(img)
+        self.pub_info.publish(msg_info)
+        self.pub_raw.publish(msg_raw)
 
         # Wait for the message to be received
         timeout = rospy.Time.now() + rospy.Duration(10)  # Wait at most 5 seconds for the node to reply
         while not self.msg_received and not rospy.is_shutdown() and rospy.Time.now() < timeout:
-            self.pub_info.publish(msg_info)
-            self.pub_raw.publish(msg_raw)
             rospy.sleep(0.1)
         self.assertLess(rospy.Time.now(), timeout, "Waiting for apriltag detection timed out.")
 

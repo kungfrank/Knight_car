@@ -34,7 +34,7 @@ class VehicleCoordinator():
     """The Vehicle Coordination Module for Duckiebot"""
 
     T_MAX_RANDOM = 2.0 # seconds
-    T_CROSS = 5.0  # seconds
+    T_CROSS = 6.0  # seconds
     T_S = 2.0      # seconds
 
     def __init__(self):

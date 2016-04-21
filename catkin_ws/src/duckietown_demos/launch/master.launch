@@ -4,6 +4,7 @@
 	<arg name="veh" default="$(env VEHICLE_NAME)"/>
 	<arg name="config" default="baseline" />
 	<arg name="param_file_name" default="default" />
+	<arg name="apriltags_param_file_name" default="param_file_name" />
 	<arg name="fsm_file_name" default="default" />
 	<arg name="visualization" default="true" />
 	<arg name="verbose" default="false" />
@@ -340,7 +341,7 @@
 			<include file="$(find apriltags)/launch/apriltags_preprocessing_node.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
-				<arg name="param_file_name" value="$(arg param_file_name)"/>
+				<arg name="param_file_name" value="$(arg apriltags_param_file_name)"/>
 			</include>
 		</group>
 		

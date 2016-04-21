@@ -36,24 +36,30 @@ class LocalizationNode(object):
         # Listen for the transform of the tag in the world
         avg = PoseAverage.PoseAverage()
         for tag in msg_tag.detections:
-            found_transform = False
-            while not found_transform and not rospy.is_shutdown():
-                try:
-                    Tt_w = self.tfbuf.lookup_transform("world", "tag_{id}".format(id=tag.id), rospy.Time(), rospy.Duration(1))
-                    found_transform = True
-                    Mt_w=self.transform_to_matrix(Tt_w.transform)
-                    Mt_r=self.transform_to_matrix(tag.transform)
+            try:
+                Tt_w = self.tfbuf.lookup_transform("world", "tag_{id}".format(id=tag.id), rospy.Time(), rospy.Duration(1))
+                Mtbase_w=self.transform_to_matrix(Tt_w.transform)
+                Mt_tbase = tr.concatenate_matrices(tr.translation_matrix((0,0,0.17)), tr.euler_matrix(0,0,np.pi))
+                Mt_w = tr.concatenate_matrices(Mtbase_w,Mt_tbase)
+                Mt_r=self.transform_to_matrix(tag.transform)
+                if abs(tr.euler_from_matrix(Mt_r)[2]) < 0.001:  # TODO This is a bandaid for the 0degree bug
                     Mr_t=np.linalg.inv(Mt_r)
                     Mr_w=np.dot(Mt_w,Mr_t)
                     Tr_w = self.matrix_to_transform(Mr_w)
                     avg.add_pose(Tr_w)
-                except(tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as ex:
-                    rospy.logwarn("Error looking up transform for tag_%s", tag.id)
-                    rospy.logwarn(ex.message)
+            except(tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as ex:
+                rospy.logwarn("Error looking up transform for tag_%s", tag.id)
+                rospy.logwarn(ex.message)
 
         Tr_w =  avg.get_average() # Average of the opinions
+
         # Broadcast the robot transform
         if Tr_w is not None:
+            # Set the z translation, and x and y rotations to 0
+            Tr_w.translation.z = 0
+            rot = Tr_w.rotation
+            rotz=tr.euler_from_quaternion((rot.x, rot.y, rot.z, rot.w))[2]
+            (rot.x, rot.y, rot.z, rot.w) = tr.quaternion_from_euler(0, 0, rotz)
             T = TransformStamped()
             T.transform = Tr_w
             T.header.frame_id = self.world_frame

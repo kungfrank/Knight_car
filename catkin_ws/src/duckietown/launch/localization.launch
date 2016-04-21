@@ -5,7 +5,7 @@
 	<arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
 
     <arg name="gui" default="true" doc="Also launches a gui that displays the duckietown map and a duckiebot" />
-    <arg name="map_name" default="map_226" doc="The name of a map file to display (in duckietown_description/urdf)" />
+    <arg name="map_name" default="open_house_dp6" doc="The name of a map file to display (in duckietown_description/urdf)" />
 
 
     <!-- duckietown_description -->

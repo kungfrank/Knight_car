@@ -6,6 +6,7 @@ from duckietown_msgs.msg import AprilTags, TagDetection, TagInfo, Vector2D
 import numpy as np
 import kinematic as k
 import tf.transformations as tr
+from geometry_msgs.msg import PoseStamped
 
 class AprilPostPros(object):
     """ """
@@ -44,6 +45,7 @@ class AprilPostPros(object):
 
         self.sub_prePros        = rospy.Subscriber("~apriltags_in", AprilTags, self.callback, queue_size=1)
         self.pub_postPros       = rospy.Publisher("~apriltags_out", AprilTags, queue_size=1)
+        self.pub_visualize = rospy.Publisher("~tag_pose", PoseStamped, queue_size=1)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -110,11 +112,12 @@ class AprilPostPros(object):
             camxout_T_camzout = tr.euler_matrix(-np.pi/2,0,-np.pi/2,'rzyx')
             veh_T_camzout = tr.concatenate_matrices(veh_T_camxout, camxout_T_camzout)
 
-            tagzout_T_tagxout = tr.euler_matrix(-np.pi/2, 0,-np.pi/2, 'rxyz')
+            tagzout_T_tagxout = tr.euler_matrix(-np.pi/2, 0, np.pi/2, 'rxyz')
 
             #Load translation
             trans = detection.transform.translation
             rot = detection.transform.rotation
+
             camzout_t_tagzout = tr.translation_matrix((trans.x*scale_x, trans.y*scale_y, trans.z*scale_z))
             camzout_R_tagzout = tr.quaternion_matrix((rot.x, rot.y, rot.z, rot.w))
             camzout_T_tagzout = tr.concatenate_matrices(camzout_t_tagzout, camzout_R_tagzout)
@@ -124,14 +127,38 @@ class AprilPostPros(object):
             # Overwrite transformed value
             (trans.x, trans.y, trans.z) = tr.translation_from_matrix(veh_T_tagxout)
             (rot.x, rot.y, rot.z, rot.w) = tr.quaternion_from_matrix(veh_T_tagxout)
+
+            # TODO bandaid for bug in on-axis rotation for apriltags
+            magic_snapper = 35  #Snap angles less than 35deg to 0
+            (rx,ry,rz) = tr.euler_from_quaternion((rot.x, rot.y, rot.z, rot.w))
+            rz = 0  if abs(rz) < (magic_snapper/180.0 * np.pi) else rz
+            (rot.x, rot.y, rot.z, rot.w) = tr.quaternion_from_euler(rx,ry,rz)
             detection.transform.translation = trans
             detection.transform.rotation = rot
 
-            # Debug Print
-            (theta_x, theta_y, theta_z) = (np.array(tr.euler_from_quaternion((rot.x, rot.y, rot.z, rot.w),'rzyx'))*180/np.pi).tolist()
-            rospy.loginfo("[{0}] Translation: [x,y,z]: [{1:.3f}, {2:.3f}, {3:.3f}] Rotation [rx,ry,rz]: [{4:.3f}, {5:.3f}, {6:.3f}]".format("apriltags", trans.x,trans.y,trans.z,theta_x, theta_y, theta_z))
             tag_infos.append(new_info)
-        
+
+            # # Debug Print
+            # (theta_x, theta_y, theta_z) = (np.array(tr.euler_from_quaternion((rot.x, rot.y, rot.z, rot.w),'rzyx'))*180/np.pi).tolist()
+            # rospy.loginfo("[{0}] Translation: [x,y,z]: [{1:.3f}, {2:.3f}, {3:.3f}] Rotation [rx,ry,rz]: [{4:.3f}, {5:.3f}, {6:.3f}]".format("apriltags", trans.x,trans.y,trans.z,theta_x, theta_y, theta_z))
+            # tag_infos.append(new_info)
+            #
+            # (angle, direction, point) = tr.rotation_from_matrix(veh_T_tagxout)
+            # rospy.loginfo("[{0}] Axis: [x,y,z]: [{1:.3f}, {2:.3f}, {3:.3f}] Angle: {4:.3f}".format("apriltags", direction[0], direction[1], direction[2], angle*180/np.pi))
+            ##### Debug Print TODO REMOVE DEBUG
+            (theta_x, theta_y, theta_z) = (np.array(tr.euler_from_quaternion((rot.x, rot.y, rot.z, rot.w),'sxyz'))*180/np.pi).tolist()
+            rospy.loginfo("[{0}] Translation: [x,y,z]: [{1:.3f}, {2:.3f}, {3:.3f}] Rotation ('sxyz')[rx,ry,rz]: [{4:.3f}, {5:.3f}, {6:.3f}]".format("apriltags", trans.x,trans.y,trans.z,theta_x, theta_y, theta_z))
+
+            (angle, direction, point) = tr.rotation_from_matrix(tr.quaternion_matrix((rot.x, rot.y, rot.z, rot.w)))
+            rospy.loginfo("[{0}] Axis: [x,y,z]: [{1:.3f}, {2:.3f}, {3:.3f}] Angle: {4:.3f}".format("apriltags", direction[0], direction[1], direction[2], angle*180/np.pi))
+            pose = PoseStamped()
+            pose.header.stamp = rospy.Time.now()
+            pose.header.frame_id = "world"
+            pose.pose.position = trans
+            pose.pose.orientation = rot
+            self.pub_visualize.publish(pose)
+            #############################################################################
+
         new_tag_data = AprilTags()
         new_tag_data.detections = msg.detections
         new_tag_data.infos = tag_infos

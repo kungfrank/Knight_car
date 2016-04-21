@@ -27,6 +27,7 @@ class InverseKinematicsNode(object):
         self.trim = self.setup_parameter("~trim", 0.0)
         self.baseline = self.setup_parameter("~baseline", 0.1)
         self.radius = self.setup_parameter("~radius", 0.0318)
+        self.k = self.setup_parameter("~k", 27.0)
         self.limit = self.setup_parameter("~limit", 1.0)
         self.limit_max = 1.0
         self.limit_min = 0.0
@@ -35,6 +36,8 @@ class InverseKinematicsNode(object):
         self.srv_set_gain = rospy.Service("~set_gain", SetValue, self.cbSrvSetGain)
         self.srv_set_trim = rospy.Service("~set_trim", SetValue, self.cbSrvSetTrim)
         self.srv_set_baseline = rospy.Service("~set_baseline", SetValue, self.cbSrvSetBaseline)
+        self.srv_set_radius = rospy.Service("~set_radius", SetValue, self.cbSrvSetRadius)
+        self.srv_set_k = rospy.Service("~set_k", SetValue, self.cbSrvSetK)
         self.srv_set_limit = rospy.Service("~set_limit", SetValue, self.cbSrvSetLimit)
         self.srv_save = rospy.Service("~save_calibration", Empty, self.cbSrvSaveCalibration)
 
@@ -64,7 +67,7 @@ class InverseKinematicsNode(object):
         if yaml_dict is None:
             # Empty yaml file
             return
-        for param_name in ["gain", "trim", "baseline", "radius", "limit"]:
+        for param_name in ["gain", "trim", "baseline", "k", "radius", "limit"]:
             param_value = yaml_dict.get(param_name)
             if param_name is not None:
                 rospy.set_param("~"+param_name, param_value)
@@ -84,6 +87,7 @@ class InverseKinematicsNode(object):
             "trim": self.trim,
             "baseline": self.baseline,
             "radius": self.radius,
+            "k": self.k,
             "limit": self.limit,
         }
 
@@ -93,7 +97,7 @@ class InverseKinematicsNode(object):
             outfile.write(yaml.dump(data, default_flow_style=False))
         # Printout
         self.printValues()
-        rospy.loginfo("[%s] Saved to %s" %(self.node_name,file_name))
+        rospy.loginfo("[%s] Saved to %s" %(self.node_name, file_name))
 
     def cbSrvSaveCalibration(self, req):
         self.saveCalibration()
@@ -114,6 +118,16 @@ class InverseKinematicsNode(object):
         self.printValues()
         return SetValueResponse()
 
+    def cbSrvSetRadius(self, req):
+        self.radius = req.value
+        self.printValues()
+        return SetValueResponse()
+
+    def cbSrvSetK(self, req):
+        self.k = req.value
+        self.printValues()
+        return SetValueResponse()
+
     def cbSrvSetLimit(self, req):
         self.limit = self.setLimit(req.value)
         self.printValues()
@@ -131,13 +145,14 @@ class InverseKinematicsNode(object):
         return limit
 
     def printValues(self):
-        rospy.loginfo("[%s] gain: %s trim: %s baseline: %s limit: %s" % (self.node_name, self.gain, self.trim, self.baseline, self.limit))
+        rospy.loginfo("[%s] gain: %s trim: %s baseline: %s radius: %s k: %s limit: %s" % (self.node_name, self.gain, self.trim, self.baseline, self.radius, self.k, self.limit))
 
     def car_cmd_callback(self, msg_car_cmd):
-        # compute duty cycle gain
-        k_r = 1 / self.radius
-        k_l = 1 / self.radius
+        # assuming same motor constants k for both motors
+        k_r = self.k
+        k_l = self.k
 
+        # adjusting k by gain and trim
         k_r_inv = (self.gain + self.trim) / k_r
         k_l_inv = (self.gain - self.trim) / k_l
         
@@ -145,7 +160,9 @@ class InverseKinematicsNode(object):
         omega_l = (msg_car_cmd.v - 0.5 * msg_car_cmd.omega * self.baseline) / self.radius
         
         # conversion from motor rotation rate to duty cycle
+        # u_r = (gain + trim) (v + 0.5 * omega * b) / (r * k_r)
         u_r = omega_r * k_r_inv
+        # u_l = (gain - trim) (v - 0.5 * omega * b) / (r * k_l)
         u_l = omega_l * k_l_inv
 
         # limiting output to limit, which is 1.0 for the duckiebot

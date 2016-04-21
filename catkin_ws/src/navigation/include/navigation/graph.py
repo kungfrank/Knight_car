@@ -89,9 +89,9 @@ class Graph(object):
             node_name = self.node_label_fn(node)
             node_pos = "%f,%f!" % (self.node_positions[node][0], self.node_positions[node][1])
             if highlight_nodes and node == target_node:
-                g.node(name=node_name, pos=node_pos, color='green', shape='doublecircle')
+                g.node(name=node_name, pos=node_pos, color='magenta', shape='circle') #green
             elif highlight_nodes and node == start_node:
-                g.node(name=node_name, pos=node_pos, color='blue', shape='doublecircle')
+                g.node(name=node_name, pos=node_pos, color='red', shape='circle') #blue
             elif node_name[0:4] == 'turn':
                 g.node(name=node_name, pos=node_pos, fixedsize='true', width='0', height='0', style='invis', label="")
             else:
@@ -104,11 +104,13 @@ class Graph(object):
                     t = ""
                     
                 if highlight_edges and (self.node_label_fn(src_node), self.node_label_fn(e.target)) in highlight_edges:
-                    c = 'red'
+                    c = 'cyan' #red
+                    p = '3.0'
                 else:
                     c  = 'black'
+                    p = '1.5'
                     
-                g.edge(self.node_label_fn(src_node), self.node_label_fn(e.target), taillabel=t , color = c)
+                g.edge(self.node_label_fn(src_node), self.node_label_fn(e.target), taillabel=t , color = c, penwidth = p)
         
         #script_dir = os.path.dirname(__file__)
         map_path = script_dir + '/maps/'

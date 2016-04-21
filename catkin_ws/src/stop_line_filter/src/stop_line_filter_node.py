@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import numpy as np
-from duckietown_msgs.msg import SegmentList, Segment, BoolStamped, StopLineReading, LanePose
+from duckietown_msgs.msg import SegmentList, Segment, BoolStamped, StopLineReading, LanePose, FSMState
 from std_msgs.msg import Float32
 from geometry_msgs.msg import Point
 import time
@@ -21,7 +21,7 @@ class StopLineFilterNode(object):
         self.lanewidth = 0 # updated continuously below
 
         self.state = "JOYSTICK_CONTROL"
-
+        self.sleep = False
         ## publishers and subscribers
         self.sub_segs      = rospy.Subscriber("~segment_list", SegmentList, self.processSegments)
         self.sub_lane      = rospy.Subscriber("~lane_pose",LanePose, self.processLanePose)
@@ -47,7 +47,9 @@ class StopLineFilterNode(object):
     def processStateChange(self,msg):
         if self.state == "INTERSECTION_CONTROL" and msg.state == "LANE_FOLLOWING":
             rospy.loginfo("stop line sleep start")
+            self.sleep = True
             rospy.sleep(self.off_time)
+            self.sleep = False
             rospy.loginfo("stop line sleep end")
         self.state=msg.state
 
@@ -58,7 +60,7 @@ class StopLineFilterNode(object):
         self.lane_pose = lane_pose_msg
 
     def processSegments(self, segment_list_msg):
-        if not self.active:
+        if not self.active or self.sleep:
             return
         good_seg_count=0
         stop_line_x_accumulator=0.0

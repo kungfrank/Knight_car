@@ -13,8 +13,8 @@ class ParallelAutonomyNode(object):
 
         self.led = RGB_LED()
         self.turn_LEFT = 0
-        self.turn_RIGHT = 1
-        self.turn_STRAIGHT = 2
+        self.turn_RIGHT = 2
+        self.turn_STRAIGHT = 1
         self.turn_NONE = 3
 
         self.blink = False
@@ -38,12 +38,15 @@ class ParallelAutonomyNode(object):
 
         self.rate = rospy.Rate(30) # 10hz
 
-    def blinkTimer(self,event):
-        self.led.setRGB(4, [.2, .2, .2])
+	# led setup
+	self.led.setRGB(4, [.2, .2, .2])
         self.led.setRGB(2, [.2, .2, .2])
         self.led.setRGB(3, [.3, 0, 0])
         self.led.setRGB(1, [.3, 0, 0])
         self.led.setRGB(0, [.2, .2, .2])
+
+
+    def blinkTimer(self,event):
         if self.turn_direction == self.turn_LEFT:
             if self.blink:
                 self.led.setRGB(1, [1,0, 0])
@@ -105,11 +108,14 @@ class ParallelAutonomyNode(object):
 
         if(self.fsm_mode == "INTERSECTION_CONTROL"):
             self.availableTurns = [0,1,2]#just to test without april tags, set to [] for actual
-
-	    self.turn_direction = self.turn_NONE
+	    self.led.setRGB(3, [1, 0, 0])
+	    self.led.setRGB(1, [1, 0, 0])
+	    self.turn_direction = self.turn_STRAIGHT
             rospy.sleep(2)
-            while self.turn_direction is self.turn_NONE or not self.joy_forward>0:
+            while not self.joy_forward>0:
                 pass
+	    self.led.setRGB(3, [.3, 0, 0])
+            self.led.setRGB(1, [.3, 0, 0])
             self.pub_turn_type.publish(self.turn_direction) # make sure mapping to turn_type is ok
             rospy.loginfo("[%s] Turn type: %i" %(self.node_name, self.turn_direction))
         if(self.fsm_mode == "LANE_FOLLOWING"):

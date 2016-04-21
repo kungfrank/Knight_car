@@ -4,6 +4,7 @@ from __future__ import print_function
 import Tkinter as tk
 
 import rospy
+from std_msgs.msg import String
 from duckietown_msgs.msg import FSMState, SignalsDetection, \
     CoordinationClearance, CoordinationSignal
 
@@ -29,7 +30,7 @@ class FakeDuckiebot:
 
         self.emitted_signal = CoordinationSignal.OFF
         self.clearance_to_go_sub = rospy.Subscriber('~change_color_pattern',
-                                                    CoordinationSignal,
+                                                    String,
                                                     self.emitted_signal_callback)
 
         self.gui = None
@@ -40,7 +41,7 @@ class FakeDuckiebot:
             self.update_gui(self.gui)
 
     def emitted_signal_callback(self, msg):
-        self.emitted_signal = msg.signal
+        self.emitted_signal = msg.data
         if self.gui:
             self.update_gui(self.gui)
 
@@ -49,11 +50,20 @@ class FakeDuckiebot:
         self.update_gui(gui)
 
     def spin(self):
-        self.publish()
+        #self.publish()
+        pass
 
     def publish(self):
         if self.mode is not None:
             self.mode_pub.publish(FSMState(state=self.mode))
+        self.signals_detection_pub.publish(SignalsDetection(front=self.opposite_veh,
+                                                            right=self.right_veh,
+                                                            traffic_light_state=self.traffic_light))
+    def publish_mode(self):
+        if self.mode is not None:
+            self.mode_pub.publish(FSMState(state=self.mode))
+
+    def publish_signals(self):
         self.signals_detection_pub.publish(SignalsDetection(front=self.opposite_veh,
                                                             right=self.right_veh,
                                                             traffic_light_state=self.traffic_light))
@@ -62,37 +72,32 @@ class FakeDuckiebot:
         self.mode = mode
         if self.gui:
             self.update_gui(self.gui)
-        self.publish()
+        self.publish_mode()
 
     def set_intersection(self, status):
         self.intersection = status
         if self.gui:
             self.update_gui(self.gui)
-        self.publish()
 
     def set_traffic_light(self, status):
         self.traffic_light = status
         if self.gui:
             self.update_gui(self.gui)
-        self.publish()
 
     def set_right_vehicle(self, status):
         self.right_veh = status
         if self.gui:
             self.update_gui(self.gui)
-        self.publish()
 
     def set_opposite_vehicle(self, status):
         self.opposite_veh = status
         if self.gui:
             self.update_gui(self.gui)
-        self.publish()
 
     def set_intersection_vehicle(self, status):
         self.intersection_veh = status
         if self.gui:
             self.update_gui(self.gui)
-        self.publish()
 
     def update_gui(self, gui):
 
@@ -120,13 +125,13 @@ class GUI:
         self.mode_label.pack(side=tk.TOP)
 
         tk.Button(self.root, text='Lane Navigation',
-                  command=lambda: self.duckiebot.set_mode(FSMState.LANE_FOLLOWING)).pack(side=tk.TOP)
+                  command=lambda: self.duckiebot.set_mode('LANE_FOLLOWING')).pack(side=tk.TOP)
 
         tk.Button(self.root, text='Coordination',
-                  command=lambda: self.duckiebot.set_mode(FSMState.COORDINATION)).pack(side=tk.TOP)
+                  command=lambda: self.duckiebot.set_mode('COORDINATION')).pack(side=tk.TOP)
 
         tk.Button(self.root, text='Intersection Nav.',
-                  command=lambda: self.duckiebot.set_mode(FSMState.INTERSECTION_CONTROL)).pack(side=tk.TOP)
+                  command=lambda: self.duckiebot.set_mode('INTERSECTION_CONTROL')).pack(side=tk.TOP)
 
         self.traffic_light_var = tk.StringVar()
         tk.Label(self.root, textvariable=self.traffic_light_var).pack(side=tk.TOP)
@@ -186,6 +191,9 @@ class GUI:
         tk.Button(self.root, text='OVeh: C',
                   command=lambda: self.duckiebot.set_opposite_vehicle(SignalsDetection.SIGNAL_C))\
             .pack(side=tk.TOP)
+
+        tk.Button(self.root, text='Publish Signals',
+                  command=lambda: self.duckiebot.publish_signals()).pack(side=tk.TOP)
 
         self.clearance_to_go_var = tk.StringVar()
         tk.Label(self.root, textvariable=self.clearance_to_go_var).pack(side=tk.TOP)

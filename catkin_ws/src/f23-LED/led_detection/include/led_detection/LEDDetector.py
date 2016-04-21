@@ -49,7 +49,7 @@ class LEDDetector():
 
     # ~~~~~~~~~~~~~~~~~~~ Downsample ~~~~~~~~~~~~~~~~~~~~~~~~
 
-    def downsample(self, channel, cell_width=20, cell_height=20, additional_offset=[0,0]):
+    def downsample(self, channel, cell_width=20, cell_height=20):
         W = channel.shape[2]
         H = channel.shape[1]
 
@@ -71,11 +71,7 @@ class LEDDetector():
                 tlx = ceil(.5*rest_x)+j*cell_width
                 cell_values[:, i, j] = np.mean(channel[:,tly:tly+cell_height, tlx:tlx+cell_width], axis=tuple([1, 2]))
 
-        if(self.publisher is not None):
-            self.debug_msg.cell_size = [cell_width, cell_height]
-            self.debug_msg.crop_rect_norm = crop_rect_norm
-
-        return (cell_values, [ceil(.5*rest_y)+additional_offset[1], ceil(.5*rest_x)+additional_offset[0]])
+        return (cell_values, [ceil(.5*rest_y), ceil(.5*rest_x)])
 
     # ~~~~~~~~~~~~~~~~~~~ Find local maxima ~~~~~~~~~~~~~~~~~~~~
 
@@ -132,7 +128,12 @@ class LEDDetector():
         if not isinstance(frequencies_to_detect, list):
             raise ValueError(frequencies_to_detect)
 
-        # Greyscale
+        if(self.publisher is not None):
+            self.debug_msg.cell_size = cell_size
+            self.debug_msg.crop_rect_norm = crop_rect_norm
+        self.republish()
+
+        # Crop + Greyscale
         tlx = floor(1.0*W*crop_rect_norm[0])
         tly = floor(1.0*H*crop_rect_norm[1])
         brx = ceil(1.0*W*crop_rect_norm[2])

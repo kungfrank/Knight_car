@@ -149,8 +149,9 @@ states:
     lights: ["coordination"]
   INTERSECTION_CONTROL:
     transitions:
-      intersection_done_and_in_lane: "LANE_FOLLOWING"
-      intersection_done_and_in_lane_and_parallel_autonomy: "PARALLEL_AUTONOMY"
+#      intersection_done_and_in_lane: "LANE_FOLLOWING"
+#      intersection_done_and_in_lane_and_parallel_autonomy: "PARALLEL_AUTONOMY"
+      intersection_done: "PARALLEL_AUTONOMY"
 #      intersection_complete_no_lane: "INTERSECTION_RECOVERY"
     active_nodes:
       - line_detector_node

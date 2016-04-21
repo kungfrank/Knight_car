@@ -25,20 +25,26 @@ class TrafficLight(object):
         self.green_on=False
         self.green_i = 0;
         self.green = self.traffic_light_list[self.green_i]
+        self.green_color = [0,1,0] #Hardcoded but should be parameter
+        self.yellow_color = [1,0.65,0] #Hardcoded but should be parameter
         self.redlightlist = self.traffic_light_list[:self.green_i] + self.traffic_light_list[(self.green_i+1):];
         self.traffic_light_state = {0:False,1:False,2:False,3:False} #All LEDs are off
-
-        self.traffic_cycle = rospy.Timer(rospy.Duration((self.allred_duration+self.greenlight_duration)),self.switchGreen)
+        self.yellowlightlist = []
+        self.traffic_cycle = rospy.Timer(rospy.Duration((self.greenlight_duration+self.allred_duration)),self.switchGreen)
         self.redLED_cycle = rospy.Timer(rospy.Duration(0.5*self.redlight_t),self.freqred)
         self.greenLED_cycle = rospy.Timer(rospy.Duration(0.5*self.greenlight_t),self.freqgreen)
 
     def switchGreen(self,event):
+        self.yellowlightlist=[]
         self.green_i = (self.green_i+1)%4 #Move to next light in list
         self.green = self.traffic_light_list[self.green_i]
+        self.green_color = [0,1,0]
         self.green_on=True
         self.redlightlist = self.traffic_light_list[:self.green_i] + self.traffic_light_list[(self.green_i+1):];
         rospy.sleep(self.greenlight_duration) #Keep the green light on
         self.green_on = False #Turn off the green light
+        self.yellowlightlist = [self.green]
+        rospy.sleep(self.allred_duration)
         self.redlightlist = self.traffic_light_list[0:]
 
     def freqred(self,event):
@@ -49,6 +55,13 @@ class TrafficLight(object):
             else:
                 self.led.setRGB(light,[1,0,0])
                 self.traffic_light_state[light]=True
+        for light in self.yellowlightlist:
+            if self.traffic_light_state[light]==True:
+                self.led.setRGB(light,[0,0,0])
+                self.traffic_light_state[light]=False
+            else:
+                self.led.setRGB(light,[1,1,0])
+                self.traffic_light_state[light]=True
 
     def freqgreen(self,event):
         if self.green_on==False: #Exit if lights should all be red
@@ -57,7 +70,7 @@ class TrafficLight(object):
             self.led.setRGB(self.green,[0,0,0])
             self.traffic_light_state[self.green]=False
         else:
-            self.led.setRGB(self.green,[0,1,0])
+            self.led.setRGB(self.green,self.green_color)
             self.traffic_light_state[self.green]=True
 
     def setupParameter(self,param_name,default_value):

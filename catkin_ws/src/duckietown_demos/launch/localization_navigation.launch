@@ -3,12 +3,13 @@
     <!-- start basic args -->
     <include file="$(find duckietown_demos)/launch/master.launch">
         <arg name="veh" value="$(arg veh)"/>
-        <arg name="fsm_file_name" value="intersection" />
+        <arg name="fsm_file_name" value="localization_navigation" />
         <arg name="map_name" value="tiles_226" />
         <arg name="visualization" value="false" />
         <arg name="navigation" value="true"/>
         <arg name="/navigation/apriltags_random" value="false"/>
         <arg name="/navigation/graph_planner" value="true"/>
+        <arg name="apriltags" value="true"/>
     </include>
 </launch>
 

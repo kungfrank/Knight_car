@@ -5,7 +5,7 @@ from duckietown_msgs.msg import Vector2D, LEDDetection, LEDDetectionArray, LEDDe
 from std_msgs.msg import Byte
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-from math import sqrt
+from math import sqrt, floor, ceil
 
 from sensor_msgs.msg import CompressedImage
 from duckietown_utils.bag_logs import numpy_from_ros_compressed
@@ -65,6 +65,7 @@ class LEDWindow(QWidget):
         self.unfiltered_leds = None
         self.filtered_leds = None
         self.cell_size = None
+        self.crop_rect_norm = None
         self.progress.connect(self.updateBar)
         self.figDialogs = []
         self.plotCamImage = True
@@ -89,6 +90,7 @@ class LEDWindow(QWidget):
         if len(msg.led_all_unfiltered.detections):
             self.unfiltered_leds = msg.led_all_unfiltered
             self.cell_size = msg.cell_size
+            self.crop_rect_norm = msg.crop_rect_norm
 
         if msg.state == 1:
             self.triggerBtn.setVisible(False)
@@ -146,9 +148,6 @@ class LEDWindow(QWidget):
         qp = QPainter()
         qp.begin(self)
         pen = QPen()
-        pen.setWidth(3);
-        pen.setBrush(QColor(255, 0, 0));
-        qp.setPen(pen)
         font = QFont()
         font.setPixelSize(16)
         qp.setFont(font)
@@ -163,8 +162,14 @@ class LEDWindow(QWidget):
             W = self.camera_image.width()
             H = self.camera_image.height()
 
-            self.imagescale = min(1.0*win_size[0]/W,
-                        1.0*win_size[1]/H)
+            tl_offset = [0,0]
+            if not self.plotCamImage:
+                rest_x = W%self.cell_size[0]
+                rest_y = H%self.cell_size[1]
+                tl_offset = [ceil(.5*rest_x)+floor(self.crop_rect_norm[0]*W),
+                                    ceil(.5*rest_y)+floor(self.crop_rect_norm[1]*H)]
+
+            self.imagescale = min(1.0*win_size[0]/W, 1.0*win_size[1]/H)
             self.frametl = [self.camtl[0]+0.5*(win_size[0]-self.imagescale*W),
                         self.camtl[1]+0.5*(win_size[1]-self.imagescale*H)]
 
@@ -173,13 +178,36 @@ class LEDWindow(QWidget):
         if(image is not None):
             #print('scale:%s'%imagescale)
             qp.scale(self.imagescale,self.imagescale)
-            k = 1.0*W/image.width()
-            qp.scale(k,k)
+            qp.translate(tl_offset[0], tl_offset[1])
+            kh = kv = 1
+            tlx = tly = brx = bry = None
+            if(self.crop_rect_norm is not None):
+                tlx = floor(1.0*W*self.crop_rect_norm[0])
+                tly = floor(1.0*H*self.crop_rect_norm[1])
+                brx = ceil(1.0*W*self.crop_rect_norm[2])
+                bry = ceil(1.0*H*self.crop_rect_norm[3])
+                if not self.plotCamImage:
+                    kh = (brx-tlx)/image.width()
+                    kv = (bry-tly)/image.height()
+
+            qp.scale(kh,kv)
             qp.drawImage(0,0,image)
-            qp.scale(1.0/k,1.0/k)
+            qp.scale(1.0/kh,1.0/kv)
+            qp.translate(-tl_offset[0], -tl_offset[1])
+            if(self.crop_rect_norm is not None):
+                pen.setWidth(3);
+                pen.setStyle(Qt.DashLine);
+                pen.setBrush(QColor(0, 0, 255));
+                qp.setPen(pen)
+                used_portion_rect = QRect(tlx, tly, brx-tlx, bry-tly)
+                qp.drawRect(used_portion_rect)
 
         if(self.unfiltered_leds is not None):
             tmp = 0
+            pen.setWidth(3);
+            pen.setStyle(Qt.SolidLine);
+            pen.setBrush(QColor(255, 0, 0));
+            qp.setPen(pen)
             for led in self.unfiltered_leds.detections:
                 tmp +=1
                 led_rect = QRect(led.pixels_normalized.x*W-0.5*self.cell_size[0],
@@ -190,7 +218,8 @@ class LEDWindow(QWidget):
                             led.pixels_normalized.y*H-0.5*self.cell_size[1]-10,
                             QString.number(led.frequency, 'g', 2))
                 qp.drawRect(led_rect)
-
+        
+        pen.setStyle(Qt.SolidLine);
         pen.setBrush(QColor(0, 255, 0));
         qp.setPen(pen)
 

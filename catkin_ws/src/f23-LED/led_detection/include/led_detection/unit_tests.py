@@ -38,9 +38,8 @@ class LEDDetectionUnitTest():
         """
 
         images = self._get_images()
-        mask = np.ones(dtype='bool', shape=images[0]['rgb'].shape)
+        #mask = np.ones(dtype='bool', shape=images[0]['rgb'].shape)
         d = dict(images=images,
-                 mask=mask,
                  frequencies_to_detect=self.query['frequencies_to_detect'],
                  min_distance_between_LEDs_pixels=self.query['min_distance_between_LEDs_pixels'])
         return d

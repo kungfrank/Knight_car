@@ -64,7 +64,7 @@ states:
     lights: []
   LOCALIZATION:
     transitions:
-      localized: "INTERSECTION_CONTROL"
+      localization_done: "INTERSECTION_CONTROL"
     active_nodes: ["apriltag_node", "decoder_node"]
   INTERSECTION_CONTROL:
     transitions:

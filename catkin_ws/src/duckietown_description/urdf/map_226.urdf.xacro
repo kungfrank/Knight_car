@@ -3,10 +3,14 @@
     <robot name="duckietown" xmlns:xacro="http://www.ros.org/wiki/xacro">
         <!--Parameters-->
         <xacro:property name="tile_width" value="0.595"/>
-        <xacro:property name="pos_0" value="0.04 0"/>
-        <xacro:property name="pos_1" value="0 0.04"/>
-        <xacro:property name="pos_2" value="-0.04 0"/>
-        <xacro:property name="pos_3" value="0 -0.04"/>
+        <xacro:property name="pos_0" value="0.125 0.035"/>
+        <xacro:property name="pos_1" value="0.035 0.125"/>
+        <xacro:property name="pos_2" value="-0.035 0.125"/>
+        <xacro:property name="pos_3" value="-0.125 0.035"/>
+        <xacro:property name="pos_4" value="-0.125 -0.035"/>
+        <xacro:property name="pos_5" value="-0.035 -0.125"/>
+        <xacro:property name="pos_6" value="0.035 -0.125"/>
+        <xacro:property name="pos_7" value="0.125 -0.035"/>
         <!--Include the tile and tag macros-->
         <xacro:include filename="$(find duckietown_description)/urdf/macros.urdf.xacro"/>
         <!--The world frame is at the lower left corner of duckietown-->
@@ -91,19 +95,19 @@
         <xacro:tile visible="false" x="6" y="8"/>
         <xacro:tile visible="false" x="6" y="9"/>
         <!--Describe the tags-->
-        <xacro:tag id="100" pos="${pos_0}" rotation="270" x="0" y="3"/>
-        <xacro:tag id="101" pos="${pos_0}" rotation="0" x="0" y="2"/>
-        <xacro:tag id="102" pos="${pos_3}" rotation="90" x="1" y="2"/>
-        <xacro:tag id="103" pos="${pos_1}" rotation="90" x="4" y="0"/>
-        <xacro:tag id="104" pos="${pos_1}" rotation="0" x="3" y="0"/>
-        <xacro:tag id="105" pos="${pos_3}" rotation="180" x="4" y="1"/>
-        <xacro:tag id="107" pos="${pos_0}" rotation="0" x="0" y="5"/>
-        <xacro:tag id="108" pos="${pos_3}" rotation="90" x="1" y="5"/>
-        <xacro:tag id="109" pos="${pos_3}" rotation="270" x="2" y="6"/>
-        <xacro:tag id="110" pos="${pos_3}" rotation="0" x="2" y="5"/>
-        <xacro:tag id="111" pos="${pos_3}" rotation="90" x="3" y="5"/>
-        <xacro:tag id="112" pos="${pos_3}" rotation="180" x="3" y="6"/>
-        <xacro:tag id="113" pos="${pos_3}" rotation="0" x="3" y="9"/>
-        <xacro:tag id="114" pos="${pos_3}" rotation="270" x="3" y="10"/>
-        <xacro:tag id="115" pos="${pos_3}" rotation="180" x="4" y="10"/>
+        <xacro:tag id="1" pos="${pos_0}" rotation="270" x="0" y="3"/>
+        <xacro:tag id="2" pos="${pos_0}" rotation="0" x="0" y="2"/>
+        <xacro:tag id="3" pos="${pos_3}" rotation="90" x="1" y="2"/>
+        <xacro:tag id="4" pos="${pos_1}" rotation="90" x="4" y="0"/>
+        <xacro:tag id="5" pos="${pos_1}" rotation="0" x="3" y="0"/>
+        <xacro:tag id="6" pos="${pos_3}" rotation="180" x="4" y="1"/>
+        <xacro:tag id="7" pos="${pos_0}" rotation="0" x="0" y="5"/>
+        <xacro:tag id="8" pos="${pos_3}" rotation="90" x="1" y="5"/>
+        <xacro:tag id="9" pos="${pos_3}" rotation="270" x="2" y="6"/>
+        <xacro:tag id="10" pos="${pos_3}" rotation="0" x="2" y="5"/>
+        <xacro:tag id="11" pos="${pos_3}" rotation="90" x="3" y="5"/>
+        <xacro:tag id="12" pos="${pos_3}" rotation="180" x="3" y="6"/>
+        <xacro:tag id="13" pos="${pos_3}" rotation="0" x="3" y="9"/>
+        <xacro:tag id="14" pos="${pos_3}" rotation="270" x="3" y="10"/>
+        <xacro:tag id="15" pos="${pos_3}" rotation="180" x="4" y="10"/>
     </robot>

@@ -85,6 +85,7 @@ class LEDInterpreterNode(object):
 		self.left = SignalsDetection.NO_CAR
 
 		self.traffic_light_state = SignalsDetection.NO_TRAFFIC_LIGHT
+
 		#case with a traffic light
 		if self.trafficLightIntersection:
 			for item in msg.detections:

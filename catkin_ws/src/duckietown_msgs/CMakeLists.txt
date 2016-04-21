@@ -84,6 +84,7 @@ add_message_files(
   BoolStamped.msg
   StopLineReading.msg
   AntiInstagramHealth.msg
+  AntiInstagramTransform.msg
   KinematicsWeights.msg
   KinematicsParameters.msg
   ThetaDotSample.msg

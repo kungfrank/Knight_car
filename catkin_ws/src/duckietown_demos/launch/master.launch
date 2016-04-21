@@ -9,6 +9,7 @@
 	<arg name="verbose" default="false" />
 	<arg name="statistics" default="false"/>
     <arg name="map_name" default="duckietown_map"/>
+	<arg name="anti_instagram" default="true"/>
 	<arg name="loc" default="-1"/>
 	<arg name="line_detector_param_file_name" default="$(arg param_file_name)"/>
 	<!-- end basic args -->
@@ -84,7 +85,6 @@
 
 	<arg name="SLAM" default="false"/>
 
-	<arg name="anti_instagram" default="false"/>
 	<!-- end switch args -->
 	
 	<!-- Enable statistics -->
@@ -206,17 +206,20 @@
 	<!-- Start Lane Following -->
 	<group if="$(arg lane_following)">
 
+
+
 		<!-- Line Detector -->
 		<group if="$(arg /lane_following/line_detection)">
 			<remap from="line_detector_node/image" to="camera_node/image/compressed"/>
+			<remap from="line_detector_node/transform" to="anti_instagram_node/transform"/>
 			<include file="$(find line_detector)/launch/line_detector_node.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
+				<!-- NOTE: "line_detector_param_file_name" as special case -->
 				<arg name="param_file_name" value="$(arg line_detector_param_file_name)"/>
 				<arg name="verbose" value="$(arg verbose)" />
 			</include>	
 		</group>
-
 		
 		<!-- Ground projection -->
 		<group if="$(arg /lane_following/ground_projection)">
@@ -225,6 +228,12 @@
 				<arg name="config" value="$(arg config)"/>
 				<arg name="param_file_name" value="$(arg param_file_name)"/>
 			</include>
+			<group if="$(arg visualization)">
+			  <remap from="duckiebot_visualizer/segment_list" to="ground_projection/lineseglist_out"/>
+			  <include file="$(find duckiebot_visualizer)/launch/duckiebot_visualizer.launch">
+			    <arg name="veh" value="$(arg veh)" />
+			  </include>
+			</group>
 		</group>
 	
 		<!-- Lane Filter -->
@@ -506,6 +515,7 @@
 			<remap from="open_loop_intersection_control_node/mode" to="fsm_node/mode"/>
 			<remap from="open_loop_intersection_control_node/lane_pose" to="lane_filter_node/lane_pose"/>
 			<remap from="open_loop_intersection_control_node/stop_line_reading" to="stop_line_filter_node/stop_line_reading"/>
+			<remap from="open_loop_intersection_control_node/in_lane" to="lane_filter_node/in_lane"/>
 			<include file="$(find intersection_control)/launch/open_loop_intersection_controller_node.launch">
 				<arg name="veh" value="$(arg veh)"/>        
 				<arg name="config" value="$(arg config)"/>        
@@ -578,8 +588,11 @@
 	<!-- Start anti-instagram -->
 	<group if="$(arg anti_instagram)">
 	  <!-- NOT LOADING PARAMS FROM A YAML FILE -->
-	  <node name="anti_instagram_node" pkg="anti_instagram" type="anti_instagram_node.py" output="screen"/>
-	</group>
+      <remap from="anti_instagram_node/uncorrected_image" to="camera_node/image/compressed" />
+      <include file="$(find anti_instagram)/launch/anti_instagram_node.launch">
+			<arg name="veh" value="$(arg veh)"/>
+      </include>
+</group>
 	<!-- End anti-instagram -->
 
 </launch>

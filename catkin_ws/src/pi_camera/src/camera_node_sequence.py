@@ -19,7 +19,6 @@ class CameraNode(object):
     def __init__(self):
         self.node_name = rospy.get_name()
         rospy.loginfo("[%s] Initializing......" %(self.node_name))
-        print "initializing"
 
         self.framerate = self.setupParam("~framerate",30.0)
         self.res_w = self.setupParam("~res_w",640)
@@ -43,6 +42,9 @@ class CameraNode(object):
         self.camera = PiCamera()
         self.camera.framerate = self.framerate
         self.camera.resolution = (self.res_w,self.res_h)
+
+#self.camera.exposure_mode = 'off'
+       # self.camera.awb_mode = 'off'
 
         self.is_shutdown = False
         # Setup timer

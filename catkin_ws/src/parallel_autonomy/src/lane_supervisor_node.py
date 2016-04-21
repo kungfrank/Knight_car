@@ -20,8 +20,9 @@ class lane_supervisor(object):
         # Params:
         self.max_cross_track_error=self.setupParameter("~max_cross_track_error",0.1)
         self.max_heading_error=self.setupParameter("~max_heading_error",math.pi/4)
-        self.max_speed=self.setupParameter("~max_speed",1.0)
-        self.max_steer=self.setupParameter("~max_steer",0.2)
+        self.min_speed=self.setupParameter("~min_speed", 0.1)
+        self.max_speed=self.setupParameter("~max_speed", 0.3)
+        self.max_steer=self.setupParameter("~max_steer", 0.2)
 
         # Publicaiton
         self.pub_car_cmd = rospy.Publisher("~car_cmd",Twist2DStamped,queue_size=1)
@@ -94,15 +95,17 @@ class lane_supervisor(object):
         else:
             rospy.loginfo("[PA] not safe - merge control inputs")
             car_control_merged = Twist2DStamped()
-            car_control_merged.v = min(self.car_control_joy.v,self.max_speed) # take the speed from the joystick 
-            car_control_merged.omega = self.car_control_lane.omega # take the heading from the lane controller
+            if abs(self.car_control_joy.v) < self.min_speed:
+                # sets the speeds to 0:
+                car_control_merged.v = 0.0
+                car_control_merged.omega = 0.0
+            else:
+                # take the speed from the joystick:
+                car_control_merged.v = min(self.car_control_joy.v, self.max_speed)
+                # take the omega from the lane controller:
+                car_control_merged.omega = self.car_control_lane.omega
             car_cmd_msg = car_control_merged
             car_cmd_msg.header.stamp = self.car_control_joy.header.stamp
-#        if car_cmd_msg.v >= 0:
-#            new_theta = -car_cmd_msg.omega - 
-#            if type(new_theta) is np.float64:
-#                new_theta = new_theta.item()
-#            rospy.set_param("lane_controller_node/k_theta",new_theta) 
         return car_cmd_msg
 
 

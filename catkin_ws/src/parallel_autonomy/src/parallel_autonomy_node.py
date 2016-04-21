@@ -84,8 +84,10 @@ class ParallelAutonomyNode(object):
                 self.turn_direction = self.turn_STRAIGHT
             else:
                 self.turn_direction = self.turn_RIGHT
-        if self.turn_direction == self.turn_STRAIGHT and self.turn_STRAIGHT not in self.availableTurns and len(self.availableTurns)>0:
+	if self.turn_direction == self.turn_STRAIGHT and self.turn_STRAIGHT not in self.availableTurns and len(self.availableTurns)>0:
             self.turn_direction = self.turn_NONE
+	if self.turn_direction == self.turn_NONE and self.turn_STRAIGHT in self.availableTurns:
+	    self.turn_direction = self.turn_STRAIGHT
 
 
 
@@ -119,7 +121,7 @@ class ParallelAutonomyNode(object):
             #force to stop for 2 seconds
             rospy.sleep(2)
             #default to straight if nothing pressed
-            self.turn_direction = self.turn_STRAIGHT
+            self.turn_direction = self.turn_NONE
             #if no straight turn avaliable wait until another is choosen
             #publish once user presses forward on joystick
             while self.turn_direction == self.turn_NONE or not self.joy_forward>0:

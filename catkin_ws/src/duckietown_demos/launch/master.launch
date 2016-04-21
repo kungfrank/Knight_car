@@ -556,6 +556,7 @@
 		<remap from="parallel_autonomy_node/mode" to="fsm_node/mode"/>
 		<remap from="parallel_autonomy_node/joy" to="joy"/>
 		<remap from="parallel_autonomy_node/turn_type" to="open_loop_intersection_control_node/turn_type" /> 
+		<remap from="parallel_autonomy_node/tag"  to="apriltags_postprocessing_global_node/apriltags_out"/>
 		<include file="$(find parallel_autonomy)/launch/lane_supervisor_node.launch">
 			<arg name="veh" value="$(arg veh)"/>
 			<arg name="config" value="$(arg config)"/>

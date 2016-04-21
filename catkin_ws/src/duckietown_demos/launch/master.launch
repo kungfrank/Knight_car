@@ -543,6 +543,8 @@
 		<remap from="lane_supervisor_node/car_cmd_joy" to="joy_mapper_node/car_cmd"/>
 		<remap from="lane_supervisor_node/car_cmd_lane" to="lane_controller_node/car_cmd"/>
 		<remap from="lane_supervisor_node/stop_line_reading" to="stop_line_filter_node/stop_line_reading"/>
+		<remap from="parallel_autonomy_node/mode" to="fsm_node/mode"/>
+		<remap from="parallel_autonomy_node/joy" to="joy"/>
 		<remap from="parallel_autonomy_node/turn_type" to="open_loop_intersection_control_node/turn_type" /> 
 		<include file="$(find parallel_autonomy)/launch/lane_supervisor_node.launch">
 			<arg name="veh" value="$(arg veh)"/>

@@ -95,6 +95,7 @@ states:
   PARALLEL_AUTONOMY:
     transitions:
       parallel_autonomy_off: "JOYSTICK_CONTROL"
+      at_stop_line: "COORDINATION"
     active_nodes:
       - vehicle_detector_node
       - static_object_detector_node

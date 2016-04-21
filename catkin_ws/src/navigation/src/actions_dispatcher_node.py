@@ -18,7 +18,7 @@ class ActionsDispatcherNode():
 
         # Parameters:
         self.fsm_mode = self.setupParameter("~initial_mode","JOYSTICK_CONTROL")
-        self.localization_mode = self.setupParameter("~localization_mode",None)
+        self.localization_mode = self.setupParameter("~localization_mode","none")
         self.trigger_mode = self.setupParameter("~trigger_mode","INTERSECTION_CONTROL")
         self.reset_mode = self.setupParameter("~reset_mode","JOYSTICK_CONTROL")
         self.localization_wait_time = setupParameter("~localization_wait_time",0.0)
@@ -31,7 +31,7 @@ class ActionsDispatcherNode():
         # Publishers:
         self.pub = rospy.Publisher("~turn_type", Int16, queue_size=1, latch=True)
         self.pubList = rospy.Publisher("~turn_plan", String, queue_size=1, latch=True)
-        if self.localization_mode:
+        if self.localization_mode != "none":
             self.pub_localized = rospy.Publisher("~localized", BoolStamped, queue_size=1, latch=True)
 
     def setupParameter(self,param_name,default_value):
@@ -47,7 +47,7 @@ class ActionsDispatcherNode():
             rospy.wait_for_service('graph_search')
             graph_search = rospy.ServiceProxy('graph_search', GraphSearch)
             graph_search('0', '0')
-        elif self.localization_mode and self.fsm_mode == self.localization_mode:
+        elif self.localization_mode != "none" and self.fsm_mode == self.localization_mode:
             rospy.sleep(self.localization_wait_time)
             self.pubLocalized()
         self.dispatcher()

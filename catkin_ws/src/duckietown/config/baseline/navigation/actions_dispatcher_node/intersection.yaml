@@ -1,6 +1,6 @@
 
 initial_mode: JOYSTICK_CONTROL
-localization_mode: None
+localization_mode: none
 trigger_mode: INTERSECTION_CONTROL
 reset_mode: JOYSTICK_CONTROL
 localization_wait_time: 0.0

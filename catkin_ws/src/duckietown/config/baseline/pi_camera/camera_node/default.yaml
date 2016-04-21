@@ -1,5 +1,5 @@
 #parameters for pi_camera/camera_node
-framerate: 15
+framerate: 30
 res_w: 640
 res_h: 480
 #decompress: false

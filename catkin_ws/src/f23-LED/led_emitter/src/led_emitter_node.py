@@ -17,8 +17,9 @@ class LEDEmitter(object):
         
         self.is_on = False
 
-        self.protocol = rospy.get_param("~LED_protocol") #should be a list of tuples
 
+        self.protocol = rospy.get_param("~LED_protocol") #should be a list of tuples
+        self.changePattern_('off')
         self.pattern_off = [[0,0,0]] * 5
 
         scale = 0.5

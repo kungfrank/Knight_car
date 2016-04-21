@@ -12,7 +12,7 @@ class LEDDetectorNode(object):
     def __init__(self):
         self.active = True # [INTERACTIVE MODE] Won't be overwritten if FSM isn't running, node always active 
         self.first_timestamp = 0
-        self.capture_time = 1.0 # capture time
+        self.capture_time = 0.97 # capture time
         self.capture_finished = True
         self.tinit = None
         self.trigger = False

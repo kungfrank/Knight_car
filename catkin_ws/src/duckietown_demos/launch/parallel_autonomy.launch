@@ -12,6 +12,6 @@
 		<arg name="line_detector_param_file_name" default="default" />
 		<arg name="/camera/raw" value="true"/>
 		<arg name="parallel_autonomy" value="true"/>
-
+		<arg name="LED" default="false" />		
 	</include>
 </launch>

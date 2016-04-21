@@ -95,19 +95,19 @@
         <xacro:tile visible="false" x="6" y="8"/>
         <xacro:tile visible="false" x="6" y="9"/>
         <!--Describe the tags-->
-        <xacro:tag id="1" pos="${pos_0}" rotation="270" x="0" y="3"/>
-        <xacro:tag id="2" pos="${pos_0}" rotation="0" x="0" y="2"/>
-        <xacro:tag id="3" pos="${pos_3}" rotation="90" x="1" y="2"/>
-        <xacro:tag id="4" pos="${pos_1}" rotation="90" x="4" y="0"/>
-        <xacro:tag id="5" pos="${pos_1}" rotation="0" x="3" y="0"/>
-        <xacro:tag id="6" pos="${pos_3}" rotation="180" x="4" y="1"/>
-        <xacro:tag id="7" pos="${pos_0}" rotation="0" x="0" y="5"/>
-        <xacro:tag id="8" pos="${pos_3}" rotation="90" x="1" y="5"/>
+        <xacro:tag id="1" pos="${pos_5}" rotation="270" x="0" y="3"/>
+        <xacro:tag id="2" pos="${pos_2}" rotation="0" x="0" y="2"/>
+        <xacro:tag id="3" pos="${pos_7}" rotation="90" x="1" y="2"/>
+        <xacro:tag id="4" pos="${pos_4}" rotation="90" x="4" y="0"/>
+        <xacro:tag id="5" pos="${pos_7}" rotation="0" x="3" y="0"/>
+        <xacro:tag id="6" pos="${pos_1}" rotation="180" x="4" y="1"/>
+        <xacro:tag id="7" pos="${pos_2}" rotation="0" x="0" y="5"/>
+        <xacro:tag id="8" pos="${pos_7}" rotation="90" x="1" y="5"/>
         <xacro:tag id="9" pos="${pos_3}" rotation="270" x="2" y="6"/>
-        <xacro:tag id="10" pos="${pos_3}" rotation="0" x="2" y="5"/>
-        <xacro:tag id="11" pos="${pos_3}" rotation="90" x="3" y="5"/>
-        <xacro:tag id="12" pos="${pos_3}" rotation="180" x="3" y="6"/>
-        <xacro:tag id="13" pos="${pos_3}" rotation="0" x="3" y="9"/>
-        <xacro:tag id="14" pos="${pos_3}" rotation="270" x="3" y="10"/>
+        <xacro:tag id="10" pos="${pos_5}" rotation="0" x="2" y="5"/>
+        <xacro:tag id="11" pos="${pos_7}" rotation="90" x="3" y="5"/>
+        <xacro:tag id="12" pos="${pos_1}" rotation="180" x="3" y="6"/>
+        <xacro:tag id="13" pos="${pos_4}" rotation="0" x="3" y="9"/>
+        <xacro:tag id="14" pos="${pos_0}" rotation="270" x="3" y="10"/>
         <xacro:tag id="15" pos="${pos_3}" rotation="180" x="4" y="10"/>
     </robot>

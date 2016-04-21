@@ -18,6 +18,7 @@ class ActionsDispatcherNode():
 
         # Parameters:
         self.fsm_mode = self.setupParameter("~initial_mode","JOYSTICK_CONTROL")
+        self.localization_mode = self.setupParameter("~localization_mode","LOCALIZATION")
         self.trigger_mode = self.setupParameter("~trigger_mode","INTERSECTION_CONTROL")
         self.reset_mode = self.setupParameter("~reset_mode","JOYSTICK_CONTROL")
         self.stop_line_wait_time = self.setupParameter("~stop_line_wait_time",2.0)

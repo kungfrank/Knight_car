@@ -16,6 +16,7 @@
 <node ns="$(arg veh)" machine="$(arg veh)"  pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen" required="true">
             <rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/$(arg protocol_file).yaml"/>
             <rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/$(arg location_config).yaml"/>
+            <param name="intersectionType" value="$(arg intersectionType)"/>
 </node>
 
 

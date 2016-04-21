@@ -35,13 +35,6 @@
 	    <arg name="continuous" value="$(arg live)"/>
 	</include>
 
-	<!-- LED interpreter --> 
-	<include file="$(find led_interpreter)/launch/LED_interpreter.launch">
-		<arg name="veh" value="$(arg veh)"/>
-	    	<arg name="local" value="$(arg local)"/>
-	    	<arg name="config" value="$(arg config)"/>
-	</include>
-	
 	<!-- april tags -->
 	<!-- Preprocessing -->
  	<include file="$(find apriltags)/launch/apriltags_preprocessing_node.launch">

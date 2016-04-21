@@ -9,6 +9,8 @@
 	<arg name="raw" default="true" doc="If set to true, also publish raw image using decoder."/> 
 	<arg name="live" default="true" doc="if set to true, run the camera and do live detection. "/>
 	<arg name="camera" default="true" doc="If set to false, won't launch the camera. This is for easier relaunching of the line_detector_node only "/>
+	<arg name="intersectionType" default="trafficLight" doc="obviuos :P"/>
+
 
 	<!-- Camera -->
 	<include if="$(arg camera)" file="$(find duckietown)/launch/camera.launch">
@@ -40,5 +42,6 @@
 		<arg name="veh" value="$(arg veh)"/>
 	    	<arg name="local" value="$(arg local)"/>
 	    	<arg name="config" value="$(arg config)"/>
+	    	<arg name="intersectionType" value="$(arg intersectionType)"/>
 	</include>
 </launch>

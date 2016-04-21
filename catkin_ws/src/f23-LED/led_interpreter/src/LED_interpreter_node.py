@@ -84,42 +84,42 @@ class LEDInterpreterNode(object):
 		self.left = SignalsDetection.NO_CAR
 
 		self.traffic_light_state = SignalsDetection.NO_TRAFFIC_LIGHT
-				#case with a traffic light
-				if self.trafficLightIntersection:
-					for item in msg.detections:
-						rospy.loginfo("[%s]:\n pixel = %f\n top bound = %f\n measured frequence=%f\n go frequency =%f" %(self.node_name, item.pixels_normalized.y,self.label['top'],item.frequency,self.lightGo))
-						if item.pixels_normalized.y < self.label['top']:
-							if abs(item.frequency - self.lightGo) < 0.1:
-								self.traffic_light_state = SignalsDetection.GO
-								break
-							else:
-								self.traffic_light_state = SignalsDetection.STOP
-								break
+		#case with a traffic light
+		if self.trafficLightIntersection:
+			for item in msg.detections:
+				rospy.loginfo("[%s]:\n pixel = %f\n top bound = %f\n measured frequence=%f\n go frequency =%f" %(self.node_name, item.pixels_normalized.y,self.label['top'],item.frequency,self.lightGo))
+				if item.pixels_normalized.y < self.label['top']:
+					if abs(item.frequency - self.lightGo) < 0.1:
+						self.traffic_light_state = SignalsDetection.GO
+						break
+					else:
+						self.traffic_light_state = SignalsDetection.STOP
+						break
 
-				#case with stop sign intersection	
-				else:
-					for item in msg.detections:
-						rospy.loginfo("[%s]:\n pixel = %f\n right bound = %f\n left bound =%f\n measured frequence=%f\n" %(self.node_name, item.pixels_normalized.x,self.label['right'],self.label['left'],item.frequency))
-						#check if front vehicle detection
-						if item.pixels_normalized.x > self.label['left'] and item.pixels_normalized.x < self.label['right'] and item.pixels_normalized.y > self.label['top']:
-							#check signal of that vehicle
-							detected_freq = item.frequency
-							for i in range(len(self.signalFrequencies)):
-								if abs(self.signalFrequencies[i] - detected_freq) < 0.1:
-									self.front = self.vehicleSignals[i]
-									break
+		#case with stop sign intersection	
+		else:
+			for item in msg.detections:
+				rospy.loginfo("[%s]:\n pixel = %f\n right bound = %f\n left bound =%f\n measured frequence=%f\n" %(self.node_name, item.pixels_normalized.x,self.label['right'],self.label['left'],item.frequency))
+				#check if front vehicle detection
+				if item.pixels_normalized.x > self.label['left'] and item.pixels_normalized.x < self.label['right'] and item.pixels_normalized.y > self.label['top']:
+					#check signal of that vehicle
+					detected_freq = item.frequency
+					for i in range(len(self.signalFrequencies)):
+						if abs(self.signalFrequencies[i] - detected_freq) < 0.1:
+							self.front = self.vehicleSignals[i]
+							break
 
-						#check if right vehicle detection
-						if item.pixels_normalized.x > self.label['right'] and item.pixels_normalized.y > self.label['top']:
-							#check signal of that vehicle
-							detected_freq = item.frequency
-							for i in range(len(self.signalFrequencies)):
-								if abs(self.signalFrequencies[i] - detected_freq)< 0.1:
-									self.right = self.vehicleSignals[i]
-									break	
-			
-				rospy.loginfo("[%s] The observed LEDs are:\n Front = %s\n Right = %s\n Traffic light state = %s" %(self.node_name, self.front, self.right,self.traffic_light_state))
-				self.pub_interpret.publish(SignalsDetection(front=self.front,right=self.right,left=self.left,traffic_light_state=self.traffic_light_state))
+				#check if right vehicle detection
+				if item.pixels_normalized.x > self.label['right'] and item.pixels_normalized.y > self.label['top']:
+					#check signal of that vehicle
+					detected_freq = item.frequency
+					for i in range(len(self.signalFrequencies)):
+						if abs(self.signalFrequencies[i] - detected_freq)< 0.1:
+							self.right = self.vehicleSignals[i]
+							break	
+	
+		rospy.loginfo("[%s] The observed LEDs are:\n Front = %s\n Right = %s\n Traffic light state = %s" %(self.node_name, self.front, self.right,self.traffic_light_state))
+		self.pub_interpret.publish(SignalsDetection(front=self.front,right=self.right,left=self.left,traffic_light_state=self.traffic_light_state))
 					
 					
 

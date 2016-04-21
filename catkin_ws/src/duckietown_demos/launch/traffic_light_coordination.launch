@@ -10,7 +10,7 @@
 	<arg name="/camera/raw" value="true"/>
 	<arg name="param_file_name" default="default" />
 	<arg name="line_detector_param_file_name" default="default" />
-   	<arg name="anti_instagram" default="false" />
+   	<arg name="anti_instagram" default="true" />
     <arg name="LED" default="true" /> 
     <arg name="intersectionType" default="trafficLight" /> 
     <arg name="coordination" default="true" />     

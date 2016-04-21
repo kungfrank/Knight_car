@@ -32,7 +32,7 @@ build:
 # Teddy: make it so "make unittests" runs all unit tests
 
 unittests-environment:
-	bash -c "source environment.sh; python setup/sanity_checks"
+	bash -c "source environment.sh; source set_vehicle_name.sh; python setup/sanity_checks"
 
 unittests:
 	$(MAKE) unittests-environment
@@ -111,11 +111,6 @@ demo-line_detector-quiet-%: unittests-environment
 openhouse-dp1: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos parallel_autonomy.launch"
 
-openhouse-dp3: unittests-environment
-	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch"
-openhouse-dp3: unittests-environment
-	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch"
-
 openhouse-dp1-%: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos parallel_autonomy.launch line_detector_param_file_name:=$*"
  
@@ -131,8 +126,6 @@ openhouse-dp2-vehicle: unittests-environment
 openhouse-dp2-obstacle: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos obstacle_avoid.launch"
 
-openhouse-dp1: unittests-environment
-	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos parallel_autonomy.launch"
 
 
 openhouse-dp3: unittests-environment
@@ -140,4 +133,10 @@ openhouse-dp3: unittests-environment
 
 openhouse-dp3-%: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch  line_detector_param_file_name:=$*"
+
+openhouse-dp5: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos stop_sign_coordination.launch"
+
+openhouse-dp4: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos traffic_light_coordination.launch"
 

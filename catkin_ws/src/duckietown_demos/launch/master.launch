@@ -11,7 +11,7 @@
 	<arg name="anti_instagram" default="false"/>
 	<arg name="loc" default="-1"/>
 	<arg name="line_detector_param_file_name" default="$(arg param_file_name)"/>
-	<arg name="intersectionType" default="trafficLight" />
+	<arg name="intersectionType" />
 	<!-- end basic args -->
  
 <!-- the things that are "on" by default: 
@@ -445,11 +445,11 @@
 		<!-- TODO do we need some remappings here? -->
 		<remap from="LED_interpreter_node/raw_led_detection" to="LED_detector_node/raw_led_detection" />
 		<group if="$(arg /LED/interpreter)">
-			<include file="$(find led_interpreter)/launch/led_interpreter_node.launch">
+			<include file="$(find led_interpreter)/launch/LED_interpreter.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
 				<arg name="param_file_name" value="$(arg param_file_name)"/>
-				<arg name="intersectionType" default="trafficLight" />
+				<arg name="intersectionType" default="$(arg intersectionType)" />
 			</include>
 		</group>
 		

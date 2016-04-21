@@ -12,6 +12,7 @@
 	<arg name="line_detector_param_file_name" default="default" />
    	<arg name="anti_instagram" default="false" />
     <arg name="LED" default="true" /> 
+	<arg name="intersectionType" value="stopSign" /> 
     <arg name="coordination" default="true" />     
 	</include>
 </launch>

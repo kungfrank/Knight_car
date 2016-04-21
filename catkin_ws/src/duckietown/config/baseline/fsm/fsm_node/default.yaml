@@ -134,9 +134,10 @@ states:
   INTERSECTION_CONTROL:
     transitions:
       intersection_done: "LANE_FOLLOWING"
-      intersection_complete_no_lane: "INTERSECTION_RECOVERY"
+#      intersection_complete_no_lane: "INTERSECTION_RECOVERY"
     active_nodes:
       - line_detector_node
+      - lane_filter_node
       - apriltag_global_node
       - decoder_node
   AVOID_VEHICLE:

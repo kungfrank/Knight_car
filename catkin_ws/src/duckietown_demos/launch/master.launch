@@ -8,7 +8,7 @@
 	<arg name="visualization" default="true" />
 	<arg name="verbose" default="false" />
 	<arg name="statistics" default="false"/>
-	<arg name="anti_instagram" default="false"/>
+	<arg name="anti_instagram" default="true"/>
 	<arg name="loc" default="-1"/>
 	<arg name="line_detector_param_file_name" default="$(arg param_file_name)"/>
 	<arg name="intersectionType" />
@@ -229,6 +229,12 @@
 				<arg name="config" value="$(arg config)"/>
 				<arg name="param_file_name" value="$(arg param_file_name)"/>
 			</include>
+			<group if="$(arg visualization)">
+			  <remap from="duckiebot_visualizer/segment_list" to="ground_projection/lineseglist_out"/>
+			  <include file="$(find duckiebot_visualizer)/launch/duckiebot_visualizer.launch">
+			    <arg name="veh" value="$(arg veh)" />
+			  </include>
+			</group>
 		</group>
 	
 		<!-- Lane Filter -->
@@ -527,6 +533,7 @@
 			<remap from="open_loop_intersection_control_node/mode" to="fsm_node/mode"/>
 			<remap from="open_loop_intersection_control_node/lane_pose" to="lane_filter_node/lane_pose"/>
 			<remap from="open_loop_intersection_control_node/stop_line_reading" to="stop_line_filter_node/stop_line_reading"/>
+			<remap from="open_loop_intersection_control_node/in_lane" to="lane_filter_node/in_lane"/>
 			<include file="$(find intersection_control)/launch/open_loop_intersection_controller_node.launch">
 				<arg name="veh" value="$(arg veh)"/>        
 				<arg name="config" value="$(arg config)"/>        

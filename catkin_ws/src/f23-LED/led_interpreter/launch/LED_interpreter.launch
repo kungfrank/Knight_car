@@ -9,7 +9,7 @@
 <arg name="protocol_file" default="LED_protocol"/>
 <arg name="location_config" default="location_config"/>
 <arg name="node_name" default="LED_interpreter_node"/>
-<arg name="intersectionType" default="trafficLight" /> 
+<arg name="intersectionType" /> 
 
 <!-- <arg name="testing" default="false" doc="using for test purposes." /> -->
 

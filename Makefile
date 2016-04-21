@@ -137,3 +137,6 @@ openhouse-dp3-%: unittests-environment
 openhouse-dp5: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos stop_sign_coordination.launch"
 
+openhouse-dp4: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos traffic_light_coordination.launch"
+

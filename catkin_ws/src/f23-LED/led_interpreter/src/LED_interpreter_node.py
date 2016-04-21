@@ -18,6 +18,7 @@ class LEDInterpreterNode(object):
 		
 		self.trafficLightIntersection = False		
 
+		rospy.loginfo('[%s] Intersection Type: %s'%(self.node_name, rospy.get_param("~intersectionType")))
 		if rospy.get_param("~intersectionType") == "trafficLight":
 			self.trafficLightIntersection = True
 

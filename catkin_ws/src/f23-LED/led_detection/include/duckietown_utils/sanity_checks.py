@@ -21,6 +21,11 @@ def check_import(package):
     f.__name__ = 'import-%s' % package
     return f
 
+def check_import_messages():
+    from duckietown_msgs.msg import (AntiInstagramTransform, BoolStamped, Segment,
+    SegmentList, Vector2D)  # @UnresolvedImport @UnusedImport
+
+
 def check_failure():
     raise ValueError('error')
 
@@ -84,6 +89,8 @@ def do_all_checks():
         check_import('scipy'),
         check_import('scipy.io'),
         check_import('sklearn'),
+
+        check_import_messages,
     ]
 
     results = []

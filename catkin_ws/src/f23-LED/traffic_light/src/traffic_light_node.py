@@ -17,8 +17,8 @@ class TrafficLight(object):
         self.redlight_freq = self.protocol['signals']['traffic_light_stop']['frequency']
 
         self.traffic_light_list = self.setupParameter("~traffic_light_list",[0,2,3,1]); #order of lights
-        self.greenlight_duration = self.setupParameter("~greenlight_duration",3) #in seconds
-        self.allred_duration = self.setupParameter("~allred_duration",7) #in seconds
+        self.greenlight_duration = self.setupParameter("~greenlight_duration",5) #in seconds
+        self.allred_duration = self.setupParameter("~allred_duration",4) #in seconds
 
         self.redlight_t = 1.0/self.redlight_freq
         self.greenlight_t = 1.0/self.greenlight_freq

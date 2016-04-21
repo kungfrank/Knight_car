@@ -15,7 +15,7 @@ class IndefNavigationTurnNode(unittest.TestCase):
         #self.setup()
     def setup(self):
         #give lane_filter some time to start before beginning
-        rospy.sleep(10)
+        rospy.sleep(8)
         rospy.init_node('indef_navigation_turn_node', anonymous=False)
         # Save the name of the node
         self.node_name = rospy.get_name()
@@ -67,9 +67,12 @@ class IndefNavigationTurnNode(unittest.TestCase):
         self.setup()
         mode = FSMState()
         mode.state = "INTERSECTION_CONTROL"
-        self.publish_mode.publish(mode)
-        #need to wait 1/2 second before publishing new turn type
-        rospy.sleep(0.5)
+        startTime = rospy.Time.now()
+        endTime = startTime + rospy.Duration.from_sec(0.2)
+        while rospy.Time.now() < endTime:
+            self.publish_mode.publish(mode)
+        #need to wait 1 second before publishing new turn type
+        rospy.sleep(1)
         if self.type.lower() == 'left':
             self.turn_left_serv()
         elif self.type.lower() == 'right':

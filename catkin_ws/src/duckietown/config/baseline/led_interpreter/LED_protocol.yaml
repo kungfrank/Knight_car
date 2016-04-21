@@ -11,7 +11,7 @@ LED_protocol:
     black: [0,0,0]
 
   frequencies:
-    f1: &f1 2
+    f1: &f1 7.8
     f2: &f2 4
     f3: &f3 5.7
 
@@ -29,7 +29,7 @@ LED_protocol:
       color: "yellow"
 
     light_off:
-      frequency: *f3
+      frequency: *f1
       color: "black"
 
     traffic_light_go:
@@ -37,5 +37,5 @@ LED_protocol:
       color: "green"
 
     traffic_light_stop:
-      frequency: *f2
+      frequency: *f3
       color: "red"

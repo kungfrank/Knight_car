@@ -9,6 +9,6 @@
 		<arg name="/camera/raw" value="true"/>
 		<arg name="param_file_name" default="default" />
 		<arg name="line_detector_param_file_name" default="default" />
-		<arg name="anti_instagram" default="false" />
+		<arg name="anti_instagram" default="true" />
 	</include>
 </launch>

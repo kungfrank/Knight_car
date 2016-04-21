@@ -94,6 +94,8 @@ class Graph(object):
                 g.node(name=node_name, pos=node_pos, color='red', shape='circle') #blue
             elif node_name[0:4] == 'turn':
                 g.node(name=node_name, pos=node_pos, fixedsize='true', width='0', height='0', style='invis', label="")
+            elif (int(node_name) % 2) == 0:
+                g.node(name=node_name, pos=node_pos, fixedsize='true', width='0', height='0', style='invis', label="")
             else:
                 g.node(name=node_name, pos=node_pos)
         for src_node, edges in self._edges.items():

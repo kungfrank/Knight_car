@@ -48,6 +48,7 @@ class lane_supervisor(object):
     def updateParams(self, event):
         self.max_cross_track_error = rospy.get_param("~max_cross_track_error")
         self.max_heading_error = rospy.get_param("~max_heading_error")
+        self.min_speed = rospy.get_param("~min_speed")
         self.max_speed = rospy.get_param("~max_speed")
         self.max_steer = rospy.get_param("~max_steer")
 

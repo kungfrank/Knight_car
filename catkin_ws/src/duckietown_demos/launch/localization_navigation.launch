@@ -6,10 +6,15 @@
         <arg name="fsm_file_name" value="default" />
         <arg name="map_name" value="tiles_226" />
         <arg name="visualization" value="false" />
+
         <arg name="navigation" value="true"/>
         <arg name="/navigation/apriltags_random" value="false"/>
         <arg name="/navigation/graph_planner" value="true"/>
+
+        <arg name="/camera/local" value="true"/>
+        <arg name="/camera/raw" value="true"/>
+        <arg name="/camera/raw/rect" value="true"/>
+
         <arg name="apriltags" value="true"/>
     </include>
 </launch>
-

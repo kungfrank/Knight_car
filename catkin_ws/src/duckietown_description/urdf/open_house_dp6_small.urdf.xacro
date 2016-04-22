@@ -54,4 +54,8 @@
         <xacro:tag id="34" pos="${pos_0}" rotation="270" x="1" y="3"/>
         <xacro:tag id="42" pos="${pos_4}" rotation="270" x="2" y="3"/>
         <xacro:tag id="116" pos="${pos_6}" rotation="180" x="2" y="3"/>
+        <xacro:tag id="110" pos="${pos_6}" rotation="90" x="2" y="1"/>
+        <xacro:tag id="113" pos="${pos_6}" rotation="90" x="2" y="2"/>
+        <xacro:tag id="114" pos="${pos_2}" rotation="270" x="0" y="1"/>
+        <xacro:tag id="109" pos="${pos_2}" rotation="270" x="0" y="2"/>
     </robot>

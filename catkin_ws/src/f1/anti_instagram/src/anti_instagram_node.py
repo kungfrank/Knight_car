@@ -16,6 +16,8 @@ class AntiInstagramNode():
 		self.node_name = rospy.get_name()
 
 		self.active = True
+		self.locked = False
+
 		self.image_pub_switch = rospy.get_param("~publish_corrected_image",False)
 		
         # Initialize publishers and subscribers
@@ -29,7 +31,7 @@ class AntiInstagramNode():
 		self.sub_click = rospy.Subscriber("~click", BoolStamped, self.cbClick, queue_size=1)
 
 		# Verbose option 
-		self.verbose = rospy.get_param('~verbose',True)  
+		self.verbose = rospy.get_param('line_detector_node/verbose',True)  
 
 		# Initialize health message
 		self.health = AntiInstagramHealth()
@@ -69,11 +71,15 @@ class AntiInstagramNode():
 				rospy.loginfo('ai:\n' + tk.getall())
 
 	def cbClick(self, _):
-		# if we have seen an image:
-		if self.image_msg is not None:
-			self.processImage(self.image_msg)
+		self.verbose = rospy.get_param('line_detector_node/verbose',True)
+		if self.verbose:
+  			# if we have seen an image:
+			if self.image_msg is not None:
+				self.processImage(self.image_msg)
+			else:
+				rospy.loginfo('No image seen yet')
 		else:
-			rospy.loginfo('No image seen yet')
+			rospy.loginfo('Calibration locked when not verbose')
 		
 	def processImage(self,msg):
 		'''

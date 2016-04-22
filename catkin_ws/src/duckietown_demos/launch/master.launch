@@ -121,7 +121,7 @@
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
 				<arg name="param_file_name" value="$(arg param_file_name)"/>
-				<arg name="local" value="$(arg /camera/local" />
+				<arg name="local" value="$(arg /camera/local)" />
 			</include>
 
 			<!-- Raw camera_info_reader node -->
@@ -129,7 +129,7 @@
 			<remap from="raw_cam_info_reader_node/compressed_image" to="camera_node/image/raw"/>
 			<include file="$(find pi_camera)/launch/cam_info_reader_node.launch">
 				<arg name="veh" value="$(arg veh)"/>
-				<arg name="local" value="$(arg /camera/local" />
+				<arg name="local" value="$(arg /camera/local)" />
 				<arg name="config" value="$(arg config)"/>
 				<arg name="param_file_name" value="$(arg param_file_name)"/>
 				<arg name="node_name" value="raw_cam_info_reader_node" />
@@ -143,7 +143,7 @@
 				<remap from="image_rect_color" to="camera_node/image/rect" />
 				<include file="$(find pi_camera)/launch/image_proc_node.launch">
 					<arg name="veh" value="$(arg veh)"/>
-					<arg name="local" value="$(arg /camera/local" />
+					<arg name="local" value="$(arg /camera/local)" />
 				</include>
 			</group>
 		</group>

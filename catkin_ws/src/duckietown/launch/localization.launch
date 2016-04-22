@@ -16,7 +16,7 @@
     </include>
 
     <!-- localization -->
-    <remap from="localization_node/apriltags" to="apriltags_postprocessing_global_node/apriltags_out"/>
+    <remap from="localization_node/apriltags" to="apriltags_postprocessing_node/apriltags_out"/>
     <include file="$(find localization)/launch/localization_node.launch">
 		<arg name="veh" value="$(arg veh)"/>
 		<arg name="local" value="$(arg local)"/>

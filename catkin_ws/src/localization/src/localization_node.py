@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from duckietown_msgs.msg import AprilTags, TagDetection
+from apriltags_ros.msg import AprilTagDetectionArray
 import tf2_ros
 from tf2_msgs.msg import TFMessage
 import tf.transformations as tr
@@ -22,8 +22,10 @@ class LocalizationNode(object):
         self.world_frame = "world"
         self.duckiebot_frame = "duckiebot"
 
+        self.bandaid = self.setupParam("~bandaid", False)
+
         # Setup the publishers and subscribers
-        self.sub_april = rospy.Subscriber("~apriltags", AprilTags, self.tag_callback)
+        self.sub_april = rospy.Subscriber("~apriltags", AprilTagDetectionArray, self.tag_callback)
         self.pub_tf = rospy.Publisher("/tf", TFMessage, queue_size=1, latch=True)
 
         # Setup the transform listener
@@ -37,12 +39,12 @@ class LocalizationNode(object):
         avg = PoseAverage.PoseAverage()
         for tag in msg_tag.detections:
             try:
-                Tt_w = self.tfbuf.lookup_transform("world", "tag_{id}".format(id=tag.id), rospy.Time(), rospy.Duration(1))
+                Tt_w = self.tfbuf.lookup_transform(self.world_frame, "tag_{id}".format(id=tag.id), rospy.Time(), rospy.Duration(1))
                 Mtbase_w=self.transform_to_matrix(Tt_w.transform)
                 Mt_tbase = tr.concatenate_matrices(tr.translation_matrix((0,0,0.17)), tr.euler_matrix(0,0,np.pi))
                 Mt_w = tr.concatenate_matrices(Mtbase_w,Mt_tbase)
-                Mt_r=self.transform_to_matrix(tag.transform)
-                if abs(tr.euler_from_matrix(Mt_r)[2]) < 0.001:  # TODO This is a bandaid for the 0degree bug
+                Mt_r=self.pose_to_matrix(tag.pose)
+                if not self.bandaid or abs(tr.euler_from_matrix(Mt_r)[2]) < 0.001:  # TODO This is a bandaid for the 0degree bug
                     Mr_t=np.linalg.inv(Mt_r)
                     Mr_w=np.dot(Mt_w,Mr_t)
                     Tr_w = self.matrix_to_transform(Mr_w)
@@ -66,6 +68,12 @@ class LocalizationNode(object):
             T.header.stamp = rospy.Time.now()
             T.child_frame_id = self.duckiebot_frame
             self.pub_tf.publish(TFMessage([T]))
+
+    def pose_to_matrix(self, p):
+        # Return the 4x4 homogeneous matrix for a PoseStamped.msg p from the geometry_msgs
+        trans = (p.pose.position.x, p.pose.position.y, p.pose.position.z)
+        rot = (p.pose.orientation.x, p.pose.orientation.y, p.pose.orientation.z, p.pose.orientation.w)
+        return np.dot(tr.translation_matrix(trans), tr.quaternion_matrix(rot))
 
     def transform_to_matrix(self, T):
         # Return the 4x4 homogeneous matrix for a TransformStamped.msg T from the geometry_msgs

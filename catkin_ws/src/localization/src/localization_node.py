@@ -22,10 +22,10 @@ class LocalizationNode(object):
         # Constants
         self.world_frame = "world"
         self.duckiebot_frame = "duckiebot"
-        self.duckiebot_lifetime = 15   # The number of seconds to keep the duckiebot alive bewtween detections
-        self.highlight_lifetime = 15   # The number of seconds to keep a sign highlighted after a detection
 
         self.bandaid = self.setupParam("~bandaid", False)
+        self.duckiebot_lifetime = self.setupParam("~duckiebot_lifetime", 5) # The number of seconds to keep the duckiebot alive bewtween detections
+        self.highlight_lifetime = self.setupParam("~highlight_lifetime", 3) # The number of seconds to keep a sign highlighted after a detection
 
         # Setup the publishers and subscribers
         self.sub_april = rospy.Subscriber("~apriltags", AprilTagDetectionArray, self.tag_callback)
@@ -38,11 +38,9 @@ class LocalizationNode(object):
 
         # Use a timer to make the duckiebot disappear
         self.lifetimer = rospy.Time.now()
+        self.publish_duckie_marker()
 
         rospy.loginfo("[%s] has started", self.node_name)
-
-        self.publish_sign_highlight(33)
-        self.publish_duckie_marker()
 
     def tag_callback(self, msg_tag):
         # Listen for the transform of the tag in the world
@@ -109,7 +107,7 @@ class LocalizationNode(object):
         s = m.scale
         s.x, s.y, s.z = (0.1, 0.1, 0.3)
         p.z = 0.15
-        c.a, c.r, c.g, c.b = (0.2, 0.3, 0.9, 0.3)
+        c.a, c.r, c.g, c.b = (0.2, 0.9, 0.9, 0.0)
         o.w = 1
         self.pub_rviz.publish(m)
 

@@ -17,7 +17,8 @@ class LEDEmitter(object):
         
         self.is_on = False
 
-        self.changePattern_('CAR_SIGNAL_A')
+#        self.changePattern_('CAR_SIGNAL_A')
+        self.changePattern_('off')
 
         self.cycle_timer = rospy.Timer(rospy.Duration.from_sec(.1), self.cycleTimer)
 

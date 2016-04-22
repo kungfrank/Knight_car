@@ -60,9 +60,9 @@
 	<arg name="/apriltags/fast" default="false" /> <!-- default to false for fast apriltags -->
 	<arg name="/apriltags/postprocessing" default="true" />
 
-	<arg name="LED" default="false" />
-	<arg name="/LED/detector" default="true" />
-	<arg name="/LED/joystick" default="true" />
+	<arg name="LED" default="true" />
+	<arg name="/LED/detector" default="false" />
+	<arg name="/LED/joystick" default="false" />
 	<arg name="/LED/emitter"  default="true" />
 	<arg name="/LED/interpreter" default="false" />
 
@@ -411,7 +411,7 @@
 	<group if="$(arg LED)">
 		
 		<!-- Detection -->
-		<group if="$(arg /LED/detection)">
+		<group if="$(arg /LED/detector)">
 			<include file="$(find led_detection)/launch/LED_detection.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>

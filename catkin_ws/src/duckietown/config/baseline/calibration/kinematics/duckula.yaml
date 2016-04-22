@@ -1,7 +1,15 @@
 baseline: 0.1
+<<<<<<< HEAD
+calibration_time: 2016-04-20-21-18-28
+gain: 1.2999999523162842
+limit: 1.0
+radius: 0.0318
+trim: 0.17000000178813934
+=======
 calibration_time: 2016-04-15-16-57-10
 gain: 1.116
 k: 27.0
 limit: 1.0
 radius: 0.0318
 trim: 0.0859
+>>>>>>> 78237510a562570c420e520b1db2b1dc6f5c1c74

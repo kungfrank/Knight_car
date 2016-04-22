@@ -12,7 +12,8 @@
 		<arg name="/camera/raw" value="true"/>
 		<arg name="parallel_autonomy" value="true"/>
 		<arg name="apriltags_param_file_name" value="parallel_autonomy"/>
-		<arg name="LED" default="false" />		
-
+		<arg name="LED" default="false" />
+		<arg name="vehicle_avoidance" value="true" />
+		<arg name="/camera/raw" value="true"/>
 	</include>
 </launch>

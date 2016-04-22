@@ -44,8 +44,8 @@ class StopLineFilterNode(object):
         self.min_segs      = rospy.get_param("~min_segs")
         self.off_time      = rospy.get_param("~off_time")
 
-    def processStateChange(self,msg):
-        if self.state == "INTERSECTION_CONTROL" and msg.state == "LANE_FOLLOWING":
+    def processStateChange(self, msg):
+        if self.state == "INTERSECTION_CONTROL" and (msg.state == "LANE_FOLLOWING" or msg.state == "PARALLEL_AUTONOMY"):
             rospy.loginfo("stop line sleep start")
             self.sleep = True
             rospy.sleep(self.off_time)

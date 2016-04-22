@@ -17,7 +17,7 @@ class LEDEmitter(object):
         self.cycle = None
         
         self.is_on = False
-        self.active True
+        self.active = True
 
         self.protocol = rospy.get_param("~LED_protocol") #should be a list of tuples
 

@@ -17,7 +17,6 @@ class SRTurnsNode(object):
 
         # Setup subscribers
         self.sub_topic_mode = rospy.Subscriber("~mode", FSMState, self.cbMode, queue_size=1)
-        self.sub_topic_tag = rospy.Subscriber("~tag", AprilTags, self.cbTag, queue_size=1)
        
         rospy.loginfo("[%s] Initialzed." %(self.node_name))
 

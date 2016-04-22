@@ -8,11 +8,11 @@
 	<arg name="navigation" value="true"/>
 
     <arg name="/navigation/intersection_control" value="true"/>
-	<arg name="/navigation/apriltags_random" value="false"/>
-    <arg name="/navigation/random_sr_turns" value="true"/>
+	<arg name="/navigation/apriltags_random" value="true"/>
+    <arg name="/navigation/random_sr_turns" value="false"/>
 	<arg name="/navigation/graph_planner" default="false"/>
 
-	<arg name="apriltags" value="false" />
+	<arg name="apriltags" value="true" />
 	<arg name="/camera/raw" value="true"/>
 	<arg name="param_file_name" default="default" />
 	<arg name="line_detector_param_file_name" default="default" />

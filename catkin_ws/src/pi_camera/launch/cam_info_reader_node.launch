@@ -6,13 +6,14 @@
 	<arg name="pkg_name" value="pi_camera"/>
 	<arg name="node_name" default="cam_info_reader_node"/>
 	<arg name="image_type" default="compressed" />
+    <arg name="cali_file_name" default="$(arg veh)" />
 
 	<!-- Run on local (laptop) -->
 	<node if="$(arg local)" ns="$(arg veh)" pkg="pi_camera" type="cam_info_reader_node.py" name="$(arg node_name)" output="screen" clear_params="true" required="true">
 		<!-- These are special in that the configs are set as parameter and should alway obey the arg -->
 		<rosparam command="load" file="$(find duckietown)/config/$(arg config)/pi_camera/cam_info_reader_node/$(arg param_file_name).yaml"/>
 		<param name="~config" value="$(arg config)"/>
-		<param name="~cali_file_name" value="$(arg veh)"/>
+		<param name="~cali_file_name" value="$(arg cali_file_name)"/>
 		<param name="~image_type" value="$(arg image_type)"/>
 	</node>
 
@@ -22,7 +23,7 @@
 		<rosparam command="load" file="$(find duckietown)/config/$(arg config)/pi_camera/cam_info_reader_node/$(arg param_file_name).yaml"/>
 		<!-- These are special in that the configs are set as parameter and should alway obey the arg -->
 		<param name="~config" value="$(arg config)"/>
-		<param name="~cali_file_name" value="$(arg veh)"/>
+		<param name="~cali_file_name" value="$(arg cali_file_name)"/>
 		<param name="~image_type" value="$(arg image_type)"/>
 	</node>	
 

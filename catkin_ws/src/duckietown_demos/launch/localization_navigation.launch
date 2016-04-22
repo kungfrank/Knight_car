@@ -16,5 +16,10 @@
         <arg name="/camera/raw/rect" value="true"/>
 
         <arg name="apriltags" value="true"/>
+        <arg name="/apriltags/local" value="true"/>
+
+        <arg name="localization" value="true"/>
+        <arg name="/localization/local" value="true"/>
+        <arg name="/localization/gui" value="false"/>
     </include>
 </launch>

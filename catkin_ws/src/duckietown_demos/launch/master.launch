@@ -135,6 +135,7 @@
 				<arg name="local" value="$(arg /camera/local)" />
 				<arg name="config" value="$(arg config)"/>
 				<arg name="param_file_name" value="$(arg param_file_name)"/>
+                <arg name="cali_file_name" value="$(arg veh)_rect" />
 				<arg name="node_name" value="raw_cam_info_reader_node" />
 				<arg name="image_type" value="raw" />
 			</include>

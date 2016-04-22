@@ -48,7 +48,15 @@ class RQTNavigation(Plugin):
         gc.build_graph_from_csv(csv_filename=self.map_name)
 
         node_locations = gc.node_locations
-        comboBoxList = sorted([int(key) for key in node_locations if key[0:4]!='turn'])
+        #comboBoxList = sorted([int(key) for key in node_locations if key[0:4]!='turn'])
+        comboBoxList = []
+        for key in node_locations:
+            if key[0:4] == 'turn':
+                continue
+            elif int(key) % 2 == 0: # allows only selection of odd numbered nodes
+                continue
+            comboBoxList += [int(key)]
+        comboBoxList = sorted(comboBoxList)
         comboBoxList = [str(key) for key in comboBoxList]
         self._widget.comboBoxDestination.addItems(comboBoxList)
         self._widget.comboBoxStart.addItems(comboBoxList)

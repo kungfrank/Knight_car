@@ -9,9 +9,10 @@
 		<arg name="/navigation/graph_planner" value="false"/>
    		<arg name="/navigation/intersection_control" value="true"/>
 		<arg name="apriltags" value="true" />
-		<arg name="line_detector_param_file_name" default="default" />
 		<arg name="/camera/raw" value="true"/>
 		<arg name="parallel_autonomy" value="true"/>
+		<arg name="apriltags_param_file_name" value="parallel_autonomy"/>
 		<arg name="LED" default="false" />		
+
 	</include>
 </launch>

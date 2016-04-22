@@ -85,6 +85,11 @@
 
 	<arg name="SLAM" default="false"/>
 
+	<arg name="localization" default="false"/>
+	<arg name="/localization/local" default="false" />
+	<arg name="/localization/map_name" default="open_house_dp6" />
+	<arg name="/localization/gui" default="false"/>
+
 	<!-- end switch args -->
 	
 	<!-- Enable statistics -->
@@ -571,5 +576,25 @@
       </include>
 </group>
 	<!-- End anti-instagram -->
+
+	<!-- Start localization -->
+	<group if="$(arg localization)">
+		<!-- duckietown_description -->
+		<include file="$(find duckietown_description)/launch/duckietown_description_node.launch">
+			<arg name="veh" value="$(arg veh)"/>
+			<arg name="gui" value="$(arg /localization/gui)"/>
+			<arg name="map_name" value="$(arg /localization/map_name)"/>
+		</include>
+
+		<!-- localization -->
+		<remap from="localization_node/apriltags" to="apriltags_postprocessing_node/apriltags_out"/>
+		<include file="$(find localization)/launch/localization_node.launch">
+			<arg name="veh" value="$(arg veh)"/>
+			<arg name="local" value="$(arg /localization/local)"/>
+			<arg name="config" value="$(arg config)"/>
+			<arg name="param_file_name" value="$(arg param_file_name)"/>
+		</include>
+	</group>
+	<!-- End localization -->
 
 </launch>

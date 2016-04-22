@@ -14,6 +14,7 @@ class lane_supervisor(object):
         self.car_control_lane = Twist2DStamped()
         self.car_control_joy = Twist2DStamped()
         self.safe = True
+        self.state = 'none'
         self.in_lane = True
         self.at_stop_line = False
         self.stop = False
@@ -82,17 +83,23 @@ class lane_supervisor(object):
     def mergeJoyAndLaneControl(self):
         car_cmd_msg = Twist2DStamped()
         if self.stop:
-            rospy.loginfo("[PA] stopped at stop line")
+            if self.state != 'stop':
+                rospy.loginfo("[PA] stopped at stop line")
+                self.state = 'stop'
             car_cmd_msg.v = 0
             car_cmd_msg.omega = 0
         elif self.safe:  # or not self.in_lane:
-            rospy.loginfo("[PA] in safe mode")
+            if self.safe != 'safe':
+                rospy.loginfo("[PA] in safe mode")
+                self.state = 'safe'
             self.car_control_joy.v = min(self.car_control_joy.v, self.max_speed)
             self.car_control_joy.omega = np.clip(self.car_control_joy.omega, -self.max_steer, self.max_steer)
             car_cmd_msg = self.car_control_joy
             car_cmd_msg.header.stamp = self.car_control_joy.header.stamp
         else:
-            rospy.loginfo("[PA] not safe - merge control inputs")
+            if self.state != 'unsafe':
+                rospy.loginfo("[PA] not safe - merge control inputs")
+                self.state = 'unsafe'
             car_control_merged = Twist2DStamped()
             if abs(self.car_control_joy.v) < self.min_speed:
                 # sets the speeds to 0:

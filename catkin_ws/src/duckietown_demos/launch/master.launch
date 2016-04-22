@@ -136,7 +136,7 @@
 				<arg name="image_type" value="raw" />
 			</include>
 
-			<group if="$(arg /camera/raw/rect">
+			<group if="$(arg /camera/raw/rect)">
 				<!-- Rectification -->
 				<remap from="image_raw" to="camera_node/image/raw"/>
 				<remap from="camera_info" to="camera_node/raw_camera_info"/>

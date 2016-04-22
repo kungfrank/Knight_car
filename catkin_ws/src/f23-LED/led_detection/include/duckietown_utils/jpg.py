@@ -1,19 +1,70 @@
 import cv2
 import numpy as np
-
+from duckietown_utils import logger
 #from PIL import Image as pimg
-#import jpeg4py as jpeg
-
 
 def image_cv_from_jpg(data):
-    """ Returns an OpenCV image from a string """
-    image_cv = cv2.imdecode(np.fromstring(data, np.uint8), cv2.CV_LOAD_IMAGE_COLOR)
+    """ Returns an OpenCV BGR image from a string """
+    s = np.fromstring(data, np.uint8)
+    image_cv = cv2.imdecode(s, cv2.CV_LOAD_IMAGE_COLOR)
+    if image_cv is None:
+        msg = 'Could not decode image (cv2.imdecode returned None). '
+        msg += 'This is usual a sign of data corruption.'
+        raise ValueError(msg)
     return image_cv
+
+# class Storage:
+#     dst = None
+# 
+# def image_cv_from_jpg_buf(data):
+#     pass
+#     """ Returns an OpenCV BGR image from a string """
+#     s = np.fromstring(data, np.uint8)
+#     if Storage.dst is not None:
+#         image_cv = cv2.imdecode(s, cv2.CV_LOAD_IMAGE_COLOR, dst=Storage.dst)
+#     else:
+#         image_cv = cv2.imdecode(s, cv2.CV_LOAD_IMAGE_COLOR)
+#     Storage.dst = image_cv
+#     return image_cv
 
 
 def image_cv_from_jpg_fn(fn):
     with open(fn) as f:
         return image_cv_from_jpg(f.read())
+
+
+# Second option: use PIL
+
+    
+import numpy as np
+from PIL import ImageFile  # @UnresolvedImport
+def rgb_from_jpg_by_PIL(data):
+    """ Warning: this returns RGB """
+    parser = ImageFile.Parser()
+    parser.feed(data)
+    res = parser.close() 
+    res = np.asarray(res)
+    return res
+
+# third option: jpeg library
+import StringIO
+
+
+
+def rgb_from_jpg_by_JPEG_library(data):
+    try:
+        import jpeg4py as jpeg
+    except ImportError as e:
+        installation = """
+sudo apt-get install -y libturbojpeg  python-cffi
+sudo pip install jpeg4py
+"""
+        logger.error(installation)
+        raise
+
+    jpg_data = np.fromstring(data, dtype=np.uint8)
+    image_cv = jpeg.JPEG(jpg_data).decode()
+    return image_cv
 
 
 def image_clip_255(image_float):
@@ -29,9 +80,6 @@ def image_clip_255(image_float):
 #         self.corrected_image = self.bridge.cv2_to_imgmsg(corrected_image_cv2,"bgr8"
 
 
-
-# with PIL Image
-# image_cv = jpeg.JPEG(np.fromstring(image_msg.data, np.uint8)).decode()
 
 # with libjpeg-turbo
 # Convert from uncompressed image message

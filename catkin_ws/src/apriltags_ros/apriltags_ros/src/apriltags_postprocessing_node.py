@@ -14,7 +14,7 @@ class AprilPostPros(object):
         self.node_name = "apriltags_postprocessing_node"
 
         # Load parameters
-        self.camera_x     = self.setupParam("~camera_x", 065)
+        self.camera_x     = self.setupParam("~camera_x", 0.065)
         self.camera_y     = self.setupParam("~camera_y", 0.0)
         self.camera_z     = self.setupParam("~camera_z", 0.11)
         self.camera_theta = self.setupParam("~camera_theta", 19.0)
@@ -69,7 +69,7 @@ class AprilPostPros(object):
                 magic_snapper = self.snap_angle  #Snap angles less than Xdeg to 0
                 (rx,ry,rz) = tr.euler_from_quaternion((rot.x, rot.y, rot.z, rot.w))
                 rz = 0  if abs(rz) < (magic_snapper/180.0 * np.pi) else rz
-            (rot.x, rot.y, rot.z, rot.w) = tr.quaternion_from_euler(rx,ry,rz)
+                (rot.x, rot.y, rot.z, rot.w) = tr.quaternion_from_euler(rx,ry,rz)
             detection.pose.pose.position = trans
             detection.pose.pose.orientation = rot
 

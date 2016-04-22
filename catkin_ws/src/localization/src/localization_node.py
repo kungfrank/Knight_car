@@ -7,6 +7,7 @@ import tf.transformations as tr
 from geometry_msgs.msg import Transform, TransformStamped
 import numpy as np
 from localization import PoseAverage
+from visualization_msgs.msg import Marker
 
 # Localization Node
 # Author: Teddy Ort
@@ -21,18 +22,27 @@ class LocalizationNode(object):
         # Constants
         self.world_frame = "world"
         self.duckiebot_frame = "duckiebot"
+        self.duckiebot_lifetime = 15   # The number of seconds to keep the duckiebot alive bewtween detections
+        self.highlight_lifetime = 15   # The number of seconds to keep a sign highlighted after a detection
 
         self.bandaid = self.setupParam("~bandaid", False)
 
         # Setup the publishers and subscribers
         self.sub_april = rospy.Subscriber("~apriltags", AprilTagDetectionArray, self.tag_callback)
         self.pub_tf = rospy.Publisher("/tf", TFMessage, queue_size=1, latch=True)
+        self.pub_rviz = rospy.Publisher("~duckiebot", Marker, queue_size=1, latch=True)
 
         # Setup the transform listener
         self.tfbuf = tf2_ros.Buffer()
         self.tfl = tf2_ros.TransformListener(self.tfbuf)
 
+        # Use a timer to make the duckiebot disappear
+        self.lifetimer = rospy.Time.now()
+
         rospy.loginfo("[%s] has started", self.node_name)
+
+        self.publish_sign_highlight(33)
+        self.publish_duckie_marker()
 
     def tag_callback(self, msg_tag):
         # Listen for the transform of the tag in the world
@@ -49,6 +59,7 @@ class LocalizationNode(object):
                     Mr_w=np.dot(Mt_w,Mr_t)
                     Tr_w = self.matrix_to_transform(Mr_w)
                     avg.add_pose(Tr_w)
+                self.publish_sign_highlight(tag.id)
             except(tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as ex:
                 rospy.logwarn("Error looking up transform for tag_%s", tag.id)
                 rospy.logwarn(ex.message)
@@ -68,6 +79,39 @@ class LocalizationNode(object):
             T.header.stamp = rospy.Time.now()
             T.child_frame_id = self.duckiebot_frame
             self.pub_tf.publish(TFMessage([T]))
+            self.lifetimer = rospy.Time.now()
+
+    def publish_duckie_marker(self):
+        # Publish a duckiebot transform far away unless the timer was reset
+        rate = rospy.Rate(10)
+        while not rospy.is_shutdown():
+            rate.sleep()
+            if rospy.Time.now() - self.lifetimer > rospy.Duration(self.duckiebot_lifetime):
+                T = TransformStamped()
+                T.transform.translation.z = 1000    # Throw it 1km in the air
+                T.transform.rotation.w = 1
+                T.header.frame_id = self.world_frame
+                T.header.stamp = rospy.Time.now()
+                T.child_frame_id = self.duckiebot_frame
+                self.pub_tf.publish(TFMessage([T]))
+
+    def publish_sign_highlight(self, id):
+        # Publish a highlight marker on the sign that is seen by the robot
+        m = Marker()
+        m.header.frame_id="tag_{id}".format(id=id)
+        m.header.stamp = rospy.Time.now()
+        m.id=id
+        m.lifetime = rospy.Duration(self.highlight_lifetime)
+        m.type = Marker.CYLINDER
+        p = m.pose.position
+        o = m.pose.orientation
+        c = m.color
+        s = m.scale
+        s.x, s.y, s.z = (0.1, 0.1, 0.3)
+        p.z = 0.15
+        c.a, c.r, c.g, c.b = (0.2, 0.3, 0.9, 0.3)
+        o.w = 1
+        self.pub_rviz.publish(m)
 
     def pose_to_matrix(self, p):
         # Return the 4x4 homogeneous matrix for a PoseStamped.msg p from the geometry_msgs

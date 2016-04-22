@@ -58,82 +58,122 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        tag_100:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tag_101:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tag_102:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tag_103:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tag_104:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tag_105:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tag_106:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tag_107:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tag_108:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tag_109:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tag_110:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tag_111:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tag_112:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tag_113:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tag_114:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         tag_115:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_116:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_117:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_118:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_120:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_121:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_122:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_123:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_124:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_29:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_34:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_37:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_40:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_42:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_43:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_50:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_54:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_55:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_56:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_69:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_70:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_71:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_72:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_75:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -148,10 +188,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        tile_0_10:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         tile_0_2:
           Alpha: 1
           Show Axes: false
@@ -161,37 +197,6 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
-        tile_0_4:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_0_5:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_0_6:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_0_7:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_0_8:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_0_9:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         tile_1_0:
           Alpha: 1
           Show Axes: false
@@ -202,10 +207,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        tile_1_10:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         tile_1_2:
           Alpha: 1
           Show Axes: false
@@ -215,48 +216,11 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
-        tile_1_4:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_1_5:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_1_6:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_1_7:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_1_8:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_1_9:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         tile_2_0:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
         tile_2_1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_2_10:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -264,245 +228,7 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
         tile_2_3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_2_4:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_2_5:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_2_6:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_2_7:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_2_8:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_2_9:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_3_0:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_3_1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_3_10:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        tile_3_2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_3_3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_3_4:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_3_5:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_3_6:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_3_7:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_3_8:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_3_9:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_4_0:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_4_1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_4_10:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        tile_4_2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_4_3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_4_4:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_4_5:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_4_6:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_4_7:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_4_8:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_4_9:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_5_0:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_5_1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_5_10:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        tile_5_2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_5_3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_5_4:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_5_5:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_5_6:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_5_7:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_5_8:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_5_9:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tile_6_0:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        tile_6_1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        tile_6_10:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        tile_6_2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        tile_6_3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        tile_6_4:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        tile_6_5:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        tile_6_6:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        tile_6_7:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        tile_6_8:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        tile_6_9:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -537,6 +263,14 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /starducks/localization_node/duckiebot
+      Name: Detected Signs
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
     - Class: rviz/TF
       Enabled: false
       Frame Timeout: 15
@@ -575,22 +309,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 5.45263
+      Distance: 3.20233
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 1.58388
-        Y: 2.13409
-        Z: -0.198355
+        X: 0.639524
+        Y: 1.49789
+        Z: -0.886496
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.715398
+      Pitch: 0.8054
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.69859
+      Yaw: 4.69857
     Saved: ~
 Window Geometry:
   Displays:

@@ -79,6 +79,7 @@ events: #Maps from subscribing topic to signal ids
 global_transitions:
   joystick_override_on: "JOYSTICK_CONTROL"
   parallel_autonomy_on: "PARALLEL_AUTONOMY"
+  parallel_autonomy_off: "JOYSTICK_CONTROL"
 
 # Define nodes 
 nodes:

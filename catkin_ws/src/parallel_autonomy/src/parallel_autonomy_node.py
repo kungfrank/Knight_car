@@ -22,12 +22,12 @@ class ParallelAutonomyNode(object):
         self.availableTurns = []
         self.turn_direction = self.turn_NONE
         self.joy_forward = 0
-        self.timeout = 4  # seconds
-        self.waitTimeInLoop = 0.15  # seconds
+        self.timeout = 5  # seconds
         rospy.loginfo("[%s] Initializing." % self.node_name)
 
         # Setup publishers
         self.pub_turn_type = rospy.Publisher("~turn_type", Int16, queue_size=1, latch=True)
+	self.pub_done = rospy.Publisher("~intersection_done",BoolStamped,queue_size=1)
 
         # Setup subscribers
         self.sub_topic_mode = rospy.Subscriber("~mode", FSMState, self.cbMode, queue_size=1)
@@ -123,16 +123,20 @@ class ParallelAutonomyNode(object):
             self.turn_direction = self.turn_NONE
             # if no straight turn avaliable wait until another is choosen
             # publish once user presses forward on joystick
-            counter = 0
-            counter_max = self.timeout/self.waitTimeInLoop
-            while self.turn_direction == self.turn_NONE or not self.joy_forward > 0 or counter < counter_max:
-                rospy.sleep(self.waitTimeInLoop)
-                counter += 1
+            time_max = rospy.get_time() + self.timeout
+            while (self.turn_direction == self.turn_NONE or not self.joy_forward > 0) and not (rospy.get_time() > time_max and self.availableTurns ==[]):
                 pass
             # turn off brake lights
-            self.led.setRGB(3, [.3, 0, 0])
             self.led.setRGB(1, [.3, 0, 0])
-            self.pub_turn_type.publish(self.turn_direction)  # make sure mapping to turn_type is ok
+	    self.led.setRGB(3, [.3, 0, 0])
+            if self.availableTurns == []:
+		#if timeout and no available turns, just leave instersection control 
+		done = BoolStamped()
+	        done.header.stamp = rospy.Time.now()
+        	done.data = True
+		self.pub_done.publish(done)
+	    else:
+	        self.pub_turn_type.publish(self.turn_direction)
             rospy.loginfo("[%s] Turn type: %i" % (self.node_name, self.turn_direction))
         if self.fsm_mode != "INTERSECTION_CONTROL":
             # on exit intersection control, stop blinking

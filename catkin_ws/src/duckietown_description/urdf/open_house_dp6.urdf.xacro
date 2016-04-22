@@ -99,10 +99,10 @@
         <xacro:tag id="62" pos="${pos_2}" rotation="90" x="0" y="2"/>
         <xacro:tag id="31" pos="${pos_5}" rotation="270" x="0" y="3"/>
         <xacro:tag id="68" pos="${pos_2}" rotation="0" x="0" y="3"/>
-        <xacro:tag id="39" pos="${pos_5}" rotation="0" x="0" y="4"/>
-        <xacro:tag id="63" pos="${pos_2}" rotation="90" x="0" y="4"/>
-        <xacro:tag id="41" pos="${pos_5}" rotation="270" x="0" y="5"/>
-        <xacro:tag id="67" pos="${pos_2}" rotation="0" x="0" y="5"/>
+        <xacro:tag id="39" pos="${pos_5}" rotation="0" x="0" y="5"/>
+        <xacro:tag id="63" pos="${pos_2}" rotation="90" x="0" y="5"/>
+        <xacro:tag id="41" pos="${pos_5}" rotation="270" x="0" y="6"/>
+        <xacro:tag id="67" pos="${pos_2}" rotation="0" x="0" y="6"/>
         <xacro:tag id="28" pos="${pos_7}" rotation="90" x="1" y="2"/>
         <xacro:tag id="58" pos="${pos_0}" rotation="270" x="1" y="3"/>
         <xacro:tag id="119" pos="${pos_7}" rotation="90" x="1" y="5"/>

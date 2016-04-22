@@ -30,6 +30,7 @@ class JoyMapper(object):
         self.pub_parallel_autonomy = rospy.Publisher("~parallel_autonomy",BoolStamped, queue_size=1)
         self.pub_anti_instagram = rospy.Publisher("anti_instagram_node/click",BoolStamped, queue_size=1)
         self.pub_e_stop = rospy.Publisher("wheels_driver_node/emergency_stop",BoolStamped,queue_size=1)
+        self.pub_avoidance = rospy.Publisher("~start_avoidance",BoolStamped,queue_size=1)
 
         # Subscriptions
         self.sub_joy_ = rospy.Subscriber("joy", Joy, self.cbJoy, queue_size=1)
@@ -108,6 +109,13 @@ class JoyMapper(object):
             e_stop_msg.header.stamp = self.joy.header.stamp
             e_stop_msg.data = True # note that this is toggle (actual value doesn't matter)
             self.pub_e_stop.publish(e_stop_msg)
+        elif (joy_msg.buttons[9] == 1): #push left joystick button 
+            avoidance_msg = BoolStamped()
+            rospy.loginfo('start lane following with avoidance mode')
+            avoidance_msg.header.stamp = self.joy.header.stamp
+            avoidance_msg.data = True 
+            self.pub_avoidance.publish(avoidance_msg)
+
         else:
             some_active = sum(joy_msg.buttons) > 0
             if some_active:

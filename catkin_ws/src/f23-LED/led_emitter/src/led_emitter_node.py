@@ -5,6 +5,7 @@ import sys
 import time
 from std_msgs.msg import Float32, Int8, String
 from rgb_led import RGB_LED
+from duckietown_msgs.msg import BoolStamped
 
 
 class LEDEmitter(object):

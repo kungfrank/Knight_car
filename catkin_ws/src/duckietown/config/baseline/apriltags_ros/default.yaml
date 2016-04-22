@@ -1,0 +1,9 @@
+# Parameters for apriltags posproc
+scale_x:         0.7
+scale_y:         0.7
+scale_z:         1.0
+camera_x:      0.065
+camera_y:      0.00
+camera_z:      0.11
+camera_theta:  19.0
+bandaid:       false

@@ -113,7 +113,13 @@ openhouse-dp1: unittests-environment
 
 openhouse-dp1-%: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos parallel_autonomy.launch line_detector_param_file_name:=$*"
- 
+
+openhouse-dp1-veh: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos parallel_autonomy.launch vehicle_avoidance:=true"
+
+openhouse-dp1-veh-%: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos parallel_autonomy.launch vehicle_avoidance:=true line_detector_param_file_name:=$*"
+
 openhouse-dp2: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos obstacle_vehicle_avoid.launch"
 

@@ -6,6 +6,7 @@
     <arg name="local" default="true" doc="true for running everything you possibly can on laptop. false for everything running on vehicle."/>
     <arg name="config" default="baseline" doc="Specify a config."/>
     <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman."/>
+    <include file="$(find duckietown)/machines"/>
 
     <group ns="$(arg veh)">
 

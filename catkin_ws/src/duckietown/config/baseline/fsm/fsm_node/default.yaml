@@ -107,6 +107,7 @@ states:
   PARALLEL_AUTONOMY:
     transitions:
       parallel_autonomy_off: "JOYSTICK_CONTROL"
+      vehicle_detection: "AVOID_VEHICLE"
       at_stop_line: "COORDINATION"
     active_nodes:
       - vehicle_detector_node
@@ -160,7 +161,7 @@ states:
       - decoder_node
   AVOID_VEHICLE:
     transitions:
-      vehicle_cleared: "LANE_FOLLOWING_AVOID"
+      vehicle_cleared: "PARALLEL_AUTONOMY"
     active_nodes:
       - vehicle_detector_node
       - decoder_node

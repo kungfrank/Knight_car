@@ -3,14 +3,14 @@
     <robot name="duckietown" xmlns:xacro="http://www.ros.org/wiki/xacro">
         <!--Parameters-->
         <xacro:property name="tile_width" value="0.595"/>
-        <xacro:property name="pos_0" value="0.125 0.035"/>
-        <xacro:property name="pos_1" value="0.035 0.125"/>
-        <xacro:property name="pos_2" value="-0.035 0.125"/>
-        <xacro:property name="pos_3" value="-0.125 0.035"/>
-        <xacro:property name="pos_4" value="-0.125 -0.035"/>
-        <xacro:property name="pos_5" value="-0.035 -0.125"/>
-        <xacro:property name="pos_6" value="0.035 -0.125"/>
-        <xacro:property name="pos_7" value="0.125 -0.035"/>
+        <xacro:property name="pos_0" value="0.09 0.035"/>
+        <xacro:property name="pos_1" value="0.035 0.09"/>
+        <xacro:property name="pos_2" value="-0.035 0.09"/>
+        <xacro:property name="pos_3" value="-0.09 0.035"/>
+        <xacro:property name="pos_4" value="-0.09 -0.035"/>
+        <xacro:property name="pos_5" value="-0.035 -0.09"/>
+        <xacro:property name="pos_6" value="0.035 -0.09"/>
+        <xacro:property name="pos_7" value="0.09 -0.035"/>
         <!--Include the tile and tag macros-->
         <xacro:include filename="$(find duckietown_description)/urdf/macros.urdf.xacro"/>
         <!--The world frame is at the lower left corner of duckietown-->

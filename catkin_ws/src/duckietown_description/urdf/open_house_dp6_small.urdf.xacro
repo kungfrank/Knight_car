@@ -3,14 +3,14 @@
     <robot name="duckietown" xmlns:xacro="http://www.ros.org/wiki/xacro">
         <!--Parameters-->
         <xacro:property name="tile_width" value="0.595"/>
-        <xacro:property name="pos_0" value="0.05 0.0"/>
-        <xacro:property name="pos_1" value="0.0 0.05"/>
-        <xacro:property name="pos_2" value="-0.0 0.05"/>
-        <xacro:property name="pos_3" value="-0.05 0.0"/>
-        <xacro:property name="pos_4" value="-0.05 -0.0"/>
-        <xacro:property name="pos_5" value="-0.0 -0.05"/>
-        <xacro:property name="pos_6" value="0.0 -0.05"/>
-        <xacro:property name="pos_7" value="0.05 -0.0"/>
+        <xacro:property name="pos_0" value="0.09 0.035"/>
+        <xacro:property name="pos_1" value="0.035 0.09"/>
+        <xacro:property name="pos_2" value="-0.035 0.09"/>
+        <xacro:property name="pos_3" value="-0.09 0.035"/>
+        <xacro:property name="pos_4" value="-0.09 -0.035"/>
+        <xacro:property name="pos_5" value="-0.035 -0.09"/>
+        <xacro:property name="pos_6" value="0.035 -0.09"/>
+        <xacro:property name="pos_7" value="0.09 -0.035"/>
         <!--Include the tile and tag macros-->
         <xacro:include filename="$(find duckietown_description)/urdf/macros.urdf.xacro"/>
         <!--The world frame is at the lower left corner of duckietown-->
@@ -39,9 +39,9 @@
         <xacro:tag id="55" pos="${pos_6}" rotation="0" x="0" y="1"/>
         <xacro:tag id="69" pos="${pos_2}" rotation="90" x="0" y="1"/>
         <xacro:tag id="123" pos="${pos_2}" rotation="90" x="1" y="1"/>
-        <xacro:tag id="72" pos="${pos_6}" rotation="270" x="1" y="1"/>
+        <xacro:tag id="111" pos="${pos_6}" rotation="270" x="1" y="1"/>
         <xacro:tag id="121" pos="${pos_2}" rotation="180" x="2" y="1"/>
-        <xacro:tag id="70" pos="${pos_6}" rotation="270" x="2" y="1"/>
+        <xacro:tag id="107" pos="${pos_6}" rotation="270" x="2" y="1"/>
         <xacro:tag id="56" pos="${pos_6}" rotation="0" x="0" y="2"/>
         <xacro:tag id="75" pos="${pos_2}" rotation="90" x="0" y="2"/>
         <xacro:tag id="118" pos="${pos_6}" rotation="270" x="1" y="2"/>
@@ -50,7 +50,7 @@
         <xacro:tag id="124" pos="${pos_2}" rotation="180" x="2" y="2"/>
         <xacro:tag id="117" pos="${pos_6}" rotation="0" x="0" y="3"/>
         <xacro:tag id="40" pos="${pos_0}" rotation="270" x="0" y="3"/>
-        <xacro:tag id="71" pos="${pos_4}" rotation="270" x="1" y="3"/>
+        <xacro:tag id="106" pos="${pos_4}" rotation="270" x="1" y="3"/>
         <xacro:tag id="34" pos="${pos_0}" rotation="270" x="1" y="3"/>
         <xacro:tag id="42" pos="${pos_4}" rotation="270" x="2" y="3"/>
         <xacro:tag id="116" pos="${pos_6}" rotation="180" x="2" y="3"/>

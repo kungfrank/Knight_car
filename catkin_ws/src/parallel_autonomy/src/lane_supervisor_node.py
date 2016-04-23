@@ -103,7 +103,7 @@ class lane_supervisor(object):
                 rospy.loginfo("[PA] not safe - merge control inputs")
                 self.state = 3
             car_control_merged = Twist2DStamped()
-            if abs(self.car_control_joy.v) < self.min_speed:
+            if self.car_control_joy.v < self.min_speed:
                 # sets the speeds to 0:
                 car_control_merged.v = 0.0
                 car_control_merged.omega = 0.0

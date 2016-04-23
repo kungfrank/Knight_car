@@ -8,7 +8,7 @@ Panels:
         - /Status1
         - /Detected Signs1
       Splitter Ratio: 0.55496
-    Tree Height: 507
+    Tree Height: 359
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -59,6 +59,26 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        tag_109:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_110:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_113:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tag_114:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         tag_115:
           Alpha: 1
           Show Axes: false
@@ -310,22 +330,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.3401
+      Distance: 2.27319
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.486165
-        Y: 0.885315
-        Z: -0.168633
+        X: 0.619737
+        Y: 0.79416
+        Z: -0.150557
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.5954
+      Pitch: 0.6604
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.33039
+      Yaw: 4.11358
     Saved: ~
 Window Geometry:
   Displays:

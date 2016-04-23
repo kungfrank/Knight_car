@@ -96,6 +96,10 @@ class lane_supervisor(object):
                 self.state = 2
             self.car_control_joy.v = min(self.car_control_joy.v, self.max_speed)
             self.car_control_joy.omega = np.clip(self.car_control_joy.omega, -self.max_steer, self.max_steer)
+            if self.car_control_joy.v < self.min_speed:
+                # sets the speeds to 0:
+                car_cmd_msg.v = 0.0
+                car_cmd_msg.omega = 0.0
             car_cmd_msg = self.car_control_joy
             car_cmd_msg.header.stamp = self.car_control_joy.header.stamp
         else:

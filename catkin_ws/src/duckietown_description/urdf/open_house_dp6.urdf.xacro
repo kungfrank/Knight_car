@@ -29,8 +29,8 @@
         <xacro:tile rotation="0" type="straight" x="1" y="0"/>
         <xacro:tile rotation="0" type="empty" x="1" y="1"/>
         <xacro:tile rotation="0" type="straight" x="1" y="2"/>
-        <xacro:tile rotation="0" type="empty" x="1" y="3"/>
-        <xacro:tile rotation="0" type="empty" x="1" y="4"/>
+        <xacro:tile rotation="0" type="pond" x="1" y="3"/>
+        <xacro:tile rotation="0" type="halfpond" x="1" y="4"/>
         <xacro:tile rotation="0" type="straight" x="1" y="5"/>
         <xacro:tile rotation="0" type="empty" x="1" y="6"/>
         <xacro:tile rotation="0" type="empty" x="1" y="7"/>

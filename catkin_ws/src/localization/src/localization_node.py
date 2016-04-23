@@ -30,7 +30,7 @@ class LocalizationNode(object):
         # Setup the publishers and subscribers
         self.sub_april = rospy.Subscriber("~apriltags", AprilTagDetectionArray, self.tag_callback)
         self.pub_tf = rospy.Publisher("/tf", TFMessage, queue_size=1, latch=True)
-        self.pub_rviz = rospy.Publisher("~duckiebot", Marker, queue_size=1, latch=True)
+        self.pub_rviz = rospy.Publisher("/sign_highlights", Marker, queue_size=1, latch=True)
 
         # Setup the transform listener
         self.tfbuf = tf2_ros.Buffer()

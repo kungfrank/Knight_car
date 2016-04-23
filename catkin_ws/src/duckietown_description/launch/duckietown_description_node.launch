@@ -17,7 +17,7 @@
             <remap from="robot_description" to="duckiebot_description" />
         </node>
 
-        <node if="$(arg gui)" name="rviz" pkg="rviz" type="rviz" args="-d $(find duckietown_description)/rviz/map.rviz" />
+        <node if="$(arg gui)" name="rviz" pkg="rviz" type="rviz" args="-d $(find duckietown_description)/rviz/$(arg map_name).rviz" />
     </group>
 
 </launch>

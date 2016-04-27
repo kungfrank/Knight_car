@@ -1,0 +1,13 @@
+<launch>
+	<arg name="veh" default="$(env VEHICLE_NAME)"/>
+	<!-- start basic args -->
+	<include file="$(find duckietown_demos)/launch/master.launch">
+		<arg name="veh" value="$(arg veh)"/>
+		<arg name="visualization" value="false" />
+		<arg name="/camera/raw" value="true"/>
+		<arg name="/lane_following/stop_line_filter" value="false" />
+		<arg name="vehicle_avoidance" value="true" />
+		<arg name="wheels" value="false"/>
+	</include>
+</launch>
+

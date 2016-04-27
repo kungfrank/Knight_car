@@ -18,6 +18,10 @@ events: #Maps from subscribing topic to singal ids
     topic: "joy_mapper_node/parallel_autonomy"
     msg_type: "BoolStamped"
     trigger: False
+  start_avoidance:
+    topic: "joy_mapper_node/start_avoidance"
+    msg_type: "BoolStamped"
+    trigger: True
   at_stop_line:
     topic: "stop_line_filter_node/at_stop_line"
     msg_type: "BoolStamped"
@@ -90,13 +94,11 @@ states:
   JOYSTICK_CONTROL:
     transitions:
       joystick_override_off: "LANE_FOLLOWING"
+      start_avoidance: "LANE_FOLLOWING_AVOID"
     active_nodes:
-      - vehicle_detector_node
-      - static_object_detector_node
       - lane_filter_node
       - line_detector_node
       - stop_line_filter_node
-      - decoder_node # remove if not doing vehicle / object avoidance
     lights: ["joystick"]
   PARALLEL_AUTONOMY:
     transitions:
@@ -110,6 +112,15 @@ states:
       - decoder_node # remove if not doing vehicle / object avoidance
     lights: ["parallel_autonomy"]
   LANE_FOLLOWING:
+    transitions:
+      at_stop_line: "COORDINATION"
+#      lost_lane: "LANE_RECOVERY"
+    active_nodes:
+      - lane_filter_node
+      - line_detector_node
+      - stop_line_filter_node
+    lights: ["lane_following"]
+  LANE_FOLLOWING_AVOID:
     transitions:
       at_stop_line: "COORDINATION"
       vehicle_detection: "AVOID_VEHICLE"
@@ -142,14 +153,14 @@ states:
       - decoder_node
   AVOID_VEHICLE:
     transitions:
-      vehicle_cleared: "LANE_FOLLOWING"
+      vehicle_cleared: "LANE_FOLLOWING_AVOID"
     active_nodes:
       - vehicle_detector_node
       - decoder_node
     lights: ["avoid_vehicle"]
   AVOID_OBSTACLE:
     transitions:
-      obstacle_cleared: "LANE_FOLLOWING"
+      obstacle_cleared: "LANE_FOLLOWING_AVOID"
     active_nodes:
       - static_object_detector_node
       - decoder_node

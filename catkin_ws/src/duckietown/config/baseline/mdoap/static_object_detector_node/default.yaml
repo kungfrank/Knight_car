@@ -1,5 +1,5 @@
 # Runs well with the bags that Sam took
-cone_low: [0, 80, 80]
+cone_low: [7, 120, 120]
 cone_high: [22, 255, 255]
 duck_low: [25, 100, 150]
 duck_high: [35, 255, 255]

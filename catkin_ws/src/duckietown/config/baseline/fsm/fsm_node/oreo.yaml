@@ -1,0 +1,26 @@
+# Initail state of the FSM
+initial_state: "LANE_FOLLOWING"
+
+events: #Maps from subscribing topic to singal ids
+  at_stop_line: "stop_line_filter_node/at_stop_line"
+  intersection_go: "veh_coordinator_node/intersection_go"
+  intersection_done: "closed_loop_intersection_control_node/intersection_done"
+
+# Define nodes 
+nodes:
+  apriltag_node: "apriltags/switch"
+
+# Define state transitions
+states:
+  LANE_FOLLOWING:
+    transitions:
+      at_stop_line: "COORDINATION"
+    active_nodes: []
+  COORDINATION:
+    transitions:
+      intersection_go: "INTERSECTION_CONTROL"
+    active_nodes: ["apriltag_node"]
+  INTERSECTION_CONTROL:
+    transitions:
+      intersection_done: "LANE_FOLLOWING"
+    active_nodes: []

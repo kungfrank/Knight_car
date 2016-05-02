@@ -1,0 +1,8 @@
+<launch>
+	<arg name="veh"/>
+	<arg name="sub_node_name" default="global" doc="Specify if you want to add a subname to the name, e.g. global or fast"/>
+	<group ns="$(arg veh)"> 
+		<node pkg="apriltags" type="apriltags_visualizer_node.py" name="apriltags_visualizer_$(arg sub_node_name)_node" output="screen" clear_params="true" required="true">
+		</node>
+	</group>
+</launch>

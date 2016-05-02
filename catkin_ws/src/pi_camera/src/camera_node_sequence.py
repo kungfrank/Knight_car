@@ -14,13 +14,15 @@ import sys
 import rospkg
 import os.path
 import yaml
+from duckietown_msgs.msg import BoolStamped
 
 class CameraNode(object):
     def __init__(self):
         self.node_name = rospy.get_name()
         rospy.loginfo("[%s] Initializing......" %(self.node_name))
 
-        self.framerate = self.setupParam("~framerate",30.0)
+        self.framerate_high = self.setupParam("~framerate_high",30.0)
+        self.framerate_low = self.setupParam("~framerate_low",15.0)
         self.res_w = self.setupParam("~res_w",640)
         self.res_h = self.setupParam("~res_h",480)
 
@@ -33,15 +35,16 @@ class CameraNode(object):
 
         self.has_published = False
         self.pub_img= rospy.Publisher("~image/compressed",CompressedImage,queue_size=1)
+        self.sub_switch_high = rospy.Subscriber("~framerate_high_switch", BoolStamped, self.cbSwitchHigh, queue_size=1)
 
         # Create service (for camera_calibration)
         self.srv_set_camera_info = rospy.Service("~set_camera_info",SetCameraInfo,self.cbSrvSetCameraInfo)
 
         # Setup PiCamera
         self.stream = io.BytesIO()
-        self.camera = PiCamera()
-        self.camera.framerate = self.framerate
-        self.camera.resolution = (self.res_w,self.res_h)
+        self.camera = 3.4 #PiCamera()
+        #self.camera.framerate = self.framerate_high # default to high
+        #self.camera.resolution = (self.res_w,self.res_h)
 
 #self.camera.exposure_mode = 'off'
        # self.camera.awb_mode = 'off'
@@ -50,6 +53,13 @@ class CameraNode(object):
         # Setup timer
         self.gen = self.grabAndPublish(self.stream,self.pub_img)
         rospy.loginfo("[%s] Initialized." %(self.node_name))
+
+    def cbSwitchHigh(self, switch_msg):
+        print self.camera
+        if switch_msg.data:
+            self.camera.framerate = self.framerate_high
+        else:
+            self.camera.framerate = self.framerate_low
 
     def startCapturing(self):
         rospy.loginfo("[%s] Start capturing." %(self.node_name))

@@ -18,11 +18,11 @@ class ImageAverageNode(object):
         #self.publish_freq = self.setupParam("~publish_freq",1.0)
         #self.publish_duration = rospy.Duration.from_sec(1.0/self.publish_freq)
         #self.pub_raw = rospy.Publisher("~image/raw",Image,queue_size=1)
-	self.pub_ave = rospy.Publisher("~image/averaged",Image,queue_size=1)
+	self.pub_ave = rospy.Publisher("~ave_img",Image,queue_size=1)
         self.last_stamp = rospy.Time.now()
         
         #self.sub_compressed_img = rospy.Subscriber("/ferrari/camera_node/image/compressed",CompressedImage,self.cbImg,queue_size=1)
-	self.sub_raw_img = rospy.Subscriber("/redrover/camera_node/image/raw",Image,self.cbImg,queue_size=1)
+	self.sub_raw_img = rospy.Subscriber("~raw_img",Image,self.cbImg,queue_size=1)
 	self.average_image_data = np.empty(1)
 	self.num_images_seen = 0.0	
     def setupParam(self,param_name,default_value):

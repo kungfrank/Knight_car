@@ -6,6 +6,7 @@ import os
 __all__ = [
     'd8n_read_images_interval',
     'd8n_read_all_images',
+    'd8n_get_all_images_topic',
 ]
 
 def d8n_read_images_interval(filename, t0, t1):
@@ -93,7 +94,56 @@ def d8n_read_all_images(filename, t0=None, t1=None):
 
     return x
 
+def d8n_get_all_images_topic(bag_filename):
+    """ Returns the (name, type) of all topics that look like images """
+    import rosbag  # @UnresolvedImport
+    bag = rosbag.Bag(bag_filename)
+    tat = bag.get_type_and_topic_info()
+# TypesAndTopicsTuple(msg_types={'sensor_msgs/Image': '060021388200f6f0f447d0fcd9c64743', 'dynamic_reconfigure/ConfigDescript
+# ion': '757ce9d44ba8ddd801bb30bc456f946f', 'diagnostic_msgs/DiagnosticArray': '60810da900de1dd6ddd437c3503511da', 'rosgraph_
+# msgs/Log': 'acffd30cd6b6de30f120938c17c593fb', 'sensor_msgs/CameraInfo': 'c9a58c1b0b154e0e6da7578cb991d214', 'duckietown_ms
+# gs/CarControl': '8cc92f3e13698e26d1f14ab2f75ce13b', 'theora_image_transport/Packet': '33ac4e14a7cff32e7e0d65f18bb410f3', 'd
+# ynamic_reconfigure/Config': '958f16a05573709014982821e6822580', 'sensor_msgs/Joy': '5a9ea5f83505693b71e785041e67a8bb'}, top
+# ics={'/rosberrypi_cam/image_raw/theora/parameter_updates': TopicTuple(msg_type='dynamic_reconfigure/Config', message_count=
+# 1, connections=1, frequency=None), '/rosberrypi_cam/image_raw/theora': TopicTuple(msg_type='theora_image_transport/Packet',
+#  message_count=655, connections=1, frequency=8.25919467858131), '/rosout': TopicTuple(msg_type='rosgraph_msgs/Log', message
+# _count=13, connections=6, frequency=23763.762039660058), '/rosberrypi_cam/camera_info': TopicTuple(msg_type='sensor_msgs/Ca
+# meraInfo', message_count=649, connections=1, frequency=8.231283478868388), '/rosberrypi_cam/image_raw/theora/parameter_desc
+# riptions': TopicTuple(msg_type='dynamic_reconfigure/ConfigDescription', message_count=1, connections=1, frequency=None), '/
+# joy': TopicTuple(msg_type='sensor_msgs/Joy', message_count=1512, connections=1, frequency=182.16304017372423), '/rosout_agg
+# ': TopicTuple(msg_type='rosgraph_msgs/Log', message_count=2, connections=1, frequency=12122.265895953757), '/diagnostics': 
+# TopicTuple(msg_type='diagnostic_msgs/DiagnosticArray', message_count=65, connections=1, frequency=0.9251713284731169), '/ca
+# r_supervisor/car_control': TopicTuple(msg_type='duckietown_msgs/CarControl', message_count=3886, connections=1, frequency=5
+# 0.09799097011538), '/joy_mapper/joy_control': TopicTuple(msg_type='duckietown_msgs/CarControl', message_count=3881, connect
+# ions=1, frequency=50.10517261975869), '/rosberrypi_cam/image_raw': TopicTuple(msg_type='sensor_msgs/Image', message_count=6
+# 45, connections=1, frequency=7.711386340215899)}
+    consider_images = [
+        'sensor_msgs/Image',
+        'sensor_msgs/CompressedImage',
+    ]
+    all_types = set()
+    found = []
+    topics = tat.topics
+    for t,v in topics.items():
+        msg_type = v.msg_type
+        all_types.add(msg_type)
+        message_count = v.message_count
+        if msg_type in consider_images:
+
+            # quick fix: ignore image_raw if we have image_compressed version
+            if 'raw' in t:
+                other = t.replace('raw', 'compressed')
+
+                if other in topics:
+                    continue
+            found.append((t,msg_type))
+
+    print('all_types: %s' % all_types)
+    print('found: %s' % found)
+    return found
+
 def get_image_topic(bag):
+    """ Returns the name of the topic for the main camera """
     topics = bag.get_type_and_topic_info()[1].keys()
     for t in topics:
         if 'camera_node/image/compressed' in t:

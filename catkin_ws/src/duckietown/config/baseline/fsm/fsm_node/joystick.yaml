@@ -1,0 +1,14 @@
+initial_state: "JOYSTICK_CONTROL"
+
+events:
+  joystick_override: 
+    topic: joy_mapper_node/joystick_override
+    msg_type: duckietown_msgs.msg.BoolStamped
+    trigger: True
+
+nodes: 
+  line_detection_node: "line_detection/switch"
+
+states:
+  JOYSTICK_CONTROL:
+    active_nodes: []

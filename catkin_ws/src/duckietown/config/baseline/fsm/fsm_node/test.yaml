@@ -1,0 +1,33 @@
+# Initail state of the FSM
+initial_state: "STATE_0"
+
+events: #Maps from subscribing topic to singal ids
+  event_0: "~event_0_topic"
+  event_1: "~event_1_topic"
+  event_2: "~event_2_topic"
+
+# Define nodes 
+nodes:
+  node_0: "~node_0_topic"
+  node_1: "~node_1_topic"
+  node_2: "~node_2_topic"
+
+# Define state transitions
+states:
+  STATE_0:
+    transitions:
+      event_1: "STATE_1"
+    active_nodes: ["node_0","node_1","node_2"]
+  STATE_1:
+    transitions:
+      event_0: "STATE_1"
+      event_2: "STATE_2"
+    active_nodes: ["node_1"]
+  STATE_2:
+    transitions:
+      event_1: "STATE_1"
+      event_0: "STATE_3"
+    active_nodes: ["node_0","node_2"]
+  STATE_3:
+    transitions: {}
+    active_nodes: []

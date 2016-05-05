@@ -62,10 +62,11 @@ class CameraNode(object):
         rospy.loginfo("[%s] Initialized." %(self.node_name))
 
     def cbSwitchHigh(self, switch_msg):
+        print switch_msg
         if switch_msg.data and self.framerate != self.framerate_high:
             self.framerate = self.framerate_high
             self.update_framerate = True
-        elif self.framerate != self.framerate_low:
+        elif not switch_msg.data and self.framerate != self.framerate_low:
             self.framerate = self.framerate_low
             self.update_framerate = True
  
@@ -82,15 +83,12 @@ class CameraNode(object):
             self.update_framerate=False
 
         self.camera.close()
-        rospy.sleep(rospy.Duration.from_sec(2.0))
         rospy.loginfo("[%s] Capture Ended." %(self.node_name))
 
     def grabAndPublish(self,stream,publisher):
         while not self.update_framerate and not self.is_shutdown: 
-            print "yielding"
             yield stream
             # Construct image_msg
-
             # Grab image from stream
             stamp = rospy.Time.now()
             stream.seek(0)
@@ -120,13 +118,15 @@ class CameraNode(object):
         rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
         return value
 
+    def signal_handler(self, signal, frame):
+        print "===== Ctrl-C Pressed ===== "
+        self.is_shutdown=True
+
     def onShutdown(self):
         rospy.loginfo("[%s] Closing camera." %(self.node_name))
         # self.camera.stop_recording(splitter_port=0)
         # rospy.sleep(rospy.Duration.from_sec(2.0))
         self.is_shutdown=True
-        self.camera.close()
-        rospy.sleep(rospy.Duration.from_sec(2.0))
         rospy.loginfo("[%s] Shutdown." %(self.node_name))
 
 

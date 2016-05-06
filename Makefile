@@ -128,14 +128,24 @@ openhouse-dp2-obstacle: unittests-environment
 
 openhouse-dp2-vehicle-no-wheels: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos vehicle_avoid_nowheels.launch"
+
 openhouse-dp2-obstacle-no-wheels: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos obstacle_avoid_nowheels.launch"
 
+openhouse-dp6b: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos mission_planning.launch"
 
+openhouse-dp6b-laptop-%: unittests-environment
+	bash -c "source set_ros_master.sh $*; rqt --force-discover"
+
+openhouse-dp6: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos localization_navigation.launch"
+
+openhouse-dp6-laptop-%: unittests-environment
+	bash -c "source set_ros_master.sh $*; rqt --force-discover"
 
 openhouse-dp3: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch"
 
 openhouse-dp3-%: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch  line_detector_param_file_name:=$*"
-

@@ -1,12 +1,11 @@
 <launch>
     <arg name="veh" doc="Name of vehicle. ex: megaman"/>
-    <arg name="map_name" default="duckietown_map.pkl" />
-    <arg name="draw_solution" default="False" />
+    <arg name="map_name" default="tiles_226" />
 	<param name="map_name" value="$(arg map_name)" />
-	<param name="draw_solution" value="$(arg draw_solution)" />
+    <param name="veh" value="$(arg veh)"/>
 
 	<node
-                ns="$(arg veh)"
+        ns="$(arg veh)"
 		name="graph_search_server"
 		pkg="navigation"
 		type="graph_search_server.py"
@@ -15,7 +14,7 @@
 	/>
 
     <node
-                ns="$(arg veh)"
+        ns="$(arg veh)"
 		name="actions_dispatcher"
 		pkg="navigation"
 		type="actions_dispatcher.py"

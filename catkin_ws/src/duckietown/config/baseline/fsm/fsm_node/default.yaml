@@ -107,7 +107,6 @@ states:
     lights: ["joystick"]
   PARALLEL_AUTONOMY:
     transitions:
-      parallel_autonomy_off: "JOYSTICK_CONTROL"
       vehicle_detection: "AVOID_VEHICLE"
       at_stop_line: "COORDINATION"
     active_nodes:

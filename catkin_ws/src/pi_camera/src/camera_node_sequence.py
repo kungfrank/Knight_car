@@ -15,6 +15,7 @@ import rospkg
 import os.path
 import yaml
 from duckietown_msgs.msg import BoolStamped
+import thread
 
 class CameraNode(object):
     def __init__(self):
@@ -118,10 +119,6 @@ class CameraNode(object):
         rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
         return value
 
-    def signal_handler(self, signal, frame):
-        print "===== Ctrl-C Pressed ===== "
-        self.is_shutdown=True
-
     def onShutdown(self):
         rospy.loginfo("[%s] Closing camera." %(self.node_name))
         self.is_shutdown=True
@@ -161,9 +158,8 @@ class CameraNode(object):
             return False
 
 if __name__ == '__main__': 
-    rospy.init_node('camera',anonymous=False, disable_signals=True)
+    rospy.init_node('camera',anonymous=False)
     camera_node = CameraNode()
-    signal.signal(signal.SIGINT, camera_node.signal_handler)
     rospy.on_shutdown(camera_node.onShutdown)
-    camera_node.startCapturing()
+    thread.start_new_thread(camera_node.startCapturing, ())
     rospy.spin()

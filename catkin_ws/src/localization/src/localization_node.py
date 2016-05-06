@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
-from apriltags_ros.msg import AprilTagDetectionArray
+#from apriltags_ros.msg import AprilTagDetectionArray
+from duckietown_msgs.msg import AprilTagsWithInfos
 import tf2_ros
 from tf2_msgs.msg import TFMessage
 import tf.transformations as tr
@@ -28,7 +29,7 @@ class LocalizationNode(object):
         self.highlight_lifetime = self.setupParam("~highlight_lifetime", 3) # The number of seconds to keep a sign highlighted after a detection
 
         # Setup the publishers and subscribers
-        self.sub_april = rospy.Subscriber("~apriltags", AprilTagDetectionArray, self.tag_callback)
+        self.sub_april = rospy.Subscriber("~apriltags", AprilTagsWithInfos, self.tag_callback)
         self.pub_tf = rospy.Publisher("/tf", TFMessage, queue_size=1, latch=True)
         self.pub_rviz = rospy.Publisher("/sign_highlights", Marker, queue_size=1, latch=True)
 

@@ -137,9 +137,9 @@ openhouse-dp6a-generate-map-%: unittests-environment
 	source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; \
 	roslaunch duckietown_description csv2xacro_node.launch tag_map_csv:=$$tag_map  tile_map_csv:=$$tile_map map_name:=$*'
 
-openhouse-dp6a-description-%: unittests-environment
+openhouse-dp6a-%: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; \
-	roslaunch duckietown_description duckietown_description_node.launch veh:=default map_name:=$*"
+	roslaunch duckietown_demos localization.launch map_name:=$*"
 
 openhouse-dp6b: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos mission_planning.launch"

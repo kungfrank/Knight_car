@@ -1,3 +1,3 @@
 Header header
-apriltags_ros/AprilTagDetectionArray detections
+apriltags_ros/AprilTagDetection[] detections
 duckietown_msgs/TagInfo[] infos

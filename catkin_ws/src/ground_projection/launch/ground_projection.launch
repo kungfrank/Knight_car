@@ -10,7 +10,7 @@
   <group ns="$(arg veh)">
 
     <!-- run local -->
-    <node if="$(arg local)"  pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen">
+    <node if="$(arg local)"  pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen" clear_params="true" required="true">
       <param name="~config" value="$(arg config)"/>
       <param name="~config_file_name" value="$(arg veh)"/>
       <remap from="~lineseglist_in" to="line_detector_node/segment_list"/>
@@ -19,7 +19,7 @@
     </node>
 
     <!-- run remote -->
-    <node unless="$(arg local)" machine="$(arg veh)" pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen">
+    <node unless="$(arg local)" machine="$(arg veh)" pkg="ground_projection" type="ground_projection" name="ground_projection" output="screen" clear_params="true" required="true">
       <param name="~config" value="$(arg config)"/>
       <param name="~config_file_name" value="$(arg veh)"/>
       <remap from="~lineseglist_in" to="line_detector_node/segment_list"/>

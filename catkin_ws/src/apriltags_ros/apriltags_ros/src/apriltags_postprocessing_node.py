@@ -22,8 +22,6 @@ class AprilPostPros(object):
         self.scale_x     = self.setupParam("~scale_x", 1)
         self.scale_y     = self.setupParam("~scale_y", 1)
         self.scale_z     = self.setupParam("~scale_z", 1)
-        self.bandaid     = self.setupParam("~bandaid", False)
-        self.snap_angle = self.setupParam("~snap_angle", 35.0)
 
 # -------- Start adding back the tag info stuff
 
@@ -133,35 +131,8 @@ class AprilPostPros(object):
             (trans.x, trans.y, trans.z) = tr.translation_from_matrix(veh_T_tagxout)
             (rot.x, rot.y, rot.z, rot.w) = tr.quaternion_from_matrix(veh_T_tagxout)
 
-            # TODO bandaid for bug in on-axis rotation for apriltags
-            if self.bandaid:
-                magic_snapper = self.snap_angle  #Snap angles less than Xdeg to 0
-                (rx,ry,rz) = tr.euler_from_quaternion((rot.x, rot.y, rot.z, rot.w))
-                rz = 0  if abs(rz) < (magic_snapper/180.0 * np.pi) else rz
-                (rot.x, rot.y, rot.z, rot.w) = tr.quaternion_from_euler(rx,ry,rz)
             detection.pose.pose.position = trans
             detection.pose.pose.orientation = rot
-
-            # # Debug Print
-            # (theta_x, theta_y, theta_z) = (np.array(tr.euler_from_quaternion((rot.x, rot.y, rot.z, rot.w),'rzyx'))*180/np.pi).tolist()
-            # rospy.loginfo("[{0}] Translation: [x,y,z]: [{1:.3f}, {2:.3f}, {3:.3f}] Rotation [rx,ry,rz]: [{4:.3f}, {5:.3f}, {6:.3f}]".format("apriltags", trans.x,trans.y,trans.z,theta_x, theta_y, theta_z))
-            # tag_infos.append(new_info)
-            #
-            # (angle, direction, point) = tr.rotation_from_matrix(veh_T_tagxout)
-            # rospy.loginfo("[{0}] Axis: [x,y,z]: [{1:.3f}, {2:.3f}, {3:.3f}] Angle: {4:.3f}".format("apriltags", direction[0], direction[1], direction[2], angle*180/np.pi))
-            ##### Debug Print TODO REMOVE DEBUG Pringing
-            # (theta_x, theta_y, theta_z) = (np.array(tr.euler_from_quaternion((rot.x, rot.y, rot.z, rot.w),'sxyz'))*180/np.pi).tolist()
-            # rospy.loginfo("[{0}] Translation: [x,y,z]: [{1:.3f}, {2:.3f}, {3:.3f}] Rotation ('sxyz')[rx,ry,rz]: [{4:.3f}, {5:.3f}, {6:.3f}]".format("apriltags", trans.x,trans.y,trans.z,theta_x, theta_y, theta_z))
-            #
-            # (angle, direction, point) = tr.rotation_from_matrix(tr.quaternion_matrix((rot.x, rot.y, rot.z, rot.w)))
-            # rospy.loginfo("[{0}] Axis: [x,y,z]: [{1:.3f}, {2:.3f}, {3:.3f}] Angle: {4:.3f}".format("apriltags", direction[0], direction[1], direction[2], angle*180/np.pi))
-            # pose = PoseStamped()
-            # pose.header.stamp = rospy.Time.now()
-            # pose.header.frame_id = "world"
-            # pose.pose.position = trans
-            # pose.pose.orientation = rot
-            # self.pub_visualize.publish(pose)
-            #############################################################################
 
         new_tag_data = AprilTagsWithInfos()
         new_tag_data.detections = msg.detections

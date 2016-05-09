@@ -132,9 +132,14 @@ openhouse-dp2-vehicle-no-wheels: unittests-environment
 openhouse-dp2-obstacle-no-wheels: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos obstacle_avoid_nowheels.launch"
 
-openhouse-dp6a-generate-map-%:
+openhouse-dp6a-generate-map-%: unittests-environment
 	bash -c 'echo -n "Enter full path to the tags .csv file: "; read tag_map; echo -n "Enter full path to the tiles .csv file: "; read tile_map;\
+	source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; \
 	roslaunch duckietown_description csv2xacro_node.launch tag_map_csv:=$$tag_map  tile_map_csv:=$$tile_map map_name:=$*'
+
+openhouse-dp6a-description-%: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; \
+	roslaunch duckietown_description duckietown_description_node.launch veh:=default map_name:=$*"
 
 openhouse-dp6b: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos mission_planning.launch"

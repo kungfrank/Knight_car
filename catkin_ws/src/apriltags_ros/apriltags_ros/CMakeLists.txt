@@ -93,4 +93,5 @@ install(FILES nodelet_plugins.xml
 if (CATKIN_ENABLE_TESTING)
     find_package(rostest REQUIRED)
     add_rostest(tests/apriltags_postprocessing_tester_node.test)
+    add_rostest(tests/apriltags_integration_tester.test)
 endif()

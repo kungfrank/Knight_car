@@ -3,7 +3,7 @@ import rospkg
 import rospy
 import yaml
 from apriltags_ros.msg import AprilTagDetectionArray
-from duckietown_msgs.msg import AprilTagsWithInfos
+from duckietown_msgs.msg import AprilTagsWithInfos, TagInfo
 import numpy as np
 import tf.transformations as tr
 from geometry_msgs.msg import PoseStamped
@@ -28,7 +28,7 @@ class AprilPostPros(object):
 # -------- Start adding back the tag info stuff
 
         rospack = rospkg.RosPack()
-        self.pkg_path = rospack.get_path('apriltags')
+        self.pkg_path = rospack.get_path('apriltags_ros')
         tags_filepath = self.setupParam("~tags_file", self.pkg_path+"/apriltagsDB/apriltagsDB.yaml") # No tags_file input atm., so default value is used
         self.loc = self.setupParam("~loc", -1) # -1 if no location is given
         tags_file = open(tags_filepath, 'r')
@@ -82,7 +82,6 @@ class AprilPostPros(object):
             # ------ start tag info processing
 
             new_info = TagInfo()
-            #new_location_info = Vector2D()
             new_info.id = int(detection.id)
             id_info = self.tags_dict[new_info.id]
             
@@ -106,7 +105,7 @@ class AprilPostPros(object):
                 if l is not None:
                     new_info.location = l
             
-
+            tag_infos.append(new_info)
             # --- end tag info processing
 
 

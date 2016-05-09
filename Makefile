@@ -141,6 +141,9 @@ openhouse-dp6a-%: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; \
 	roslaunch duckietown_demos localization.launch map_name:=$*"
 
+openhouse-dp6a_laptop-%: unittests-environment
+	bash -c "source set_ros_master.sh $*; roslaunch duckietown_demos localization_frontend.launch"
+
 openhouse-dp6b: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos mission_planning.launch"
 

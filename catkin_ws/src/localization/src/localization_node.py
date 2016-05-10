@@ -53,6 +53,11 @@ class LocalizationNode(object):
                 Mt_tbase = tr.concatenate_matrices(tr.translation_matrix((0,0,0.17)), tr.euler_matrix(0,0,np.pi))
                 Mt_w = tr.concatenate_matrices(Mtbase_w,Mt_tbase)
                 Mt_r=self.pose_to_matrix(tag.pose)
+                if not self.bandaid or abs(tr.euler_from_matrix(Mt_r)[2]) < 0.001:  # TODO This is a bandaid for the 0degree bug
+                    Mr_t=np.linalg.inv(Mt_r)
+                    Mr_w=np.dot(Mt_w,Mr_t)
+                    Tr_w = self.matrix_to_transform(Mr_w)
+                    avg.add_pose(Tr_w)
                 self.publish_sign_highlight(tag.id)
             except(tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as ex:
                 rospy.logwarn("Error looking up transform for tag_%s", tag.id)

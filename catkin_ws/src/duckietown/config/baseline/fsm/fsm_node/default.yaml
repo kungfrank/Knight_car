@@ -80,8 +80,7 @@ global_transitions:
 nodes:
   decoder_node: "decoder_node/switch"
 # anti_instagram_node: "anti_instagram/switch"
-  apriltag_global_node: "apriltags_preprocessing_node/global_switch"
-  apriltag_fast_node: "apriltags_preprocessing_node/fast_switch"
+  apriltag_node: "apriltag_detector_node/switch"
   vehicle_detector_node: "vehicle_detection_node/switch"
   led_detector_node: "LED_detector_node/switch"
   led_emitter_node: "led_emitter_node/switch"
@@ -100,6 +99,7 @@ states:
       - lane_filter_node
       - line_detector_node
       - stop_line_filter_node
+      - decoder_node
     lights: ["joystick"]
   PARALLEL_AUTONOMY:
     transitions:

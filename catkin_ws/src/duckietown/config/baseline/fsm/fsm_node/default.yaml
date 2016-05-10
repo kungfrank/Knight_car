@@ -34,12 +34,12 @@ events: #Maps from subscribing topic to signal ids
     topic: "open_loop_intersection_control_node/intersection_done"
     msg_type: "BoolStamped"
     trigger: True
-  intersection_done_and_in_lane:
-    topic: "logic_gate_node/intersection_done_and_in_lane"
+  intersection_done_and_not_parallel_autonomy:
+    topic: "logic_gate_node/intersection_done_and_not_parallel_autonomy"
     msg_type: "BoolStamped"
     trigger: True
-  intersection_done_and_in_lane_and_parallel_autonomy:
-    topic: "logic_gate_node/intersection_done_and_in_lane_and_parallel_autonomy"
+  intersection_done_and_parallel_autonomy:
+    topic: "logic_gate_node/intersection_done_and_parallel_autonomy"
     msg_type: "BoolStamped"
     trigger: True
   obstacle_detection:
@@ -150,10 +150,8 @@ states:
     lights: ["coordination"]
   INTERSECTION_CONTROL:
     transitions:
-#      intersection_done_and_in_lane: "LANE_FOLLOWING"
-#      intersection_done_and_in_lane_and_parallel_autonomy: "PARALLEL_AUTONOMY"
-      intersection_done: "PARALLEL_AUTONOMY"
-#      intersection_complete_no_lane: "INTERSECTION_RECOVERY"
+      intersection_done_and_not_parallel_autonomy: "LANE_FOLLOWING"
+      intersection_done_and_parallel_autonomy: "PARALLEL_AUTONOMY"
     active_nodes:
       - line_detector_node
       - lane_filter_node

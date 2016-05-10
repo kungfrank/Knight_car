@@ -13,7 +13,6 @@
 
 		<!-- Turn off what we don't need for this demo -->
 		<arg name="lane_following" value="false"/>
-		<arg name="fsm" value="false"/>
 		<arg name="LED" value="false"/>
 	</include>
 </launch>

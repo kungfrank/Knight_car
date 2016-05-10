@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import numpy
-from duckietown_msgs.msg import FSMState, AprilTags, BoolStamped
+from duckietown_msgs.msg import FSMState, AprilTagsWithInfos, BoolStamped
 from std_msgs.msg import String, Int16 #Imports msg
 
 class RandomAprilTagTurnsNode(object):
@@ -19,7 +19,7 @@ class RandomAprilTagTurnsNode(object):
         # Setup subscribers
         # self.sub_topic_b = rospy.Subscriber("~topic_b", String, self.cbTopic)
         self.sub_topic_mode = rospy.Subscriber("~mode", FSMState, self.cbMode, queue_size=1)
-        self.sub_topic_tag = rospy.Subscriber("~tag", AprilTags, self.cbTag, queue_size=1)
+        self.sub_topic_tag = rospy.Subscriber("~tag", AprilTagsWithInfos, self.cbTag, queue_size=1)
        
 
         # Read parameters

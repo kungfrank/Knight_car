@@ -43,6 +43,12 @@ class JoyMapper(object):
         self.state_parallel_autonomy = False
         self.state_verbose = False
 
+        pub_msg = BoolStamped()
+        pub_msg.data = self.state_parallel_autonomy
+        pub_msg.header.stamp = self.last_pub_time
+        self.pub_parallel_autonomy.publish(pub_msg)
+        
+
     def cbParamTimer(self,event):
         self.v_gain = rospy.get_param("~speed_gain", 1.0)
         self.omega_gain = rospy.get_param("~steer_gain", 10)
@@ -90,7 +96,7 @@ class JoyMapper(object):
         elif (joy_msg.buttons[5] == 1): # Right back button
             self.state_verbose ^= True
             rospy.loginfo('state_verbose = %s' % self.state_verbose)
-            rospy.set_param('line_detector_node/verbose', self.state_verbose)
+            rospy.set_param('line_detector_node/verbose', self.state_verbose) # bad - should be published for all to hear - not set a specific param
 
         elif (joy_msg.buttons[4] == 1): #Left back button
             self.state_parallel_autonomy ^= True

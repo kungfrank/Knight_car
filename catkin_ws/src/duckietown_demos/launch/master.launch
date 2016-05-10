@@ -540,7 +540,7 @@
 		<group if="$(arg /navigation/apriltags_random)">
 			<!-- random april tags -->
 			<remap from="random_april_tag_turns_node/mode" to="fsm_node/mode"/>
-			<remap from="random_april_tag_turns_node/tag"  to="apriltags_postprocessing_global_node/apriltags_out"/>
+			<remap from="random_april_tag_turns_node/tag"  to="apriltags_postprocessing_node/apriltags_out"/>
 			<remap from="random_april_tag_turns_node/turn_type" to="open_loop_intersection_control_node/turn_type"/> <!-- remapping outputs since there are two different possible turn types -->
 
 			<include file="$(find navigation)/launch/random_april_tag_turns_node.launch">

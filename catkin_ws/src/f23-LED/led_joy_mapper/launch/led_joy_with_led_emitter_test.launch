@@ -22,6 +22,7 @@
 		<node machine="$(arg veh)" name="led_emitter_node" pkg="led_emitter" type="led_emitter_node.py" output="screen">
 			<remap from="~change_light_frequency" to="led_joy_mapper_node/change_light_frequency"/>
 			<remap from="~change_color_pattern" to="led_joy_mapper_node/change_color_pattern"/>
+			<rosparam command="load" file="$(find duckietown)/config/$(arg config)/led_interpreter/LED_protocol.yaml"/> <!-- is this legit? -->
 		</node>
 	</group>
 </launch>

@@ -61,12 +61,12 @@
 	<arg name="/apriltags/local" default="false" />
 
 
-	<arg name="LED" default="false" />
-	<arg name="/LED/pattern_switch" default="true" />
-	<arg name="/LED/detector" default="true" />
-	<arg name="/LED/joystick" default="true" />
+	<arg name="LED" default="true" />
+	<arg name="/LED/pattern_switch" default="false" />
+	<arg name="/LED/detector" default="false" />
+	<arg name="/LED/joystick" default="false" />
 	<arg name="/LED/emitter"  default="true" />
-	<arg name="/LED/interpreter" default="true" />
+	<arg name="/LED/interpreter" default="false" />
 
 	<arg name="odometry_learning" default="false"/>
 	<arg name="/odometry_learning/kinematics" default="true"/>

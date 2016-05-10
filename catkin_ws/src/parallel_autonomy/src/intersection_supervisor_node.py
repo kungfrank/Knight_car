@@ -7,7 +7,7 @@ from sensor_msgs.msg import Joy
 from rgb_led import RGB_LED
 
 
-class ParallelAutonomyNode(object):
+class IntersectionSupervisorNode(object):
     def __init__(self):
         # Save the name of the node
         self.node_name = rospy.get_name()
@@ -161,9 +161,9 @@ class ParallelAutonomyNode(object):
 
 if __name__ == '__main__':
     # Initialize the node with rospy
-    rospy.init_node('parallel_autonomy_node', anonymous=False)
+    rospy.init_node('intersection_supervisor_node', anonymous=False)
     # Create the NodeName object
-    node = ParallelAutonomyNode()
+    node = IntersectionSupervisorNode()
 
     # Setup proper shutdown behavior 
     rospy.on_shutdown(node.on_shutdown)

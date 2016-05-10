@@ -66,3 +66,5 @@ if __name__ == '__main__':
     rospy.init_node('virtual_mirror_node',anonymous=False)
     node = VirtualMirrorNode()
     rospy.spin()
+    
+# will this show up on bitbucket? from github

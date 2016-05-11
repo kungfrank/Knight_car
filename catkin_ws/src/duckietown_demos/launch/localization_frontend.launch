@@ -1,0 +1,4 @@
+<launch>
+    <arg name="rviz_config" default="rviz_default" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find duckietown_description)/rviz/$(arg rviz_config).rviz" />
+</launch>

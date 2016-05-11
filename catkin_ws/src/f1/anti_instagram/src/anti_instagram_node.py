@@ -45,7 +45,7 @@ class AntiInstagramNode():
 		self.bridge = CvBridge()
 
 		self.image_msg = None
-
+		self.click_on = False
 
 	def cbNewImage(self,image_msg):
 		# memorize image
@@ -71,15 +71,16 @@ class AntiInstagramNode():
 				rospy.loginfo('ai:\n' + tk.getall())
 
 	def cbClick(self, _):
-		self.verbose = rospy.get_param('line_detector_node/verbose',True)
-		if self.verbose:
-  			# if we have seen an image:
-			if self.image_msg is not None:
+		# if we have seen an image:
+		if self.image_msg is not None:
+			self.click_on = not self.click_on
+			if self.click_on:
 				self.processImage(self.image_msg)
 			else:
-				rospy.loginfo('No image seen yet')
-		else:
-			rospy.loginfo('Calibration locked when not verbose')
+				self.transform.s = [0,0,0,1,1,1]
+				self.pub_transform.publish(self.transform)
+				rospy.loginfo('ai: Color transform is turned OFF!')
+
 		
 	def processImage(self,msg):
 		'''

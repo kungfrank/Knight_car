@@ -1,0 +1,18 @@
+<launch>
+	<arg name="veh" default="$(env VEHICLE_NAME)"/>
+	<!-- start basic args -->
+	<include file="$(find duckietown_demos)/launch/master.launch">
+        <arg name="joystick" value="true" />
+	<arg name="veh" value="$(arg veh)"/>
+	<arg name="visualization" value="false" />
+	<arg name="navigation" value="true"/>
+	<arg name="apriltags" value="true" />
+	<arg name="/camera/raw" value="true"/>
+	<arg name="param_file_name" default="default" />
+	<arg name="line_detector_param_file_name" default="default" />
+   	<arg name="anti_instagram" default="true" />
+    <arg name="LED" default="true" /> 
+	<arg name="intersectionType" value="stopSign" /> 
+    <arg name="coordination" default="true" />     
+	</include>
+</launch>

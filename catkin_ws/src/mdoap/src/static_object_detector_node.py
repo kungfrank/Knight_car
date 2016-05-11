@@ -8,6 +8,7 @@ from cv_bridge import CvBridge, CvBridgeError
 from duckietown_msgs.msg import ObstacleImageDetection, ObstacleImageDetectionList, ObstacleType, Rect, BoolStamped
 import sys
 import threading
+from rgb_led import *
 
 
 class Matcher:
@@ -58,9 +59,16 @@ class Matcher:
             x,y,w,h = cv2.boundingRect(cnt)
             box = (x,y,w,h)
             d =  0.5*(x-width/2)**2 + (y-height)**2 
-            if not(h>15 and w >15 and d  < 120000):
+            if not(h>15 and w >10 and h<200 and w<200 and d < 120000):
                     continue
+	    if contour_type == "DUCK_CANNY":
+		continue
             if contour_type =="DUCK_COLOR": # extra filtering to remove lines
+		if not(h>25 and w>25):
+			continue
+		if d>90000:
+			if not(h>35 and w>35):
+				continue
                 if cv2.contourArea(cnt)==0:
                     continue
                 val = cv2.arcLength(cnt,True)**2/ cv2.contourArea(cnt)
@@ -133,6 +141,7 @@ class StaticObjectDetectorNode:
         self.pub_image = rospy.Publisher("~cone_detection_image", Image, queue_size=1)
         self.pub_detections_list = rospy.Publisher("~detection_list", ObstacleImageDetectionList, queue_size=1)
         self.bridge = CvBridge()
+	turn_off_LEDs(speed=5)
 
         rospy.loginfo("[%s] Initialized." %(self.name))
 

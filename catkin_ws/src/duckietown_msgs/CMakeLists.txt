@@ -14,7 +14,6 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   tf_conversions
   tf
-  apriltags_ros
 )
 
 ## System dependencies are found with CMake's conventions
@@ -66,6 +65,8 @@ add_message_files(
   Pose2DStamped.msg
   SignalsDetection.msg
   Twist2DStamped.msg
+  AprilTagDetection.msg
+  AprilTagDetectionArray.msg
   AprilTagsWithInfos.msg
   TagInfo.msg
   Pixel.msg
@@ -123,7 +124,6 @@ generate_messages(
   std_msgs
   geometry_msgs
   sensor_msgs
-  apriltags_ros
 )
 
 ################################################
@@ -165,7 +165,6 @@ catkin_package(
    std_msgs
    message_runtime
    visualization_msgs
-   apriltags_ros
 #  DEPENDS system_lib
 )
 

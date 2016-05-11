@@ -61,12 +61,12 @@
 	<arg name="/apriltags/local" default="false" />
 
 
-	<arg name="LED" default="false" />
-	<arg name="/LED/pattern_switch" default="true" />
-	<arg name="/LED/detector" default="true" />
-	<arg name="/LED/joystick" default="true" />
+	<arg name="LED" default="true" />
+	<arg name="/LED/pattern_switch" default="false" />
+	<arg name="/LED/detector" default="false" />
+	<arg name="/LED/joystick" default="false" />
 	<arg name="/LED/emitter"  default="true" />
-	<arg name="/LED/interpreter" default="true" />
+	<arg name="/LED/interpreter" default="false" />
 
 	<arg name="odometry_learning" default="false"/>
 	<arg name="/odometry_learning/kinematics" default="true"/>
@@ -540,7 +540,7 @@
 		<group if="$(arg /navigation/apriltags_random)">
 			<!-- random april tags -->
 			<remap from="random_april_tag_turns_node/mode" to="fsm_node/mode"/>
-			<remap from="random_april_tag_turns_node/tag"  to="apriltags_postprocessing_global_node/apriltags_out"/>
+			<remap from="random_april_tag_turns_node/tag"  to="apriltags_postprocessing_node/apriltags_out"/>
 			<remap from="random_april_tag_turns_node/turn_type" to="open_loop_intersection_control_node/turn_type"/> <!-- remapping outputs since there are two different possible turn types -->
 
 			<include file="$(find navigation)/launch/random_april_tag_turns_node.launch">

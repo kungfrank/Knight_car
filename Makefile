@@ -105,6 +105,13 @@ demo-line_detector-default_ld2: demo-line_detector-quiet-default_ld2
 demo-line_detector-quiet-%: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; roslaunch duckietown line_detector.launch veh:=$(vehicle_name) line_detector_param_file_name:=$* verbose:=false"
 
+# traffic lights
+traffic-light:
+	bash -c "source environment.sh; source set_ros_master.sh; roslaunch traffic_light traffic_light_node.launch veh:=$(vehicle_name)"
+
+#traffic-light-%:
+#	bash -c "source environment.sh; source set_ros_master.sh $*; roslaunch traffic_light traffic_light_node.launch veh:=$*"
+
 # ==========
 # openhouse demos
  

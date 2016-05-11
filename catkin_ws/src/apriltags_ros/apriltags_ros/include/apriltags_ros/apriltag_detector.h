@@ -3,7 +3,7 @@
 
 #include <ros/ros.h>
 #include <image_transport/image_transport.h>
-
+#include <duckietown_msgs/BoolStamped.h>
 #include <AprilTags/TagDetector.h>
 #include <tf/transform_broadcaster.h>
 
@@ -20,6 +20,7 @@ class AprilTagDescription{
   int id_;
   double size_;
   std::string frame_name_;
+
 };
 
 
@@ -28,6 +29,7 @@ class AprilTagDetector{
   AprilTagDetector(ros::NodeHandle& nh, ros::NodeHandle& pnh);
   ~AprilTagDetector();
  private:
+void switchCB(const duckietown_msgs::BoolStamped::ConstPtr& switch_msg);
   void imageCb(const sensor_msgs::ImageConstPtr& msg,const sensor_msgs::CameraInfoConstPtr& cam_info);
   std::map<int, AprilTagDescription> parse_tag_descriptions(XmlRpc::XmlRpcValue& april_tag_descriptions);
 
@@ -37,10 +39,12 @@ class AprilTagDetector{
   image_transport::ImageTransport it_;
   image_transport::CameraSubscriber image_sub_;
   image_transport::Publisher image_pub_;
+  ros::Subscriber switch_sub_;
   ros::Publisher detections_pub_;
   ros::Publisher pose_pub_;
   tf::TransformBroadcaster tf_pub_;
   boost::shared_ptr<AprilTags::TagDetector> tag_detector_;
+  bool on_switch;
 };
 
 

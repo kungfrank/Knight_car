@@ -2,8 +2,7 @@
 import rospkg
 import rospy
 import yaml
-from apriltags_ros.msg import AprilTagDetectionArray
-from duckietown_msgs.msg import AprilTagsWithInfos, TagInfo
+from duckietown_msgs.msg import AprilTagsWithInfos, TagInfo, AprilTagDetectionArray
 import numpy as np
 import tf.transformations as tr
 from geometry_msgs.msg import PoseStamped

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import numpy
-from duckietown_msgs.msg import FSMState, AprilTags, BoolStamped
+from duckietown_msgs.msg import FSMState, AprilTagsWithInfos, BoolStamped
 from std_msgs.msg import String, Int16  # Imports msg
 from sensor_msgs.msg import Joy
 from rgb_led import RGB_LED
@@ -31,7 +31,7 @@ class IntersectionSupervisorNode(object):
 
         # Setup subscribers
         self.sub_topic_mode = rospy.Subscriber("~mode", FSMState, self.cbMode, queue_size=1)
-        self.sub_topic_tag = rospy.Subscriber("~tag", AprilTags, self.cbTag, queue_size=1)
+        self.sub_topic_tag = rospy.Subscriber("~tag", AprilTagsWithInfos, self.cbTag, queue_size=1)
         self.sub_joy = rospy.Subscriber("~joy", Joy, self.cbJoy, queue_size=1)
 
         self.cycle_timer = rospy.Timer(rospy.Duration.from_sec(.5), self.blinkTimer)
@@ -90,7 +90,7 @@ class IntersectionSupervisorNode(object):
         if self.turn_direction == self.turn_NONE and self.turn_STRAIGHT in self.availableTurns:
             self.turn_direction = self.turn_STRAIGHT
 
-    def cbTag(self, tag_msgs):
+    def cbTag(self, tag_msgs): # this and random_april_tag_turns are duplicated should be turned into a library
         if self.fsm_mode == "INTERSECTION_CONTROL":
             # loop through list of april tags
             for taginfo in tag_msgs.infos:

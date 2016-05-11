@@ -13,6 +13,7 @@
    		<arg name="/navigation/intersection_control" value="true"/>
 		<arg name="apriltags" value="true" />
 		<arg name="/camera/raw" value="true"/>
+		<arg name="/camera/raw/rect" value="true"/>
 		<arg name="parallel_autonomy" value="true"/>
 		<arg name="apriltags_param_file_name" value="parallel_autonomy"/>
 		<arg name="LED" default="false" />

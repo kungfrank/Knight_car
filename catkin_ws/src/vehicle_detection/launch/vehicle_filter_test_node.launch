@@ -1,0 +1,15 @@
+<launch>
+	<arg name="veh" doc="Name of vehicle" />
+
+	<remap from="vehicle_filter_node/corners" to="vehicle_filter_test_node/corners" />
+	<include file="$(find vehicle_detection)/launch/vehicle_filter_node.launch">
+		<arg name="veh" value="$(arg veh)"/>
+		<arg name="local" value="true" />
+	</include>
+
+	<remap from="vehicle_filter_test_node/pose" to="vehicle_filter_node/pose" />
+	<group ns="$(arg veh)">
+        <node name="vehicle_filter_test_node" pkg="vehicle_detection" type="vehicle_filter_node_test.py" output="screen" />
+	</group>
+</launch>
+

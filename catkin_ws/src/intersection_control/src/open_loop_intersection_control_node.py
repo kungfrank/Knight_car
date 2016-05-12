@@ -1,101 +1,147 @@
 #!/usr/bin/env python
 import rospy
-from intersection_control.util import HelloGoodbye #Imports module. Not limited to modules in this pkg. 
-from duckietown_msgs.msg import FSMState
-
-from std_msgs.msg import String #Imports msg
-from std_msgs.msg import Bool #Imports msg
-#from duckietown_msgs.msg import messages to command the wheels
-from duckietown_msgs.msg import WheelsCmdStamped
+from duckietown_msgs.msg import FSMState, BoolStamped, Twist2DStamped, LanePose, StopLineReading
+from std_srvs.srv import EmptyRequest, EmptyResponse, Empty
+from std_msgs.msg import String, Int16 #Imports msg
+import copy
 
 class OpenLoopIntersectionNode(object):
     def __init__(self):
         # Save the name of the node
         self.node_name = rospy.get_name()
-        
-        rospy.loginfo("[%s] Initialzing." %(self.node_name))
+        self.mode = None
+        self.turn_type = -1
+        self.in_lane = False
+        self.lane_pose = LanePose()
+        self.stop_line_reading = StopLineReading()
 
-        # Setup publishers
-        self.pub_topic_a = rospy.Publisher("~topic_a",String, queue_size=1)
-        self.pub_wheels_cmd = rospy.Publisher("~wheels_cmd",WheelsCmdStamped, queue_size=1)
-        self.pub_wheels_done = rospy.Publisher("~intersection_done",Bool, queue_size=1, latch=True)
-        # Setup subscribers
-        self.sub_topic_b = rospy.Subscriber("~topic_b", String, self.cbTopic)
-        self.sub_topic_mode = rospy.Subscriber("~mode", FSMState, self.cbMode, queue_size=1)
-        # Read parameters
-        self.pub_timestep = self.setupParameter("~pub_timestep",1.0)
-        # Create a timer that calls the cbTimer function every 1.0 second
-        self.timer = rospy.Timer(rospy.Duration.from_sec(self.pub_timestep),self.cbTimer)
+        self.trajectory_reparam = rospy.get_param("~trajectory_reparam",1)
+        self.pub_cmd = rospy.Publisher("~car_cmd",Twist2DStamped,queue_size=1)
+        self.pub_done = rospy.Publisher("~intersection_done",BoolStamped,queue_size=1)
 
-        rospy.loginfo("[%s] Initialzed." %(self.node_name))
+        # Construct maneuvers
+        self.maneuvers = dict()
 
-        self.rate = rospy.Rate(30) # 10hz
+        self.maneuvers[0] = self.getManeuver("turn_left")
+        self.maneuvers[1] = self.getManeuver("turn_forward")
+        self.maneuvers[2] = self.getManeuver("turn_right")
+        # self.maneuvers[-1] = self.getManeuver("turn_stop")
 
-    def cbMode(self, mode_msg):
-        print mode_msg
-        if(mode_msg.state == mode_msg.INTERSECTION_CONTROL):
-            self.turnRight()
+        self.srv_turn_left = rospy.Service("~turn_left", Empty, self.cbSrvLeft)
+        self.srv_turn_right = rospy.Service("~turn_right", Empty, self.cbSrvRight)
+        self.srv_turn_forward = rospy.Service("~turn_forward", Empty, self.cbSrvForward)
+
+        self.rate = rospy.Rate(30)
+
+        # Subscribers
+        self.sub_in_lane = rospy.Subscriber("~in_lane", BoolStamped, self.cbInLane, queue_size=1)
+        self.sub_turn_type = rospy.Subscriber("~turn_type", Int16, self.cbTurnType, queue_size=1)
+        self.sub_mode = rospy.Subscriber("~mode", FSMState, self.cbFSMState, queue_size=1)
+        self.sub_lane_pose = rospy.Subscriber("~lane_pose", LanePose, self.cbLanePose, queue_size=1)
+        self.sub_stop_line = rospy.Subscriber("~stop_line_reading", StopLineReading, self.cbStopLine, queue_size=1)
+
+    def cbSrvLeft(self,req):
+        self.trigger(0)
+        return EmptyResponse()
+    
+    def cbSrvForward(self,req):
+        self.trigger(1)
+        return EmptyResponse()        
+    
+    def cbSrvRight(self,req):
+        self.trigger(2)
+        return EmptyResponse()
 
 
-    def turnRight(self):
-        #move forward
-        forward_for_time_leave = 2.0
-        turn_for_time = 0.7
-        forward_for_time_enter = 2.0
-        
-        starting_time = rospy.Time.now()
-        while((rospy.Time.now() - starting_time) < rospy.Duration(forward_for_time_leave)):
-            wheels_cmd_msg = WheelsCmdStamped()
-            wheels_cmd_msg.header.stamp = rospy.Time.now()
-            wheels_cmd_msg.vel_left = 0.4
-            wheels_cmd_msg.vel_right = 0.4
-            self.pub_wheels_cmd.publish(wheels_cmd_msg)    
-            rospy.loginfo("Moving?.")
-            self.rate.sleep()
-        #turn right
-        starting_time = rospy.Time.now()
-        while((rospy.Time.now() - starting_time) < rospy.Duration(turn_for_time)):
-            wheels_cmd_msg = WheelsCmdStamped()
-            wheels_cmd_msg.header.stamp = rospy.Time.now()
-            wheels_cmd_msg.vel_left = 0.25
-            wheels_cmd_msg.vel_right = -0.25
-            self.pub_wheels_cmd.publish(wheels_cmd_msg)    
-            rospy.loginfo("Moving?.")
-            self.rate.sleep()
-   
-            #coordination with lane controller means part way through announce finished turn
-        self.pub_wheels_done.publish(True)
+    def getManeuver(self,param_name):
+        param_list = rospy.get_param("~%s"%(param_name))
+        # rospy.loginfo("PARAM_LIST:%s" %param_list)        
+        maneuver = list()
+        for param in param_list:
+            maneuver.append((param[0],Twist2DStamped(v=param[1],omega=param[2])))
+        # rospy.loginfo("MANEUVER:%s" %maneuver)
+        return maneuver
 
-        #move forward
-        starting_time = rospy.Time.now()
-        while((rospy.Time.now() - starting_time) < rospy.Duration(forward_for_time_enter)):
-            wheels_cmd_msg = WheelsCmdStamped()
-            wheels_cmd_msg.header.stamp = rospy.Time.now()
-            wheels_cmd_msg.vel_left = 0.4
-            wheels_cmd_msg.vel_right = 0.4
-            self.pub_wheels_cmd.publish(wheels_cmd_msg)    
-            rospy.loginfo("Moving?.")
-            self.rate.sleep()
-   
-    def setupParameter(self,param_name,default_value):
-        value = rospy.get_param(param_name,default_value)
-        rospy.set_param(param_name,value) #Write to parameter server for transparancy
-        rospy.loginfo("[%s] %s = %s " %(self.node_name,param_name,value))
-        return value
+    def cbTurnType(self,msg):
+        if self.mode == "INTERSECTION_CONTROL":
+            self.turn_type = msg.data #Only listen if in INTERSECTION_CONTROL mode
+            self.trigger(self.turn_type)
 
-    def cbTopic(self,msg):
-        rospy.loginfo("[%s] %s" %(self.node_name,msg.data))
+    def cbLanePose(self,msg):
+        self.lane_pose = msg
 
-    def cbTimer(self,event):
-        singer = HelloGoodbye()
-        # Simulate hearing something
-        msg = String()
-        msg.data = singer.sing("duckietown")
-        self.pub_topic_a.publish(msg)
-#        wheels_cmd_msg = WheelsCmdStamped()
-#        wheels_cmd_msg.vel_left = 0.1
-#        wheels_cmd_msg.vel_right = 0.1
-#        self.pub_wheels_cmd.publish(wheels_cmd_msg)
+    def cbStopLine(self,msg):
+        self.stop_line_reading = msg
+                
+        # TODO remove in lane it is now handled by the logic_gate_node
+    def cbInLane(self,msg):
+        self.in_lane = msg.data
+
+    def cbFSMState(self,msg):
+        if (not self.mode == "INTERSECTION_CONTROL") and msg.state == "INTERSECTION_CONTROL":
+            # Switch into INTERSECTION_CONTROL mode
+            rospy.loginfo("[%s] %s triggered." %(self.node_name,self.mode))
+            start = rospy.Time.now()
+            current = rospy.Time.now()
+            while current.secs - start.secs < 0.5:
+                current = rospy.Time.now()
+                self.trigger(-1)
+        self.mode = msg.state
+        self.turn_type = -1 #Reset turn_type at mode change
+
+    def publishDoneMsg(self):
+        msg = BoolStamped()
+        msg.header.stamp = rospy.Time.now()
+        msg.data = True
+        self.pub_done.publish(msg)
+        rospy.loginfo("[%s] interesction_done!" %(self.node_name))
+    
+    def update_trajectory(self,turn_type):
+        rospy.loginfo("updating trajectory: distance from stop_line=%s, lane_pose_phi = %s", self.stop_line_reading.stop_line_point.x,  self.lane_pose.phi)
+        first_leg = (self.maneuvers[turn_type]).pop(0)
+        exec_time = first_leg[0];
+        car_cmd   = first_leg[1];
+        new_exec_time = exec_time + self.stop_line_reading.stop_line_point.x/car_cmd.v
+        rospy.loginfo("old exec_time = %s, new_exec_time = %s" ,exec_time, new_exec_time)
+        ###### warning this next line is because of wrong inverse kinematics - remove the 10s after it's fixed
+        new_car_cmd = Twist2DStamped(v=car_cmd.v,omega=10*(car_cmd.omega/10 - self.lane_pose.phi/new_exec_time))
+        new_first_leg = [new_exec_time,new_car_cmd]
+        print "old car command"
+        print car_cmd
+        print "new_car_command"
+        print new_car_cmd
+        self.maneuvers[turn_type].insert(0,new_first_leg)
+
+    def trigger(self,turn_type):
+        if turn_type == -1: #Wait. Publish stop command. Does not publish done.
+            cmd = Twist2DStamped(v=0.0,omega=0.0)
+            cmd.header.stamp = rospy.Time.now()
+            self.pub_cmd.publish(cmd)
+            return
+
+        if (self.trajectory_reparam):
+            self.update_trajectory(turn_type)
+
+        published_already = False
+        for index, pair in enumerate(self.maneuvers[turn_type]):
+            cmd = copy.deepcopy(pair[1])
+            start_time = rospy.Time.now()
+            end_time = start_time + rospy.Duration.from_sec(pair[0])
+            while rospy.Time.now() < end_time:
+                if not self.mode == "INTERSECTION_CONTROL": # If not in the mode anymore, return
+                    return
+                cmd.header.stamp = rospy.Time.now()
+                self.pub_cmd.publish(cmd)
+                if index > 1:
+                    # See if need to publish interesction_done
+                    if self.in_lane and not (published_already):
+                        published_already = True
+                        self.publishDoneMsg()
+                        return
+                self.rate.sleep()
+        # Done with the sequence
+        if not published_already:
+            self.publishDoneMsg()
 
     def on_shutdown(self):
         rospy.loginfo("[%s] Shutting down." %(self.node_name))

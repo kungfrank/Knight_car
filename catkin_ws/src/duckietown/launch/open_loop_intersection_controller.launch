@@ -7,8 +7,8 @@
     <include file="$(find duckietown)/machines"/>
     <!-- intersection control -->
 
-    <remap from="~wheels_cmd" to="wheels_driver_node/wheels_cmd"/>
-    <remap from="~mode" to="fsm_node/mode"/>
+    <!-- <remap from="~wheels_cmd" to="wheels_driver_node/wheels_cmd"/> -->
+    <!-- <remap from="~mode" to="fsm_node/mode"/> -->
     <include file="$(find intersection_control)/launch/open_loop_intersection_controller_node.launch">
         <arg name="veh" value="$(arg veh)"/>        
         <arg name="local" value="$(arg local)"/>        

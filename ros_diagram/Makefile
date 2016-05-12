@@ -1,5 +1,7 @@
 all: Duckietown_ROS_Diagram.pdf
 
+fsm: default.pdf
+
 %.dot: %.dot.in
 	python prepare.py < $< > $@
 

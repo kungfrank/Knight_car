@@ -1,0 +1,24 @@
+<launch>
+	<arg name="config" default="baseline"/>
+    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
+    <arg name="local" default="false" doc="true: laptop. false: vehicle."/>
+    <arg name="pkg_name" value="vehicle_detection"/>
+    <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman"/>
+    <arg name="node_name" default="vehicle_filter_node"/>
+
+    <group ns="$(arg veh)">        
+        <node if="$(arg local)" name="vehicle_filter_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen" clear_params="true" required="true">
+			<rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
+		</node>
+        <include unless="$(arg local)" file="$(find duckietown)/machines"/>
+        <node unless="$(arg local)" machine="$(arg veh)" name="vehicle_filter_node" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen" clear_params="true" required="true">
+			<rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/$(arg param_file_name).yaml"/>
+		</node>
+    </group>
+
+    <!-- Publications -->
+
+    <!-- Subscriptions -->
+
+</launch>
+

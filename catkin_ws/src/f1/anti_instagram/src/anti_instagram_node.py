@@ -108,8 +108,8 @@ class AntiInstagramNode():
 		tk.completed('calculateTransform')
 
 
-		# FIXME !!!
-		if False:
+		# if health is much below the threshold value, do not update the color correction and log it.
+		if self.ai.health <= 0.001:
 			# health is not good
 
 			rospy.loginfo("Health is not good")

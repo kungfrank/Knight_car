@@ -191,3 +191,28 @@ pandola:
 
 sonata:
   name: Heejin Ahn
+
+mocap01:
+  name: Motion Capture Unit 1
+
+mocap02:
+  name: Motion Capture Unit 2
+
+mocap03:
+  name: Motion Capture Unit 3
+
+mocap04:
+  name: Motion Capture Unit 4
+
+mocap05:
+  name: Motion Capture Unit 5
+
+mocap06:
+  name: Motion Capture Unit 6
+
+mocap07:
+  name: Motion Capture Unit 7
+
+mocap08:
+  name: Motion Capture Unit 8
+

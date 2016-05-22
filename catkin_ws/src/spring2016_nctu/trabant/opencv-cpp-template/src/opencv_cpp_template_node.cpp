@@ -29,10 +29,20 @@ void callback_compressed(const sensor_msgs::CompressedImageConstPtr& imageMap)
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "opencv_cpp_template");
-    ros::NodeHandle n;
+    ros::init(argc, argv, "opencv_cpp_template_node");
+    ros::NodeHandle nh("~");
 
-    ros::Subscriber sub = n.subscribe("/trabant/camera_node/image/compressed", 1000, callback_compressed);
+    // read param from launch file
+    std::string veh;
+
+    // There are two ways to setup the param
+    //nh.param<std::string>("veh", veh, "trabant"); // make sure you init nh by "~"
+    ros::param::param<std::string>("~veh", veh, "trabant");
+    std::stringstream ss;
+    ss << "/" << veh << "/camera_node/image/compressed";
+    ros::Subscriber sub = nh.subscribe(ss.str().c_str(), 1000, callback_compressed);
+    ROS_INFO("Start opencv_cpp_template_node, and subscribe topic: %s", ss.str().c_str());
+
     ros::spin();
     return 0;
 }

@@ -210,13 +210,16 @@ mocap04:
 
 mocap05:
   name: Motion Capture Unit 5
+  mac: 9c:5c:8e:b2:35:25
 
 mocap06:
   name: Motion Capture Unit 6
+  mac: 9c:5c:8e:b2:35:2a
 
 mocap07:
   name: Motion Capture Unit 7
+  mac: 9c:5c:8e:b2:35:28
 
 mocap08:
   name: Motion Capture Unit 8
-
+  mac: 9c:5c:8e:b4:2a:17

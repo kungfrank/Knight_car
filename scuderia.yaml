@@ -194,15 +194,19 @@ sonata:
 
 mocap01:
   name: Motion Capture Unit 1
+  mac: 00:1d:43:20:1a:7e
 
 mocap02:
   name: Motion Capture Unit 2
+  mac: 00:1d:43:20:1a:89
 
 mocap03:
   name: Motion Capture Unit 3
+  mac: 00:1d:43:30:1b:ba
 
 mocap04:
   name: Motion Capture Unit 4
+  mac: 00:1d:43:20:1a:7e
 
 mocap05:
   name: Motion Capture Unit 5

@@ -5,6 +5,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
 
+#include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
@@ -25,6 +26,12 @@ void callback(const sensor_msgs::ImageConstPtr& imageMap)
 void callback_compressed(const sensor_msgs::CompressedImageConstPtr& imageMap)
 {
     ROS_INFO("Received Compressed Image ");
+
+    cv::Mat im_pi = cv::Mat::zeros(480, 640, CV_8UC3);
+    im_pi = cv::imdecode(cv::Mat(imageMap->data), CV_LOAD_IMAGE_COLOR);
+    cv::cvtColor(im_pi, im_pi, CV_RGB2BGR);
+
+    //YOU CODE HERE
 }
 
 int main(int argc, char **argv)

@@ -1,0 +1,18 @@
+<launch>
+	<arg name="veh" default="$(env VEHICLE_NAME)"/>
+	<arg name="map_name" default="open_house_dp6_small" />
+
+	<include file="$(find duckietown_demos)/launch/master.launch">
+		<arg name="veh" value="$(arg veh)"/>
+		<arg name="apriltags" value="true" />
+		<arg name="/camera/raw" value="true"/>
+		<arg name="/camera/raw/rect" value="true"/>
+		<arg name="localization" value="true"/>
+		<arg name="/localization/map_name" value="$(arg map_name)"/>
+		<arg name="/localization/gui" value="false"/>
+
+		<!-- Turn off what we don't need for this demo -->
+		<arg name="lane_following" value="false"/>
+		<arg name="LED" value="false"/>
+	</include>
+</launch>

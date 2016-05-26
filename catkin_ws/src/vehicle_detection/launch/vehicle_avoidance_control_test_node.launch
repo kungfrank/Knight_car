@@ -1,0 +1,16 @@
+<launch>
+	<arg name="veh" doc="Name of vehicle" />
+
+	<remap from="vehicle_avoidance_control_node_test/vehicle_avoidance_control" to="vehicle_avoidance_control_node/wheels_cmd" />
+	<remap from="vehicle_avoidance_control_node_test/vehicle_detected" to="vehicle_avoidance_control_node/flag" />
+	<remap from="vehicle_avoidance_control_node/vehicle_pose" to="vehicle_avoidance_control_node_test/vehicle_pose" />
+
+	<include file="$(find vehicle_detection)/launch/vehicle_avoidance_control_node.launch">
+		<arg name="veh" value="$(arg veh)"/>
+		<arg name="local" value="true" />
+	</include>
+
+	<group ns="$(arg veh)">
+        <node name="vehicle_avoidance_control_node_test" pkg="vehicle_detection" type="vehicle_avoidance_control_node_test.py" output="screen" />
+	</group>
+</launch>

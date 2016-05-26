@@ -14,16 +14,29 @@ import sys
 import rospkg
 import os.path
 import yaml
+from duckietown_msgs.msg import BoolStamped
+import thread
 
 class CameraNode(object):
     def __init__(self):
         self.node_name = rospy.get_name()
         rospy.loginfo("[%s] Initializing......" %(self.node_name))
-        print "initializing"
 
-        self.framerate = self.setupParam("~framerate",30.0)
+
+        self.framerate_high = self.setupParam("~framerate_high",30.0)
+        self.framerate_low = self.setupParam("~framerate_low",15.0)
         self.res_w = self.setupParam("~res_w",640)
         self.res_h = self.setupParam("~res_h",480)
+
+        self.image_msg = CompressedImage()
+
+        # Setup PiCamera
+
+        self.camera = PiCamera()
+        self.framerate = self.framerate_high # default to high
+        self.camera.framerate = self.framerate
+        self.camera.resolution = (self.res_w,self.res_h)
+
 
         # For intrinsic calibration
         rospack = rospkg.RosPack()
@@ -34,38 +47,49 @@ class CameraNode(object):
 
         self.has_published = False
         self.pub_img= rospy.Publisher("~image/compressed",CompressedImage,queue_size=1)
+        self.sub_switch_high = rospy.Subscriber("~framerate_high_switch", BoolStamped, self.cbSwitchHigh, queue_size=1)
 
         # Create service (for camera_calibration)
         self.srv_set_camera_info = rospy.Service("~set_camera_info",SetCameraInfo,self.cbSrvSetCameraInfo)
 
-        # Setup PiCamera
         self.stream = io.BytesIO()
-        self.camera = PiCamera()
-        self.camera.framerate = self.framerate
-        self.camera.resolution = (self.res_w,self.res_h)
+ 
+#self.camera.exposure_mode = 'off'
+       # self.camera.awb_mode = 'off'
 
         self.is_shutdown = False
+        self.update_framerate = False
         # Setup timer
-        self.gen = self.grabAndPublish(self.stream,self.pub_img)
         rospy.loginfo("[%s] Initialized." %(self.node_name))
 
+    def cbSwitchHigh(self, switch_msg):
+        print switch_msg
+        if switch_msg.data and self.framerate != self.framerate_high:
+            self.framerate = self.framerate_high
+            self.update_framerate = True
+        elif not switch_msg.data and self.framerate != self.framerate_low:
+            self.framerate = self.framerate_low
+            self.update_framerate = True
+ 
     def startCapturing(self):
         rospy.loginfo("[%s] Start capturing." %(self.node_name))
-        self.camera.capture_sequence(self.gen,'jpeg',use_video_port=True,splitter_port=0)
+        while not self.is_shutdown and not rospy.is_shutdown():
+            gen =  self.grabAndPublish(self.stream,self.pub_img)
+            try:
+                self.camera.capture_sequence(gen,'jpeg',use_video_port=True,splitter_port=0)
+            except StopIteration:
+                pass
+            print "updating framerate"
+            self.camera.framerate = self.framerate
+            self.update_framerate=False
+
         self.camera.close()
-        rospy.sleep(rospy.Duration.from_sec(2.0))
         rospy.loginfo("[%s] Capture Ended." %(self.node_name))
 
     def grabAndPublish(self,stream,publisher):
-        while True: #TODO not being triggere correctly when shutting down.
-            if self.is_shutdown:
-                rospy.loginfo("[%s] Stopping stream...." %(self.node_name))
-                # raise StopIteration
-                return
-
+        while not self.update_framerate and not self.is_shutdown and not rospy.is_shutdown(): 
             yield stream
             # Construct image_msg
-
             # Grab image from stream
             stamp = rospy.Time.now()
             stream.seek(0)
@@ -74,12 +98,6 @@ class CameraNode(object):
             image_msg = CompressedImage()
             image_msg.format = "jpeg"
             image_msg.data = stream_data
-
-            # Generate raw image
-            # image_msg = Image()
-            # data = np.fromstring(stream_data, dtype=np.uint8)  #320 by 240 90Hz
-            # image = cv2.imdecode(data, cv2.CV_LOAD_IMAGE_COLOR) # drop to about 60Hz
-            # image_msg = self.bridge.cv2_to_imgmsg(image) # drop to about 30hz..
 
             image_msg.header.stamp = stamp
             image_msg.header.frame_id = self.frame_id
@@ -103,15 +121,9 @@ class CameraNode(object):
 
     def onShutdown(self):
         rospy.loginfo("[%s] Closing camera." %(self.node_name))
-        # self.camera.stop_recording(splitter_port=0)
-        # rospy.sleep(rospy.Duration.from_sec(2.0))
-        self.camera.close()
-        rospy.sleep(rospy.Duration.from_sec(2.0))
+        self.is_shutdown=True
         rospy.loginfo("[%s] Shutdown." %(self.node_name))
 
-    def signal_handler(self, signal, frame):
-        print "==== Ctrl-C Pressed ==== "
-        self.is_shutdown = True
 
     def cbSrvSetCameraInfo(self,req):
         # TODO: save req.camera_info to yaml file
@@ -146,9 +158,8 @@ class CameraNode(object):
             return False
 
 if __name__ == '__main__': 
-    rospy.init_node('camera',anonymous=False,disable_signals=True)
+    rospy.init_node('camera',anonymous=False)
     camera_node = CameraNode()
-    signal.signal(signal.SIGINT, camera_node.signal_handler)
     rospy.on_shutdown(camera_node.onShutdown)
-    camera_node.startCapturing()
+    thread.start_new_thread(camera_node.startCapturing, ())
     rospy.spin()

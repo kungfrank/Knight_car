@@ -32,7 +32,6 @@
 
     <!-- Lane controller -->
     <remap from="lane_controller_node/lane_pose" to="lane_filter_node/lane_pose"/>
-    <remap from="lane_controller_node/wheels_control" to="wheels_trimmer_node/wheels_cmd"/>
     <include file="$(find lane_control)/launch/lane_controller_node.launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>
@@ -40,18 +39,17 @@
         <arg name="param_file_name" value="$(arg param_file_name)"/>        
     </include>
 
-    <group if="$(arg drive)">
-        <!-- Wheels Trimmer -->
-        <!-- <remap from="wheels_trimmer/wheels_cmd" to="joy_mapper/wheels_cmd"/> -->
-        <remap from="wheels_trimmer_node/trimmed_wheels_cmd" to="wheels_driver_node/wheels_cmd"/>
-        <include file="$(find dagu_car)/launch/wheels_trimmer_node.launch">
-            <arg name="veh" value="$(arg veh)"/>
-            <arg name="local" value="$(arg local)"/>
-            <arg name="config" value="$(arg config)"/>
-            <arg name="param_file_name" value="$(arg param_file_name)"/>
-        </include>
+    <!-- car_cmd_switch_node -->
+    <remap from="inverse_kinematics_node/car_cmd" to="lane_controller_node/car_cmd"/>
+    <include file="$(find dagu_car)/launch/inverse_kinematics_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="local" value="$(arg local)"/>
+        <arg name="config" value="$(arg config)"/>
+    </include>
 
+    <group if="$(arg drive)">
         <!-- Wheel Driver -->
+	<remap from="wheels_driver_node/wheels_cmd" to="inverse_kinematics_node/wheels_cmd"/>
     	<include if="$(arg live)" file="$(find dagu_car)/launch/wheels_driver_node.launch">
             <arg name="veh" value="$(arg veh)"/>
         </include>

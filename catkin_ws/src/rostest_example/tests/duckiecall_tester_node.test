@@ -1,0 +1,9 @@
+<launch>
+    <!-- Run the node -->
+    <include file="$(find rostest_example)/launch/duckiecall_node.launch" />
+
+    <!-- Run unit test -->
+    <remap from="duckiecall_tester_node/number_of_quacks" to="duckiecall_node/number_of_quacks" />
+    <remap from="duckiecall_tester_node/duckiecall" to="duckiecall_node/duckiecall" />
+    <test test-name="duckiecall_tester_node" pkg="rostest_example" type="duckiecall_tester_node.py"/>
+</launch>

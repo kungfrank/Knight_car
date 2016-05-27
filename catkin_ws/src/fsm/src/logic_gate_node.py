@@ -3,85 +3,99 @@ import rospy
 import numpy as np
 from duckietown_msgs.msg import BoolStamped
 
+
 class LogicGateNode(object):
-	def __init__(self):
-		self.node_name = rospy.get_name()
-		self.gate_type = rospy.get_param("~gate_type")
-		# validate gate_type
-		if not self.validateGateType():
-			rospy.signal_shutdown("Invalid gate_type.")
-			return
+    def __init__(self):
+        self.node_name = rospy.get_name()
+        self.gates_dict = rospy.get_param("~gates")
+        # validate gate
+        if not self._validateGates(self.gates_dict):
+            rospy.signal_shutdown("Invalid gate_type.")
+            return
 
-		self.inputs_dict = rospy.get_param("~inputs")
-		if not self.validateInputs():
-			rospy.signal_shutdown("Invalid input definition.")
-			return
+        self.events_dict = rospy.get_param("~events")
+        if not self._validateEvents():
+            rospy.signal_shutdown("Invalid event definition.")
+            return
 
-		self.sub_list = list()
-		self.input_msg_dict = dict()
-		self.last_published_msg = None
-		self.pub = rospy.Publisher(rospy.get_param("~output_topic"),BoolStamped,queue_size=1)
-		for input_name, input_dict in self.inputs_dict.items():
-			topic_name = input_dict["topic"]
-			# Initialze local copy as None
-			self.input_msg_dict[input_name] = None
-			self.sub_list.append(rospy.Subscriber(topic_name, BoolStamped, self.cbBoolStamped, callback_args=input_name))
+        self.sub_list = list()
+        self.pub_dict = dict()
+        self.event_msg_dict = dict()
+        self.event_trigger_dict = dict()
+        self.last_published_msg = None
+        for gate_name, gate_dict in self.gates_dict.items():
+            output_topic_name = gate_dict["output_topic"]
+            self.pub_dict[gate_name] = rospy.Publisher(output_topic_name, BoolStamped, queue_size=1)
+        for event_name, event_dict in self.events_dict.items():
+            topic_name = event_dict["topic"]
+            self.event_trigger_dict[event_name] = event_dict["trigger"]
+            # Initialze local copy as None
+            self.event_msg_dict[event_name] = None
+            self.sub_list.append(
+                rospy.Subscriber(topic_name, BoolStamped, self.cbBoolStamped, callback_args=event_name))
 
-	def validateInputs(self):
-		valid_flag = True
-		for input_name, input_dict in self.inputs_dict.items():
-			if "topic" not in input_dict:
-				rospy.logfatal("[%s] topic not defined for input %s" %(self.node_name,input_name))
-				valid_flag = False
-		return valid_flag
+    def _validateEvents(self):
+        valid_flag = True
+        for event_name, event_dict in self.events_dict.items():
+            if "topic" not in event_dict:
+                rospy.logfatal("[%s] topic not defined for event %s" % (self.node_name, event_name))
+                valid_flag = False
+        return valid_flag
 
-	def validateGateType(self):
-		valid_gate_types = ["AND","OR"]
-		if self.gate_type not in valid_gate_types:
-			rospy.logfatal("[%s] gate_type %s is not valid." %(self.node_name,self.gate_type))
-			return False
-		return True
+    def _validateGates(self, gates_dict):
+        valid_gate_types = ["AND", "OR"]
+        for gate_name, gate_dict in gates_dict.items():
+            gate_type = gate_dict["gate_type"]
+            if gate_type not in valid_gate_types:
+                rospy.logfatal("[%s] gate_type %s is not valid." % (self.node_name, self.gate_type))
+                return False
+        return True
 
-	def publish(self,msg):
-		if msg is None:
-			return
-		
-		if self.last_published_msg is not None:
-			if msg.data == self.last_published_msg.data:
-				# Only publish when data changes
-				return
+    def publish(self, msg, gate_name):
+        if msg is None:
+            return
+        self.pub_dict[gate_name].publish(msg)
 
-		self.pub.publish(msg)
-		self.last_published_msg = msg
 
-	def getOutputMsg(self):
-		bool_list = list()
-		latest_time_stamp = rospy.Time(0)
+    def getOutputMsg(self, gate_name, inputs):
+        bool_list = list()
+        latest_time_stamp = rospy.Time(0)
 
-		for input_name, input_msg in self.input_msg_dict.items():
-			if input_msg is None:
-				return None
-			bool_list.append(input_msg.data)
-			# Keeps track of latest timestamp
-			if input_msg.header.stamp >= latest_time_stamp:
-				latest_time_stamp = input_msg.header.stamp
-		
-		# Perform logic operation
-		msg = BoolStamped()
-		msg.header.stamp = latest_time_stamp
+        for event_name, event_msg in self.event_msg_dict.items():
+            if event_msg is None:
+                return None
+            if event_name in inputs:
+                if (event_msg.data == self.event_trigger_dict[event_name]):
+                    bool_list.append(True)
+                else:
+                    bool_list.append(False)
+                    # Keeps track of latest timestamp
+            if event_msg.header.stamp >= latest_time_stamp:
+                latest_time_stamp = event_msg.header.stamp
 
-		if self.gate_type == "AND":
-			msg.data = all(bool_list)
-		elif self.gate_type == "OR":
-			msg.data = any(bool_list)
-		return msg
+        # Perform logic operation
+        msg = BoolStamped()
+        msg.header.stamp = latest_time_stamp
 
-	def cbBoolStamped(self, msg, input_name):
-		self.input_msg_dict[input_name] = msg
-		self.publish(self.getOutputMsg())
+        gate = self.gates_dict.get(gate_name)
+        gate_type = gate.get("gate_type")
+        if gate_type == "AND":
+            msg.data = all(bool_list)
+        elif gate_type == "OR":
+            msg.data = any(bool_list)
+        print bool_list
+        return msg
 
-	def on_shutdown(self):
-	    rospy.loginfo("[%s] Shutting down." %(self.node_name))
+    def cbBoolStamped(self, msg, event_name):
+        self.event_msg_dict[event_name] = msg
+        for gate_name, gate_dict in self.gates_dict.items():
+            inputs = gate_dict.get("inputs")
+            if event_name in inputs:
+                self.publish(self.getOutputMsg(gate_name,inputs),gate_name)
+
+    def on_shutdown(self):
+        rospy.loginfo("[%s] Shutting down." % (self.node_name))
+
 
 if __name__ == '__main__':
     # Initialize the node with rospy

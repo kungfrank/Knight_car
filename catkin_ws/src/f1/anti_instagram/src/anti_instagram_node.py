@@ -16,6 +16,8 @@ class AntiInstagramNode():
 		self.node_name = rospy.get_name()
 
 		self.active = True
+		self.locked = False
+
 		self.image_pub_switch = rospy.get_param("~publish_corrected_image",False)
 		
         # Initialize publishers and subscribers
@@ -29,7 +31,7 @@ class AntiInstagramNode():
 		self.sub_click = rospy.Subscriber("~click", BoolStamped, self.cbClick, queue_size=1)
 
 		# Verbose option 
-		self.verbose = rospy.get_param('~verbose',True)  
+		self.verbose = rospy.get_param('line_detector_node/verbose',True)  
 
 		# Initialize health message
 		self.health = AntiInstagramHealth()
@@ -78,8 +80,7 @@ class AntiInstagramNode():
 				self.transform.s = [0,0,0,1,1,1]
 				self.pub_transform.publish(self.transform)
 				rospy.loginfo('ai: Color transform is turned OFF!')
-		else:
-			rospy.loginfo('No image seen yet')
+
 		
 	def processImage(self,msg):
 		'''

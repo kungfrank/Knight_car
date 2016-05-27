@@ -4,7 +4,8 @@ from __future__ import print_function
 import Tkinter as tk
 
 import rospy
-from duckietown_msgs.msg import FSMState, IntersectionDetection, VehicleDetection, TrafficLightDetection, \
+from std_msgs.msg import String
+from duckietown_msgs.msg import FSMState, SignalsDetection, \
     CoordinationClearance, CoordinationSignal
 
 
@@ -13,40 +14,34 @@ class FakeDuckiebot:
         self.node = rospy.init_node('fake_duckiebot', anonymous=True)
 
         # publishing
-        self.mode = FSMState.LANE_FOLLOWING
+        self.mode = None
         self.mode_pub = rospy.Publisher('~mode', FSMState, queue_size=10)
 
-        self.intersection_pub = rospy.Publisher('~intersection_detection', IntersectionDetection, queue_size=10)
-        self.intersection = IntersectionDetection.NONE
-
-        self.traffic_light_pub = rospy.Publisher('~traffic_light_detection', TrafficLightDetection, queue_size=10)
-        self.traffic_light = TrafficLightDetection.NA
-
-        self.right_veh_pub = rospy.Publisher('~right_vehicle_detection', VehicleDetection, queue_size=10)
-        self.right_veh = VehicleDetection.NO_CAR
-
-        self.opposite_veh_pub = rospy.Publisher('~opposite_vehicle_detection', VehicleDetection, queue_size=10)
-        self.opposite_veh = VehicleDetection.NO_CAR
+        self.signals_detection_pub = rospy.Publisher('~signals_detection', SignalsDetection, queue_size=10)
+        self.traffic_light = SignalsDetection.NO_TRAFFIC_LIGHT
+        self.right_veh = SignalsDetection.NO_CAR
+        self.opposite_veh = SignalsDetection.NO_CAR
 
         # subscribing
         self.clearance_to_go = CoordinationClearance.NA
-        self.clearance_to_go_sub = rospy.Subscriber('~clearance_to_go', CoordinationClearance,
+        self.clearance_to_go_sub = rospy.Subscriber('~clearance_to_go',
+                                                    CoordinationClearance,
                                                     self.clearance_to_go_callback)
 
-        self.roof_light = CoordinationSignal.SIGNAL_A
-        self.clearance_to_go_sub = rospy.Subscriber('~coordination_signal',
-                                                    CoordinationSignal, self.roof_light_callback)
+        self.emitted_signal = CoordinationSignal.OFF
+        self.clearance_to_go_sub = rospy.Subscriber('~change_color_pattern',
+                                                    String,
+                                                    self.emitted_signal_callback)
 
         self.gui = None
-
 
     def clearance_to_go_callback(self, msg):
         self.clearance_to_go = msg.status
         if self.gui:
             self.update_gui(self.gui)
 
-    def roof_light_callback(self, msg):
-        self.roof_light = msg.signal
+    def emitted_signal_callback(self, msg):
+        self.emitted_signal = msg.data
         if self.gui:
             self.update_gui(self.gui)
 
@@ -55,88 +50,69 @@ class FakeDuckiebot:
         self.update_gui(gui)
 
     def spin(self):
-        self.publish()
+        #self.publish()
+        pass
 
     def publish(self):
-        self.mode_pub.publish(FSMState(state=self.mode))
-        self.intersection_pub.publish(IntersectionDetection(type=self.intersection))
-        self.traffic_light_pub.publish(TrafficLightDetection(color=self.traffic_light))
+        if self.mode is not None:
+            self.mode_pub.publish(FSMState(state=self.mode))
+        self.signals_detection_pub.publish(SignalsDetection(front=self.opposite_veh,
+                                                            right=self.right_veh,
+                                                            traffic_light_state=self.traffic_light))
+    def publish_mode(self):
+        if self.mode is not None:
+            self.mode_pub.publish(FSMState(state=self.mode))
 
-        self.right_veh_pub.publish(VehicleDetection(detection=self.right_veh))
-
-        self.opposite_veh_pub.publish(VehicleDetection(detection=self.opposite_veh))
+    def publish_signals(self):
+        self.signals_detection_pub.publish(SignalsDetection(front=self.opposite_veh,
+                                                            right=self.right_veh,
+                                                            traffic_light_state=self.traffic_light))
 
     def set_mode(self, mode):
         self.mode = mode
         if self.gui:
             self.update_gui(self.gui)
-        self.publish()
+        self.publish_mode()
 
     def set_intersection(self, status):
         self.intersection = status
         if self.gui:
             self.update_gui(self.gui)
-        self.publish()
 
     def set_traffic_light(self, status):
         self.traffic_light = status
         if self.gui:
             self.update_gui(self.gui)
-        self.publish()
 
     def set_right_vehicle(self, status):
         self.right_veh = status
         if self.gui:
             self.update_gui(self.gui)
-        self.publish()
 
     def set_opposite_vehicle(self, status):
         self.opposite_veh = status
         if self.gui:
             self.update_gui(self.gui)
-        self.publish()
 
     def set_intersection_vehicle(self, status):
         self.intersection_veh = status
         if self.gui:
             self.update_gui(self.gui)
-        self.publish()
 
     def update_gui(self, gui):
-        if self.mode == FSMState.LANE_FOLLOWING:
-            gui.mode_var.set('Mode: LANE_FOLLOWING')
-        if self.mode == FSMState.COORDINATION:
-            gui.mode_var.set('Mode: COORDINATION_CONTROL')
-        if self.mode == FSMState.INTERSECTION_CONTROL:
-            gui.mode_var.set('Mode: INTERSECTION_CONTROL')
 
-        if self.intersection == IntersectionDetection.NONE:
-            gui.intersection_var.set('Int: NONE')
-        if self.intersection == IntersectionDetection.STOP:
-            gui.intersection_var.set('Int: STOP')
-        if self.intersection == IntersectionDetection.TRAFFIC_LIGHT:
-            gui.intersection_var.set('Int: TRAFFIC LIGHT')
+        if self.mode is not None:
+            gui.mode_var.set(self.mode)
 
-        values = ['TL: NA', 'TL: NONE', 'TL: GREEN', 'TL: YELLOW', 'TL: RED']
-        gui.traffic_light_var.set(values[self.traffic_light+1])
+        gui.traffic_light_var.set(self.traffic_light)
 
-        if self.right_veh == 0:
-            gui.right_veh_var.set("RV: No Car")
-        else:
-            values = ['RV: A', 'RV: B', 'RV: C']
-            gui.right_veh_var.set(values[self.right_veh-11])
-
-        if self.opposite_veh == 0:
-            gui.opposite_veh_var.set("OV: No Car")
-        else:
-            values = ['OV: A', 'OV: B', 'OV: C']
-            gui.opposite_veh_var.set(values[self.opposite_veh-11])
+        gui.right_veh_var.set('Right: ' + self.right_veh)
+        gui.opposite_veh_var.set('Opp.: ' + self.opposite_veh)
 
         values = ['Clearance: NA', 'Clearance: WAIT', 'Clearance: GO']
         gui.clearance_to_go_var.set(values[self.clearance_to_go+1])
 
-        values = ['Roof: A', 'Roof: B', 'Roof: C']
-        gui.roof_light_var.set(values[self.roof_light-11])
+        gui.roof_light_var.set('Emitted: ' + self.emitted_signal)
 
 
 class GUI:
@@ -149,47 +125,32 @@ class GUI:
         self.mode_label.pack(side=tk.TOP)
 
         tk.Button(self.root, text='Lane Navigation',
-                  command=lambda: self.duckiebot.set_mode(FSMState.LANE_FOLLOWING)).pack(side=tk.TOP)
+                  command=lambda: self.duckiebot.set_mode('LANE_FOLLOWING')).pack(side=tk.TOP)
 
         tk.Button(self.root, text='Coordination',
-                  command=lambda: self.duckiebot.set_mode(FSMState.COORDINATION)).pack(side=tk.TOP)
+                  command=lambda: self.duckiebot.set_mode('COORDINATION')).pack(side=tk.TOP)
 
         tk.Button(self.root, text='Intersection Nav.',
-                  command=lambda: self.duckiebot.set_mode(FSMState.INTERSECTION_CONTROL)).pack(side=tk.TOP)
-
-        self.intersection_var = tk.StringVar()
-        tk.Label(self.root, textvariable=self.intersection_var).pack(side=tk.TOP)
-
-        tk.Button(self.root, text='Int: None',
-                  command=lambda: self.duckiebot.set_intersection(IntersectionDetection.NONE))\
-            .pack(side=tk.TOP)
-
-        tk.Button(self.root, text='Int: Stop',
-                  command=lambda: self.duckiebot.set_intersection(IntersectionDetection.STOP))\
-            .pack(side=tk.TOP)
-
-        tk.Button(self.root, text='Int: Tr. Light',
-                  command=lambda: self.duckiebot.set_intersection(IntersectionDetection.TRAFFIC_LIGHT))\
-            .pack(side=tk.TOP)
+                  command=lambda: self.duckiebot.set_mode('INTERSECTION_CONTROL')).pack(side=tk.TOP)
 
         self.traffic_light_var = tk.StringVar()
         tk.Label(self.root, textvariable=self.traffic_light_var).pack(side=tk.TOP)
 
         tk.Button(self.root, text='TL: None',
-                  command=lambda: self.duckiebot.set_traffic_light(TrafficLightDetection.NA))\
+                  command=lambda: self.duckiebot.set_traffic_light(SignalsDetection.NO_TRAFFIC_LIGHT))\
             .pack(side=tk.TOP)
 
-        tk.Button(self.root, text='TL: Green',
-                  command=lambda: self.duckiebot.set_traffic_light(TrafficLightDetection.GREEN))\
+        tk.Button(self.root, text='TL: STOP',
+                  command=lambda: self.duckiebot.set_traffic_light(SignalsDetection.STOP))\
             .pack(side=tk.TOP)
 
 
-        tk.Button(self.root, text='TL: Yellow',
-                  command=lambda: self.duckiebot.set_traffic_light(TrafficLightDetection.YELLOW))\
+        tk.Button(self.root, text='TL: YIELD',
+                  command=lambda: self.duckiebot.set_traffic_light(SignalsDetection.YIELD))\
             .pack(side=tk.TOP)
 
-        tk.Button(self.root, text='TL: Red',
-                  command=lambda: self.duckiebot.set_traffic_light(TrafficLightDetection.RED))\
+        tk.Button(self.root, text='TL: GO',
+                  command=lambda: self.duckiebot.set_traffic_light(SignalsDetection.GO))\
             .pack(side=tk.TOP)
 
 
@@ -197,39 +158,42 @@ class GUI:
         tk.Label(self.root, textvariable=self.right_veh_var).pack(side=tk.TOP)
 
         tk.Button(self.root, text='RVeh: NA',
-                  command=lambda: self.duckiebot.set_right_vehicle(VehicleDetection.NO_CAR))\
+                  command=lambda: self.duckiebot.set_right_vehicle(SignalsDetection.NO_CAR))\
             .pack(side=tk.TOP)
 
         tk.Button(self.root, text='RVeh: A',
-                  command=lambda: self.duckiebot.set_right_vehicle(VehicleDetection.SIGNAL_A))\
+                  command=lambda: self.duckiebot.set_right_vehicle(SignalsDetection.SIGNAL_A))\
             .pack(side=tk.TOP)
 
         tk.Button(self.root, text='RVeh: B',
-                  command=lambda: self.duckiebot.set_right_vehicle(VehicleDetection.SIGNAL_B))\
+                  command=lambda: self.duckiebot.set_right_vehicle(SignalsDetection.SIGNAL_B))\
             .pack(side=tk.TOP)
 
         tk.Button(self.root, text='RVeh: C',
-                  command=lambda: self.duckiebot.set_right_vehicle(VehicleDetection.SIGNAL_C))\
+                  command=lambda: self.duckiebot.set_right_vehicle(SignalsDetection.SIGNAL_C))\
             .pack(side=tk.TOP)
 
         self.opposite_veh_var = tk.StringVar()
         tk.Label(self.root, textvariable=self.opposite_veh_var).pack(side=tk.TOP)
 
         tk.Button(self.root, text='OVeh: NA',
-                  command=lambda: self.duckiebot.set_opposite_vehicle(VehicleDetection.NO_CAR))\
+                  command=lambda: self.duckiebot.set_opposite_vehicle(SignalsDetection.NO_CAR))\
             .pack(side=tk.TOP)
 
         tk.Button(self.root, text='OVeh: A',
-                  command=lambda: self.duckiebot.set_opposite_vehicle(VehicleDetection.SIGNAL_A))\
+                  command=lambda: self.duckiebot.set_opposite_vehicle(SignalsDetection.SIGNAL_A))\
             .pack(side=tk.TOP)
 
         tk.Button(self.root, text='OVeh: B',
-                  command=lambda: self.duckiebot.set_opposite_vehicle(VehicleDetection.SIGNAL_B))\
+                  command=lambda: self.duckiebot.set_opposite_vehicle(SignalsDetection.SIGNAL_B))\
             .pack(side=tk.TOP)
 
         tk.Button(self.root, text='OVeh: C',
-                  command=lambda: self.duckiebot.set_opposite_vehicle(VehicleDetection.SIGNAL_C))\
+                  command=lambda: self.duckiebot.set_opposite_vehicle(SignalsDetection.SIGNAL_C))\
             .pack(side=tk.TOP)
+
+        tk.Button(self.root, text='Publish Signals',
+                  command=lambda: self.duckiebot.publish_signals()).pack(side=tk.TOP)
 
         self.clearance_to_go_var = tk.StringVar()
         tk.Label(self.root, textvariable=self.clearance_to_go_var).pack(side=tk.TOP)

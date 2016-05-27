@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import rospkg
-from sensor_msgs.msg import CameraInfo, CompressedImage
+from sensor_msgs.msg import CameraInfo, CompressedImage, Image
 import os.path
 import yaml
 
@@ -12,6 +12,7 @@ class CamInfoReader(object):
         # self.pub_freq       = self.setupParam("~pub_freq",1.0)
         self.config         = self.setupParam("~config","baseline")
         self.cali_file_name = self.setupParam("~cali_file_name","default")
+        self.image_type = self.setupParam("~image_type", "compressed")
 
         # Setup publisher
         self.pub_camera_info = rospy.Publisher("~camera_info",CameraInfo,queue_size=1)
@@ -35,7 +36,11 @@ class CamInfoReader(object):
         self.camera_info_msg.header.frame_id = rospy.get_namespace() + "camera_optical_frame"
         rospy.loginfo("[%s] CameraInfo: %s" %(self.node_name,self.camera_info_msg))
         # self.timer_pub = rospy.Timer(rospy.Duration.from_sec(1.0/self.pub_freq),self.cbTimer)
-        self.sub_img_compressed = rospy.Subscriber("~compressed_image",CompressedImage,self.cbCompressedImage,queue_size=1)
+
+        img_type = CompressedImage if self.image_type == "compressed" else Image
+        typemsg = "CompressedImage" if self.image_type == "compressed" else "Image"
+        rospy.logwarn("[%s] ==============%s",self.node_name, typemsg)
+        self.sub_img_compressed = rospy.Subscriber("~compressed_image",img_type,self.cbCompressedImage,queue_size=1)
     
     def cbCompressedImage(self,msg):
         if self.camera_info_msg is not None:

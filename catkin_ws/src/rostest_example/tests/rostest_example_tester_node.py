@@ -43,7 +43,7 @@ class RostestExampleTesterNode(unittest.TestCase):
         self.pub_list.publish(msg_list)
 
         # Wait for the message to be received
-        timeout = rospy.Time.now() + rospy.Duration(5) # Wait at most 5 seconds for the node to reply
+        timeout = rospy.Time.now() + rospy.Duration(10) # Wait at most 10 seconds for the node to reply
         while not self.msg_received and not rospy.is_shutdown() and rospy.Time.now() < timeout:
             rospy.sleep(0.1)
 

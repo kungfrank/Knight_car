@@ -53,6 +53,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   CarControl.msg
+  CoordinationSignal.msg
   DuckieSensor.msg
   LanePose.msg
 #  LEDControl.msg
@@ -62,10 +63,12 @@ add_message_files(
   WheelsCmd.msg
   WheelsCmdStamped.msg
   Pose2DStamped.msg
+  SignalsDetection.msg
   Twist2DStamped.msg
-  TagDetection.msg
+  AprilTagDetection.msg
+  AprilTagDetectionArray.msg
+  AprilTagsWithInfos.msg
   TagInfo.msg
-  AprilTags.msg
   Pixel.msg
   Vector2D.msg
   Segment.msg
@@ -73,16 +76,18 @@ add_message_files(
   Rect.msg
   Rects.msg
   SceneSegments.msg
+  SourceTargetNodes.msg
   CoordinationClearance.msg
 #  IntersectionDetection.msg
 #  CoordinationSignal.msg
 #  TrafficLightDetection.msg
   VehicleCorners.msg
   VehiclePose.msg
-  VehicleDetection.msg
+#  VehicleDetection.msg
   FSMState.msg
   BoolStamped.msg
   StopLineReading.msg
+  LEDInterpreter.msg
   AntiInstagramHealth.msg
   AntiInstagramTransform.msg
   KinematicsWeights.msg
@@ -95,6 +100,7 @@ add_message_files(
   ObstacleImageDetectionList.msg
   ObstacleProjectedDetection.msg
   ObstacleProjectedDetectionList.msg
+
 )
 
 ## Generate services in the 'srv' folder
@@ -152,8 +158,13 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES duckietown_msgs
-   CATKIN_DEPENDS geometry_msgs roscpp rospy sensor_msgs std_msgs message_runtime visualization_msgs
-
+   CATKIN_DEPENDS
+   geometry_msgs
+   roscpp rospy
+   sensor_msgs
+   std_msgs
+   message_runtime
+   visualization_msgs
 #  DEPENDS system_lib
 )
 

@@ -92,6 +92,9 @@ duckmobile:
 starducks:
   name: Teddy
 
+ferrari:
+  name: Luca!
+
 redrover:
   name: Michael
 
@@ -139,9 +142,6 @@ kitt:
   mac: b8:ca:3a:c9:73:e9
 
 tesla:
-  name: Hang Zhao
-
-shamrock:
   name: Hang Zhao
 
 ernie:

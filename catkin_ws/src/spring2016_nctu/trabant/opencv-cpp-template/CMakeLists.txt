@@ -28,7 +28,6 @@ catkin_package(
 )
 
 include_directories(
-  include/AprilTags
   include
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
@@ -41,7 +40,7 @@ include_directories(
 
 add_executable(opencv_cpp_template_node src/opencv_cpp_template_node.cpp)
 add_dependencies(opencv_cpp_template_node ${catkin_EXPORTED_TARGETS})
-target_link_libraries(opencv_cpp_template_node ${catkin_LIBRARIES} apriltags)
+target_link_libraries(opencv_cpp_template_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
 
 # find_package(OpenCV)

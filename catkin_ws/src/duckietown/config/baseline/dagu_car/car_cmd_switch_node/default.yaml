@@ -19,3 +19,4 @@ mappings: #Mapping from FSMStates.state to cmd source names. Allows different FS
   LANE_RECOVERY:     "recovery"
   INTERSECTION_RECOVERY: "recovery"
   PARALLEL_AUTONOMY: "parallel_autonomy"  
+  LOCALIZATION: "stop"

@@ -1,0 +1,20 @@
+<launch>
+	<arg name="veh" default="$(env VEHICLE_NAME)"/>
+<remap from="camera_node/image/compressed" to="/ada/camera_node/image/compressed"/>
+	<!-- start basic args -->
+	<include file="$(find duckietown_demos)/launch/master_bagtest.launch">
+		<arg name="veh" value="$(arg veh)"/>
+		<arg name="fsm_file_name" value="parallel_autonomy" />
+		<arg name="visualization" value="false" />
+		<arg name="navigation" value="true"/>
+		<arg name="/navigation/apriltags_random" value="false"/>
+		<arg name="/navigation/graph_planner" value="false"/>
+   		<arg name="/navigation/intersection_control" value="true"/>
+		<arg name="apriltags" value="true" />
+		<arg name="/camera/raw" value="true"/>
+		<arg name="parallel_autonomy" value="true"/>
+
+	<!--<arg name="camera" value="false"/>-->
+
+	</include>
+</launch>

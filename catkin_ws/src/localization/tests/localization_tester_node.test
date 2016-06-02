@@ -1,0 +1,21 @@
+<launch>
+    <arg name="pkg_name" value="localization"/>
+    <arg name="node_name" default="localization_tester_node"/>
+
+    <arg name="veh" default="testbot" doc="Name of vehicle. ex: megaman"/>
+    <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman."/>
+
+    <!-- Run the node -->
+    <include file="$(find localization)/launch/localization_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+    </include>
+
+    <!-- Run a static transform to test with -->
+    <node pkg="tf" type="static_transform_publisher" name="test_tag_100_broadcaster" args="1 1 0 0 0 0 1 world tag_100 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="test_tag_101_broadcaster" args="2 2 0 0 0 1 0 world tag_101 100"/>
+
+    <!-- Run unit test -->
+    <remap from="localization_tester_node/apriltags" to="localization_node/apriltags" />
+    <test test-name="localization_tester_node" pkg="localization" type="localization_tester_node.py" ns="$(arg veh)"/>
+</launch>

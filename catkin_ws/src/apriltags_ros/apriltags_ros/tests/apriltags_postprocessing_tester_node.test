@@ -1,0 +1,19 @@
+<launch>
+    <arg name="pkg_name" value="apriltags_ros"/>
+    <arg name="node_name" default="apriltags_postprocessing_tester_node"/>
+
+    <arg name="veh" default="testbot" doc="Name of vehicle. ex: megaman"/>
+    <arg name="param_file_name" default="test_default" doc="Specify a param file. ex:megaman."/>
+
+    <!-- Run the node -->
+    <include file="$(find apriltags_ros)/launch/apriltags_postprocessing_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+    </include>
+
+    <!-- Run unit test -->
+    <remap from="apriltags_postprocessing_tester_node/apriltags_in" to="apriltags_postprocessing_node/apriltags_in"/>
+    <remap from="apriltags_postprocessing_tester_node/apriltags_out" to="apriltags_postprocessing_node/apriltags_out"/>
+    <test test-name="apriltags_postprocessing_tester_node" pkg="apriltags_ros"
+          type="apriltags_postprocessing_tester_node.py" ns="$(arg veh)"/>
+</launch>

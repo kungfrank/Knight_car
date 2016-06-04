@@ -4,13 +4,16 @@
 	<arg name="veh" default="$(env VEHICLE_NAME)"/>
 	<arg name="config" default="baseline" />
 	<arg name="param_file_name" default="default" />
+	<arg name="apriltags_param_file_name" default="$(arg param_file_name)" />
 	<arg name="fsm_file_name" default="default" />
 	<arg name="visualization" default="true" />
 	<arg name="verbose" default="false" />
 	<arg name="statistics" default="false"/>
+	<arg name="map_name" default="duckietown_map"/>
 	<arg name="anti_instagram" default="true"/>
 	<arg name="loc" default="-1"/>
 	<arg name="line_detector_param_file_name" default="$(arg param_file_name)"/>
+	<arg name="intersectionType" />
 	<!-- end basic args -->
  
 <!-- the things that are "on" by default: 
@@ -27,6 +30,8 @@
 	<arg name="camera" default="true"/>
 	<arg name="/camera/raw" default="false"/>
 	<arg name="/camera/cam_info" default="true"/>
+	<arg name="/camera/raw/rect" default="false"/>
+	<arg name="/camera/local" default="false" />
 
 	<arg name="wheels" default="true"/>
 
@@ -54,12 +59,11 @@
 	<arg name="/vehicle_avoidance/control" default="true"/>
 
 	<arg name="apriltags" default="false"/>
-	<arg name="/apriltags/preprocessing" default="true"/>
-	<arg name="/apriltags/global" default="true"/>
-	<arg name="/apriltags/fast" default="false" /> <!-- default to false for fast apriltags -->
-	<arg name="/apriltags/postprocessing" default="true" />
+	<arg name="/apriltags/local" default="false" />
+
 
 	<arg name="LED" default="true" />
+	<arg name="/LED/pattern_switch" default="false" />
 	<arg name="/LED/detector" default="false" />
 	<arg name="/LED/joystick" default="false" />
 	<arg name="/LED/emitter"  default="true" />
@@ -75,6 +79,7 @@
 	<arg name="navigation" default="false"/>
 	<arg name="/navigation/intersection_control" default="true"/>
 	<arg name="/navigation/apriltags_random" default="true"/>
+	<arg name="/navigation/random_sr_turns" default="false"/>
 	<arg name="/navigation/graph_planner" default="false"/>
 	<!-- NOTE: either apriltags_random or graph_planner but not both -->
 
@@ -83,6 +88,11 @@
 	<arg name="global_localizer" default="false"/>
 
 	<arg name="SLAM" default="false"/>
+
+	<arg name="localization" default="false"/>
+	<arg name="/localization/local" default="false" />
+	<arg name="/localization/map_name" default="open_house_dp6" />
+	<arg name="/localization/gui" default="false"/>
 
 	<!-- end switch args -->
 	
@@ -96,26 +106,54 @@
 			<arg name="config" value="$(arg config)"/>
 			<arg name="param_file_name" value="$(arg param_file_name)"/>
 		</include>
-		<!-- decoder_node -->
+
+		<!-- cam_info_reader_node -->
+		<group if="$(arg /camera/cam_info)">
+			<remap from="cam_info_reader_node/camera_info" to="camera_node/camera_info"/>
+			<remap from="cam_info_reader_node/compressed_image" to="camera_node/image/compressed"/>
+			<include file="$(find pi_camera)/launch/cam_info_reader_node.launch">
+				<arg name="veh" value="$(arg veh)"/>
+				<arg name="config" value="$(arg config)"/>
+				<arg name="param_file_name" value="$(arg param_file_name)"/>
+			</include>
+		</group>
+
+
 		<group if="$(arg /camera/raw)">
+
+			<!-- decoder_node -->
 			<remap from="decoder_node/compressed_image" to="camera_node/image/compressed"/>
 			<remap from="decoder_node/image/raw" to="camera_node/image/raw"/>
 			<include file="$(find pi_camera)/launch/decoder_node.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
 				<arg name="param_file_name" value="$(arg param_file_name)"/>
+				<arg name="local" value="$(arg /camera/local)" />
 			</include>
-		</group>
-	
-		<!-- cam_info_reader_node -->
-		<group if="$(arg /camera/cam_info)">
-			<remap from="cam_info_reader_node/camera_info" to="camera_node/camera_info"/>
-			<remap from="cam_info_reader_node/compressed_image" to="camera_node/image/compressed"/>
-			<include file="$(find pi_camera)/launch/cam_info_reader_node.launch"> 
+
+			<!-- Raw camera_info_reader node -->
+			<remap from="raw_cam_info_reader_node/camera_info" to="camera_node/raw_camera_info"/>
+			<remap from="raw_cam_info_reader_node/compressed_image" to="camera_node/image/raw"/>
+			<include file="$(find pi_camera)/launch/cam_info_reader_node.launch">
 				<arg name="veh" value="$(arg veh)"/>
+				<arg name="local" value="$(arg /camera/local)" />
 				<arg name="config" value="$(arg config)"/>
-				<arg name="param_file_name" value="$(arg param_file_name)"/>            
+				<arg name="param_file_name" value="$(arg param_file_name)"/>
+                <arg name="cali_file_name" value="$(arg veh)_rect" />
+				<arg name="node_name" value="raw_cam_info_reader_node" />
+				<arg name="image_type" value="raw" />
 			</include>
+
+			<group if="$(arg /camera/raw/rect)">
+				<!-- Rectification -->
+				<remap from="image_raw" to="camera_node/image/raw"/>
+				<remap from="camera_info" to="camera_node/raw_camera_info"/>
+				<remap from="image_rect_color" to="camera_node/image/rect" />
+				<include file="$(find pi_camera)/launch/image_proc_node.launch">
+					<arg name="veh" value="$(arg veh)"/>
+					<arg name="local" value="$(arg /camera/local)" />
+				</include>
+			</group>
 		</group>
 	</group>
 	<!-- End Camera -->
@@ -204,8 +242,6 @@
 
 	<!-- Start Lane Following -->
 	<group if="$(arg lane_following)">
-
-
 
 		<!-- Line Detector -->
 		<group if="$(arg /lane_following/line_detection)">
@@ -333,82 +369,32 @@
 	
 	<!-- Start April Tags -->
 	<group if="$(arg apriltags)">
-
-		<!-- Preprocessing -->
-		<group if="$(arg /apriltags/preprocessing)">
-			<remap from="apriltags_preprocessing_node/image_in" to="camera_node/image/raw"/>
-			<include file="$(find apriltags)/launch/apriltags_preprocessing_node.launch">
-				<arg name="veh" value="$(arg veh)"/>
-				<arg name="config" value="$(arg config)"/>
-				<arg name="param_file_name" value="$(arg param_file_name)"/>
-			</include>
-		</group>
-		
-		<!-- Global -->
-		<group if="$(arg  /apriltags/global)">
-			<remap from="apriltags_global_node/image_raw" to="apriltags_preprocessing_node/global_image_raw"/>
-			<remap from="apriltags_global_node/camera_info" to="camera_node/camera_info"/>
-			<include file="$(find apriltags)/launch/apriltags_node.launch">
-				<arg name="veh" value="$(arg veh)"/>
-				<arg name="sub_node_name" value="global"/>
-				<arg name="config" value="$(arg config)"/>
-				<arg name="param_file_name" value="$(arg param_file_name)"/>
-			</include>
-		 
-		<group if="$(arg /apriltags/postprocessing)">
-		<remap from="apriltags_postprocessing_global_node/apriltags_in" to="apriltags_global_node/apriltags"/> 	
-	<include file="$(find apriltags)/launch/apriltags_postprocessing_node.launch">
-		<arg name="veh" value="$(arg veh)"/>
-		<arg name="sub_node_name" value="global"/>
-		<arg name="loc" value="$(arg loc)"/>
-		<arg name="param_file_name" value="$(arg param_file_name)"/>
-		<arg name="config" value="$(arg config)"/>
-	</include>
-			</group>
-		</group>
-		
-		<!-- Fast -->
-		<group if="$(arg  /apriltags/fast)">
-			<remap from="apriltags_fast_node/image_raw" to="apriltags_preprocessing_node/fast_image_raw"/>
-			<remap from="apriltags_fast_node/camera_info" to="camera_node/camera_info"/>      
-			<include file="$(find apriltags)/launch/apriltags_node.launch">
-				<arg name="veh" value="$(arg veh)"/>
-				<arg name="sub_node_name" value="fast"/>
-				<arg name="config" value="$(arg config)"/>
-				<arg name="param_file_name" value="$(arg param_file_name)"/>
-			</include>
-	
-			<group if="$(arg /apriltags/postprocessing)">
-				<remap from="apriltags_postprocessing_fast_node/apriltags_in" to="apriltags_fast_node/apriltags"/> 	
-				<include file="$(find apriltags)/launch/apriltags_postprocessing_node.launch">
-					<arg name="veh" value="$(arg veh)"/>
-					<arg name="sub_node_name" value="fast"/>
-					<arg name="loc" value="$(arg loc)"/>
-					<arg name="param_file_name" value="$(arg param_file_name)"/>
-					<arg name="config" value="$(arg config)"/>
-				</include>
-			</group>
-		</group>
-
-		<!-- Visualization -->
-		<group if="$(arg visualization)">
-			<remap from="apriltags_visualizer_fast_node/apriltags_in" to="apriltags_postprocessing_fast_node/apriltags_out"/>
-			<remap from="apriltags_visualizer_global_node/apriltags_in" to="apriltags_postprocessing_global_node/apriltags_out"/>
-			<include file="$(find apriltags)/launch/apriltags_visualizer_node.launch">
-				<arg name="veh" value="$(arg veh)"/>
-				<arg name="sub_node_name" value="fast"/>
-			</include>
-			<include file="$(find apriltags)/launch/apriltags_visualizer_node.launch">
-				<arg name="veh" value="$(arg veh)"/>
-				<arg name="sub_node_name" value="global"/>
-			</include>
-		</group>
+		<!-- AprilTags Detections -->
+		<remap from="image_rect" to="camera_node/image/rect" />
+		<remap from="camera_node/image/camera_info" to="camera_node/raw_camera_info" />
+		<remap from="apriltags_detector_node/image_raw" to="camera_node/image/rect"/>
+		<remap from="apriltags_detector_node/camera_info" to="camera_node/raw_camera_info"/>
+		<include file="$(find apriltags_ros)/launch/apriltag_detector_node.launch">
+			<arg name="veh" value="$(arg veh)"/>
+			<arg name="local" value="$(arg /apriltags/local)"/>
+			<arg name="config" value="$(arg config)"/>
+			<arg name="param_file_name" value="$(arg param_file_name)"/>
+		</include>
+		<!-- Postprocessing node -->
+		<remap from="apriltags_postprocessing_node/apriltags_in" to="tag_detections" />
+		<include file="$(find apriltags_ros)/launch/apriltags_postprocessing_node.launch">
+			<arg name="veh" value="$(arg veh)"/>
+			<arg name="local" value="$(arg /apriltags/local)"/>
+			<arg name="config" value="$(arg config)"/>
+			<arg name="param_file_name" value="$(arg param_file_name)"/>
+		</include>
 	</group>
 	<!--End Apriltags -->
 
 	<!-- Start LEDs Detection -->
 	<group if="$(arg LED)">
 		
+
 		<!-- Detection -->
 		<group if="$(arg /LED/detector)">
 			<include file="$(find led_detection)/launch/LED_detection.launch">
@@ -418,6 +404,7 @@
 			</include>
 		</group>
 
+        <!--remap from="led_joy_mapper_node/change_color_pattern" to="led_emitter_node/change_color_pattern" /-->
 		<group if="$(arg /LED/joystick)">
 			<include file="$(find led_joy_mapper)/launch/led_joy_mapper_node.launch">
 				<arg name="veh" value="$(arg veh)"/>
@@ -425,21 +412,33 @@
 				<arg name="param_file_name" value="$(arg param_file_name)"/>
 			</include>
 		</group>
-
+		
+		<remap from="led_pattern_switch_node/change_color_pattern" to="led_emitter_node/change_color_pattern" />    
+		<group if="$(arg /LED/pattern_switch)">
+			<include file="$(find led_emitter)/launch/led_pattern_switch_node.launch">
+				<arg name="veh" value="$(arg veh)"/>
+				<arg name="config" value="$(arg config)"/>
+				<arg name="param_file_name" value="$(arg param_file_name)"/>
+			</include>    
+		</group>
+        
 		<group if="$(arg /LED/emitter)">
 			<include file="$(find led_emitter)/launch/led_emitter_node.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
 				<arg name="param_file_name" value="$(arg param_file_name)"/>
+
 			</include>
 		</group>
 
 		<!-- TODO do we need some remappings here? -->
+		<remap from="LED_interpreter_node/raw_led_detection" to="LED_detector_node/raw_led_detection" />
 		<group if="$(arg /LED/interpreter)">
-			<include file="$(find led_interpreter)/launch/led_interpreter_node.launch">
+			<include file="$(find led_interpreter)/launch/LED_interpreter.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
 				<arg name="param_file_name" value="$(arg param_file_name)"/>
+				<arg name="intersectionType" value="$(arg intersectionType)" />
 			</include>
 		</group>
 		
@@ -485,10 +484,14 @@
 	<group if="$(arg coordination)">
 		<!-- Vehicle Coordinator-->
 		<remap from="simple_coordinator_node/mode" to="fsm_node/mode" />
+		<remap from="simple_coordinator_node/signals_detection" to="LED_interpreter_node/signals_detection" />
+		<!--the following remap is done through led_patter_switch_node -->
+        <!--remap from="simple_coordinator_node/change_color_pattern" to="led_emitter_node/change_color_pattern" /-->
 		<include file="$(find veh_coordinator)/launch/simple_coordinator_node.launch">
 			<arg name="veh" value="$(arg veh)"/>        
 			<arg name="config" value="$(arg config)"/>        
-			<arg name="param_file_name" value="$(arg param_file_name)"/>        
+			<arg name="param_file_name" value="$(arg param_file_name)"/>    
+            <arg name="intersectionType" value="$(arg intersectionType)" />    
 		</include>
 	</group>
 
@@ -522,10 +525,22 @@
 			</include>
 		</group>
 
+        <group if="$(arg /navigation/random_sr_turns)">
+			<!-- random april tags -->
+			<remap from="sr_turns_node/mode" to="fsm_node/mode"/>
+			<remap from="sr_turns_node/turn_type" to="open_loop_intersection_control_node/turn_type"/> <!-- remapping outputs since there are two different possible turn types -->
+
+			<include file="$(find navigation)/launch/sr_turns_node.launch">
+				<arg name="veh" value="$(arg veh)"/>        
+				<arg name="config" value="$(arg config)"/>        
+				<arg name="param_file_name" value="$(arg param_file_name)"/>        
+			</include>
+		</group>
+
 		<group if="$(arg /navigation/apriltags_random)">
 			<!-- random april tags -->
 			<remap from="random_april_tag_turns_node/mode" to="fsm_node/mode"/>
-			<remap from="random_april_tag_turns_node/tag"  to="apriltags_postprocessing_global_node/apriltags_out"/>
+			<remap from="random_april_tag_turns_node/tag"  to="apriltags_postprocessing_node/apriltags_out"/>
 			<remap from="random_april_tag_turns_node/turn_type" to="open_loop_intersection_control_node/turn_type"/> <!-- remapping outputs since there are two different possible turn types -->
 
 			<include file="$(find navigation)/launch/random_april_tag_turns_node.launch">
@@ -536,12 +551,21 @@
 		</group>
 
 		<group if="$(arg /navigation/graph_planner)">
-		<remap from="actions_dispatcher/turn_type" to="open_loop_intersection_node/turn_type" /> <!-- remapping outputs since there are two different possible turn types -->
-			<include file="$(find navigation)/launch/graph_search_server.launch">
+			<remap from="actions_dispatcher_node/fsm_mode" to="fsm_node/mode" />
+			<remap from="actions_dispatcher_node/turn_type" to="open_loop_intersection_control_node/turn_type" /> <!-- remapping outputs since there are two different possible turn types -->
+
+			<include file="$(find navigation)/launch/graph_search_server_node.launch">
 				<arg name="map_name" value="$(arg map_name)"/>        
-				<arg name="draw_solution" value="$(arg draw_solution)"/>   
-				<arg name="veh" value="$(arg veh)"/>   
+				<arg name="veh" value="$(arg veh)"/>
+				<arg name="config" value="$(arg config)"/>        
+				<arg name="param_file_name" value="$(arg param_file_name)"/>        
 			</include>
+
+	        	<include file="$(find navigation)/launch/actions_dispatcher_node.launch">
+ 				<arg name="veh" value="$(arg veh)"/>        
+				<arg name="config" value="$(arg config)"/>        
+				<arg name="param_file_name" value="$(arg fsm_file_name)"/>        
+        		</include>
 		</group>
 		
 	</group>
@@ -553,7 +577,17 @@
 		<remap from="lane_supervisor_node/car_cmd_joy" to="joy_mapper_node/car_cmd"/>
 		<remap from="lane_supervisor_node/car_cmd_lane" to="lane_controller_node/car_cmd"/>
 		<remap from="lane_supervisor_node/stop_line_reading" to="stop_line_filter_node/stop_line_reading"/>
+		<remap from="intersection_supervisor_node/mode" to="fsm_node/mode"/>
+		<remap from="intersection_supervisor_node/joy" to="joy"/>
+		<remap from="intersection_supervisor_node/turn_type" to="open_loop_intersection_control_node/turn_type" /> 
+		<remap from="intersection_supervisor_node/tag"  to="apriltags_postprocessing_node/apriltags_out"/>
+		<remap from="intersection_supervisor_node/intersection_done" to="open_loop_intersection_control_node/intersection_done"/>
 		<include file="$(find parallel_autonomy)/launch/lane_supervisor_node.launch">
+			<arg name="veh" value="$(arg veh)"/>
+			<arg name="config" value="$(arg config)"/>
+			<arg name="param_file_name" value="$(arg param_file_name)"/>        
+		</include>
+		<include file="$(find parallel_autonomy)/launch/intersection_supervisor_node.launch">
 			<arg name="veh" value="$(arg veh)"/>
 			<arg name="config" value="$(arg config)"/>
 			<arg name="param_file_name" value="$(arg param_file_name)"/>        
@@ -584,5 +618,25 @@
       </include>
 </group>
 	<!-- End anti-instagram -->
+
+	<!-- Start localization -->
+	<group if="$(arg localization)">
+		<!-- duckietown_description -->
+		<include file="$(find duckietown_description)/launch/duckietown_description_node.launch">
+			<arg name="veh" value="$(arg veh)"/>
+			<arg name="gui" value="$(arg /localization/gui)"/>
+			<arg name="map_name" value="$(arg /localization/map_name)"/>
+		</include>
+
+		<!-- localization -->
+		<remap from="localization_node/apriltags" to="apriltags_postprocessing_node/apriltags_out"/>
+		<include file="$(find localization)/launch/localization_node.launch">
+			<arg name="veh" value="$(arg veh)"/>
+			<arg name="local" value="$(arg /localization/local)"/>
+			<arg name="config" value="$(arg config)"/>
+			<arg name="param_file_name" value="$(arg param_file_name)"/>
+		</include>
+	</group>
+	<!-- End localization -->
 
 </launch>

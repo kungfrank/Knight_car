@@ -1,0 +1,23 @@
+camera_matrix:
+  cols: 3
+  data: [639.0753490176633, 0.0, 284.9825631289737, 0.0, 641.7855026627603, 276.04327420565744,
+    0.0, 0.0, 1.0]
+  rows: 3
+camera_name: mocap01/camera_node
+distortion_coefficients:
+  cols: 5
+  data: [0.040239720016576275, -0.08725201909294757, 0.01899013167090593, -0.015405713209165981,
+    0.0]
+  rows: 1
+distortion_model: plumb_bob
+image_height: 480
+image_width: 640
+projection_matrix:
+  cols: 4
+  data: [643.34765625, 0.0, 276.0833382027922, 0.0, 0.0, 646.9327392578125, 282.5419322073503,
+    0.0, 0.0, 0.0, 1.0, 0.0]
+  rows: 3
+rectification_matrix:
+  cols: 3
+  data: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+  rows: 3

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import numpy
-from duckietown_msgs.msg import FSMState, AprilTags, BoolStamped
+from duckietown_msgs.msg import FSMState, AprilTagsWithInfos, BoolStamped
 from std_msgs.msg import String, Int16 #Imports msg
 
 class RandomAprilTagTurnsNode(object):
@@ -13,12 +13,20 @@ class RandomAprilTagTurnsNode(object):
         rospy.loginfo("[%s] Initialzing." %(self.node_name))
 
         # Setup publishers
+        # self.pub_topic_a = rospy.Publisher("~topic_a",String, queue_size=1)
         self.pub_turn_type = rospy.Publisher("~turn_type",Int16, queue_size=1, latch=True)
 
         # Setup subscribers
+        # self.sub_topic_b = rospy.Subscriber("~topic_b", String, self.cbTopic)
         self.sub_topic_mode = rospy.Subscriber("~mode", FSMState, self.cbMode, queue_size=1)
-        self.sub_topic_tag = rospy.Subscriber("~tag", AprilTags, self.cbTag, queue_size=1)
+        self.sub_topic_tag = rospy.Subscriber("~tag", AprilTagsWithInfos, self.cbTag, queue_size=1)
        
+
+        # Read parameters
+        self.pub_timestep = self.setupParameter("~pub_timestep",1.0)
+        # Create a timer that calls the cbTimer function every 1.0 second
+        #self.timer = rospy.Timer(rospy.Duration.from_sec(self.pub_timestep),self.cbTimer)
+
         rospy.loginfo("[%s] Initialzed." %(self.node_name))
 
         self.rate = rospy.Rate(30) # 10hz
@@ -26,10 +34,10 @@ class RandomAprilTagTurnsNode(object):
     def cbMode(self, mode_msg):
         #print mode_msg
         self.fsm_mode = mode_msg.state
-        if(self.fsm_mode != "INTERSECTION_CONTROL"):
+        if(self.fsm_mode != mode_msg.INTERSECTION_CONTROL):
             self.turn_type = -1
             self.pub_turn_type.publish(self.turn_type)
-            rospy.loginfo("[%s] Turn type: %i" %(self.node_name, self.turn_type))
+            rospy.loginfo("Turn type now: %i" %(self.turn_type))
             
     def cbTag(self, tag_msgs):
         if(self.fsm_mode == "INTERSECTION_CONTROL"):
@@ -50,14 +58,14 @@ class RandomAprilTagTurnsNode(object):
                     elif (signType == taginfo.T_INTERSECTION):
                         availableTurns = [0,2]
 
-                    #now randomly choose a possible direction
+                        #now randomly choose a possible direction
                     if(len(availableTurns)>0):
                         randomIndex = numpy.random.randint(len(availableTurns))
                         chosenTurn = availableTurns[randomIndex]
                         self.turn_type = chosenTurn
                         self.pub_turn_type.publish(self.turn_type)
-                        rospy.loginfo("[%s] possible turns %s." %(self.node_name,availableTurns))
-                        rospy.loginfo("[%s] Turn type now: %i" %(self.node_name,self.turn_type))
+                        rospy.loginfo("possible turns %s." %(availableTurns))
+                        rospy.loginfo("Turn type now: %i" %(self.turn_type))
 
     def setupParameter(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)

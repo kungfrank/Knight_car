@@ -1,0 +1,18 @@
+<launch>
+    <arg name="pkg_name" value="parallel_autonomy"/>
+    <arg name="node_name" default="annotate_bag_node"/>
+    <arg name="veh" doc="Name of vehicle. ex: megaman"/>
+    <arg name="bagin" doc="The path to the input bag to be processed" />
+    <arg name="bagout" default="$(arg bagin).annotated.bag" doc="The path to the output bag file after processing."/>
+    <arg name="topicin" default="$(arg veh)/camera_node/image/compressed" doc="The name of the topic in the bag that lines up with annotation file"/>
+    <arg name="topicout" default="$(arg veh)/desired_supervisor_output" doc="The name of the new topic which will be created"/>
+
+    <group ns="$(arg veh)">
+        <node name="$(arg node_name)" pkg="$(arg pkg_name)" type="$(arg node_name).py" output="screen" >
+            <param name="bagin" value="$(arg bagin)"/>
+            <param name="bagout" value="$(arg bagout)" />
+            <param name="topicin" value="$(arg topicin)" />
+            <param name="topicout" value="$(arg topicout)" />
+        </node>
+    </group>
+</launch>

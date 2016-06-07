@@ -25,7 +25,7 @@ class lane_controller(object):
           
         # Publicaiton
         self.pub_car_cmd = rospy.Publisher("~car_cmd",Twist2DStamped,queue_size=1)
-        self.pub_image_original = rospy.Publisher("~image_with_face", Image, queue_size=1)
+        self.pub_image_original = rospy.Publisher("~image_with_red", Image, queue_size=1)
         self.sub_lane_reading = rospy.Subscriber("~image", CompressedImage, self.cbImage, queue_size=1)
 
         # safe shutdown
@@ -87,21 +87,83 @@ class lane_controller(object):
         #image_cv = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
         
         #image = image_cv_from_jpg(image_msg.data)
-        faceCascade = cv2.CascadeClassifier('/home/ubuntu/duckietown/catkin_ws/src/spring2016_nctu/wama/face_detector/src/haarcascade_frontalface_default.xml')
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+#        faceCascade = cv2.CascadeClassifier('/home/ubuntu/duckietown/catkin_ws/src/spring2016_nctu/wama/face_detector/src/haarcascade_frontalface_default.xml')
+#        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
         # Detect faces in the image
-        faces = faceCascade.detectMultiScale(gray,scaleFactor=2,minNeighbors=5,minSize=(10, 10),flags = cv2.cv.CV_HAAR_SCALE_IMAGE)
-        print "Found {0} faces!".format(len(faces))
+#        faces = faceCascade.detectMultiScale(gray,scaleFactor=2,minNeighbors=5,minSize=(10, 10),flags = cv2.cv.CV_HAAR_SCALE_IMAGE)
+
+
+
+
+
+##############################################################################################
+	# define the lower and upper boundaries of the "green"
+	# greenLower = (29, 86, 6)
+	# greenUpper = (64, 255, 255)
+
+	# define the lower and upper boundaries of the "red"
+
+	redLower1 = (0, 50, 100) #~
+	redUpper1 = (5, 255, 255) #~
+	redLower2 = (175, 50, 100) #~
+	redUpper2 = (180, 255, 255) #~
+	hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+ 
+	# construct a mask for the color "green", then perform
+	# a series of dilations and erosions to remove any small
+	# blobs left in the mask
+	mask = cv2.inRange(hsv, redLower1, redUpper1) + cv2.inRange(hsv, redLower2, redUpper2) #~
+	mask = cv2.erode(mask, None, iterations=2)
+	mask = cv2.dilate(mask, None, iterations=2)
+
+	
+	# find contours in the mask and initialize the current
+	# (x, y) center of the ball
+	cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,	cv2.CHAIN_APPROX_SIMPLE)[-2]
+	center = None
+
+	radius = 0
+ 
+	# only proceed if at least one contour was found
+	if len(cnts) > 0:
+		# find the largest contour in the mask, then use
+		# it to compute the minimum enclosing circle and
+		# centroid
+		c = max(cnts, key=cv2.contourArea)
+		((x, y), radius) = cv2.minEnclosingCircle(c)
+		M = cv2.moments(c)
+		center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+		 
+		# only proceed if the radius meets a minimum size
+		if radius > 50:
+			# draw the circle and centroid on the frame, (=image)
+			# then update the list of tracked points
+			
+			#cv2.circle(mask, (int(x), int(y)), int(radius),(255, 255, 255), 2)
+			
+			cv2.circle(image, (int(x), int(y)), int(radius),(0, 255, 255), 2)
+			cv2.circle(image, center, 5, (0, 0, 255), -1)
+			#print "center: %f, %f" % (x,y)
+
+			#h=np.size(image,0)
+			#w=np.size(image,1)
+			#print "h x w = %d x %d" % (h,w)
+##############################################################################################
+
+
+
+#        print "Found {0} faces!".format(len(faces))
         
-        for (x, y, w, h) in faces:
-           cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
+#        for (x, y, w, h) in faces:
+#           cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
         #   cv2.imshow("preview", image)
         #   cv2.waitKey(0)
         #   cv2.destroyAllWindows()
         
-        
-        #cv2.rectangle(image, (100, 100), (120, 140), (0, 255, 0), 2)
+
+	#cv2.rectangle(image, (100, 100), (120, 140), (0, 255, 0), 2)
+        #image_msg_out = self.bridge.cv2_to_imgmsg(mask, "mono8")
         image_msg_out = self.bridge.cv2_to_imgmsg(image, "bgr8")
         image_msg_out.header.stamp = image_msg.header.stamp
         self.pub_image_original.publish(image_msg_out)
@@ -135,13 +197,28 @@ class lane_controller(object):
         # car_control_msg.steering = -car_control_msg.steering
         # print "controls: speed %f, steering %f" % (car_control_msg.speed, car_control_msg.steering)
         # self.pub_.publish(car_control_msg)
-	if len(faces) != 0:
-         car_control_msg.v=0
+	if radius > 150:
+	 print "Running!!!~~~~~"
+	 car_control_msg.v=1
          car_control_msg.omega=0
+	 self.publishCmd(car_control_msg)
+
+	elif radius > 50:
+         car_control_msg.v=0.45
+         if x > 310:
+	  if x < 510:
+	   car_control_msg.omega=(310-x)*0.011
+	  else: 
+	   car_control_msg.omega=-2.2
+	 else:
+	  if x > 120:
+	   car_control_msg.omega=(x-310)*0.013
+	  else:
+	    car_control_msg.omega=2.6
          self.publishCmd(car_control_msg)
 
-        if len(faces) == 0:
-         car_control_msg.v=0.5
+        else:
+         car_control_msg.v=0.1
          car_control_msg.omega=0
          self.publishCmd(car_control_msg)
          #rospy.Timer(rospy.Duration.from_sec(1), self.publishCmd(car_control_msg))

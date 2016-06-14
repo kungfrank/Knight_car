@@ -1,0 +1,801 @@
+---
+-
+  id: 1
+  frame_id: viewed_tag_1
+  size: 0.065
+- 
+  id: 2
+  frame_id: viewed_tag_2
+  size: 0.065
+- 
+  id: 3
+  frame_id: viewed_tag_3
+  size: 0.065
+- 
+  id: 4
+  frame_id: viewed_tag_4
+  size: 0.065
+- 
+  id: 5
+  frame_id: viewed_tag_5
+  size: 0.065
+- 
+  id: 6
+  frame_id: viewed_tag_6
+  size: 0.065
+- 
+  id: 7
+  frame_id: viewed_tag_7
+  size: 0.065
+- 
+  id: 8
+  frame_id: viewed_tag_8
+  size: 0.065
+- 
+  id: 9
+  frame_id: viewed_tag_9
+  size: 0.065
+- 
+  id: 10
+  frame_id: viewed_tag_10
+  size: 0.065
+- 
+  id: 11
+  frame_id: viewed_tag_11
+  size: 0.065
+- 
+  id: 12
+  frame_id: viewed_tag_12
+  size: 0.065
+- 
+  id: 13
+  frame_id: viewed_tag_13
+  size: 0.065
+- 
+  id: 14
+  frame_id: viewed_tag_14
+  size: 0.065
+- 
+  id: 15
+  frame_id: viewed_tag_15
+  size: 0.065
+- 
+  id: 16
+  frame_id: viewed_tag_16
+  size: 0.065
+- 
+  id: 17
+  frame_id: viewed_tag_17
+  size: 0.065
+- 
+  id: 18
+  frame_id: viewed_tag_18
+  size: 0.065
+- 
+  id: 19
+  frame_id: viewed_tag_19
+  size: 0.065
+- 
+  id: 20
+  frame_id: viewed_tag_20
+  size: 0.065
+- 
+  id: 21
+  frame_id: viewed_tag_21
+  size: 0.065
+- 
+  id: 22
+  frame_id: viewed_tag_22
+  size: 0.065
+- 
+  id: 23
+  frame_id: viewed_tag_23
+  size: 0.065
+- 
+  id: 24
+  frame_id: viewed_tag_24
+  size: 0.065
+- 
+  id: 25
+  frame_id: viewed_tag_25
+  size: 0.065
+- 
+  id: 26
+  frame_id: viewed_tag_26
+  size: 0.065
+- 
+  id: 27
+  frame_id: viewed_tag_27
+  size: 0.065
+- 
+  id: 28
+  frame_id: viewed_tag_28
+  size: 0.065
+- 
+  id: 29
+  frame_id: viewed_tag_29
+  size: 0.065
+- 
+  id: 30
+  frame_id: viewed_tag_30
+  size: 0.065
+- 
+  id: 31
+  frame_id: viewed_tag_31
+  size: 0.065
+- 
+  id: 32
+  frame_id: viewed_tag_32
+  size: 0.065
+- 
+  id: 33
+  frame_id: viewed_tag_33
+  size: 0.065
+- 
+  id: 34
+  frame_id: viewed_tag_34
+  size: 0.065
+- 
+  id: 35
+  frame_id: viewed_tag_35
+  size: 0.065
+- 
+  id: 36
+  frame_id: viewed_tag_36
+  size: 0.065
+- 
+  id: 37
+  frame_id: viewed_tag_37
+  size: 0.065
+- 
+  id: 38
+  frame_id: viewed_tag_38
+  size: 0.065
+- 
+  id: 39
+  frame_id: viewed_tag_39
+  size: 0.065
+- 
+  id: 40
+  frame_id: viewed_tag_40
+  size: 0.065
+- 
+  id: 41
+  frame_id: viewed_tag_41
+  size: 0.065
+- 
+  id: 42
+  frame_id: viewed_tag_42
+  size: 0.065
+- 
+  id: 43
+  frame_id: viewed_tag_43
+  size: 0.065
+- 
+  id: 44
+  frame_id: viewed_tag_44
+  size: 0.065
+- 
+  id: 45
+  frame_id: viewed_tag_45
+  size: 0.065
+- 
+  id: 46
+  frame_id: viewed_tag_46
+  size: 0.065
+- 
+  id: 47
+  frame_id: viewed_tag_47
+  size: 0.065
+- 
+  id: 48
+  frame_id: viewed_tag_48
+  size: 0.065
+- 
+  id: 49
+  frame_id: viewed_tag_49
+  size: 0.065
+- 
+  id: 50
+  frame_id: viewed_tag_50
+  size: 0.065
+- 
+  id: 51
+  frame_id: viewed_tag_51
+  size: 0.065
+- 
+  id: 52
+  frame_id: viewed_tag_52
+  size: 0.065
+- 
+  id: 53
+  frame_id: viewed_tag_53
+  size: 0.065
+- 
+  id: 54
+  frame_id: viewed_tag_54
+  size: 0.065
+- 
+  id: 55
+  frame_id: viewed_tag_55
+  size: 0.065
+- 
+  id: 56
+  frame_id: viewed_tag_56
+  size: 0.065
+- 
+  id: 57
+  frame_id: viewed_tag_57
+  size: 0.065
+- 
+  id: 58
+  frame_id: viewed_tag_58
+  size: 0.065
+- 
+  id: 59
+  frame_id: viewed_tag_59
+  size: 0.065
+- 
+  id: 60
+  frame_id: viewed_tag_60
+  size: 0.065
+- 
+  id: 61
+  frame_id: viewed_tag_61
+  size: 0.065
+- 
+  id: 62
+  frame_id: viewed_tag_62
+  size: 0.065
+- 
+  id: 63
+  frame_id: viewed_tag_63
+  size: 0.065
+- 
+  id: 64
+  frame_id: viewed_tag_64
+  size: 0.065
+- 
+  id: 65
+  frame_id: viewed_tag_65
+  size: 0.065
+- 
+  id: 66
+  frame_id: viewed_tag_66
+  size: 0.065
+- 
+  id: 67
+  frame_id: viewed_tag_67
+  size: 0.065
+- 
+  id: 68
+  frame_id: viewed_tag_68
+  size: 0.065
+- 
+  id: 69
+  frame_id: viewed_tag_69
+  size: 0.065
+- 
+  id: 70
+  frame_id: viewed_tag_70
+  size: 0.065
+- 
+  id: 71
+  frame_id: viewed_tag_71
+  size: 0.065
+- 
+  id: 72
+  frame_id: viewed_tag_72
+  size: 0.065
+- 
+  id: 73
+  frame_id: viewed_tag_73
+  size: 0.065
+- 
+  id: 74
+  frame_id: viewed_tag_74
+  size: 0.065
+- 
+  id: 75
+  frame_id: viewed_tag_75
+  size: 0.065
+- 
+  id: 76
+  frame_id: viewed_tag_76
+  size: 0.065
+- 
+  id: 77
+  frame_id: viewed_tag_77
+  size: 0.065
+- 
+  id: 78
+  frame_id: viewed_tag_78
+  size: 0.065
+- 
+  id: 79
+  frame_id: viewed_tag_79
+  size: 0.065
+- 
+  id: 80
+  frame_id: viewed_tag_80
+  size: 0.065
+- 
+  id: 81
+  frame_id: viewed_tag_81
+  size: 0.065
+- 
+  id: 82
+  frame_id: viewed_tag_82
+  size: 0.065
+- 
+  id: 83
+  frame_id: viewed_tag_83
+  size: 0.065
+- 
+  id: 84
+  frame_id: viewed_tag_84
+  size: 0.065
+- 
+  id: 85
+  frame_id: viewed_tag_85
+  size: 0.065
+- 
+  id: 86
+  frame_id: viewed_tag_86
+  size: 0.065
+- 
+  id: 87
+  frame_id: viewed_tag_87
+  size: 0.065
+- 
+  id: 88
+  frame_id: viewed_tag_88
+  size: 0.065
+- 
+  id: 89
+  frame_id: viewed_tag_89
+  size: 0.065
+- 
+  id: 90
+  frame_id: viewed_tag_90
+  size: 0.065
+- 
+  id: 91
+  frame_id: viewed_tag_91
+  size: 0.065
+- 
+  id: 92
+  frame_id: viewed_tag_92
+  size: 0.065
+- 
+  id: 93
+  frame_id: viewed_tag_93
+  size: 0.065
+- 
+  id: 94
+  frame_id: viewed_tag_94
+  size: 0.065
+- 
+  id: 95
+  frame_id: viewed_tag_95
+  size: 0.065
+- 
+  id: 96
+  frame_id: viewed_tag_96
+  size: 0.065
+- 
+  id: 97
+  frame_id: viewed_tag_97
+  size: 0.065
+- 
+  id: 98
+  frame_id: viewed_tag_98
+  size: 0.065
+- 
+  id: 99
+  frame_id: viewed_tag_99
+  size: 0.065
+- 
+  id: 100
+  frame_id: viewed_tag_100
+  size: 0.065
+- 
+  id: 101
+  frame_id: viewed_tag_101
+  size: 0.065
+- 
+  id: 102
+  frame_id: viewed_tag_102
+  size: 0.065
+- 
+  id: 103
+  frame_id: viewed_tag_103
+  size: 0.065
+- 
+  id: 104
+  frame_id: viewed_tag_104
+  size: 0.065
+- 
+  id: 105
+  frame_id: viewed_tag_105
+  size: 0.065
+- 
+  id: 106
+  frame_id: viewed_tag_106
+  size: 0.065
+- 
+  id: 107
+  frame_id: viewed_tag_107
+  size: 0.065
+- 
+  id: 108
+  frame_id: viewed_tag_108
+  size: 0.065
+- 
+  id: 109
+  frame_id: viewed_tag_109
+  size: 0.065
+- 
+  id: 110
+  frame_id: viewed_tag_110
+  size: 0.065
+- 
+  id: 111
+  frame_id: viewed_tag_111
+  size: 0.065
+- 
+  id: 112
+  frame_id: viewed_tag_112
+  size: 0.065
+- 
+  id: 113
+  frame_id: viewed_tag_113
+  size: 0.065
+- 
+  id: 114
+  frame_id: viewed_tag_114
+  size: 0.065
+- 
+  id: 115
+  frame_id: viewed_tag_115
+  size: 0.065
+- 
+  id: 116
+  frame_id: viewed_tag_116
+  size: 0.065
+- 
+  id: 117
+  frame_id: viewed_tag_117
+  size: 0.065
+- 
+  id: 118
+  frame_id: viewed_tag_118
+  size: 0.065
+- 
+  id: 119
+  frame_id: viewed_tag_119
+  size: 0.065
+- 
+  id: 120
+  frame_id: viewed_tag_120
+  size: 0.065
+- 
+  id: 121
+  frame_id: viewed_tag_121
+  size: 0.065
+- 
+  id: 122
+  frame_id: viewed_tag_122
+  size: 0.065
+- 
+  id: 123
+  frame_id: viewed_tag_123
+  size: 0.065
+- 
+  id: 124
+  frame_id: viewed_tag_124
+  size: 0.065
+- 
+  id: 125
+  frame_id: viewed_tag_125
+  size: 0.065
+- 
+  id: 126
+  frame_id: viewed_tag_126
+  size: 0.065
+- 
+  id: 127
+  frame_id: viewed_tag_127
+  size: 0.065
+- 
+  id: 128
+  frame_id: viewed_tag_128
+  size: 0.065
+- 
+  id: 129
+  frame_id: viewed_tag_129
+  size: 0.065
+- 
+  id: 130
+  frame_id: viewed_tag_130
+  size: 0.065
+- 
+  id: 131
+  frame_id: viewed_tag_131
+  size: 0.065
+- 
+  id: 132
+  frame_id: viewed_tag_132
+  size: 0.065
+- 
+  id: 133
+  frame_id: viewed_tag_133
+  size: 0.065
+- 
+  id: 134
+  frame_id: viewed_tag_134
+  size: 0.065
+- 
+  id: 135
+  frame_id: viewed_tag_135
+  size: 0.065
+- 
+  id: 136
+  frame_id: viewed_tag_136
+  size: 0.065
+- 
+  id: 137
+  frame_id: viewed_tag_137
+  size: 0.065
+- 
+  id: 138
+  frame_id: viewed_tag_138
+  size: 0.065
+- 
+  id: 139
+  frame_id: viewed_tag_139
+  size: 0.065
+- 
+  id: 140
+  frame_id: viewed_tag_140
+  size: 0.065
+- 
+  id: 141
+  frame_id: viewed_tag_141
+  size: 0.065
+- 
+  id: 142
+  frame_id: viewed_tag_142
+  size: 0.065
+- 
+  id: 143
+  frame_id: viewed_tag_143
+  size: 0.065
+- 
+  id: 144
+  frame_id: viewed_tag_144
+  size: 0.065
+- 
+  id: 145
+  frame_id: viewed_tag_145
+  size: 0.065
+- 
+  id: 146
+  frame_id: viewed_tag_146
+  size: 0.065
+- 
+  id: 147
+  frame_id: viewed_tag_147
+  size: 0.065
+- 
+  id: 148
+  frame_id: viewed_tag_148
+  size: 0.065
+- 
+  id: 149
+  frame_id: viewed_tag_149
+  size: 0.065
+- 
+  id: 150
+  frame_id: viewed_tag_150
+  size: 0.065
+- 
+  id: 151
+  frame_id: viewed_tag_151
+  size: 0.065
+- 
+  id: 152
+  frame_id: viewed_tag_152
+  size: 0.065
+- 
+  id: 153
+  frame_id: viewed_tag_153
+  size: 0.065
+- 
+  id: 154
+  frame_id: viewed_tag_154
+  size: 0.065
+- 
+  id: 155
+  frame_id: viewed_tag_155
+  size: 0.065
+- 
+  id: 156
+  frame_id: viewed_tag_156
+  size: 0.065
+- 
+  id: 157
+  frame_id: viewed_tag_157
+  size: 0.065
+- 
+  id: 158
+  frame_id: viewed_tag_158
+  size: 0.065
+- 
+  id: 159
+  frame_id: viewed_tag_159
+  size: 0.065
+- 
+  id: 160
+  frame_id: viewed_tag_160
+  size: 0.065
+- 
+  id: 161
+  frame_id: viewed_tag_161
+  size: 0.065
+- 
+  id: 162
+  frame_id: viewed_tag_162
+  size: 0.065
+- 
+  id: 163
+  frame_id: viewed_tag_163
+  size: 0.065
+- 
+  id: 164
+  frame_id: viewed_tag_164
+  size: 0.065
+- 
+  id: 165
+  frame_id: viewed_tag_165
+  size: 0.065
+- 
+  id: 166
+  frame_id: viewed_tag_166
+  size: 0.065
+- 
+  id: 167
+  frame_id: viewed_tag_167
+  size: 0.065
+- 
+  id: 168
+  frame_id: viewed_tag_168
+  size: 0.065
+- 
+  id: 169
+  frame_id: viewed_tag_169
+  size: 0.065
+- 
+  id: 170
+  frame_id: viewed_tag_170
+  size: 0.065
+- 
+  id: 171
+  frame_id: viewed_tag_171
+  size: 0.065
+- 
+  id: 172
+  frame_id: viewed_tag_172
+  size: 0.065
+- 
+  id: 173
+  frame_id: viewed_tag_173
+  size: 0.065
+- 
+  id: 174
+  frame_id: viewed_tag_174
+  size: 0.065
+- 
+  id: 175
+  frame_id: viewed_tag_175
+  size: 0.065
+- 
+  id: 176
+  frame_id: viewed_tag_176
+  size: 0.065
+- 
+  id: 177
+  frame_id: viewed_tag_177
+  size: 0.065
+- 
+  id: 178
+  frame_id: viewed_tag_178
+  size: 0.065
+- 
+  id: 179
+  frame_id: viewed_tag_179
+  size: 0.065
+- 
+  id: 180
+  frame_id: viewed_tag_180
+  size: 0.065
+- 
+  id: 181
+  frame_id: viewed_tag_181
+  size: 0.065
+- 
+  id: 182
+  frame_id: viewed_tag_182
+  size: 0.065
+- 
+  id: 183
+  frame_id: viewed_tag_183
+  size: 0.065
+- 
+  id: 184
+  frame_id: viewed_tag_184
+  size: 0.065
+- 
+  id: 185
+  frame_id: viewed_tag_185
+  size: 0.065
+- 
+  id: 186
+  frame_id: viewed_tag_186
+  size: 0.065
+- 
+  id: 187
+  frame_id: viewed_tag_187
+  size: 0.065
+- 
+  id: 188
+  frame_id: viewed_tag_188
+  size: 0.065
+- 
+  id: 189
+  frame_id: viewed_tag_189
+  size: 0.065
+- 
+  id: 190
+  frame_id: viewed_tag_190
+  size: 0.065
+- 
+  id: 191
+  frame_id: viewed_tag_191
+  size: 0.065
+- 
+  id: 192
+  frame_id: viewed_tag_192
+  size: 0.065
+- 
+  id: 193
+  frame_id: viewed_tag_193
+  size: 0.065
+- 
+  id: 194
+  frame_id: viewed_tag_194
+  size: 0.065
+- 
+  id: 195
+  frame_id: viewed_tag_195
+  size: 0.065
+- 
+  id: 196
+  frame_id: viewed_tag_196
+  size: 0.065
+- 
+  id: 197
+  frame_id: viewed_tag_197
+  size: 0.065
+- 
+  id: 198
+  frame_id: viewed_tag_198
+  size: 0.065
+- 
+  id: 199
+  frame_id: viewed_tag_199
+  size: 0.065
+- 
+  id: 200
+  frame_id: viewed_tag_200
+  size: 0.065

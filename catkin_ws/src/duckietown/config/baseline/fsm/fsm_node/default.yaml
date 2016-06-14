@@ -1,7 +1,7 @@
 # Initail state of the FSM
 initial_state: "JOYSTICK_CONTROL"
 
-events: #Maps from subscribing topic to singal ids
+events: #Maps from subscribing topic to signal ids
   joystick_override_on: 
     topic: "joy_mapper_node/joystick_override"
     msg_type: "BoolStamped"
@@ -34,8 +34,12 @@ events: #Maps from subscribing topic to singal ids
     topic: "open_loop_intersection_control_node/intersection_done"
     msg_type: "BoolStamped"
     trigger: True
-  intersection_done_and_in_lane:
-    topic: "logic_gate_node/intersection_done_and_in_lane"
+  intersection_done_and_not_parallel_autonomy:
+    topic: "logic_gate_node/intersection_done_and_not_parallel_autonomy"
+    msg_type: "BoolStamped"
+    trigger: True
+  intersection_done_and_parallel_autonomy:
+    topic: "logic_gate_node/intersection_done_and_parallel_autonomy"
     msg_type: "BoolStamped"
     trigger: True
   obstacle_detection:
@@ -75,19 +79,21 @@ events: #Maps from subscribing topic to singal ids
 global_transitions:
   joystick_override_on: "JOYSTICK_CONTROL"
   parallel_autonomy_on: "PARALLEL_AUTONOMY"
+  parallel_autonomy_off: "JOYSTICK_CONTROL"
 
 # Define nodes 
 nodes:
   decoder_node: "decoder_node/switch"
 # anti_instagram_node: "anti_instagram/switch"
-  apriltag_global_node: "apriltags_preprocessing_node/global_switch"
-  apriltag_fast_node: "apriltags_preprocessing_node/fast_switch"
+  apriltag_node: "apriltag_detector_node/switch"
   vehicle_detector_node: "vehicle_detection_node/switch"
   led_detector_node: "LED_detector_node/switch"
+  led_emitter_node: "led_emitter_node/switch"
   static_object_detector_node: "static_object_detector_node/switch"
   line_detector_node: "line_detector_node/switch"
   lane_filter_node: "lane_filter_node/switch"
   stop_line_filter_node: "stop_line_filter_node/switch"
+  framerate_high: "camera_node/framerate_high_switch"
 
 # Define state transitions
 states:
@@ -99,10 +105,14 @@ states:
       - lane_filter_node
       - line_detector_node
       - stop_line_filter_node
+      - framerate_high
+      - decoder_node
+      - apriltag_node
     lights: ["joystick"]
   PARALLEL_AUTONOMY:
     transitions:
-      parallel_autonomy_off: "JOYSTICK_CONTROL"
+      vehicle_detection: "AVOID_VEHICLE"
+      at_stop_line: "COORDINATION"
     active_nodes:
       - vehicle_detector_node
       - static_object_detector_node
@@ -138,22 +148,25 @@ states:
     transitions:
       intersection_go: "INTERSECTION_CONTROL"
     active_nodes:
-      - apriltag_global_node
+      - apriltag_node
       - led_detector_node
+      - led_emitter_node
       - decoder_node
+      - framerate_high
     lights: ["coordination"]
   INTERSECTION_CONTROL:
     transitions:
-      intersection_done: "LANE_FOLLOWING"
-#      intersection_complete_no_lane: "INTERSECTION_RECOVERY"
+      intersection_done_and_not_parallel_autonomy: "LANE_FOLLOWING"
+      intersection_done_and_parallel_autonomy: "PARALLEL_AUTONOMY"
     active_nodes:
       - line_detector_node
       - lane_filter_node
-      - apriltag_global_node
+      - apriltag_node
       - decoder_node
+      - led_emitter_node
   AVOID_VEHICLE:
     transitions:
-      vehicle_cleared: "LANE_FOLLOWING_AVOID"
+      vehicle_cleared: "PARALLEL_AUTONOMY"
     active_nodes:
       - vehicle_detector_node
       - decoder_node

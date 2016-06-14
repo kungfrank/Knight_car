@@ -1,0 +1,21 @@
+<launch>
+    <arg name="veh" default="testbot" doc="Name of vehicle. ex: megaman"/>
+    <arg name="test_path" value="$(env DUCKIETOWN_DATA)/logs/20160400-phase3-logs/dp6a/apriltags" />
+
+    <!-- Run the system level launch -->
+    <include file="$(find duckietown)/launch/apriltags.launch">
+        <arg name="veh" value="$(arg veh)" />
+        <arg name="camera" value="false" />
+        <arg name="local" value="true" />
+        <arg name="param_file_name" value="test_default" />
+    </include>
+
+    <!-- Run unit test -->
+    <remap from="apriltags_integration_tester/image_raw" to="camera_node/image/rect" />
+    <remap from="apriltags_integration_tester/camera_info" to="camera_node/raw_camera_info" />
+    <remap from="apriltags_integration_tester/apriltags" to="apriltags_postprocessing_node/apriltags_out" />
+    <test test-name="apriltags_integration_tester" pkg="apriltags_ros" type="apriltags_integration_tester.py" ns="$(arg veh)">
+        <param name="test_path" value="$(arg test_path)" />
+        <rosparam command="load" file="$(arg test_path)/annotations.yaml" />
+    </test>
+</launch>

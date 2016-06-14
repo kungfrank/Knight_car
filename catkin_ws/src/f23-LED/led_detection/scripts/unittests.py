@@ -38,7 +38,6 @@ The default algorithm is called "baseline", and the tests are invoked using:
 
     rosrun led_detection <script> '*' 'baseline'
 
-
 """
 
         msg = msg.replace('<script>', script_name)
@@ -50,7 +49,8 @@ The default algorithm is called "baseline", and the tests are invoked using:
 
     root = os.environ['DUCKIETOWN_ROOT']
     dirname = 'catkin_ws/src/f23-LED/led_detection/scripts/'
-    filename = 'all_tests.yaml'
+    #filename = 'all_tests.yaml'
+    filename = 'dp45_tests.yaml'
     filename = os.path.join(root, dirname, filename)
 
     alltests = load_tests(filename)
@@ -137,8 +137,6 @@ def run_test(id_test, test, id_estimator, estimator):
     if(missedLEDs):
         logger.error('missed LED detections (%s): \n %s' % (len(missedLEDs),missedLEDs))
 
-    # Valerio: check this - sometimes the error above is thrown, but the test
-    # does not return False
     return not 0 in match_count
 
 if __name__ == '__main__':

@@ -196,4 +196,7 @@ include_directories(
 
 add_executable(imgpreproc src/imgpreproc.cpp)
 target_link_libraries(imgpreproc ${catkin_LIBRARIES})
+add_executable(imgundist src/imgundist.cpp)
+target_link_libraries(imgundist ${catkin_LIBRARIES})
+
 	

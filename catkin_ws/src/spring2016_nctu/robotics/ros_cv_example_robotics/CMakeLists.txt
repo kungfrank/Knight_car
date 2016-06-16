@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(campicpp)
+project(ros_cv_example_robotics)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -8,14 +8,13 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   duckietown_msgs
   geometry_msgs
-  image_transport
   roscpp
   rospy
   sensor_msgs
   std_msgs
 )
-
 find_package(OpenCV REQUIRED)
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -107,8 +106,8 @@ find_package(OpenCV REQUIRED)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES campicpp
-#  CATKIN_DEPENDS cv_bridge duckietown_msgs geometry_msgs image_transport roscpp rospy sensor_msgs std_msgs
+#  LIBRARIES ros_cv_example_robotics
+#  CATKIN_DEPENDS cv_bridge duckietown_msgs geometry_msgs roscpp rospy sensor_msgs std_msgs
 #  DEPENDS system_lib
 )
 
@@ -121,28 +120,28 @@ catkin_package(
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  ${OpenCV_INCLUDE_DIRS}		
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
-# add_library(campicpp
-#   src/${PROJECT_NAME}/campicpp.cpp
+# add_library(ros_cv_example_robotics
+#   src/${PROJECT_NAME}/ros_cv_example_robotics.cpp
 # )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(campicpp ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(ros_cv_example_robotics ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(campicpp_node src/campicpp_node.cpp)
+# add_executable(ros_cv_example_robotics_node src/ros_cv_example_robotics_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(campicpp_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(ros_cv_example_robotics_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(campicpp_node
+# target_link_libraries(ros_cv_example_robotics_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -161,7 +160,7 @@ include_directories(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS campicpp campicpp_node
+# install(TARGETS ros_cv_example_robotics ros_cv_example_robotics_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -186,17 +185,10 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_campicpp.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_ros_cv_example_robotics.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-
-add_executable(imgpreproc src/imgpreproc.cpp)
-target_link_libraries(imgpreproc ${catkin_LIBRARIES})
-add_executable(imgundist src/imgundist.cpp)
-target_link_libraries(imgundist ${catkin_LIBRARIES})
-
-	

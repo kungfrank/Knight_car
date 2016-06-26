@@ -110,6 +110,9 @@ class lane_controller(object):
 	cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,	cv2.CHAIN_APPROX_SIMPLE)[-2]
 	center = None
 
+	#initialize center	
+	x = 320
+	y = 240 
 	radius = 0
 	# draw the region line
 	cv2.line(image,(120,0),(120,480),(100,100,100),2)

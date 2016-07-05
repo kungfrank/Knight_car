@@ -111,6 +111,13 @@ demo-line_detector-default_ld2: demo-line_detector-quiet-default_ld2
 demo-line_detector-quiet-%: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; roslaunch duckietown line_detector.launch veh:=$(vehicle_name) line_detector_param_file_name:=$* verbose:=false"
 
+# traffic lights
+traffic-light:
+	bash -c "source environment.sh; source set_ros_master.sh; roslaunch traffic_light traffic_light_node.launch veh:=$(vehicle_name)"
+
+#traffic-light-%:
+#	bash -c "source environment.sh; source set_ros_master.sh $*; roslaunch traffic_light traffic_light_node.launch veh:=$*"
+
 # ==========
 # openhouse demos
  
@@ -119,7 +126,10 @@ openhouse-dp1: unittests-environment
 
 openhouse-dp1-%: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos parallel_autonomy.launch line_detector_param_file_name:=$*"
- 
+
+openhouse-dp1-veh: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos parallel_autonomy.launch vehicle_avoidance:=true"
+
 openhouse-dp2: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos obstacle_vehicle_avoid.launch"
 
@@ -134,14 +144,44 @@ openhouse-dp2-obstacle: unittests-environment
 
 openhouse-dp2-vehicle-no-wheels: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos vehicle_avoid_nowheels.launch"
+
 openhouse-dp2-obstacle-no-wheels: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos obstacle_avoid_nowheels.launch"
 
+openhouse-dp6a-generate-map-%: unittests-environment
+	bash -c 'echo -n "Enter full path to the tags .csv file: "; read tag_map; echo -n "Enter full path to the tiles .csv file: "; read tile_map;\
+	source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; \
+	roslaunch duckietown_description csv2xacro_node.launch tag_map_csv:=$$tag_map  tile_map_csv:=$$tile_map map_name:=$*'
 
+openhouse-dp6a-%: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; \
+	roslaunch duckietown_demos localization.launch map_name:=$*"
+
+openhouse-dp6a_laptop-%: unittests-environment
+	bash -c "source set_ros_master.sh $*; roslaunch duckietown_demos localization_frontend.launch"
+
+openhouse-dp6b: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos mission_planning.launch"
+
+openhouse-dp6b-laptop-%: unittests-environment
+	bash -c "source set_ros_master.sh $*; rqt --force-discover"
+
+openhouse-dp6: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos localization_navigation.launch"
+
+openhouse-dp6-laptop-%: unittests-environment
+	bash -c "source set_ros_master.sh $*; rqt --force-discover"
 
 openhouse-dp3: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch"
 
 openhouse-dp3-%: unittests-environment
 	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos indefinite_navigation.launch  line_detector_param_file_name:=$*"
+
+openhouse-dp5: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos stop_sign_coordination.launch"
+
+openhouse-dp4: unittests-environment
+	bash -c "source environment.sh; source set_ros_master.sh; source set_vehicle_name.sh; roslaunch duckietown_demos traffic_light_coordination.launch"
+
 

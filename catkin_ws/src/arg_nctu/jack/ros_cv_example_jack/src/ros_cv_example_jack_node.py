@@ -8,7 +8,7 @@ from cv_bridge import CvBridge, CvBridgeError
 import cv2
 import sys
 from duckietown_utils.jpg import image_cv_from_jpg
-class ros_cv_example_wama(object):
+class ros_cv_example_jack(object):
     def __init__(self):
         self.node_name = rospy.get_name()
         self.lane_reading = None

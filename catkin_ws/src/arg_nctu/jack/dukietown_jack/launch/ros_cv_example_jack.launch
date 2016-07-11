@@ -1,0 +1,4 @@
+<!-- ros_cv_example_jack-->
+<remap from="ros_cv_example_jack_node/image" to="camera_node/image/compressed"/>
+<include file="$(find ros_cv_example_jack)/launch/ros_cv_example_jack_node.launch">
+

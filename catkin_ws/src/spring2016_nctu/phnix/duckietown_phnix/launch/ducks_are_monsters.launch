@@ -17,7 +17,7 @@
     <arg name="live" value="$(arg live)"/>
   </include>
 
-  <!-- red detector -->
+  <!-- detector -->
       <remap from="ducks_are_monsters_node/image" to="camera_node/image/compressed"/>
       <include file="$(find ducks_are_monsters)/launch/ducks_are_monsters.launch">
           <arg name="veh" value="$(arg veh)"/>
@@ -27,7 +27,7 @@
       </include>
   
       <!-- car_cmd_switch_node -->
-      <remap from="inverse_kinematics_node/car_cmd" to="red_detector_node/car_cmd"/>
+      <remap from="inverse_kinematics_node/car_cmd" to="ducks_are_monsters_node/car_cmd"/>
       <include file="$(find dagu_car)/launch/inverse_kinematics_node.launch">
          <arg name="veh" value="$(arg veh)"/>
          <arg name="local" value="$(arg local)"/>

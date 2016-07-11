@@ -106,6 +106,6 @@ class ros_cv_example_jack(object):
         self.pub_image_original.publish(image_msg_out)
 
 if __name__ == "__main__":
-    rospy.init_node("ros_cv_example_wama",anonymous=False)
-    ros_cv_example_wama_node = ros_cv_example_wama()
+    rospy.init_node("ros_cv_example_jack",anonymous=False)
+    ros_cv_example_jack_node = ros_cv_example_jack()
     rospy.spin()

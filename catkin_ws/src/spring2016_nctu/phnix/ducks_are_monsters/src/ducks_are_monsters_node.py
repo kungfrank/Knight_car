@@ -86,7 +86,7 @@ class lane_controller(object):
         image = cv2.imdecode(narr, cv2.CV_LOAD_IMAGE_COLOR)
 	gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 	
-	Cascade = cv2.CascadeClassifier("./eye_classifier.xml")
+	Cascade = cv2.CascadeClassifier("/home/ubuntu/duckietown/catkin_ws/src/spring2016_nctu/phnix/ducks_are_monsters/src/eye_classifier.xml")
 	
 	bananas = Cascade.detectMultiScale(
 	gray,

@@ -21,19 +21,19 @@ image_transport::Publisher image_pub;
 void chatterCallback(sensor_msgs::CompressedImage image_msg)
 //void chatterCallback(sensor_msgs::Compr msg)
 {
-
-	cv_bridge::CvImagePtr cv_ptr;
-	cv_ptr = cv_bridge::toCvCopy(image_msg,sensor_msgs::image_encodings::BGR8);
-
-	
-	if (cv_ptr->image.rows > 60 && cv_ptr->image.cols > 60)
-		circle(cv_ptr->image, Point(150,150), 40, CV_RGB(255,0,0));	
-
-	namedWindow("Camera");
-  	imshow("Camera",cv_ptr->image);
-  	waitKey(1);
-	
-	image_pub.publish(cv_ptr->toImageMsg());
+//
+//	cv_bridge::CvImagePtr cv_ptr;
+//	cv_ptr = cv_bridge::toCvCopy(image_msg,sensor_msgs::image_encodings::BGR8);
+//
+//	
+//	if (cv_ptr->image.rows > 60 && cv_ptr->image.cols > 60)
+//		circle(cv_ptr->image, Point(150,150), 40, CV_RGB(255,0,0));	
+//
+//	namedWindow("Camera");
+//  	imshow("Camera",cv_ptr->image);
+//  	waitKey(1);
+//	
+//	image_pub.publish(cv_ptr->toImageMsg());
 }
 
 int main(int argc, char **argv)

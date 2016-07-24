@@ -35,22 +35,22 @@ void chatterCallback(sensor_msgs::CompressedImage image_msg)
 {
     ros::Time time = ros::Time::now();
 
-    cv_bridge::CvImagePtr cv_ptr;
-    cv_ptr = cv_bridge::toCvCopy(image_msg,sensor_msgs::image_encodings::BGR8);
-
-    //Undistort the image
-    undistort(cv_ptr->image,undistImg,cameraMatrix,distParamCV);
-    //Create a cvImage to transform from OpenCVImage to ImageMsg
-    cv_bridge::CvImage cvi_undist;
-    cvi_undist.header.stamp = time;
-    cvi_undist.header.frame_id = "undist";
-    cvi_undist.encoding = "bgr8";
-    cvi_undist.image = undistImg;
-
-    //Publish the image
-    image_pub.publish(cvi_undist.toImageMsg());
-
-    ROS_INFO_ONCE("First image published");
+//    cv_bridge::CvImagePtr cv_ptr;
+//    cv_ptr = cv_bridge::toCvCopy(image_msg,sensor_msgs::image_encodings::BGR8);
+//
+//    //Undistort the image
+//    undistort(cv_ptr->image,undistImg,cameraMatrix,distParamCV);
+//    //Create a cvImage to transform from OpenCVImage to ImageMsg
+//    cv_bridge::CvImage cvi_undist;
+//    cvi_undist.header.stamp = time;
+//    cvi_undist.header.frame_id = "undist";
+//    cvi_undist.encoding = "bgr8";
+//    cvi_undist.image = undistImg;
+//
+//    //Publish the image
+//    image_pub.publish(cvi_undist.toImageMsg());
+//
+//    ROS_INFO_ONCE("First image published");
 }
 
 //Transform from world coodinates to image coordinates

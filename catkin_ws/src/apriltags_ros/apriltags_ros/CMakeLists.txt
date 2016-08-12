@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   geometry_msgs
-#  duckietown_msgs
+  duckietown_msgs
   tf
   cv_bridge
   message_generation

@@ -40,7 +40,7 @@ class RandomAprilTagTurnsNode(object):
             rospy.loginfo("Turn type now: %i" %(self.turn_type))
             
     def cbTag(self, tag_msgs):
-        if(self.fsm_mode == FSMState.INTERSECTION_CONTROL):
+        if(self.fsm_mode == "INTERSECTION_CONTROL"):
             #loop through list of april tags
             for taginfo in tag_msgs.infos:
                 print taginfo

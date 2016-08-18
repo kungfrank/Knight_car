@@ -14,6 +14,7 @@
 
 	<arg name="apriltags" value="true" />
 	<arg name="/camera/raw" value="true"/>
+	<arg name="/camera/raw/rect" value="true"/>
 	<arg name="param_file_name" default="default" />
 	<arg name="line_detector_param_file_name" default="default" />
    	<arg name="anti_instagram" default="true" />

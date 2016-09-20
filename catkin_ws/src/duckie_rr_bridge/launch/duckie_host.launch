@@ -7,12 +7,12 @@
 	<arg name="port" default="0" doc="RobotRaconteur port number"/>
 
 	<!-- Run on local (laptop) -->
-	<node if="$(arg local)" ns="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen" clear_params="true" required="true" args="veh $(arg veh) --port $(arg port)"/>
+	<node if="$(arg local)" ns="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen" clear_params="true" required="true" args="--veh $(arg veh) --port $(arg port)"/>
 	
 
 	<!-- Run on remote (vehicle) -->
 	<include unless="$(arg local)" file="$(find duckietown)/machines"/>
-	<node unless="$(arg local)" ns="$(arg veh)" machine="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen" clear_params="true" required="true" args="veh $(arg veh) --port $(arg port)"/>
+	<node unless="$(arg local)" ns="$(arg veh)" machine="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen" clear_params="true" required="true" args="--veh $(arg veh) --port $(arg port)"/>
 
 	<!-- Subscribe Topics -->
 	<!-- "~velocity": duckietown_msgs/Twist2DStamped. velocity and omega from forward kinematics node. -->

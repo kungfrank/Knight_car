@@ -99,7 +99,7 @@ class DuckiebotHost(object):
         self._y = pose_msg.y
         self._theta = pose_msg.theta
 
-    def close(self)
+    def close(self):
         self.sendStop()
 
 def cb_shutdown():
@@ -116,8 +116,9 @@ if __name__ == '__main__':
     parser.add_argument('--port',type=int,default=0,
         help='TCP port to host service on' +\
         '(will auto-generate if not specified)')
-    parser.add_argument('veh', 
+    parser.add_argument('--veh', required=True,
         help='The name of the duckiebot being launched')
+    parser.add_argument('args', nargs=argparse.REMAINDER)
 
     args = parser.parse_args(sys.argv[1:])
 
@@ -134,7 +135,7 @@ if __name__ == '__main__':
 
     # Create transport, register it, and start the server
     print "Registering Transport..."
-    t = RR.TCPTransport()
+    t = RR.TcpTransport()
     t.EnableNodeAnnounce(RR.IPNodeDiscoveryFlags_NODE_LOCAL | 
         RR.IPNodeDiscoveryFlags_LINK_LOCAL | 
         RR.IPNodeDiscoveryFlags_SITE_LOCAL)
@@ -143,13 +144,13 @@ if __name__ == '__main__':
 
     port = args.port
     t.StartServer(port)
-    if (port == 0)
+    if (port == 0):
         port = t.GetListenPort()
 
     # Register the service type and the service
     print "Starting Service..."
     RR.RobotRaconteurNode.s.RegisterServiceType(duckie_servicedef)
-    RR.RobotRaconteurNode.s.RegisterService("Duckiebot","Duckiebot_Interface.Duckiebot")
+    RR.RobotRaconteurNode.s.RegisterService("Duckiebot","Duckiebot_Interface.Duckiebot", duck)
 
     print "Service Started, connect via \n" +\
         "tcp://localhost:%s/DuckiebotServer.%s/Duckiebot"%(port,veh)

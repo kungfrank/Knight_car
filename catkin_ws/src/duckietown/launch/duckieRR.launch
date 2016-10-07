@@ -7,15 +7,25 @@
 
 
     <include file="$(find duckietown)/machines"/>
+    
     <!-- run duckie_rr_bridge/duckie_host node -->
     <remap from="duckie_host/velocity" to="forward_kinematics_node/velocity" />
     <remap from="duckie_host/pose" to="velocity_to_pose_node/pose" />
+    <remap from="duckie_host/image" to="camera_node/image/raw" />
     <include file="$(find duckie_rr_bridge)/launch/duckie_host.launch">
         <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)"/>
         <arg name="port" value="$(arg port)"/> 
     </include>
-    
+ 
+    <!-- run camera node -->
+    <include file="$(find duckietown)/launch/camera.launch">
+	<arg name="veh" value="$(arg veh)"/>
+        <arg name="local" value="$(arg local)" />
+        <arg name="config" value="$(arg config)"/>
+	<arg name="raw" value="true" />
+    </include>
+       
     <!-- run inverse_kinematics_node -->
     <remap from="inverse_kinematics_node/car_cmd" to="duckie_host/car_cmd"/>
     <remap from="inverse_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />

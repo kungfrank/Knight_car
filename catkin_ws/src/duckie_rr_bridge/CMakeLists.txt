@@ -5,6 +5,7 @@ find_package(catkin REQUIRED COMPONENTS
   duckietown_msgs
   rospy
   std_msgs
+  sensor_msgs
 )
 
 catkin_python_setup()
@@ -15,6 +16,7 @@ catkin_package(
   	duckietown_msgs 
   	rospy 
   	std_msgs
+  	sensor_msgs
 )
 
 ## Specify additional locations of header files

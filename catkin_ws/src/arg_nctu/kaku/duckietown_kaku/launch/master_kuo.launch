@@ -249,7 +249,7 @@
 		<group if="$(arg /lane_following/line_detection)">
 			<remap from="line_detector_node/image" to="camera_node/image/compressed"/>
 			<remap from="line_detector_node/transform" to="anti_instagram_node/transform"/>
-			<include file="$(find line_detector)/launch/line_detector_node.launch">
+			<include file="$(find line_detector)/launch/line_detector_node_kuo.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
 				<!-- NOTE: "line_detector_param_file_name" as special case -->

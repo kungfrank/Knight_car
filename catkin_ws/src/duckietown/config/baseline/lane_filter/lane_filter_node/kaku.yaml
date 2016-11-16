@@ -10,8 +10,8 @@ d_min: -0.15
 phi_min: -1.5
 phi_max: 1.5
 cov_v: 0.5
-linewidth_white: 0.05
-linewidth_yellow: 0.025
+linewidth_white: -0.01
+linewidth_yellow: 0.5
 lanewidth: 0
 min_max: 0.1
 

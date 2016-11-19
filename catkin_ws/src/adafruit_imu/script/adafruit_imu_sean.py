@@ -12,8 +12,8 @@ class AdafruitIMU(object):
     def __init__(self):
         self.node_name=rospy.get_name()
         rospy.loginfo("[%s] Initializing " %(self.node_name))
-		self.G=9.80665
-		self.DEG2RAD=0.01744533
+	self.G=9.80665
+	self.DEG2RAD=0.01744533
         # Setup compass and accelerometer
         self.compass_accel=Adafruit_LSM303()
         # Setup gyroscope

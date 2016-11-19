@@ -14,6 +14,7 @@ class AdafruitIMU(object):
         rospy.loginfo("[%s] Initializing " %(self.node_name))
 	self.G=9.80665
 	self.DEG2RAD=0.01744533
+	self.signOfZ=0
         # Setup compass and accelerometer
         self.compass_accel=Adafruit_LSM303()
         # Setup gyroscope
@@ -41,10 +42,10 @@ class AdafruitIMU(object):
         # covariance matrix
         imu_msg.orientation_covariance[0]=-1
         imu_msg.angular_velocity_covariance[0]=-1
-        imu_msg.linear_acceleration_covariance=-1
+        imu_msg.linear_acceleration_covariance[0]=-1
         # angular velocity
         imu_msg.angular_velocity.x=gyro[0][0]*self.DEG2RAD
-        imu_msg.angular_velocity.y=gyro[0][1]*self.DEG2EAD
+        imu_msg.angular_velocity.y=gyro[0][1]*self.DEG2RAD
         imu_msg.angular_velocity.z=gyro[0][2]*self.DEG2RAD
         # linear acceleration
         imu_msg.linear_acceleration.x=accel[0]*self.G
@@ -52,19 +53,19 @@ class AdafruitIMU(object):
         imu_msg.linear_acceleration.z=accel[2]*self.G
         # pitch roll yaw
         if imu_msg.linear_acceleration.z>=0:
-            signOfZ=1
+            self.signOfZ=1
         else :
-            signOfZ=-1
+            self.signOfZ=-1
         t_roll=imu_msg.linear_acceleration.x**2+imu_msg.linear_acceleration.z**2
         roll=math.atan2(imu_msg.linear_acceleration.y,math.sqrt(t_roll))*180/math.pi
 
         t_pitch=imu_msg.linear_acceleration.y**2+imu_msg.linear_acceleration.z**2
-        pitch=math.atan2(imu_msg.linear_acceleration.x,sighOfZ*math.sqrt(t_pitch))*180/math.pi
+        pitch=math.atan2(imu_msg.linear_acceleration.x,self.signOfZ*math.sqrt(t_pitch))*180/math.pi
 
-        yaw=math.atan2(compass[1]/compass[2])*180/math.pi
+        yaw=math.atan2(compass[1],compass[2])*180/math.pi
         # orientation
         imu_msg.orientation.x=pitch
-        imu_msg.orientation.y=row
+        imu_msg.orientation.y=roll
         imu_msg.orientation.z=yaw
         imu_msg.orientation.w=0
         # publish

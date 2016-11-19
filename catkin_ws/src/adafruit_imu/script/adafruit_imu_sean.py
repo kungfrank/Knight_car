@@ -9,12 +9,11 @@ from sensor_msgs.msg import Imu
 from sensor_msgs.msg import MagneticField
 
 class AdafruitIMU(object):
-    self.G=9.80665
-    self.DEG2RAD=0.01744533
-
     def __init__(self):
         self.node_name=rospy.get_name()
         rospy.loginfo("[%s] Initializing " %(self.node_name))
+		self.G=9.80665
+		self.DEG2RAD=0.01744533
         # Setup compass and accelerometer
         self.compass_accel=Adafruit_LSM303()
         # Setup gyroscope
@@ -54,7 +53,7 @@ class AdafruitIMU(object):
         # pitch roll yaw
         if imu_msg.linear_acceleration.z>=0:
             signOfZ=1
-        else 
+        else :
             signOfZ=-1
         t_roll=imu_msg.linear_acceleration.x**2+imu_msg.linear_acceleration.z**2
         roll=math.atan2(imu_msg.linear_acceleration.y,math.sqrt(t_roll))*180/math.pi

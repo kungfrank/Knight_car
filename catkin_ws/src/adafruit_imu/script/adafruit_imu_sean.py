@@ -80,8 +80,10 @@ class AdafruitIMU(object):
         mag_msg.magnetic_field.z=compass[2]
         # publish
         self.pub_mag.publish(mag_msg)
-
+	def onShutdown(self):
+		rospy.loginfo("[%s] Shutdown." %(self.node_name))
 if __name__=="__main__":
     rospy.init_node("Adafruit_IMU",anonymous=False)
     adafruit_IMU=AdafruitIMU()
-    rospy.spin()
+rospy.on_shutdown(adafruit_IMU.onShutdown)
+rospy.spin()

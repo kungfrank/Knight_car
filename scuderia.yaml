@@ -233,6 +233,9 @@ jcarname:
 kaku:
   name: Chang-Yi Kuo
 
+caroline:
+  name: Chang-Yi Kuo
+
 redbull:
   name: Peter
 
@@ -240,4 +243,10 @@ jack:
   name: Jack 
 
 karissa:
-  name:JihShi Chen     
+  name: JihShi Chen     
+
+topbot:
+  name: topbot
+
+soukoban:
+  name: ARG-Car14

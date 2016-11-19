@@ -83,7 +83,7 @@ class AdafruitIMU(object):
 	def onShutdown(self):
 		rospy.loginfo("[%s] Shutdown." %(self.node_name))
 if __name__=="__main__":
-    rospy.init_node("Adafruit_IMU",anonymous=False)
-    adafruit_IMU=AdafruitIMU()
-rospy.on_shutdown(adafruit_IMU.onShutdown)
-rospy.spin()
+	rospy.init_node("Adafruit_IMU",anonymous=False)
+	adafruit_IMU=AdafruitIMU()
+	rospy.on_shutdown(adafruit_IMU.onShutdown)
+	rospy.spin()

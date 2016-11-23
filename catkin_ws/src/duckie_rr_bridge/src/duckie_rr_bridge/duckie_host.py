@@ -11,7 +11,7 @@ import traceback
 from __builtin__ import True, False
 
 import rospy
-from duckietown_msgs.msg import Twist2DStamped, BoolStamped, Pose2DStamped
+from duckietown_msgs.msg import Twist2DStamped, BoolStamped, Pose2DStamped, LanePose, AprilTagDetectionArray
 #from sensor_msgs.msg import CompressedImage
 from sensor_msgs.msg import Image, CameraInfo
 
@@ -21,7 +21,7 @@ duckie_servicedef="""
 #Service to provide simple interface to the Duckiebot
 service Duckiebot_Interface
 
-option version 0.4
+option version 0.5
 
 struct DuckieImage
     #field string format
@@ -38,6 +38,21 @@ struct ImageHeader
     field int32 step
 end struct
 
+struct LanePose
+    field double d
+    field double phi
+    field double sigma_d
+    field double sigma_phi
+    field uint8 status
+    field uint8 in_lane
+end struct
+
+struct AprilTag
+    field double size
+    field double[3] pos
+    field double[4] quat 
+end struct
+
 object Duckiebot
     
     property double v
@@ -46,6 +61,10 @@ object Duckiebot
     property double y
     property double theta
     property uint8 camera_open
+    property LanePose lane_pose
+    property AprilTag{list} april_tags
+
+    event TagDetected(AprilTag at)
 
     function void sendCmd(double v, double omega)
     function void sendStop()
@@ -53,6 +72,7 @@ object Duckiebot
     function void closeCamera()
     function DuckieImage getImage()
     function ImageHeader getImageHeader()
+    #function LanePose getLanePose()
 
     pipe DuckieImage ImageStream
 
@@ -103,13 +123,29 @@ class DuckiebotHost(object):
         self._y = 0
         self._theta = 0
 
+        # Set up Lane Pose Struct
+        self._lane_pose = RR.RobotRaconteurNode.s.NewStructure(
+            "Duckiebot_Interface.LanePose")
+        self._lane_pose.d = float(0)
+        self._lane_pose.phi = float(0)
+        self._lane_pose.sigma_d = float(0)
+        self._lane_pose.sigma_phi = float(0)
+        self._lane_pose.status = int(0)
+        self._lane_pose.in_lane = 0
+        
+        # Set up april tag struct
+        self._apriltags = []
+        self.TagDetected = RR.EventHook()
+
         # Publications
         self.pub_car_cmd = rospy.Publisher("~car_cmd", Twist2DStamped, queue_size=1)
 
         # Subscriptions 
         self.sub_velocity = rospy.Subscriber("~velocity", Twist2DStamped, self._cb_velocity)
         self.sub_pose = rospy.Subscriber("~pose",Pose2DStamped, self._cb_pose)
-
+        self.sub_lane_pose = rospy.Subscriber("~lane_pose", LanePose, self._cb_lane_pose)
+        self.sub_april = rospy.Subscriber("~april", AprilTagDetectionArray, self._cb_april)
+    
     # Camera Functions
     @property
     def camera_open(self):
@@ -197,6 +233,48 @@ class DuckiebotHost(object):
                 del(dict_ep[pipe_ep.Index])
             except:
                 traceback.print_exc()
+
+    # Lane Pose Functions
+    @property
+    def lane_pose(self):
+        #with self._lock:
+        return self._lane_pose
+
+    def _cb_lane_pose(self,lane_pose_msg):
+        self._lane_pose.d = lane_pose_msg.d
+        self._lane_pose.phi = lane_pose_msg.phi
+        self._lane_pose.sigma_d = lane_pose_msg.sigma_d
+        self._lane_pose.sigma_phi = lane_pose_msg.sigma_phi
+        self._lane_pose.status = lane_pose_msg.status
+        if lane_pose_msg.in_lane:
+            self._lane_pose.in_lane = 1
+        else:
+            self._lane_pose.in_lane = 0
+
+    
+    # April Tags Properties
+    @property
+    def april_tags(self):
+        #with self._lock:
+        return self._apriltags
+
+    def _cb_april(self, april_msg):
+        self._apriltags = []
+
+        for tag in april_msg.detections:
+            apriltag = RR.RobotRaconteurNode.s.NewStructure(
+            "Duckiebot_Interface.AprilTag") 
+            
+            apriltag.size = tag.size
+            pose = tag.pose.pose
+            pos = pose.position
+            ori = pose.orientation
+            
+            apriltag.pos = np.array([pos.x, pos.y, pos.z], dtype='f8')
+            apriltag.quat = np.array([ori.x, ori.y, ori.z, ori.w], dtype='f8')
+            
+            self.TagDetected.fire(apriltag)
+            self._apriltags.append(apriltag)
 
     # Kinematics Functions
     @property

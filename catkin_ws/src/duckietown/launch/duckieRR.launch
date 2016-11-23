@@ -4,28 +4,78 @@
     <arg name="config" default="baseline" doc="Specify a config."/>
     <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
     <arg name="port" default="0" doc="RobotRaconteur port number"/>
+    <arg name="lanefilter" default="true" doc="Enable the lanefilter (launch with false if lanefilter is not working)" />
+    <arg name="artags" default="true" doc="Enable AR Tag detection." />
 
 
     <include file="$(find duckietown)/machines"/>
     
-    <!-- run duckie_rr_bridge/duckie_host node -->
+    <!-- duckie_rr_bridge/duckie_host  -->
     <remap from="duckie_host/velocity" to="forward_kinematics_node/velocity" />
     <remap from="duckie_host/pose" to="velocity_to_pose_node/pose" />
     <remap from="duckie_host/image" to="camera_node/image/raw" />
+    <remap from="duckie_host/lane_pose" to="lane_filter_node/lane_pose" />
+    <remap from="duckie_host/april" to="tag_detections" />
     <include file="$(find duckie_rr_bridge)/launch/duckie_host.launch">
         <arg name="veh" value="$(arg veh)"/>
-        <arg name="local" value="$(arg local)"/>
+        <!--arg name="local" value="$(arg local)"/ -->
+        <arg name="local" value="true"/>
         <arg name="port" value="$(arg port)"/> 
     </include>
  
-    <!-- run camera node -->
+    <!-- camera node -->
     <include file="$(find duckietown)/launch/camera.launch">
-	<arg name="veh" value="$(arg veh)"/>
+        <arg name="veh" value="$(arg veh)"/>
         <arg name="local" value="$(arg local)" />
         <arg name="config" value="$(arg config)"/>
-	<arg name="raw" value="true" />
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+        <arg name="raw" value="true"/>
+        <arg name="cam_info" value="true"/> 
+        <arg name="live" value="true"/>
+        <arg name="rect" value="true" />
     </include>
-       
+
+    <group if="$(arg lanefilter)">
+        <!-- Ground projection -->
+        <include file="$(find ground_projection)/launch/ground_projection.launch">
+         <arg name="veh" value="$(arg veh)"/>
+         <arg name="local" value="$(arg local)"/>
+         <arg name="config" value="$(arg config)"/>
+         <arg name="param_file_name" value="$(arg param_file_name)"/>
+         <arg name="camera_topic" value="camera_node"/>
+        </include>
+        
+        <!-- Line Detector -->
+        <remap from="line_detector_node/image" to="camera_node/image/compressed"/>
+        <include file="$(find line_detector)/launch/line_detector_node.launch">
+            <arg name="veh" value="$(arg veh)"/>
+            <arg name="local" value="$(arg local)"/>
+            <arg name="config" value="$(arg config)"/>
+            <arg name="param_file_name" value="$(arg param_file_name)"/>
+            <arg name="verbose" value="false" />
+        </include>
+
+        <!-- Lane Filter -->
+        <remap from="lane_filter_node/segment_list" to="ground_projection/lineseglist_out"/>
+        <remap from="lane_filter_node/velocity" to="forward_kinematics_node/velocity"/>
+        <include file="$(find lane_filter)/launch/lane_filter_node.launch">
+            <arg name="veh" value="$(arg veh)"/>
+            <arg name="local" value="$(arg local)"/>
+            <arg name="config" value="$(arg config)"/>
+            <arg name="param_file_name" value="$(arg param_file_name)"/>
+        </include>
+    </group>
+
+    <!--- run the april tags -->
+    <remap from="image_rect" to="camera_node/image/rect" />
+    <remap from="camera_node/image/camera_info" to="camera_node/raw_camera_info" />
+    <include if="$(arg artags)" file="$(find apriltags_ros)/launch/apriltag_detector_node.launch">
+        <arg name="veh" value="$(arg veh)"/>
+        <arg name="local" value="$(arg local)"/>
+        <arg name="config" value="$(arg config)"/>
+        <arg name="param_file_name" value="$(arg param_file_name)"/>
+    </include>
+
     <!-- run inverse_kinematics_node -->
     <remap from="inverse_kinematics_node/car_cmd" to="duckie_host/car_cmd"/>
     <remap from="inverse_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd" />

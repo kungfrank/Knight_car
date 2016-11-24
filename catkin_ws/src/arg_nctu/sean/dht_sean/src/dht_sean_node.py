@@ -1,6 +1,8 @@
 #!/usr/bin/env python
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import rospy
-import gpio
+import pigpio
 import time
 from dht_sean.msg import Sensor
 
@@ -16,7 +18,7 @@ class DHT(object):
 	self.setup()
 	self.node_name=rospy.get_name()
 	self.pub_timestep=self.setupParam("~pub_timestep",1)
-	self.pub_dht=rospy.Publisher("~dht_date",Sensor,queue_size=10)
+	self.pub_dht=rospy.Publisher("~dht_data",Sensor,queue_size=10)
 	self.pub_timer=rospy.Timer(rospy.Duration.from_sec(self.pub_timestep),self.publish)
 	rospy.loginfo("[%s] Initializing " %(self.node_name))		
     def setupParam(self,param_name,default_value):
@@ -30,10 +32,10 @@ class DHT(object):
 	sensor_data.moisture=self.humidity
 	self.pub_dht.publish(sensor_data)	
     def onShutdown(self):
-	rospy.loginfo("[%s] Shuttinf down." %(self.node_name))		
+	rospy.loginfo("[%s] Shutting down." %(self.node_name))		
     def setup(self):
 	self.pi.set_pull_up_down(self.gpio,pigpio.PUD_OFF)
-	self.set_watchdog(self.gpio,0)
+	self.pi.set_watchdog(self.gpio,0)
 	self.register_callbacks()
     def register_callbacks(self):
 	self.either_edge_cb=self.pi.callback(self.gpio,pigpio.EITHER_EDGE,self.either_edge_callback)
@@ -57,12 +59,12 @@ class DHT(object):
 		total = self.humidity + self.temperature
 		if not (total & 255) == self.checksum:
 		    raise
-	    elif 16 <= self.bit < 24:
-		self.temperature = (self.temperature << 1) + val
-	    elif 0 <= self.bit < 8:
-		self.humidity = (self.humidity << 1) + val
-	    else:
-		pass
+	elif 16 <= self.bit < 24:
+	    self.temperature = (self.temperature << 1) + val
+	elif 0 <= self.bit < 8:
+	    self.humidity = (self.humidity << 1) + val
+	else:
+	    pass
 	self.bit+=1	
     def _edge_FALL(self, tick, diff):
 	self.high_tick = tick
@@ -97,3 +99,4 @@ if __name__=='__main__':
     sensor=DHT(pi,4)
     rospy.on_shutdown(sensor.onShutdown)
     rospy.spin()
+    sensor.close()

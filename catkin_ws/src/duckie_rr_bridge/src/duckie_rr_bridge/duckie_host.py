@@ -11,7 +11,9 @@ import traceback
 from __builtin__ import True, False
 
 import rospy
-from duckietown_msgs.msg import Twist2DStamped, BoolStamped, Pose2DStamped, LanePose, AprilTagDetectionArray
+from duckietown_msgs.msg import Twist2DStamped, BoolStamped, Pose2DStamped, LanePose
+from duckietown_msgs.msg import AprilTagsWithInfos
+#from duckietown_msgs.msg import AprilTagDetectionArray
 #from sensor_msgs.msg import CompressedImage
 from sensor_msgs.msg import Image, CameraInfo
 
@@ -49,6 +51,7 @@ end struct
 
 struct AprilTag
     field double size
+    field int32 id
     field double[3] pos
     field double[4] quat 
 end struct
@@ -144,7 +147,8 @@ class DuckiebotHost(object):
         self.sub_velocity = rospy.Subscriber("~velocity", Twist2DStamped, self._cb_velocity)
         self.sub_pose = rospy.Subscriber("~pose",Pose2DStamped, self._cb_pose)
         self.sub_lane_pose = rospy.Subscriber("~lane_pose", LanePose, self._cb_lane_pose)
-        self.sub_april = rospy.Subscriber("~april", AprilTagDetectionArray, self._cb_april)
+        self.sub_april = rospy.Subscriber("~april", AprilTagsWithInfos, self._cb_april)
+        #self.sub_april = rospy.Subscriber("~april", AprilTagDetectionArray, self._cb_april)
     
     # Camera Functions
     @property
@@ -260,11 +264,12 @@ class DuckiebotHost(object):
 
     def _cb_april(self, april_msg):
         self._apriltags = []
-
-        for tag in april_msg.detections:
+        
+        for tag, info in zip(april_msg.detections, april_msg.infos):
             apriltag = RR.RobotRaconteurNode.s.NewStructure(
             "Duckiebot_Interface.AprilTag") 
             
+            apriltag.id = info.id
             apriltag.size = tag.size
             pose = tag.pose.pose
             pos = pose.position

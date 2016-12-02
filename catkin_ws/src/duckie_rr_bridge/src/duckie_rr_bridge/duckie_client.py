@@ -15,7 +15,7 @@ if __name__ == '__main__':
     t2 = RR.TcpTransport()
     RRN.RegisterTransport(t2)
     print "Connecting..."
-    duck = RRN.ConnectService("tcp://duckiebot1.local:1234/DuckiebotServer.duckiebot1/Duckiebot")
+    duck = RRN.ConnectService("tcp://<DUCKIEBOTNAME.LOCAL OR IP ADDRESS>:<PORT>/DuckiebotServer.<DUCKIEBOTNAME>/Duckiebot")
     print "Connection Successful!"
     
     vel = duck.v

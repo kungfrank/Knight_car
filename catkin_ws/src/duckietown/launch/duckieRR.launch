@@ -1,6 +1,7 @@
 <launch>
     <arg name="veh" doc="Name of vehicle. ex: megaman"/>
     <arg name="local" default="false" doc="true for running on laptop. false for running on vehicle."/>
+    <arg name="RRlocal" default="false" doc="true for running the robotRaconteur node locally. Otherwise launched on duckiebot." />
     <arg name="config" default="baseline" doc="Specify a config."/>
     <arg name="param_file_name" default="default" doc="Specify a param file. ex:megaman." />
     <arg name="port" default="0" doc="RobotRaconteur port number"/>
@@ -20,7 +21,8 @@
     <include file="$(find duckie_rr_bridge)/launch/duckie_host.launch">
         <arg name="veh" value="$(arg veh)"/>
         <!--arg name="local" value="$(arg local)"/ -->
-        <arg name="local" value="true"/>
+        <!--arg name="local" value="true"/ -->
+        <arg name="local" value="$(arg RRlocal)"/>
         <arg name="port" value="$(arg port)"/> 
     </include>
  
@@ -68,7 +70,7 @@
     </group>
 
     <!--- run the april tags -->
-    <group if="$(arg artags)"
+    <group if="$(arg artags)">
     <remap from="image_rect" to="camera_node/image/rect" />
     <remap from="camera_node/image/camera_info" to="camera_node/raw_camera_info" />
         <include file="$(find apriltags_ros)/launch/apriltag_detector_node.launch">

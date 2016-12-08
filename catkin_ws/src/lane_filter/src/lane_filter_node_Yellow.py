@@ -11,6 +11,7 @@ from math import floor, atan2, pi, cos, sin, sqrt
 import time
 
 
+
 class LaneFilterNode(object):
     """
     
@@ -119,7 +120,7 @@ For more info on algorithm and parameters please refer to the google doc:
         measurement_likelihood = np.zeros(self.d.shape)
 
         for segment in segment_list_msg.segments:
-            if segment.color != segment.WHITE and segment.color != segment.YELLOW:
+            if segment.color != segment.YELLOW:
                 continue
             if segment.points[0].x < 0 or segment.points[1].x < 0:
                 continue
@@ -253,14 +254,25 @@ For more info on algorithm and parameters please refer to the google doc:
         l_i = (l1+l2)/2
         d_i = (d1+d2)/2
         phi_i = np.arcsin(t_hat[1])
-        if segment.color == segment.YELLOW: # right lane is white
-            if(p1[0] > p2[0]): # right edge of white lane
-                d_i = d_i - self.linewidth_yellow
-            else: # left edge of white lane
-                d_i = - d_i
-                phi_i = -phi_i
-            d_i = d_i - self.lanewidth/2
+        if segment.color == segment.WHITE: # right lane is white
+            print 'skip white'
+	    
+	 #   if(p1[0] > p2[0]): # right edge of white lane
+         #       d_i = d_i - self.linewidth_white
+         #   else: # left edge of white lane
+         #       d_i = - d_i
+         #       phi_i = -phi_i
+         #   d_i = d_i - self.lanewidth/2
 
+        elif segment.color == segment.YELLOW: # left lane is yellow
+            if (p2[0] > p1[0]): # left edge of yellow lane
+                d_i = d_i - self.linewidth_yellow
+                phi_i = -phi_i
+                print 'left edge of yellow'
+            else: # right edge of white lane
+                d_i = -d_i
+                print 'right edge of yellow'
+            d_i =  self.lanewidth/2 - d_i
 
         return d_i, phi_i, l_i
 

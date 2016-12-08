@@ -1,5 +1,5 @@
 <launch>
-oiiiiiff	<arg name="veh" default="$(env VEHICLE_NAME)"/>
+	<arg name="veh" default="$(env VEHICLE_NAME)"/>
 	<!-- start basic args -->
 	<include file="$(find duckietown_kaku)/launch/master_kuo.launch">
 		<arg name="veh" value="$(arg veh)"/>
@@ -8,7 +8,7 @@ oiiiiiff	<arg name="veh" default="$(env VEHICLE_NAME)"/>
 		<arg name="param_file_name" default="default" />
 		<arg name="line_detector_param_file_name" default="universal" />
 		<arg name="anti_instagram" default="true" />
-		<arg name="/lane_following/stop_line_filter" default="false" /> <!-- will not every allow a transition into COORDINATION mode -->
+		<arg name="/lane_following/stop_line_filter" default="true" /> <!-- will not every allow a transition into COORDINATION mode -->
                 <arg name="yellow" default="$(arg yellow)" />
 	</include>
 </launch>

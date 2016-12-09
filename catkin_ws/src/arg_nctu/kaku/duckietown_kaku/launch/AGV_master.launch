@@ -221,11 +221,7 @@
 	<!-- Start Jupyter 
 	
 	<group if="$(arg jupyter)">
-		<include file="$(find duckietown_nctu_wama)/launch/joystick_jupyter.launch">
-			<arg name="veh" value="$(arg veh)"/>
-			<arg name="config" value="$(arg config)"/>
-			<arg name="param_file_name" value="$(arg param_file_name)"/>
-		</include>
+		<remap from="car_cmd_switch_node/cmd" to="jupyter_control/car_cmd"/>
 	</group>
 
 	 End Jupyter -->

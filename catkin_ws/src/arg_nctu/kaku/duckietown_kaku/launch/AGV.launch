@@ -6,6 +6,7 @@
 		<arg name="visualization" default="true" />
 		<arg name="verbose" default="true" />
 		<arg name="param_file_name" default="default" />
+		<arg name="fsm_file_name" default="arg" />
 		<arg name="line_detector_param_file_name" default="universal" />
 		<arg name="anti_instagram" default="true" />
 		<arg name="/lane_following/stop_line_filter" default="true" /> 

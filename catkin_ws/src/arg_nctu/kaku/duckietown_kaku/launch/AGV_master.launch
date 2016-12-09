@@ -218,16 +218,17 @@
 	</group>
 	<!-- End Joystick -->
 
-	<!-- Start Jupyter -->
+	<!-- Start Jupyter 
+	
 	<group if="$(arg jupyter)">
-		<!-- joystick_jupyter -->
 		<include file="$(find duckietown_nctu_wama)/launch/joystick_jupyter.launch">
 			<arg name="veh" value="$(arg veh)"/>
 			<arg name="config" value="$(arg config)"/>
 			<arg name="param_file_name" value="$(arg param_file_name)"/>
 		</include>
 	</group>
-	<!-- End Jupyter -->
+
+	 End Jupyter -->
 
 	<!-- Start FSM -->
 	<group if="$(arg fsm)">

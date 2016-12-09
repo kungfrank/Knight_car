@@ -131,6 +131,8 @@ states:
       - stop_line_filter_node
     lights: ["lane_following"]
 
+## Added by ARG
+
   LANE_FOLLOWING_TURN_LEFT:
     transitions:
       at_stop_line: "COORDINATION"
@@ -149,6 +151,20 @@ states:
       - line_detector_node
     lights: ["lane_following"]
 
+  JUPYTER_CONTROL:
+    transitions:
+      # jupyter_override_off: "LANE_FOLLOWING"
+      # start_avoidance: "LANE_FOLLOWING_AVOID"
+    active_nodes:
+      - lane_filter_node
+      - line_detector_node
+      - stop_line_filter_node
+      - framerate_high
+      - decoder_node
+      - apriltag_node
+    lights: ["jupyter_control"]
+
+## End Adding by ARG
 
   LANE_FOLLOWING_AVOID:
     transitions:

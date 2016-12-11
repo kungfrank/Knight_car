@@ -5,6 +5,7 @@
 	<arg name="config" default="baseline" />
 	<arg name="param_file_name" default="default" />
 	<arg name="apriltags_param_file_name" default="$(arg param_file_name)" />
+	<arg name="car_cmd_switch_param_file_name" default="$(arg param_file_name)" />
 	<arg name="fsm_file_name" default="default" />
 	<arg name="visualization" default="true" />
 	<arg name="verbose" default="true" />
@@ -242,7 +243,7 @@
 		<include file="$(find dagu_car)/launch/car_cmd_switch_node.launch">
 			<arg name="veh" value="$(arg veh)"/>
 			<arg name="config" value="$(arg config)"/>
-			<arg name="param_file_name" value="$(arg param_file_name)"/>
+			<arg name="param_file_name" value="$(arg car_cmd_switch_param_file_name)"/>
 		</include>
 
 		<include file="$(find fsm)/launch/logic_gate_node.launch">

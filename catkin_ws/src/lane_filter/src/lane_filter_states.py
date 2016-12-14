@@ -143,7 +143,7 @@ For more info on algorithm and parameters please refer to the google doc:
 	    state_switch = segment.WHITE
 	    if self.state != "LANE_FOLLOWING":
                 state_switch = segment.YELLOW
-
+	    
 	
             if segment.color != state_switch and segment.color != segment.YELLOW:
                 continue
@@ -151,6 +151,15 @@ For more info on algorithm and parameters please refer to the google doc:
                 continue
 
             d_i,phi_i,l_i = self.generateVote(segment)
+
+	    if self.state != "LANE_FOLLOWING":
+                if self.state == "LANE_FOLLOWING_TURN_RIGHT":
+                    if phi_i <0 :
+                        continue
+                if self.state == "LANE_FOLLOWING_TURN_LEFT":
+                    if phi_i >0 :
+                        continue
+
             if d_i > self.d_max or d_i < self.d_min or phi_i < self.phi_min or phi_i>self.phi_max:
                 continue
             if self.use_max_segment_dist and (l_i > self.max_segment_dist):

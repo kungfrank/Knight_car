@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 import rospy
+import roscpp
 import numpy as np
 import math
 from duckietown_msgs.msg import  Twist2DStamped
 from geometry_msgs.msg import Point
 from geometry_msgs.msg import Quaternion
-from tf.transformations import euler_from_quaternion
+#from tf.transformations import euler_from_quaternion
+import tf
 import sys
 import time
 import threading
@@ -24,7 +26,7 @@ class mocap_pose(object):
 		#self.sub_joystick_car_cmd = rospy.Subscriber("~joystick_car_cmd",Twist2DStamped, self.cbJoystick,queue_size=1)
 		self.sub_vehicle_position = rospy.Subscriber("~vehicle_position", Point, self.cbPosition, queue_size=1)
 		self.sun_vehicle_orientation = rospy.Subscriber("~vehicle_orientation", Quaternion, self.cbOrientation, queue_size=1)
-		self.sub_target_position = rospy.Subscriber("~target_position", Point, self.cbTargetn, queue_size=1)
+		self.sub_target_position = rospy.Subscriber("~target_position", Point, self.cbTarget, queue_size=1)
 
 		# safe shutdown
 		rospy.on_shutdown(self.custom_shutdown)
@@ -65,6 +67,7 @@ class mocap_pose(object):
 		self.pos.x = pose_msg.x
 		self.pos.y = pose_msg.y
 		self.pos.z = pose_msg.z
+		print self.pos.x, self.pos.y, self.pos.z
 
 	def cbOrientation(self , pose_o_msg):
 
@@ -74,6 +77,7 @@ class mocap_pose(object):
 		pitch = euler[1]
 		yaw = euler[2]
 		self.yaw = yaw
+		print (pose_o_msg.x, pose_o_msg.y, pose_o_msg.z, pose_o_msg.w)
 		print (roll, pitch, yaw)
 
 	def cbTarget(self, pose_msg):
@@ -83,7 +87,10 @@ class mocap_pose(object):
 
 	def Spinning(self, direction):
 
+		print "start spinning"
+		print "yaw dire", self.yaw, direction
 		while(abs(self.yaw - direction) >= 5):
+			print "yaw dire", self.yaw, direction
 			car_control_msg = Twist2DStamped()
 			car_control_msg.v = 1
 			car_control_msg.omega = 0.5
@@ -92,12 +99,18 @@ class mocap_pose(object):
 			car_control_msg.v = 0
 			car_control_msg.omega = 0
 			self.publishCmd(car_control_msg)
+			print "continue spinning"
+		print "end spinning"
 
 	def Forward_x(self, target_x):
 
-		if(self.pos.x >= target_x):
+		print "start forward_x"
+		print self.pos.x, target_x
+		car_control_msg = Twist2DStamped()
+		if(self.pos.x < target_x):
 			self.Spinning(0)
-			while(self.pos.x > target_x):
+			while(self.pos.x < target_x):
+				print self.pos.x, target_x
 				car_control_msg.v = 1
 				car_control_msg.omega = 0
 				self.publishCmd(car_control_msg)
@@ -105,6 +118,8 @@ class mocap_pose(object):
 				car_control_msg.v = 0
 				car_control_msg.omega = 0
 				self.publishCmd(car_control_msg)
+				print "continue forward_x"
+		print "end spinning"
 
 if __name__ == "__main__":
 	rospy.init_node("mocap_pose",anonymous=False)

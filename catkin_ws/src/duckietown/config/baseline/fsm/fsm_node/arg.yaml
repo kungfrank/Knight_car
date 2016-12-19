@@ -135,7 +135,7 @@ states:
 
   LANE_FOLLOWING_TURN_LEFT:
     transitions:
-      at_stop_line: "COORDINATION"
+      joystick_override_off: "LANE_FOLLOWING"
 #      lost_lane: "LANE_RECOVERY"
     active_nodes:
       - lane_filter_node
@@ -144,7 +144,7 @@ states:
 
   LANE_FOLLOWING_TURN_RIGHT:
     transitions:
-      at_stop_line: "COORDINATION"
+      joystick_override_off: "LANE_FOLLOWING"
 #      lost_lane: "LANE_RECOVERY"
     active_nodes:
       - lane_filter_node

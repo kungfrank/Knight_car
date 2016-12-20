@@ -1,0 +1,10 @@
+<launch>
+	<arg name = "robotName" default = "atlas" />
+	<arg name = "mode" default = "state_estimation" />
+	<arg name = "imuSensor" default = "pelvis_imu_sensor_at_imu_frame" />
+	<arg name = "veh" default = "wama" />
+	
+	<node name = "lcm2ros_node" type = "lcm2ros" pkg = "lcm2ros" output = "screen">
+		<param name="veh" type="string" value="$(arg veh)"/>
+	</node>
+</launch>

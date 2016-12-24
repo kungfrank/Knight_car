@@ -55,16 +55,16 @@ For more info on algorithm and parameters please refer to the google doc:
 
         # Subscribers
         if self.use_propagation:
-            self.sub_velocity = rospy.Subscriber("~velocity", Twist2DStamped, self.updateVelocity)
-        self.sub = rospy.Subscriber("~segment_list", SegmentList, self.processSegments, queue_size=1)
+            self.sub_velocity = rospy.Subscriber("/lane_filter_node/velocity", Twist2DStamped, self.updateVelocity)
+        self.sub = rospy.Subscriber("/kaku/lane_filter_node/segment_list", SegmentList, self.processSegments, queue_size=1)
 
         # Publishers
-        self.pub_lane_pose  = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
-        self.pub_belief_img = rospy.Publisher("~belief_img", Image, queue_size=1)
-        self.pub_entropy    = rospy.Publisher("~entropy",Float32, queue_size=1)
+        self.pub_lane_pose  = rospy.Publisher("/kaku/lane_filter_node/lane_pose", LanePose, queue_size=1)
+        self.pub_belief_img = rospy.Publisher("/kaku/lane_filter_node/belief_img", Image, queue_size=1)
+        self.pub_entropy    = rospy.Publisher("/kaku/lane_filter_node/entropy",Float32, queue_size=1)
     	#self.pub_prop_img = rospy.Publisher("~prop_img", Image, queue_size=1)
-        self.pub_in_lane    = rospy.Publisher("~in_lane",BoolStamped, queue_size=1)
-        self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
+        self.pub_in_lane    = rospy.Publisher("/kaku/lane_filter_node/in_lane",BoolStamped, queue_size=1)
+        self.sub_switch = rospy.Subscriber("/kaku/lane_filter_node/switch", BoolStamped, self.cbSwitch, queue_size=1)
 
         self.timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
 
@@ -126,6 +126,11 @@ For more info on algorithm and parameters please refer to the google doc:
                 continue
 
             d_i,phi_i,l_i = self.generateVote(segment)
+
+	    #print "d= " + `d_i` + "    phi= " + `phi_i`
+#	    if phi_i > 0:
+#		continue
+
             if d_i > self.d_max or d_i < self.d_min or phi_i < self.phi_min or phi_i>self.phi_max:
                 continue
             if self.use_max_segment_dist and (l_i > self.max_segment_dist):

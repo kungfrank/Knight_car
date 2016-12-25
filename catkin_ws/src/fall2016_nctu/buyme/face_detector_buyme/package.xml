@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>duckietown_kaku</name>
+  <name>face_detector_buyme</name>
   <version>0.0.0</version>
-  <description>The duckietown_kaku package</description>
+  <description>The face_detector_buyme package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/duckietown_kaku</url> -->
+  <!-- <url type="website">http://wiki.ros.org/face_detector_buyme</url> -->
 
 
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
@@ -50,6 +50,7 @@
   <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>sensor_msgs</run_depend>
+
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

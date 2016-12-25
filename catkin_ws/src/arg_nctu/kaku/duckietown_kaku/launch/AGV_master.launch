@@ -255,6 +255,17 @@
 
 	<!--End FSM -->
 
+        <!-- Start Timer -->
+        <group if="$(arg fsm)">
+                <!-- Timer -->
+                <include file="$(find duckietown_kaku)/launch/timer.launch">
+                        <arg name="veh" value="$(arg veh)"/>
+                </include>
+
+        </group>
+
+        <!--End Timer -->
+
 	<!-- Start Lane Following -->
 	<group if="$(arg lane_following)">
 

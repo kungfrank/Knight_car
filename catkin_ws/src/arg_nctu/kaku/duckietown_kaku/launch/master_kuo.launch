@@ -50,35 +50,35 @@
 	<arg name="fsm" default="true"/>
 
 	<arg name="obstacle_avoidance" default="false"/>
-	<arg name="/obstacle_avoidance/simple_stop" default="true"/>
-	<arg name="/obstacle_avoidance/detection" default="true"/>
-	<arg name="/obstacle_avoidance/safety" default="true"/>
+	<arg name="/obstacle_avoidance/simple_stop" default="false"/>
+	<arg name="/obstacle_avoidance/detection" default="false"/>
+	<arg name="/obstacle_avoidance/safety" default="false"/>
 
 	<arg name="vehicle_avoidance" default="false"/>
-	<arg name="/vehicle_avoidance/detection" default="true" />
-	<arg name="/vehicle_avoidance/control" default="true"/>
+	<arg name="/vehicle_avoidance/detection" default="false" />
+	<arg name="/vehicle_avoidance/control" default="false"/>
 
 	<arg name="apriltags" default="false"/>
 	<arg name="/apriltags/local" default="false" />
 
 
-	<arg name="LED" default="true" />
+	<arg name="LED" default="false" />
 	<arg name="/LED/pattern_switch" default="false" />
 	<arg name="/LED/detector" default="false" />
 	<arg name="/LED/joystick" default="false" />
-	<arg name="/LED/emitter"  default="true" />
+	<arg name="/LED/emitter"  default="false" />
 	<arg name="/LED/interpreter" default="false" />
 
 	<arg name="odometry_learning" default="false"/>
-	<arg name="/odometry_learning/kinematics" default="true"/>
+	<arg name="/odometry_learning/kinematics" default="false"/>
 	<arg name="/odometry_learning/learning"  default="false"/>
 	<arg name="/odometry_learning/visual_odometry" default="false"/>
 
 	<arg name="coordination" default="false"/>
 
 	<arg name="navigation" default="false"/>
-	<arg name="/navigation/intersection_control" default="true"/>
-	<arg name="/navigation/apriltags_random" default="true"/>
+	<arg name="/navigation/intersection_control" default="false"/>
+	<arg name="/navigation/apriltags_random" default="false"/>
 	<arg name="/navigation/random_sr_turns" default="false"/>
 	<arg name="/navigation/graph_planner" default="false"/>
 	<!-- NOTE: either apriltags_random or graph_planner but not both -->

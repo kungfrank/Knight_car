@@ -14,7 +14,7 @@
     <group ns="$(arg veh)">        
 
         <!-- run Yellow -->
-        <node if="$(arg yellow)" machine="$(arg veh)" name="$(arg node_name)_kuo" pkg="$(arg pkg_name)" type="lane_filter_node_Yellow.py" output="screen" clear_params="true" required="true">
+        <node if="$(arg yellow)" machine="$(arg veh)" name="$(arg node_name)" pkg="$(arg pkg_name)" type="lane_filter_node_Yellow.py" output="screen" clear_params="true" required="true">
             <rosparam command="load" file="$(find duckietown)/config/$(arg config)/$(arg pkg_name)/$(arg node_name)/kaku.yaml"/>
         </node>
 

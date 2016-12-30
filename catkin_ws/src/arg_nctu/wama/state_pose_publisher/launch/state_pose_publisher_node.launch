@@ -3,12 +3,14 @@
 	<arg name="local" default="false" doc="true to launch locally on laptop. false to launch of vehicle"/>
 	<arg name="pkg_name" default="state_pose_publisher" doc="name of the package"/>
 	<arg name="node_name" default="state_pose_publisher_node" doc="name of the node"/>
+
 	<group ns="$(arg veh)">
 	<!-- Local -->
+		<remap from="state_pose_publisher_node/pose" to="L2R_pose_pose_node/pose"/>
 		<node if="$(arg local)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen" clear_params="true" required="true">
 		</node>
 	<!-- Remote -->
-			<include unless="$(arg local)" file="$(find duckietown)/machines"/>
+		<include unless="$(arg local)" file="$(find duckietown)/machines"/>
 		<node unless="$(arg local)" machine="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen" clear_params="true" required="true">
 		</node>
 	</group>

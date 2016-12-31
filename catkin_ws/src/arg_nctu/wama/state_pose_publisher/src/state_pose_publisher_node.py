@@ -11,6 +11,7 @@ import tf2_ros
 class state_pose_publisher(object):
 	def __init__(self):
 		self.node_name = rospy.get_name() 
+		self.tango = rospy.get_param("~tango")
 		#print 1
 		# Publicaiton
 		#self.pub_state_pose_ = rospy.Publisher("~car_cmd",Twist2DStamped,queue_size=1)
@@ -34,8 +35,8 @@ class state_pose_publisher(object):
 		trans_msg = TransformStamped()
 		trans_msg.header.frame_id = 'world'
 		trans_msg.child_frame_id = 'duckiebot'
-		trans_msg.transform.translation.x = pose_msg.position.x
-		trans_msg.transform.translation.y = pose_msg.position.y
+		trans_msg.transform.translation.x = pose_msg.position.x * 0.05
+		trans_msg.transform.translation.y = pose_msg.position.y *0.05
 		#trans_msg.transform.translation.z = pose_msg.position.z
 		trans_msg.transform.translation.z = 0
 
@@ -43,10 +44,19 @@ class state_pose_publisher(object):
 		quaternion = ( pose_msg.orientation.x, pose_msg.orientation.y, pose_msg.orientation.z, pose_msg.orientation.w)
 		euler = tf.transformations.euler_from_quaternion(quaternion)
 		#print euler
-		roll = math.pi - euler[2] 
-		pitch = math.pi - euler[1] 
-		yaw = math.pi - euler[0]
-		#print roll, pitch, yaw
+
+		if self.tango == "false":
+			roll = math.pi - euler[2] 
+			pitch = math.pi - euler[1] 
+			yaw = math.pi - euler[0]
+			#print roll, pitch, yaw
+		else:
+			print "tango"
+			roll = math.pi - euler[1] 
+			print "r : " , euler[1] , " p : " , euler[2] , "y : " , math.pi*2 - euler[0]
+			pitch = math.pi - euler[2] 
+			yaw =  math.pi*2 - euler[0]
+
 		new_quaternion = tf.transformations.quaternion_from_euler(roll, pitch, yaw)
 		trans_msg.transform.rotation.x = new_quaternion[0]
 		trans_msg.transform.rotation.y = new_quaternion[1]

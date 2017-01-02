@@ -59,10 +59,20 @@ events: #Maps from subscribing topic to signal ids
     msg_type: "BoolStamped"
     trigger: False
 
+# add by ARG
   time_is_up:
     topic: "timer/time_is_up"
     msg_type: "BoolStamped"
     trigger: True
+  left_turn:
+    topic: "lcm2ros_node/left_turn"
+    msg_type: "BoolStamped"
+    trigger: True
+  right_turn:
+    topic: "lcm2ros_node/right_turn"
+    msg_type: "BoolStamped"
+    trigger: True
+# end adding by ARG
 
 #  lost_lane: # not tested
 #    topic: "lane_filter_node/in_lane"
@@ -149,8 +159,8 @@ states:
 
   STREET_NAVI:
     transitions:
-      turn_right: "LANE_FOLLOWING_TURN_RIGHT"
-      turn_left: "LANE_FOLLOWING_TURN_LEFT"
+      left_turn: "LANE_FOLLOWING_TURN_LEFT"
+      right_turn: "LANE_FOLLOWING_TURN_RIGHT"
 #      lost_lane: "LANE_RECOVERY"
     active_nodes:
       - picamera_ros_to_lcm_node

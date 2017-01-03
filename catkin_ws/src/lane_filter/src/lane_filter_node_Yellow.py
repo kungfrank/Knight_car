@@ -273,10 +273,10 @@ For more info on algorithm and parameters please refer to the google doc:
             if (p2[0] > p1[0]): # left edge of yellow lane
                 d_i = d_i - self.linewidth_yellow
                 phi_i = -phi_i
-                print 'left edge of yellow'
+               # print 'left edge of yellow'
             else: # right edge of white lane
                 d_i = -d_i
-                print 'right edge of yellow'
+               # print 'right edge of yellow'
             d_i =  self.lanewidth/2 - d_i
 
         return d_i, phi_i, l_i

@@ -17,6 +17,12 @@ class mocap_patrol(object):
 		# vehicle yaw
 		self.yaw = 0
 		self.dist = 0
+		# state switch
+		self.switch = True
+		# patrol mode in S type
+		self.label = 0
+		self.X = [1.04, 1.01, -0.11, -0.08, 1.02, 0.98, -0.14, -0.08, 1]
+		self.Y = [0.35, 0.71, 0.58, 0.96, 0.94, 1.3, 1.2, 1.55, 1.53]
 		# Publicaiton
 		self.pub_car_cmd_ = rospy.Publisher("~car_cmd",Twist2DStamped,queue_size=1)
 		# Subscription
@@ -39,7 +45,7 @@ class mocap_patrol(object):
 		self.pub_car_cmd_.publish(car_cmd_msg)
 		rospy.sleep(0.5) #To make sure that it gets published.
 		rospy.loginfo("[%s] Shutdown" %self.node_name)
-	
+		
 	def cbPose(self, pose_msg):
 		# read vehicle position form mocap pose message
 		self.position.x = pose_msg.position.x
@@ -50,15 +56,20 @@ class mocap_patrol(object):
 		euler = tf.transformations.euler_from_quaternion(quaternion)
 		#roll = euler[2] * 180/math.pi
 		#pitch = euler[1] * 180/math.pi
-		#self.yaw  = 180 - euler[0] * 180/math.pi
-		self.yaw  = euler[0] * 180/math.pi
-		if(self.yaw > 0):
-			self.yaw = 180 - self.yaw
+		if self.switch == True:
+			self.yaw  = euler[0] * 180/math.pi
+			if(self.yaw > 0):
+				self.yaw = 180 - self.yaw
+			else:
+				self.yaw = -180 -self.yaw
+			print '1_vehicle yaw: ', self.yaw
+
 		else:
-			self.yaw = -180 -self.yaw
-		print 'vehicle yaw: ', self.yaw
+			self.yaw  = 180 - euler[0] * 180/math.pi
+			print '2_vehicle yaw: ', self.yaw
+			
 		#initial a target point for test
-		target_point = self.set_target_point(0.6, 0.6, 0)
+		target_point = self.set_target_point(self.label)
 		target_yaw = self.get_yaw_two_point(self.position, target_point)
 		dist = self.get_dist_two_point(self.position, target_point)
 
@@ -72,19 +83,27 @@ class mocap_patrol(object):
 		if(dist > 0.1):
 			print 'moving'
 			print 'distance' , dist
-			if(self.dist > dist):
-				self.publish_car_cmd(0.5, 0, 0.25)
-			else:
-				self.publish_car_cmd(-0.5, 0, 0.25)
-			self.dist = dist
-					
+			self.publish_car_cmd(0.5, 0, 0.25)
+		else:
+			print "**************destination arrived*****************"
+			print "label = ",self.label
+			if self.label == 1 or self.label == 5:
+				self.switch = False
+			elif self.label == 0 or self.label == 3 or self.label == 7:
+				self.switch = True
+			else:	
+				print "************label no change**********"
+			self.label = self.label + 1
+			print "label switch to ",self.label
 
-	def set_target_point(self, x, y, z):
+	def set_target_point(self, order):
 		# set a target_point
+                print "the ",(order+1)," point"
+
 		target_point = Point()
-		target_point.x = x
-		target_point.y = y
-		target_point.z = z
+		target_point.x = self.X[order]
+		target_point.y = self.Y[order]
+		target_point.z = 0
 
 		return target_point
 
@@ -97,31 +116,34 @@ class mocap_patrol(object):
 		#print 'dx', dx
 		#print 'dy', dy
 		# rad compensation
-		#if( dx > 0 and dy > 0):
-		#	yaw = yaw
-		#elif( dx < 0):
-		#	yaw = yaw + 180
-		#elif( dx > 0 and dy < 0):
-		#	yaw = yaw + 360
-		if( dx > 0):
-			yaw = yaw
-		elif( dx < 0 and dy > 0):
-			yaw = yaw + 180
-		elif( dx < 0 and dy < 0):
-			yaw = yaw - 180
-		elif( dx == 0 and dy == 0):
-			yaw = 0
-		elif( dx == 0 and dy > 0):
-			yaw = 90
-		elif( dx == 0 and dy < 0):
-			yaw = -90 
-		print 'compensation yaw: ', yaw
+		if self.switch == False:
+			if( dx > 0 and dy > 0):
+				yaw = yaw
+			elif( dx < 0):
+				yaw = yaw + 180
+			elif( dx > 0 and dy < 0):
+				yaw = yaw + 360
+		else:
+			if( dx > 0):
+				yaw = yaw
+			elif( dx < 0 and dy > 0):
+				yaw = yaw + 180
+			elif( dx < 0 and dy < 0):
+				yaw = yaw - 180
+			elif( dx == 0 and dy == 0):
+				yaw = 0
+			elif( dx == 0 and dy > 0):
+				yaw = 90
+			elif( dx == 0 and dy < 0):
+				yaw = -90 
+			print 'compensation yaw: ', yaw
 
 		return yaw
 
 	def publish_car_cmd(self, v, omega, duration):
 		# publish car command
 		print 'start motion'
+		print "\n"
 		car_cmd_msg = Twist2DStamped()
 		car_cmd_msg.v = v
 		car_cmd_msg.omega = omega

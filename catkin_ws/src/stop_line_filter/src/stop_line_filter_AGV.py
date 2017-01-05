@@ -28,7 +28,7 @@ class StopLineFilterNode(object):
         self.sub_mode      = rospy.Subscriber("fsm_node/mode",FSMState, self.processStateChange)
         self.pub_stop_line_reading = rospy.Publisher("~stop_line_reading", StopLineReading, queue_size=1)
         self.pub_at_stop_line = rospy.Publisher("~at_stop_line", BoolStamped, queue_size=1)
-	self.sub_switch = rospy.Subscriber("/kaku/stop_line_filter_node/switch", BoolStamped, self.cbSwitch, queue_size=1)
+	self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
 
 
         self.params_update = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)

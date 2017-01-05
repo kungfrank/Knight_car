@@ -5,6 +5,7 @@
 	<arg name="config" default="baseline" />
 	<arg name="param_file_name" default="default" />
 	<arg name="apriltags_param_file_name" default="$(arg param_file_name)" />
+	<arg name="car_cmd_switch_param_file_name" default="$(arg param_file_name)" />
 	<arg name="fsm_file_name" default="default" />
 	<arg name="visualization" default="true" />
 	<arg name="verbose" default="true" />
@@ -37,6 +38,8 @@
 
 	<arg name="joystick" default="true"/>
 
+	<arg name="jupyter" default="true"/>
+
 	<arg name="odometry" default="false"/>
 	<arg name="/odometry/forward_kinematics" default="false"/>
 
@@ -50,35 +53,35 @@
 	<arg name="fsm" default="true"/>
 
 	<arg name="obstacle_avoidance" default="false"/>
-	<arg name="/obstacle_avoidance/simple_stop" default="false"/>
-	<arg name="/obstacle_avoidance/detection" default="false"/>
-	<arg name="/obstacle_avoidance/safety" default="false"/>
+	<arg name="/obstacle_avoidance/simple_stop" default="true"/>
+	<arg name="/obstacle_avoidance/detection" default="true"/>
+	<arg name="/obstacle_avoidance/safety" default="true"/>
 
 	<arg name="vehicle_avoidance" default="false"/>
-	<arg name="/vehicle_avoidance/detection" default="false" />
-	<arg name="/vehicle_avoidance/control" default="false"/>
+	<arg name="/vehicle_avoidance/detection" default="true" />
+	<arg name="/vehicle_avoidance/control" default="true"/>
 
 	<arg name="apriltags" default="false"/>
 	<arg name="/apriltags/local" default="false" />
 
 
-	<arg name="LED" default="false" />
+	<arg name="LED" default="true" />
 	<arg name="/LED/pattern_switch" default="false" />
 	<arg name="/LED/detector" default="false" />
 	<arg name="/LED/joystick" default="false" />
-	<arg name="/LED/emitter"  default="false" />
+	<arg name="/LED/emitter"  default="true" />
 	<arg name="/LED/interpreter" default="false" />
 
 	<arg name="odometry_learning" default="false"/>
-	<arg name="/odometry_learning/kinematics" default="false"/>
+	<arg name="/odometry_learning/kinematics" default="true"/>
 	<arg name="/odometry_learning/learning"  default="false"/>
 	<arg name="/odometry_learning/visual_odometry" default="false"/>
 
 	<arg name="coordination" default="false"/>
 
 	<arg name="navigation" default="false"/>
-	<arg name="/navigation/intersection_control" default="false"/>
-	<arg name="/navigation/apriltags_random" default="false"/>
+	<arg name="/navigation/intersection_control" default="true"/>
+	<arg name="/navigation/apriltags_random" default="true"/>
 	<arg name="/navigation/random_sr_turns" default="false"/>
 	<arg name="/navigation/graph_planner" default="false"/>
 	<!-- NOTE: either apriltags_random or graph_planner but not both -->
@@ -94,7 +97,9 @@
 	<arg name="/localization/map_name" default="open_house_dp6" />
 	<arg name="/localization/gui" default="false"/>
 
-        <arg name="yellow" default="$(arg yellow)"/>
+	<!--test 2016/12/8 -->
+	<arg name="yellow" default="true"/>
+
 
 	<!-- end switch args -->
 	
@@ -214,6 +219,14 @@
 	</group>
 	<!-- End Joystick -->
 
+	<!-- Start Jupyter 
+	
+	<group if="$(arg jupyter)">
+		<remap from="car_cmd_switch_node/cmd" to="jupyter_control/car_cmd"/>
+	</group>
+
+	 End Jupyter -->
+
 	<!-- Start FSM -->
 	<group if="$(arg fsm)">
 		<!-- FSM -->
@@ -230,7 +243,7 @@
 		<include file="$(find dagu_car)/launch/car_cmd_switch_node.launch">
 			<arg name="veh" value="$(arg veh)"/>
 			<arg name="config" value="$(arg config)"/>
-			<arg name="param_file_name" value="$(arg param_file_name)"/>
+			<arg name="param_file_name" value="$(arg car_cmd_switch_param_file_name)"/>
 		</include>
 
 		<include file="$(find fsm)/launch/logic_gate_node.launch">
@@ -242,6 +255,17 @@
 
 	<!--End FSM -->
 
+        <!-- Start Timer -->
+        <group if="$(arg fsm)">
+                <!-- Timer -->
+                <include file="$(find little_waiter)/launch/timer_hercules.launch">
+                        <arg name="veh" value="$(arg veh)"/>
+                </include>
+
+        </group>
+
+        <!--End Timer -->
+
 	<!-- Start Lane Following -->
 	<group if="$(arg lane_following)">
 
@@ -249,12 +273,12 @@
 		<group if="$(arg /lane_following/line_detection)">
 			<remap from="line_detector_node/image" to="camera_node/image/compressed"/>
 			<remap from="line_detector_node/transform" to="anti_instagram_node/transform"/>
-			<include file="$(find line_detector)/launch/line_detector_node_kuo.launch">
+			<include file="$(find line_detector)/launch/line_detector_node.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
 				<!-- NOTE: "line_detector_param_file_name" as special case -->
 				<arg name="param_file_name" value="$(arg line_detector_param_file_name)"/>
-				<arg name="verbose" value="true" />
+				<arg name="verbose" value="$(arg verbose)" />
 			</include>	
 		</group>
 		
@@ -273,16 +297,30 @@
 			</group>
 		</group>
 	
-		<!-- Lane Filter -->
+		<!-- Lane Filter 
 		<group if="$(arg /lane_following/lane_filter)">
 			<remap from="lane_filter_node/segment_list" to="ground_projection/lineseglist_out"/>
-			<include file="$(find lane_filter)/launch/lane_filter_node_kuo.launch">
+			<remap from="lane_filter_node/mode" to="fsm_node/mode" />
+			<include file="$(find lane_filter)/launch/lane_filter_node_states.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
 				<arg name="param_file_name" value="$(arg param_file_name)"/>
-                                <arg name="yellow" value="$(arg yellow)"/>      
 			</include>
-		</group>
+		</group> -->
+
+		 <!--test 2016/12/8 --> 
+
+		<group if="$(arg /lane_following/lane_filter)">
+            <remap from="lane_filter_node/segment_list" to="ground_projection/lineseglist_out"/>
+            <include file="$(find lane_filter)/launch/lane_filter_node_kuo.launch">
+                <arg name="veh" value="$(arg veh)"/>
+                <arg name="config" value="$(arg config)"/>
+                <arg name="param_file_name" value="$(arg param_file_name)"/>
+			        <arg name="yellow" default="true"/>
+
+            </include>
+        </group>   
+
 
 		<!-- Stop Line Filter -->
 		<group if="$(arg /lane_following/stop_line_filter)">      
@@ -299,7 +337,9 @@
 		<!-- Lane controller -->
 		<group if="$(arg /lane_following/lane_controller)">
 			<remap from="lane_controller_node/lane_pose" to="lane_filter_node/lane_pose"/>
-			<include file="$(find lane_control)/launch/lane_controller_node.launch">
+			<remap from="lane_controller_node/StopLine" to="stop_line_filter_node/stop_line_reading"/>
+
+			<include file="$(find lane_control)/launch/AGV.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
 				<arg name="param_file_name" value="$(arg param_file_name)"/>        

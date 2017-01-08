@@ -28,10 +28,10 @@ events: #Maps from subscribing topic to signal ids
     trigger: True
   
   #Added by buyme
-  not_at_stop_line:
-    topic: "stop_line_filter_node/at_stop_line"
+  time_is_up:
+    topic: "project/time_is_up"
     msg_type: "BoolStamped"
-    trigger: False
+    trigger: True
   #end of addition
 
   intersection_go:
@@ -139,32 +139,41 @@ states:
     lights: ["lane_following"]
 
   #Added by buyme
+  RESET:
+    transitions:
+      joystick_override_on: "JOYSTICK_CONTROL"
+    active_nodes:
+      - project
+    lights: ["reset"]
   FORWARD:
     transitions:
       at_stop_line: "TURN_RIGHT"
     active_nodes:
       - lane_filter_node
       - line_detector_node
+      - stop_line_filter_node
       - project
     lights: ["forward"]
   
   TURN_RIGHT:
     transitions:
       at_stop_line: "TURN_BACK"
-      not_at_stop_line: "FORWARD"
+      time_is_up: "FORWARD"
     active_nodes:
       - lane_filter_node
       - line_detector_node
       - project
+      - stop_line_filter_node
     lights: ["turn_right"]
 
   TURN_BACK:
     transitions:
       at_stop_line: "TRACE_BACK"
-      not_at_stop_line: "FORWARD"
+      time_is_up: "FORWARD"
     active_nodes:
       - lane_filter_node
       - line_detector_node
+      - stop_line_filter_node
       - project
     lights: ["turn_back"]
   

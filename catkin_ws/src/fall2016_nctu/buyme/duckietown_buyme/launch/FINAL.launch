@@ -1,7 +1,7 @@
 <launch>
 	<arg name="veh" default="$(env VEHICLE_NAME)"/>
 	<!-- start basic args -->
-	<include file="$(find duckietown_kaku)/launch/AGV_master.launch">
+	<include file="$(find duckietown_buyme)/launch/FINAL_master.launch">
 		<arg name="veh" value="$(arg veh)"/>
 		<arg name="visualization" default="true" />
 		<arg name="verbose" default="true" />

@@ -21,8 +21,8 @@ class mocap_patrol(object):
 		self.switch = True
 		# patrol mode in S type
 		self.label = 0
-		self.X = [1.04, 1.01, -0.11, -0.08, 1.02, 0.98, -0.14, -0.08, 1]
-		self.Y = [0.35, 0.71, 0.58, 0.96, 0.94, 1.3, 1.2, 1.55, 1.53]
+		self.X = [1.07, 0.98, -0.17, -0.136, 1.0, 0.92, -0.18, -0.14, 0.98, 1.03, 0.68, 0.65, 0.03, 0.49, 0.12, 0.1, -0.194, -0.07 ]
+		self.Y = [0.35, 0.71, 0.56, 0.942, 0.96, 1.3, 1.19, 1.54, 1.56, 0.29, 0.315, 1.56, 1.5, 0.245, 0.29, 1.56, 1.5, 0.26 ]
 		# Publicaiton
 		self.pub_car_cmd_ = rospy.Publisher("~car_cmd",Twist2DStamped,queue_size=1)
 		# Subscription
@@ -74,10 +74,15 @@ class mocap_patrol(object):
 		dist = self.get_dist_two_point(self.position, target_point)
 
 		# vehicle turn by yaw angle difference 
+		if self.label == 18:
+			print "------- patrol mode END -------"
+			self.publish_car_cmd(0, 0, 0.5)
+			return
+
 		if(abs(self.yaw - target_yaw) >= 10):
 			print 'spinning'
 			print 'omega', -((self.yaw - target_yaw) * 0.1)
-			self.publish_car_cmd(0.3, -((self.yaw - target_yaw) * 0.3), 0.25)
+			self.publish_car_cmd(0.3, -((self.yaw - target_yaw) * 0.3), 0.2)
 			return
 
 		if(dist > 0.1):
@@ -87,13 +92,15 @@ class mocap_patrol(object):
 		else:
 			print "**************destination arrived*****************"
 			print "label = ",self.label
-			if self.label == 1 or self.label == 5:
+			if self.label == 1 or self.label == 5 or self.label == 8:
 				self.switch = False
 			elif self.label == 0 or self.label == 3 or self.label == 7:
 				self.switch = True
 			else:	
 				print "************label no change**********"
 			self.label = self.label + 1
+			if self.label > 17:
+				self.label = 18
 			print "label switch to ",self.label
 
 	def set_target_point(self, order):
@@ -154,6 +161,16 @@ class mocap_patrol(object):
 		car_cmd_msg.omega = 0
 		self.pub_car_cmd_.publish(car_cmd_msg)
 		rospy.sleep(0)		
+
+#	def publish_car_cmd_straight(self):
+                # publish car command
+#                print 'start motion'
+#                print "\n"
+#                car_cmd_msg = Twist2DStamped()
+#                car_cmd_msg.v = 0.5
+#                car_cmd_msg.omega = 0
+#                self.pub_car_cmd_.publish(car_cmd_msg)
+
 	
 	def get_dist_two_point(self, source_point, target_point):
 

@@ -94,12 +94,14 @@ class state_pose_publisher(object):
 		self.line_marker.action = Marker.ADD
 		self.line_marker.id = 0
 		self.line_marker.type = 4   
-		self.color.r = 0.254902
-		self.color.g = 0.411765
-		self.color.b = 0.882353
+		self.color.r = 0.0
+		self.color.g = 1.0
+		self.color.b = 0.0
 		self.color.a = 1
-		#self.line_marker.scale.x = 0.075
-		self.line_marker.scale.x = 0.01
+		if self.tango == "true":
+			self.line_marker.scale.x = 0.075
+		else:
+			self.line_marker.scale.x = 0.01
 if __name__ == "__main__":
 	rospy.init_node("state_pose_publisher",anonymous=False)
 	state_pose_publisher_node = state_pose_publisher()

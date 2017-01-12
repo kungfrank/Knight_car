@@ -239,6 +239,9 @@ caroline:
 brick:
   name: Chang-Yi Kuo
 
+teng:
+  name: Chang-Yu Kuo
+
 redbull:
   name: Peter
 
@@ -263,3 +266,5 @@ car15:
 buyme:
   name: ARG-car12
 
+hercules:
+  name: hercules

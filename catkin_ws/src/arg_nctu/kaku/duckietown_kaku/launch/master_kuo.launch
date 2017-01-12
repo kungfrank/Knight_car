@@ -132,21 +132,6 @@
 
 	<!-- End Wheels -->
 
-	<group if="true">
-		<group if="true">
-				<remap from="forward_kinematics_node/wheels_cmd" to="wheels_driver_node/wheels_cmd_executed" />
-				<include file="$(find dagu_car)/launch/forward_kinematics_node.launch">
-					<arg name="veh" value="$(arg veh)"/>
-					<arg name="config" value="$(arg config)"/>
-				</include>
-				<!-- run the velocity_to_pose_node -->
-				<remap from="velocity_to_pose_node/velocity" to="forward_kinematics_node/velocity" />
-				<include file="$(find dagu_car)/launch/velocity_to_pose_node.launch">
-					<arg name="veh" value="$(arg veh)"/>
-					<arg name="config" value="$(arg config)"/>
-				</include>
-		</group>
-	</group>
 
 
 	<!-- Start Joystick -->

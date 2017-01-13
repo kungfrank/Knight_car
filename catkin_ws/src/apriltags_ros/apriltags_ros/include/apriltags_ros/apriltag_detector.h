@@ -5,6 +5,7 @@
 #include <image_transport/image_transport.h>
 #include <duckietown_msgs/BoolStamped.h>
 #include <AprilTags/TagDetector.h>
+#include <AprilTags/TagRectDetector.h>
 #include <tf/transform_broadcaster.h>
 
 namespace apriltags_ros{
@@ -41,9 +42,11 @@ void switchCB(const duckietown_msgs::BoolStamped::ConstPtr& switch_msg);
   image_transport::Publisher image_pub_;
   ros::Subscriber switch_sub_;
   ros::Publisher detections_pub_;
+  ros::Publisher proposals_pub_;
   ros::Publisher pose_pub_;
   tf::TransformBroadcaster tf_pub_;
   boost::shared_ptr<AprilTags::TagDetector> tag_detector_;
+  boost::shared_ptr<AprilTags::TagRectDetector> tag_rect_detector_;
   bool on_switch;
 };
 

@@ -6,6 +6,8 @@
 #include <geometry_msgs/PoseArray.h>
 #include <duckietown_msgs/AprilTagDetection.h>
 #include <duckietown_msgs/AprilTagDetectionArray.h>
+#include <duckietown_msgs/Rect.h>
+#include <duckietown_msgs/Rects.h>
 #include <AprilTags/Tag16h5.h>
 #include <AprilTags/Tag25h7.h>
 #include <AprilTags/Tag25h9.h>
@@ -34,10 +36,12 @@ namespace apriltags_ros{
     
     AprilTags::TagCodes tag_codes = AprilTags::tagCodes36h11;
     tag_detector_= boost::shared_ptr<AprilTags::TagDetector>(new AprilTags::TagDetector(tag_codes));
+    tag_rect_detector_= boost::shared_ptr<AprilTags::TagRectDetector>(new AprilTags::TagRectDetector(tag_codes));
     image_sub_ = it_.subscribeCamera("image_rect", 1, &AprilTagDetector::imageCb, this);
     switch_sub_ = nh.subscribe("switch",1,&AprilTagDetector::switchCB, this);
     image_pub_ = it_.advertise("tag_detections_image", 1);
     detections_pub_ = nh.advertise<duckietown_msgs::AprilTagDetectionArray>("tag_detections", 1);
+    proposals_pub_ = nh.advertise<duckietown_msgs::Rects>("quad_proposals", 1);
     pose_pub_ = nh.advertise<geometry_msgs::PoseArray>("tag_detections_pose", 1);
     on_switch=true;
   }
@@ -60,8 +64,13 @@ namespace apriltags_ros{
     }
     cv::Mat gray;
     cv::cvtColor(cv_ptr->image, gray, CV_BGR2GRAY);
-    std::vector<AprilTags::TagDetection>	detections = tag_detector_->extractTags(gray);
+    //std::vector<AprilTags::TagDetection>	detections = tag_detector_->extractTags(gray);
+    //std::vector<AprilTags::TagDetection>	detections = tag_rect_detector_->extractTags(gray);
+    std::vector<cv::Rect> quad_proposals;
+    std::vector<AprilTags::TagDetection>	detections = tag_rect_detector_->extractTags(gray, quad_proposals);
+    
     ROS_DEBUG("%d tag detected", (int)detections.size());
+    ROS_DEBUG("%d quad detected", (int)quad_proposals.size());
     
     double fx = cam_info->K[0];
     double fy = cam_info->K[4];
@@ -72,6 +81,7 @@ namespace apriltags_ros{
       cv_ptr->header.frame_id = sensor_frame_id_;
     
     duckietown_msgs::AprilTagDetectionArray tag_detection_array;
+    duckietown_msgs::Rects quad_proposal_array;
     geometry_msgs::PoseArray tag_pose_array;
     tag_pose_array.header = cv_ptr->header;
     
@@ -110,7 +120,20 @@ namespace apriltags_ros{
       tf::poseStampedMsgToTF(tag_pose, tag_transform);
       tf_pub_.sendTransform(tf::StampedTransform(tag_transform, tag_transform.stamp_, tag_transform.frame_id_, description.frame_name()));
     }
+
+    for(int qi = 0; qi < quad_proposals.size(); qi++){
+      duckietown_msgs::Rect quad_proposal;
+      quad_proposal.x = quad_proposals[qi].x;
+      quad_proposal.y = quad_proposals[qi].y;
+      quad_proposal.w = quad_proposals[qi].width;
+      quad_proposal.h = quad_proposals[qi].height;
+      //visualization
+      cv::rectangle(cv_ptr->image, quad_proposals[qi], cv::Scalar(255,0,0));
+      quad_proposal_array.rects.push_back(quad_proposal);
+    }
+
     detections_pub_.publish(tag_detection_array);
+    proposals_pub_.publish(quad_proposal_array);
     pose_pub_.publish(tag_pose_array);
     image_pub_.publish(cv_ptr->toImageMsg());
   }

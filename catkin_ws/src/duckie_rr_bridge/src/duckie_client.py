@@ -69,13 +69,13 @@ if __name__ == '__main__':
     duck.sendStop()
     time.sleep(1)
 
-    # turn right
+    # turn left
     duck.sendCmd(0,1.0)
     time.sleep(1)
     duck.sendStop()
     time.sleep(1)
 
-    # turn left
+    # turn right
     duck.sendCmd(0,-1.0)
     time.sleep(1)
     duck.sendStop()

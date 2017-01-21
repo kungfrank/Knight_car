@@ -21,8 +21,22 @@ class mocap_patrol(object):
 		self.switch = True
 		# patrol mode in S type
 		self.label = 0
-		self.X = [1.07, 0.98, -0.17, -0.136, 1.0, 0.92, -0.18, -0.14, 0.98, 1.03, 0.68, 0.65, 0.03, 0.49, 0.12, 0.1, -0.194, -0.07 ]
-		self.Y = [0.35, 0.71, 0.56, 0.942, 0.96, 1.3, 1.19, 1.54, 1.56, 0.29, 0.315, 1.56, 1.5, 0.245, 0.29, 1.56, 1.5, 0.26 ]
+		#self.X = [1.07, 0.98, -0.17, -0.136, 1.0, 0.92, -0.18, -0.14, 0.98, 1.03, 0.68, 0.65, 0.03, 0.49, 0.12, 0.1, -0.194, -0.07 ]
+		self.X = [1.36, 1.36, 0.16, 0.16, 1.36, 1.36, 0.16, 0.16, 1.36, 1.36, 1.06, 1.06, 0.76, 0.76, 0.46, 0.46, 0.16, 0.16]
+		#self.X = [1.45, 1.38, 0.10, 0.15, 1.45, 1.37, 0.08, 0.13, 1.48]
+		#self.Y = [0.16, 0.56, 0.44, 0.80, 0.73, 1.12, 1.04, 1.38, 1.34]
+		self.Y = [0.16, 0.46, 0.46, 0.76, 0.76, 1.06, 1.06, 1.36, 1.36, 0.16, 0.16, 1.36, 1.36, 0.16, 0.16, 1.36, 1.36, 0.16]
+		#self.Y = [0.35, 0.71, 0.56, 0.942, 0.96, 1.3, 1.19, 1.54, 1.56, 0.29, 0.315, 1.56, 1.5, 0.245, 0.29, 1.56, 1.5, 0.26 ]
+
+		self.yaw_target = 0
+		self.yaw_old = 0
+		self.yaw_new = 0
+		self.kd = 0.04
+		#self.kd = 0.1
+		#self.kp = 0.1
+		self.kp = 0.04
+		
+
 		# Publicaiton
 		self.pub_car_cmd_ = rospy.Publisher("~car_cmd",Twist2DStamped,queue_size=1)
 		# Subscription
@@ -79,16 +93,32 @@ class mocap_patrol(object):
 			self.publish_car_cmd(0, 0, 0.5)
 			return
 
-		if(abs(self.yaw - target_yaw) >= 10):
+		if(abs(self.yaw - target_yaw) >= 20):
 			print 'spinning'
-			print 'omega', -((self.yaw - target_yaw) * 0.1)
-			self.publish_car_cmd(0.3, -((self.yaw - target_yaw) * 0.3), 0.2)
+			print 'omega', -((self.yaw - target_yaw) * 0.3)
+			
+			self.yaw_target = target_yaw
+			self.yaw_old = self.yaw_new
+			self.yaw_new = self.yaw
+			ess = self.yaw_new - self.yaw_target
+			diff = self.yaw_new - self.yaw_old
+			u = self.kp * ess + self.kd * diff
+			print 'omega pd: ', -u
+		    
+			if (u < 0 and abs(u) < 2):
+				u = -2
+			if (u > 0 and abs(u) < 2):
+				u = 2
+			print 'mega pd com: ', -u
+			#self.publish_car_cmd(0.3, -((self.yaw - target_yaw) * 0.3), 0.2)
+			self.publish_car_cmd(0, -u , 0.2)
 			return
 
 		if(dist > 0.1):
 			print 'moving'
 			print 'distance' , dist
-			self.publish_car_cmd(0.5, 0, 0.25)
+			#self.publish_car_cmd(0.5, 0, 0.25)
+			self.publish_car_cmd(0.2, 0, 0.25)
 		else:
 			print "**************destination arrived*****************"
 			print "label = ",self.label

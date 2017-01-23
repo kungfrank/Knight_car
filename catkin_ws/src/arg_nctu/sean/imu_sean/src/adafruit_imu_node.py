@@ -3,6 +3,7 @@ import rospy
 import time
 import math
 import numpy
+import tf
 from Adafruit_LSM303 import Adafruit_LSM303
 from Gyro_L3GD20 import Gyro_L3GD20
 from sensor_msgs.msg import Imu
@@ -11,7 +12,6 @@ from sensor_msgs.msg import MagneticField
 class AdafruitIMU(object):
     def __init__(self):
         self.node_name=rospy.get_name()
-        rospy.loginfo("[%s] Initializing " %(self.node_name))
 	self.G=9.80665
 	self.DEG2RAD=0.01744533
 	self.signOfZ=0
@@ -25,6 +25,7 @@ class AdafruitIMU(object):
         self.pub_imu=rospy.Publisher("~adafruit_imu",Imu,queue_size=10)
         self.pub_mag=rospy.Publisher("~adafruit_mag",MagneticField,queue_size=10)
         self.pub_timer=rospy.Timer(rospy.Duration.from_sec(self.pub_timestep),self.publish)
+        rospy.loginfo("[%s]Initialized!" %(self.node_name))
     def setupParam(self,param_name,default_value):
         value=rospy.get_param(param_name,default_value)
         # Write to parameter server for transparancy
@@ -39,7 +40,7 @@ class AdafruitIMU(object):
         # Put together an IMU message
         imu_msg=Imu()
         imu_msg.header.stamp=rospy.Time.now()
-	imu_msg.header.frame_id="sean"
+	#imu_msg.header.frame_id="sean"
         # covariance matrix
         imu_msg.orientation_covariance[0]=-1
         imu_msg.angular_velocity_covariance[0]=-1
@@ -52,22 +53,30 @@ class AdafruitIMU(object):
         imu_msg.linear_acceleration.x=accel[0]*self.G
         imu_msg.linear_acceleration.y=accel[1]*self.G
         imu_msg.linear_acceleration.z=accel[2]*self.G
+        # for compute rpy
+        accel_x=img_msg.linear_acceleration.x
+        accel_y=img.msg.linear_acceleration.y
+        accel_z=img.msg.linear_acceleration.z
+        mag_x=compass[0]
+        mag_y=compass[1]
+        mag_z=compass[2]
         # pitch roll yaw
-        roll=math.atan2(imu_msg.linear_acceleration.y,imu_msg.linear_acceleration.z)
-	if (imu_msg.linear_acceleration.y * math.sin(roll) + imu_msg.linear_acceleration.z * math.cos(roll) == 0):
-		#pitch = imu_msg.linear_acceleration.x > 0 ? (math.pi / 2) : (math.pi / 2)
-		if	imu_msg.linear_acceleration.x > 0:
+        roll=math.atan2(accel_y,accel_z)
+	if (accel.y * math.sin(roll) + accel.z * math.cos(roll) == 0):
+		if	accel.x > 0:
 			pitch=math.pi/2
 		else:
 			pitch=-math.pi/2
 	else:
-		pitch = math.atan(-imu_msg.linear_acceleration.x / (imu_msg.linear_acceleration.y * math.sin(roll) + imu_msg.linear_acceleration.z * math.cos(roll)))
-	yaw = math.atan2(compass[2] * math.sin(roll) - compass[1] * math.cos(roll), compass[0] * math.cos(pitch) + compass[1] * math.sin(pitch) * math.sin(roll) + compass[2] * math.sin(pitch) * math.cos(roll))
+		pitch = math.atan(-accel.x / (accel.y * math.sin(roll) + accel.z * math.cos(roll)))
+	yaw = math.atan2(mag_z * math.sin(roll) - mag_y * math.cos(roll), mag_x * math.cos(pitch) + mag_y * math.sin(pitch) * math.sin(roll) + mag_z * math.sin(pitch) * math.cos(roll)) 
+        # rpy to quaternion
+        quaternion=tf.transformations.quaternion_from_euler(roll,pitch,yaw)
         # orientation
-        imu_msg.orientation.x=roll*180/math.pi
-        imu_msg.orientation.y=pitch*180/math.pi
-        imu_msg.orientation.z=yaw*180/math.pi
-        imu_msg.orientation.w=0
+        imu_msg.orientation.x=quaternion[0]
+        imu_msg.orientation.y=quaternion[1]
+        imu_msg.orientation.z=quaternion[2]
+        imu_msg.orientation.w=quaternion[3]
         # publish
         self.pub_imu.publish(imu_msg)
 
@@ -80,10 +89,10 @@ class AdafruitIMU(object):
         mag_msg.magnetic_field.z=compass[2]
         # publish
         self.pub_mag.publish(mag_msg)
-	#def on_shutdown(self):
-		#rospy.loginfo("[%s] Shutting down." %(self.node_name))
+    def on_shutdown(self):
+	    rospy.loginfo("[%s] Shutting down." %(self.node_name))
 if __name__=="__main__":
 	rospy.init_node("Adafruit_IMU",anonymous=False)
 	adafruit_IMU=AdafruitIMU()
-	#rospy.on_shutdown(adafruit_IMU.on_shutdown)
+	rospy.on_shutdown(adafruit_IMU.on_shutdown)
 	rospy.spin()

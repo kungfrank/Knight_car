@@ -9,16 +9,19 @@ import math
 
 class Timer(object):
     def __init__(self):
-        self.node_name = "Timer"
+        self.node_name = "timer"
         self.active = True
 	self.i = 0
 
         
 	## publishers and subscribers
-        self.sub_mode      = rospy.Subscriber("/kaku/fsm_node/mode",FSMState, self.processStateChange)
-	self.sub_in_lane      = rospy.Subscriber("/kaku/lane_filter_node/in_lane", BoolStamped, self.processTimer)
+        #self.sub_mode      = rospy.Subscriber("/kaku/fsm_node/mode",FSMState, self.processStateChange)
+        self.sub_mode      = rospy.Subscriber("~fsm_node/mode",FSMState, self.processStateChange)
+	#self.sub_in_lane      = rospy.Subscriber("/kaku/lane_filter_node/in_lane", BoolStamped, self.processTimer)
+	self.sub_in_lane      = rospy.Subscriber("~lane_filter_node/in_lane", BoolStamped, self.processTimer)
 
-	self.sub_switch = rospy.Subscriber("/kaku/timer/switch", BoolStamped, self.cbSwitch, queue_size=1)
+	#self.sub_switch = rospy.Subscriber("/kaku/timer/switch", BoolStamped, self.cbSwitch, queue_size=1)
+	self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
         self.pub_time_is_up = rospy.Publisher("~time_is_up", BoolStamped, queue_size=1, latch=True)
 
     def processStateChange(self, msg):

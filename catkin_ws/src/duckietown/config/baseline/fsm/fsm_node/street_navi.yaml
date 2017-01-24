@@ -112,7 +112,7 @@ nodes:
   framerate_high: "camera_node/framerate_high_switch"
 # add by ARG
   timer: "timer/switch"
-  picamera_ros_to_lcm_node: "picamera_ros_to_lcm_node/switch"
+  R2L_street_navi_picamera_node: "R2L_street_navi_picamera_node/switch"
 
 # end adding by ARG
 
@@ -163,7 +163,7 @@ states:
       right_turn: "LANE_FOLLOWING_TURN_RIGHT"
 #      lost_lane: "LANE_RECOVERY"
     active_nodes:
-      - picamera_ros_to_lcm_node
+      - R2L_street_navi_picamera_node
     lights: ["lane_following"]
 
 

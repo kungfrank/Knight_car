@@ -105,10 +105,10 @@ class mocap_patrol(object):
 			u = self.kp * ess + self.kd * diff
 			print 'omega pd: ', -u
 		    
-			if (u < 0 and abs(u) < 2):
-				u = -2
-			if (u > 0 and abs(u) < 2):
-				u = 2
+			if (u < 0 and abs(u) < 2.2):
+				u = -2.2
+			if (u > 0 and abs(u) < 2.7):
+				u = 2.7
 			print 'mega pd com: ', -u
 			#self.publish_car_cmd(0.3, -((self.yaw - target_yaw) * 0.3), 0.2)
 			self.publish_car_cmd(0, -u , 0.2)

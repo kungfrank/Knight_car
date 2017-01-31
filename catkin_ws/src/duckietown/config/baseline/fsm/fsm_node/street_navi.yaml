@@ -65,11 +65,15 @@ events: #Maps from subscribing topic to signal ids
     msg_type: "BoolStamped"
     trigger: True
   left_turn:
-    topic: "lcm2ros_node/left_turn"
+    topic: "L2R_text_navigation_node/left_turn"
     msg_type: "BoolStamped"
     trigger: True
   right_turn:
-    topic: "lcm2ros_node/right_turn"
+    topic: "L2R_text_navigation_node/right_turn"
+    msg_type: "BoolStamped"
+    trigger: True
+  straight:
+    topic: "L2R_text_navigation_node/straight"
     msg_type: "BoolStamped"
     trigger: True
 # end adding by ARG
@@ -112,7 +116,8 @@ nodes:
   framerate_high: "camera_node/framerate_high_switch"
 # add by ARG
   timer: "timer/switch"
-  picamera_ros_to_lcm_node: "picamera_ros_to_lcm_node/switch"
+  R2L_street_navi_picamera_node: "R2L_street_navi_picamera_node/switch"
+  L2R_text_navigation_node: "L2R_text_navigation_node/switch"
 
 # end adding by ARG
 
@@ -161,9 +166,11 @@ states:
     transitions:
       left_turn: "LANE_FOLLOWING_TURN_LEFT"
       right_turn: "LANE_FOLLOWING_TURN_RIGHT"
+      straight: "LANE_FOLLOWING"
 #      lost_lane: "LANE_RECOVERY"
     active_nodes:
-      - picamera_ros_to_lcm_node
+      - R2L_street_navi_picamera_node
+      - L2R_text_navigation_node
     lights: ["lane_following"]
 
 

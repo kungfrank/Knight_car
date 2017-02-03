@@ -33,7 +33,7 @@ class Timer(object):
 					print "start time: ", self.timer_start
 				self.timer_end = time.time() # record time now
 				print "end time: ", self.timer_end
-				if (self.timer_end - self.timer_start) > 2: #if time duration between start time and time now bigger than 2 seconsds
+				if (self.timer_end - self.timer_start) > 4: #if time duration between start time and time now bigger than 2 seconsds
 					# publish time is up
 					msg = BoolStamped()
 					msg.data = True

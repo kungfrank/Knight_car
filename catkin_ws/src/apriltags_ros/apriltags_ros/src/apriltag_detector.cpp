@@ -42,6 +42,7 @@ namespace apriltags_ros{
     image_pub_ = it_.advertise("tag_detections_image", 1);
     detections_pub_ = nh.advertise<duckietown_msgs::AprilTagDetectionArray>("tag_detections", 1);
     proposals_pub_ = nh.advertise<duckietown_msgs::Rects>("quad_proposals", 1);
+    //crop_image_pub_ = it2_.advertise("crop_image", 1);
     pose_pub_ = nh.advertise<geometry_msgs::PoseArray>("tag_detections_pose", 1);
     on_switch=true;
   }
@@ -54,7 +55,7 @@ namespace apriltags_ros{
   }
   
   void AprilTagDetector::imageCb(const sensor_msgs::ImageConstPtr& msg,const sensor_msgs::CameraInfoConstPtr& cam_info){
-    cv_bridge::CvImagePtr cv_ptr;
+    cv_bridge::CvImagePtr cv_ptr, cv_crop;
     try{
       cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
     }
@@ -79,6 +80,7 @@ namespace apriltags_ros{
     
     if(!sensor_frame_id_.empty())
       cv_ptr->header.frame_id = sensor_frame_id_;
+      //cv_crop->header.frame_id = sensor_frame_id_;
     
     duckietown_msgs::AprilTagDetectionArray tag_detection_array;
     duckietown_msgs::Rects quad_proposal_array;
@@ -121,21 +123,39 @@ namespace apriltags_ros{
       tf_pub_.sendTransform(tf::StampedTransform(tag_transform, tag_transform.stamp_, tag_transform.frame_id_, description.frame_name()));
     }
 
+	cv::Rect crop_proposal;
+	cv_crop = cv_ptr;
     for(int qi = 0; qi < quad_proposals.size(); qi++){
       duckietown_msgs::Rect quad_proposal;
       quad_proposal.x = quad_proposals[qi].x;
       quad_proposal.y = quad_proposals[qi].y;
       quad_proposal.w = quad_proposals[qi].width;
       quad_proposal.h = quad_proposals[qi].height;
-      //visualization
-      cv::rectangle(cv_ptr->image, quad_proposals[qi], cv::Scalar(255,0,0));
+      
+	  // publish crop image
+	  //crop_proposal.x = quad_proposals[qi].x;
+	  //crop_proposal.y = quad_proposals[qi].y;
+	  //crop_proposal.width = quad_proposals[qi].width;
+	  //crop_proposal.height = quad_proposals[qi].height;
+	  crop_proposal.x = 5;
+	  crop_proposal.y = 5;
+	  crop_proposal.width = 20;
+	  crop_proposal.height = 20;
+	  //cv_crop->image = cv_ptr->image.clone();
+	  //cv_crop->image = cv_ptr->image(crop_proposal).clone();
+	  //crop_image_pub_.publish(cv_crop->toImageMsg());
+	
+	  //image_pub_.publish(cv_crop->toImageMsg());
+	  //visualization
+      //cv::rectangle(cv_ptr->image, quad_proposals[qi], cv::Scalar(255,0,0));
       quad_proposal_array.rects.push_back(quad_proposal);
     }
 
     detections_pub_.publish(tag_detection_array);
     proposals_pub_.publish(quad_proposal_array);
     pose_pub_.publish(tag_pose_array);
-    image_pub_.publish(cv_ptr->toImageMsg());
+	image_pub_.publish(cv_crop->toImageMsg());
+    //image_pub_.publish(cv_ptr->toImageMsg());
   }
 
 

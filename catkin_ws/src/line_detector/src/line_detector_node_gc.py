@@ -329,7 +329,6 @@ class LineDetectorNode(object):
 
             tk.completed('pub_edge/pub_segment')
 
-
         self.intermittent_log(tk.getall())
 
 

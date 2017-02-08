@@ -236,6 +236,15 @@ kaku:
 caroline:
   name: Chang-Yi Kuo
 
+brick:
+  name: Chang-Yi Kuo
+
+teng:
+  name: Chang-Yi Kuo
+
+cheng:
+  name: Chang-Yi Kuo
+
 redbull:
   name: Peter
 
@@ -250,3 +259,15 @@ topbot:
 
 soukoban:
   name: ARG-Car14
+
+agribot:
+  name: ARG-Car18
+
+car15:
+  name: ARG-car15
+
+buyme:
+  name: ARG-car12
+
+hercules:
+  name: hercules

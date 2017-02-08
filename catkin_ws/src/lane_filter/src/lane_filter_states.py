@@ -54,6 +54,8 @@ For more info on algorithm and parameters please refer to the google doc:
         self.v_avg = 0
         self.w_avg = 0
 
+        self.timer_switch = True
+
         # Subscribers
         if self.use_propagation:
             self.sub_velocity = rospy.Subscriber("~velocity", Twist2DStamped, self.updateVelocity)
@@ -65,9 +67,12 @@ For more info on algorithm and parameters please refer to the google doc:
         self.pub_lane_pose  = rospy.Publisher("~lane_pose", LanePose, queue_size=1)
         self.pub_belief_img = rospy.Publisher("~belief_img", Image, queue_size=1)
         self.pub_entropy    = rospy.Publisher("~entropy",Float32, queue_size=1)
-    	#self.pub_prop_img = rospy.Publisher("~prop_img", Image, queue_size=1)
-        self.pub_in_lane    = rospy.Publisher("~in_lane",BoolStamped, queue_size=1)
+        #self.pub_prop_img = rospy.Publisher("~prop_img", Image, queue_size=1)
+        self.pub_in_lane    = rospy.Publisher("~in_lane",BoolStamped, queue_size=1
+)
         self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
+
+        self.sub_timer = rospy.Subscriber("~time_is_up", BoolStamped, self.cbTimer)
 
         self.timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
 
@@ -108,22 +113,21 @@ For more info on algorithm and parameters please refer to the google doc:
         self.cov_mask = [rospy.get_param("~sigma_d_mask",0.05) , rospy.get_param("~sigma_phi_mask",0.05)]
 
     def processStateChange(self, msg):
-	if msg.state == "LANE_FOLLOWING_TURN_RIGHT":
+        if msg.state == "LANE_FOLLOWING_TURN_RIGHT":
             rospy.loginfo("**************Turn Right*****************")
-	elif msg.state == "LANE_FOLLOWING_TURN_LEFT":
+        elif msg.state == "LANE_FOLLOWING_TURN_LEFT":
             rospy.loginfo("**************Turn Left*****************")
-	elif msg.state == "LANE_FOLLOWING":
+        elif msg.state == "LANE_FOLLOWING":
             rospy.loginfo("**************state not changed*****************")
-
-	else:
-	    rospy.loginfo("**************We don't have this state*****************")
-
-
-
+        else:
+            rospy.loginfo("**************We don't have this state*****************")
         self.state=msg.state
 
     def cbSwitch(self, switch_msg):
-        self.active = switch_msg.data
+        self.active = switch_msg.data    
+
+    def cbTimer(self, msg):
+        self.timer_switch = msg.data
 
     def processSegments(self,segment_list_msg):
         if not self.active:
@@ -139,18 +143,33 @@ For more info on algorithm and parameters please refer to the google doc:
 	
 
         for segment in segment_list_msg.segments:
-	    
-	    state_switch = segment.WHITE
-	    if self.state != "LANE_FOLLOWING":
-                state_switch = segment.YELLOW
 
-	
+            #state_switch = segment.WHITE
+            #if self.state != "LANE_FOLLOWING":
+            #    state_switch = segment.YELLOW
+            state_switch = segment.YELLOW	
+
             if segment.color != state_switch and segment.color != segment.YELLOW:
                 continue
             if segment.points[0].x < 0 or segment.points[1].x < 0:
                 continue
 
             d_i,phi_i,l_i = self.generateVote(segment)
+
+            if not self.timer_switch:
+                if self.state == "LANE_FOLLOWING_TURN_RIGHT":
+                    if phi_i <0 :
+                        print "------------------Turn Right----------------------"
+                        continue
+                elif self.state == "LANE_FOLLOWING_TURN_LEFT":
+                    if phi_i >0 :
+                        print "------------------Turn Left-----------------------"
+                        continue
+                else:
+                    print "---------------------- No Turn -----------------------"
+            else:
+                print "-----------------------Time is up-------------------------"
+
             if d_i > self.d_max or d_i < self.d_min or phi_i < self.phi_min or phi_i>self.phi_max:
                 continue
             if self.use_max_segment_dist and (l_i > self.max_segment_dist):

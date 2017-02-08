@@ -319,6 +319,7 @@ class LineDetectorNode(object):
 
             tk.completed('pub_image')
 
+
 #         if self.verbose:
             colorSegment = color_segment(white.area, red.area, yellow.area) 
             edge_msg_out = self.bridge.cv2_to_imgmsg(self.detector.edges, "mono8")

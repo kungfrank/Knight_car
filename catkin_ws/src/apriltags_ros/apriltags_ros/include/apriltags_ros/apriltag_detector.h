@@ -7,7 +7,7 @@
 #include <AprilTags/TagDetector.h>
 #include <AprilTags/TagRectDetector.h>
 #include <tf/transform_broadcaster.h>
-
+#include <sensor_msgs/CompressedImage.h>
 namespace apriltags_ros{
 
 
@@ -32,6 +32,7 @@ class AprilTagDetector{
  private:
 void switchCB(const duckietown_msgs::BoolStamped::ConstPtr& switch_msg);
   void imageCb(const sensor_msgs::ImageConstPtr& msg,const sensor_msgs::CameraInfoConstPtr& cam_info);
+  void image_compress_Cb(const sensor_msgs::CompressedImageConstPtr& msg);
   std::map<int, AprilTagDescription> parse_tag_descriptions(XmlRpc::XmlRpcValue& april_tag_descriptions);
 
  private:
@@ -46,6 +47,7 @@ void switchCB(const duckietown_msgs::BoolStamped::ConstPtr& switch_msg);
   ros::Publisher detections_pub_;
   ros::Publisher proposals_pub_;
   ros::Publisher pose_pub_;
+  ros::Subscriber image_compress_sub_;
   tf::TransformBroadcaster tf_pub_;
   boost::shared_ptr<AprilTags::TagDetector> tag_detector_;
   boost::shared_ptr<AprilTags::TagRectDetector> tag_rect_detector_;

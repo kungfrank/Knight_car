@@ -119,6 +119,7 @@ nodes:
   R2L_street_navi_picamera_node: "R2L_street_navi_picamera_node/switch"
   R2L_quad_proposals_picamera_node: "R2L_quad_proposals_picamera_node/switch"
   L2R_text_navigation_node: "L2R_text_navigation_node/switch"
+  apriltag_compress_node: "switch"
 
 # end adding by ARG
 
@@ -170,8 +171,8 @@ states:
       straight: "LANE_FOLLOWING"
 #      lost_lane: "LANE_RECOVERY"
     active_nodes:
-      - decoder_node
-      - apriltag_node
+#      - decoder_node
+      - apriltag_compress_node
       - R2L_quad_proposals_picamera_node
 #      - R2L_street_navi_picamera_node
       - L2R_text_navigation_node

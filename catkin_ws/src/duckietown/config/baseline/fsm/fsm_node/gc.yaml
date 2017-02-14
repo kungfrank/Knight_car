@@ -128,6 +128,7 @@ states:
     transitions:
       found_lane: "LANE_FOLLOWING"
       lane_recovery_timeout_reached: "JOYSTICK_CONTROL"
+      joystick_override_off: "JOYSTICK_CONTROL"
     active_nodes:
       - lane_filter_node
       - line_detector_node

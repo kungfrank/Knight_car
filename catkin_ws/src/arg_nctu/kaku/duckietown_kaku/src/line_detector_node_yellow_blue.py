@@ -2,7 +2,7 @@
 from anti_instagram.AntiInstagram import *
 from cv_bridge import CvBridge, CvBridgeError
 from duckietown_msgs.msg import (AntiInstagramTransform, BoolStamped, Segment,
-    SegmentList, Vector2D)
+    SegmentList, Vector2D, Twist2DStamped)
 from duckietown_utils.instantiate_utils import instantiate
 from duckietown_utils.jpg import image_cv_from_jpg
 from geometry_msgs.msg import Point
@@ -28,6 +28,7 @@ class LineDetectorNode(object):
         self.bridge = CvBridge()
 
         self.active = True
+        self.car_cmd_switch = True
 
         self.stats = Stats()
 
@@ -53,6 +54,7 @@ class LineDetectorNode(object):
         self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
         self.pub_image = rospy.Publisher("~image_with_lines", Image, queue_size=1)
         self.pub_lane = rospy.Publisher("~have_lines", BoolStamped, queue_size=1, latch=True)
+        self.pub_car_cmd = rospy.Publisher("~car_cmd",Twist2DStamped,queue_size=1)
        
         # Subscribers
         self.sub_image = rospy.Subscriber("~image", CompressedImage, self.cbImage, queue_size=1)
@@ -346,14 +348,25 @@ class LineDetectorNode(object):
                 segment.normal.y = norm_y
                 segmentMsgList.append(segment)
 
-                msgg = BoolStamped()
-                msgg.data = True
-                self.pub_lane.publish(msgg)
+                if self.car_cmd_switch == True:
+                    msgg = BoolStamped()
+                    msgg.data = True
+                    self.pub_lane.publish(msgg)
+                    self.car_cmd_switch = False
 
             else:
-                msgg = BoolStamped()
-                msgg.data = False
-                self.pub_lane.publish(msgg)
+                
+                if self.car_cmd_switch == False:
+                    msgg = BoolStamped()
+                    msgg.data = False
+                    self.pub_lane.publish(msgg)
+                    self.car_cmd_switch = True
+
+
+                car_control_msg = Twist2DStamped()
+                car_control_msg.v = 0.0
+                car_control_msg.omega = 0.0
+                self.pub_car_cmd.publish(car_control_msg)
                 
 
         return segmentMsgList

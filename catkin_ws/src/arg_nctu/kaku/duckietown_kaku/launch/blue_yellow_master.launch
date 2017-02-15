@@ -169,7 +169,7 @@
 		<include file="$(find dagu_car)/launch/car_cmd_switch_node.launch">
 			<arg name="veh" value="$(arg veh)"/>
 			<arg name="config" value="$(arg config)"/>
-			<arg name="param_file_name" value="default"/>
+			<arg name="param_file_name" value="gc"/>
 		</include>
 
 		<include file="$(find fsm)/launch/logic_gate_node.launch">

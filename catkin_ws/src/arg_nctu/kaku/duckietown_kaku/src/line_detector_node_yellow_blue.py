@@ -52,6 +52,7 @@ class LineDetectorNode(object):
         # Publishers
         self.pub_lines = rospy.Publisher("~segment_list", SegmentList, queue_size=1)
         self.pub_image = rospy.Publisher("~image_with_lines", Image, queue_size=1)
+        self.pub_lane = rospy.Publisher("~have_lines", BoolStamped, queue_size=1, latch=True)
        
         # Subscribers
         self.sub_image = rospy.Subscriber("~image", CompressedImage, self.cbImage, queue_size=1)
@@ -232,6 +233,15 @@ class LineDetectorNode(object):
         
         if len(lines_yellow) > 0:
             segmentList.segments.extend(self.toSegmentMsg(lines_yellow, normals_yellow, Segment.YELLOW))
+
+            msgg = BoolStamped()
+            msgg.data = True
+            self.pub_lane.publish(msgg)
+
+        else:
+            msgg = BoolStamped()
+            msgg.data = False
+            self.pub_lane.publish(msgg)
 
         #if len(lines_blue) > 0:
             #segmentList.segments.extend(self.toSegmentMsg(lines_blue, normals_blue, Segment.YELLOW))

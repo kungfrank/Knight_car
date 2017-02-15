@@ -65,11 +65,11 @@ events: #Maps from subscribing topic to signal ids
     trigger: True
 
   lost_lane: # not tested
-    topic: "lane_filter_node/in_lane"
+    topic: "line_detector_node/have_lines"
     msg_type: "BoolStamped"
     trigger: False
   found_lane: # note tested
-    topic: "lane_filter_node/in_lane"
+    topic: "line_detector_node/have_lines"
     msg_type: "BoolStamped"
     trigger: True
 #  lane_recovery_timeout_reached: #not currently implemented
@@ -124,10 +124,9 @@ states:
       - line_detector_node
     lights: ["lane_following"]
 
-  LANE_RECOVERY: # not implemented
+  LANE_RECOVERY: 
     transitions:
       found_lane: "LANE_FOLLOWING"
-      lane_recovery_timeout_reached: "JOYSTICK_CONTROL"
       joystick_override_off: "JOYSTICK_CONTROL"
     active_nodes:
       - lane_filter_node

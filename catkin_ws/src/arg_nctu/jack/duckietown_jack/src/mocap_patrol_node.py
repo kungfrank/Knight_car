@@ -3,7 +3,7 @@ import rospy
 import roscpp
 import numpy as np
 import math
-from duckietown_msgs.msg import  Twist2DStamped
+from duckietown_msgs.msg import  Twist2DStamped, BoolStamped
 from geometry_msgs.msg import Point, Quaternion, Pose
 import tf
 import sys
@@ -21,12 +21,22 @@ class mocap_patrol(object):
 		self.switch = True
 		# patrol mode in S type
 		self.label = 0
+		# start patrolling
+		self.start = False
+		# reset target
+		self.reset = False
+
 		#self.X = [1.07, 0.98, -0.17, -0.136, 1.0, 0.92, -0.18, -0.14, 0.98, 1.03, 0.68, 0.65, 0.03, 0.49, 0.12, 0.1, -0.194, -0.07 ]
-		self.X = [1.36, 1.36, 0.16, 0.16, 1.36, 1.36, 0.16, 0.16, 1.36, 1.36, 1.06, 1.06, 0.76, 0.76, 0.46, 0.46, 0.16, 0.16]
 		#self.X = [1.45, 1.38, 0.10, 0.15, 1.45, 1.37, 0.08, 0.13, 1.48]
 		#self.Y = [0.16, 0.56, 0.44, 0.80, 0.73, 1.12, 1.04, 1.38, 1.34]
-		self.Y = [0.16, 0.46, 0.46, 0.76, 0.76, 1.06, 1.06, 1.36, 1.36, 0.16, 0.16, 1.36, 1.36, 0.16, 0.16, 1.36, 1.36, 0.16]
 		#self.Y = [0.35, 0.71, 0.56, 0.942, 0.96, 1.3, 1.19, 1.54, 1.56, 0.29, 0.315, 1.56, 1.5, 0.245, 0.29, 1.56, 1.5, 0.26 ]
+
+		#self.X = [1.36, 1.36, 0.16, 0.16, 1.36, 1.36, 0.16, 0.16, 1.36, 1.36, 1.06, 1.06, 0.76, 0.76, 0.46, 0.46, 0.16, 0.16]
+		#self.Y = [0.16, 0.46, 0.46, 0.76, 0.76, 1.06, 1.06, 1.36, 1.36, 0.16, 0.16, 1.36, 1.36, 0.16, 0.16, 1.36, 1.36, 0.16]
+
+		self.X = [1.41, 1.35, 0.09, 0.17, 1.41, 1.36, 0.09, 0.16, 1.44, 1.31, 0.94, 1.08, 0.68, 0.71, 0.35, 0.44, 0.10, 0.11]
+		self.Y = [0.20, 0.56, 0.49, 0.86, 0.74, 1.15, 1.08, 1.41, 1.34, 0.13, 0.17, 1.41, 1.34, 0.11, 0.16, 1.42, 1.33, 0.12]
+
 
 		self.yaw_target = 0
 		self.yaw_old = 0
@@ -34,13 +44,15 @@ class mocap_patrol(object):
 		self.kd = 0.04
 		#self.kd = 0.1
 		#self.kp = 0.1
-		self.kp = 0.04
+		self.kp = 0.08
 		
 
 		# Publicaiton
 		self.pub_car_cmd_ = rospy.Publisher("~car_cmd",Twist2DStamped,queue_size=1)
 		# Subscription
 		self.sub_vehicle_pose_ = rospy.Subscriber("~vehicle_pose", Pose, self.cbPose, queue_size=1)
+		self.sub_start_cmd_ = rospy.Subscriber("~start_cmd", BoolStamped, self.cbStart, queue_size=1)
+		self.sub_reset_cmd_ = rospy.Subscriber("~reset_cmd", BoolStamped, self.cbReset, queue_size=1)
 
 		# safe shutdown
 		rospy.on_shutdown(self.custom_shutdown)
@@ -56,11 +68,13 @@ class mocap_patrol(object):
 		car_control_msg = Twist2DStamped()
 		car_control_msg.v = 0.0
 		car_control_msg.omega = 0.0
-		self.pub_car_cmd_.publish(car_cmd_msg)
-		rospy.sleep(0.5) #To make sure that it gets published.
+		self.pub_car_cmd_.publish(car_control_msg)
+		rospy.sleep(3) #To make sure that it gets published.
 		rospy.loginfo("[%s] Shutdown" %self.node_name)
 		
 	def cbPose(self, pose_msg):
+		if not(self.start):
+			return
 		# read vehicle position form mocap pose message
 		self.position.x = pose_msg.position.x
 		self.position.y = pose_msg.position.y
@@ -91,11 +105,11 @@ class mocap_patrol(object):
 		if self.label == 18:
 			print "------- patrol mode END -------"
 			self.publish_car_cmd(0, 0, 0.5)
+			rospy.sleep(3)
 			return
 
-		if(abs(self.yaw - target_yaw) >= 20):
-			print 'spinning'
-			print 'omega', -((self.yaw - target_yaw) * 0.3)
+		#if(abs(self.yaw - target_yaw) >= 20):
+		if(True):
 			
 			self.yaw_target = target_yaw
 			self.yaw_old = self.yaw_new
@@ -104,21 +118,16 @@ class mocap_patrol(object):
 			diff = self.yaw_new - self.yaw_old
 			u = self.kp * ess + self.kd * diff
 			print 'omega pd: ', -u
-		    
-			if (u < 0 and abs(u) < 2.2):
-				u = -2.2
-			if (u > 0 and abs(u) < 2.7):
-				u = 2.7
+			if( u < -7):
+				u = -7
+			if( u > 7):
+				u = 7
 			print 'mega pd com: ', -u
-			#self.publish_car_cmd(0.3, -((self.yaw - target_yaw) * 0.3), 0.2)
-			self.publish_car_cmd(0, -u , 0.2)
-			return
-
-		if(dist > 0.1):
-			print 'moving'
+			self.publish_car_cmd(0.3, -u , 0.2)
+		if(dist > 0.05):
 			print 'distance' , dist
 			#self.publish_car_cmd(0.5, 0, 0.25)
-			self.publish_car_cmd(0.2, 0, 0.25)
+			#self.publish_car_cmd(0.2, 0, 0.25)
 		else:
 			print "**************destination arrived*****************"
 			print "label = ",self.label
@@ -132,6 +141,7 @@ class mocap_patrol(object):
 			if self.label > 17:
 				self.label = 18
 			print "label switch to ",self.label
+	
 
 	def set_target_point(self, order):
 		# set a target_point
@@ -143,6 +153,13 @@ class mocap_patrol(object):
 		target_point.z = 0
 
 		return target_point
+
+	def cbStart(self, start_msg):
+		self.start = start_msg.data
+
+	def cbReset(self, reset_msg):
+		if(reset_msg.data):
+			self.label = 0
 
 	def get_yaw_two_point(self, source_point, target_point):
 		# calculate arctan(in rad) of two point

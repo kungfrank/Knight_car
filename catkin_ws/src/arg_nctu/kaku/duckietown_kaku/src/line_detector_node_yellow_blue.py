@@ -344,6 +344,7 @@ class LineDetectorNode(object):
                 segment.pixels_normalized[1].y = y2
                 segment.normal.x = norm_x
                 segment.normal.y = norm_y
+                segmentMsgList.append(segment)
 
                 msgg = BoolStamped()
                 msgg.data = True
@@ -353,11 +354,7 @@ class LineDetectorNode(object):
                 msgg = BoolStamped()
                 msgg.data = False
                 self.pub_lane.publish(msgg)
-
-
-
-             
-                segmentMsgList.append(segment)
+                
 
         return segmentMsgList
 

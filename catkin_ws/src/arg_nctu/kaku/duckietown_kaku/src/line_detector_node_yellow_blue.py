@@ -211,14 +211,14 @@ class LineDetectorNode(object):
         #else:
             #lines_blue = []
 
-
-        bw_yellow = yellow
-        bw_blue = blue
+	#print "***************** ",image_cv.shape," *********************"
+        #bw_yellow = yellow
+        #bw_blue = blue
 
         self.blue = blue
         self.yellow = yellow
         if len(lines_yellow) > 0:
-            lines_yellow,normals_yellow = self.normals(lines_yellow,bw_yellow)
+            lines_yellow,normals_yellow = self.normals(lines_yellow,yellow)
 
         #if len(lines_blue) > 0:
             #lines_blue,normals_blue = self.normals(lines_blue,bw_blue)
@@ -276,6 +276,16 @@ class LineDetectorNode(object):
                     ccx = 158
                 elif ccx <1:
                     ccx = 1
+ 
+                if cy >=79:
+                    cy = 79
+                elif cy <1:
+                    cy = 1
+                if ccy >=79:
+                    ccy = 79
+                elif ccy <1:
+                    ccy = 1
+
         
                 if (blue[cy, cx] == 255 and yellow[ccy,ccx] ==255) or (yellow[cy, cx] == 255 and blue[ccy,ccx] ==255):
 
@@ -333,6 +343,16 @@ class LineDetectorNode(object):
                 ccx = 158
             elif ccx <1:
                 ccx = 1
+
+            if cy >=79:
+                cy = 79
+            elif cy <1:
+                cy = 1
+            if ccy >=79:
+                ccy = 79
+            elif ccy <1:
+                ccy = 1
+
         
             if (self.blue[cy, cx] == 255 and self.yellow[ccy,ccx] ==255) or (self.yellow[cy, cx] == 255 and self.blue[ccy,ccx] ==255):
 
@@ -400,7 +420,7 @@ class LineDetectorNode(object):
     
             y3[y3<0]=0
 
-            y3[y3>=120]=120-1
+            y3[y3>=80]=80-1
 
             x4 = (centers[:,0:1] + 3.*dx).astype('int')
         
@@ -412,7 +432,7 @@ class LineDetectorNode(object):
 
             y4[y4<0]=0
 
-            y4[y4>=120]=120-1
+            y4[y4>=80]=80-1
 
             flag_signs = (np.logical_and(bw[y3,x3]>0, bw[y4,x4]==0)).astype('int')*2-1
 

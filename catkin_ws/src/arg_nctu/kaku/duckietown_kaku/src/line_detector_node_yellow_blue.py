@@ -234,15 +234,6 @@ class LineDetectorNode(object):
         if len(lines_yellow) > 0:
             segmentList.segments.extend(self.toSegmentMsg(lines_yellow, normals_yellow, Segment.YELLOW))
 
-            msgg = BoolStamped()
-            msgg.data = True
-            self.pub_lane.publish(msgg)
-
-        else:
-            msgg = BoolStamped()
-            msgg.data = False
-            self.pub_lane.publish(msgg)
-
         #if len(lines_blue) > 0:
             #segmentList.segments.extend(self.toSegmentMsg(lines_blue, normals_blue, Segment.YELLOW))
 
@@ -343,7 +334,7 @@ class LineDetectorNode(object):
         
             if (self.blue[cy, cx] == 255 and self.yellow[ccy,ccx] ==255) or (self.yellow[cy, cx] == 255 and self.blue[ccy,ccx] ==255):
 
-        	[x1,y1,x2,y2] = (([x1,y1,x2,y2] + arr_cutoff) * arr_ratio)
+                [x1,y1,x2,y2] = (([x1,y1,x2,y2] + arr_cutoff) * arr_ratio)
 
                 segment = Segment()
                 segment.color = color
@@ -353,6 +344,18 @@ class LineDetectorNode(object):
                 segment.pixels_normalized[1].y = y2
                 segment.normal.x = norm_x
                 segment.normal.y = norm_y
+
+                msgg = BoolStamped()
+                msgg.data = True
+                self.pub_lane.publish(msgg)
+
+            else:
+                msgg = BoolStamped()
+                msgg.data = False
+                self.pub_lane.publish(msgg)
+
+
+
              
                 segmentMsgList.append(segment)
 

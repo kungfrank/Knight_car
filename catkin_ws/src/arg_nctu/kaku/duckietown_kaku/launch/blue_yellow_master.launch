@@ -256,5 +256,15 @@
 	</group>
 	<!-- End Lane Control -->
 
+	    <!-- Start anti-instagram -->
+	    <group if="$(arg anti_instagram)">
+	      <!-- NOT LOADING PARAMS FROM A YAML FILE -->
+            <remap from="anti_instagram_node/uncorrected_image" to="camera_node/image/compressed" />
+            <include file="$(find anti_instagram)/launch/anti_instagram_node.launch">
+		        <arg name="veh" value="$(arg veh)"/>
+            </include>
+        </group>
+	      <!-- End anti-instagram -->
+
 
 </launch>

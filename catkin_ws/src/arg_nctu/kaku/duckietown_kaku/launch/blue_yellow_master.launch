@@ -219,7 +219,7 @@
 			<include file="$(find lane_filter)/launch/lane_filter_node_kuo.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
-				<arg name="param_file_name" value="$(arg param_file_name)"/>
+				<arg name="param_file_name" value="gc"/>
                 <arg name="yellow" value="$(arg yellow)"/>      
 			</include>
 		</group>

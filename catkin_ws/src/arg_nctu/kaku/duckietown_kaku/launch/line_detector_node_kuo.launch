@@ -7,7 +7,7 @@
     <arg name="pkg_name" value="line_detector"/>
     <arg name="node_name" default="line_detector_node"/>
 
-    <arg name="gc" value="$(arg gc)"/>
+    <arg name="gc" default="$(arg gc)"/>
     
     <arg name="verbose" default="false" />
 
@@ -20,12 +20,12 @@
 
         <!-- switch -->
         <include unless="$(arg local)" file="$(find duckietown)/machines"/>
-        <node if="$(arg gc)" machine="$(arg veh)" name="line_detector_node" pkg="duckietown_nctu_gc" type="line_detector_node_gc.py" output="screen" clear_params="true" required="true">
+        <node if="$(arg gc)" machine="$(arg veh)" name="line_detector_node" pkg="duckietown_kaku" type="line_detector_node_gc.py" output="screen" clear_params="true" required="true">
             <rosparam command="load" file="$(find duckietown)/config/$(arg config)/line_detector/$(arg node_name)/$(arg param_file_name).yaml"/>
             <param name="verbose" value="$(arg verbose)"/>
         </node>
 
-        <node unless="$(arg gc)" machine="$(arg veh)" name="line_detector_node" pkg="duckietown_nctu_gc" type="line_detector_node_yellow_blue.py" output="screen" clear_params="true" required="true">
+        <node unless="$(arg gc)" machine="$(arg veh)" name="line_detector_node" pkg="duckietown_kaku" type="line_detector_node_yellow_blue.py" output="screen" clear_params="true" required="true">
             <rosparam command="load" file="$(find duckietown)/config/$(arg config)/line_detector/$(arg node_name)/$(arg param_file_name).yaml"/>
             <param name="verbose" value="$(arg verbose)"/>
         </node>

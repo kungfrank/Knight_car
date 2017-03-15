@@ -17,9 +17,9 @@ import threading
 import time
 
 
-class LineDetectorNode(object):
+class ColorDetectorNode(object):
     def __init__(self):
-        self.node_name = "LineDetectorNode"
+        self.node_name = "ColorDetectorNode"
 
         # Thread lock 
         self.thread_lock = threading.Lock()
@@ -307,9 +307,9 @@ class Stats():
 
 
 if __name__ == '__main__': 
-    rospy.init_node('line_detector',anonymous=False)
-    line_detector_node = LineDetectorNode()
-    rospy.on_shutdown(line_detector_node.onShutdown)
+    rospy.init_node('color_detector',anonymous=False)
+    color_detector_node = ColorDetectorNode()
+    rospy.on_shutdown(color_detector_node.onShutdown)
     rospy.spin()
 
 

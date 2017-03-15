@@ -47,7 +47,8 @@
 	<arg name="fsm" default="true"/>
 
 
-        <arg name="yellow" default="$(arg yellow)"/>
+    <arg name="yellow" default="$(arg yellow)"/>
+    <arg name="color_detector" default="true"/>
 
 	<!-- end switch args -->
 	
@@ -179,6 +180,25 @@
 	</group>
 
 	<!--End FSM -->
+
+
+    <!-- Start color detector -->
+        <group if="$(arg color_detector)">
+        		<!-- color detector -->
+                <remap from="line_detector_node/image" to="camera_node/image/compressed"/>
+                <remap from="line_detector_node/transform" to="anti_instagram_node/transform"/>
+        		<include file="$(find duckietown_kaku)/launch/color_detector.launch">
+                        <arg name="veh" value="$(arg veh)"/>
+                </include>
+                <!-- Timer -->
+                <include file="$(find duckietown_kaku)/launch/timer.launch">
+                        <arg name="veh" value="$(arg veh)"/>
+                </include>
+
+        </group>
+
+
+
 
 	<!-- Start Lane Following -->
 	<group if="$(arg lane_following)">

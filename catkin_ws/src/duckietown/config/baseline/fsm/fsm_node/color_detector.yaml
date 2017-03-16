@@ -93,6 +93,7 @@ states:
   COROL_DETECTOR:
     transitions:
       lane_recovery: "LANE_RECOVERY"
+      joystick_override_off: "JOYSTICK_CONTROL"
     active_nodes:
       - color_detector_node
 
@@ -100,6 +101,8 @@ states:
   LANE_RECOVERY:
     transitions:
       time_is_up: "LANE_FOLLOWING"
+      joystick_override_off: "JOYSTICK_CONTROL"
+
     active_nodes:
       - lane_filter_node
       - line_detector_node

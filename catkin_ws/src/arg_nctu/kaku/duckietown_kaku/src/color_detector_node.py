@@ -97,6 +97,7 @@ class ColorDetectorNode(object):
         self.stats.received()
 
         if not self.active:
+            #print "******************** no color detector *********************"
             return 
         # Start a daemon thread to process the image
         thread = threading.Thread(target=self.processImage,args=(image_msg,))
@@ -188,8 +189,6 @@ class ColorDetectorNode(object):
         green = cv2.dilate(green, kernel)
         blue = cv2.dilate(blue, kernel)
 
-        self.blue = blue
-        self.yellow = yellow
         x = green[90:120,:]
         y = blue[90:120,:]
         
@@ -202,7 +201,7 @@ class ColorDetectorNode(object):
             print " 4 sec finish"
 
             msgg.data = True
-            self.pub_lane_recovery(msgg)
+            self.pub_lane_recovery.publish(msgg)
 
 
         elif (y==255).sum() > 250:
@@ -211,7 +210,7 @@ class ColorDetectorNode(object):
             print " 7 sec finish"
 
             msgg.data = True
-            self.pub_lane_recovery(msgg)
+            self.pub_lane_recovery.publish(msgg)
 
         else:
             print "only red line detected"
@@ -219,7 +218,7 @@ class ColorDetectorNode(object):
             print " 1 sec finish"
 
             msgg.data = True
-            self.pub_lane_recovery(msgg)
+            self.pub_lane_recovery.publish(msgg)
        
         tk.completed('prepared')
 
@@ -233,11 +232,11 @@ class ColorDetectorNode(object):
 
             # Publish the frame with lines
 
-            image_msg_out_green = self.bridge.cv2_to_imgmsg(green, "bgr8")
+            image_msg_out_green = self.bridge.cv2_to_imgmsg(green, "mono8")
             image_msg_out_green.header.stamp = image_msg.header.stamp
             self.pub_image_green.publish(image_msg_out_green)
 
-            image_msg_out_blue = self.bridge.cv2_to_imgmsg(blue, "bgr8")
+            image_msg_out_blue = self.bridge.cv2_to_imgmsg(blue, "mono8")
             image_msg_out_blue.header.stamp = image_msg.header.stamp
             self.pub_image_blue.publish(image_msg_out_blue)
 
@@ -256,7 +255,7 @@ class ColorDetectorNode(object):
         car_control_msg = Twist2DStamped()
         car_control_msg.v = 0.0
         car_control_msg.omega = 0.0
-        self.pub_car_cmd(car_control_msg)
+        self.pub_car_cmd.publish(car_control_msg)
 
 
 class Stats():

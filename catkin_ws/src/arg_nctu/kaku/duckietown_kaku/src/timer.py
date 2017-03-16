@@ -16,8 +16,8 @@ class Timer(object):
 		self.start = False
 		self.state = ""
 		## publishers and subscribers
-		self.sub_mode = rospy.Subscriber("~fsm_node/mode",FSMState, self.processStateChange)
-		self.sub_in_lane = rospy.Subscriber("~lane_filter_node/in_lane", BoolStamped, self.processTimer)
+		self.sub_mode = rospy.Subscriber("~mode",FSMState, self.processStateChange)
+		self.sub_in_lane = rospy.Subscriber("~in_lane", BoolStamped, self.processTimer)
 		self.sub_switch = rospy.Subscriber("~switch", BoolStamped, self.cbSwitch, queue_size=1)
 		self.pub_time_is_up = rospy.Publisher("~time_is_up", BoolStamped, queue_size=1, latch=True)
 
@@ -46,7 +46,7 @@ class Timer(object):
 	# 		self.pub_time_is_up.publish(msg)
 	# 		self.start = False
 
-		def processTimer(self, msgg):
+	def processTimer(self, msgg):
 		if self.active: # fsm switch on
 			if not self.start: # if timer not start yet
 				self.timer_start = time.time() # record start time

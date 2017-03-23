@@ -237,7 +237,7 @@ class LineDetectorNode(object):
         
         if len(lines_yellow) > 0:
             segmentList.segments.extend(self.toSegmentMsg(lines_yellow, normals_yellow, Segment.YELLOW))
-        if len(segmentList) = 0:
+        if len(segmentList.segments) == 0:
 
                     if self.time_switch == False:
                         msgg = BoolStamped()

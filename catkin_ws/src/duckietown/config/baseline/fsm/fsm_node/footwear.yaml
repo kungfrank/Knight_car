@@ -32,7 +32,7 @@ events: #Maps from subscribing topic to signal ids
     msg_type: "BoolStamped"
     trigger: True
   lane_recovery:
-    topic: "stop_line_filter_node/lane_recovery"
+    topic: "timer/lane_recovery"
     msg_type: "BoolStamped"
     trigger: True
 #  lost_lane: # not tested
@@ -94,7 +94,7 @@ states:
       lane_recovery: "LANE_RECOVERY"
       joystick_override_off: "JOYSTICK_CONTROL"
     active_nodes:
-      - stop_line_filter_node
+      - timer
 
 
   LANE_RECOVERY:

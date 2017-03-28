@@ -35,6 +35,15 @@ events: #Maps from subscribing topic to signal ids
     topic: "timer/lane_recovery"
     msg_type: "BoolStamped"
     trigger: True
+
+  lost_lane: # not tested
+    topic: "line_detector_node/have_lines"
+    msg_type: "BoolStamped"
+    trigger: False
+  found_lane: # note tested
+    topic: "line_detector_node/have_lines"
+    msg_type: "BoolStamped"
+    trigger: True
 #  lost_lane: # not tested
 #    topic: "lane_filter_node/in_lane"
 #    msg_type: "BoolStamped"
@@ -83,6 +92,8 @@ states:
     transitions:
       at_stop_line: "STOP"
       joystick_override_off: "JOYSTICK_CONTROL"
+      lost_lane: "NO_LINE"
+
 #      lost_lane: "LANE_RECOVERY"
     active_nodes:
       - lane_filter_node
@@ -93,7 +104,9 @@ states:
     transitions:
       lane_recovery: "LANE_RECOVERY"
       joystick_override_off: "JOYSTICK_CONTROL"
+      lost_lane: "NO_LINE"
     active_nodes:
+      - line_detector_node
       - timer
 
 
@@ -101,9 +114,18 @@ states:
     transitions:
       time_is_up: "LANE_FOLLOWING"
       joystick_override_off: "JOYSTICK_CONTROL"
+      lost_lane: "NO_LINE"
 
     active_nodes:
+      - line_detector_node
       - lane_filter_node
       - line_detector_node
       - timer
+
+  NO_LINE:
+    transitions:
+      found_lane: "LANE_FOLLOWING"
+
+    active_nodes:
+      - line_detector_node
 

@@ -11,15 +11,16 @@ from sensor_msgs.msg import Joy
 
 class camera_mount(object):
     def __init__(self):
-        self.node_name = "camera_mount"
-        self.active = True
+	    self.node_name = "camera_mount"
+	    self.active = True
 
 	    self.pwm = Adafruit_PCA9685.PCA9685()
 	    # self.servo_min = 340  # Min pulse length out of 4096
 	    # self.servo_max = 600  # Max pulse length out of 4096
-	    self.hor = 400
-	    self.ver = 400
-        self.pwm.set_pwm_freq(60)
+	    self.horL = 355
+	    self.ver = 475
+	    self.horR = 355
+	    self.pwm.set_pwm_freq(60)
 
 	    self.sub_joy_ = rospy.Subscriber("joy", Joy, self.cbJoy, queue_size=1)
 
@@ -28,32 +29,36 @@ class camera_mount(object):
 	    self.processButtons(msg)
 
     def processButtons(self, msg):
-	    if (self.joy.buttons[1] == 1):
-		    self.hor +=1
-		    print " hor = ",self.hor
-		    self.pwm.set_pwm(0, 0, self.hor)
-		    self.pwm.set_pwm(8, 0, self.hor)
+		if (self.joy.buttons[1] == 1):
+				self.horL +=5
+				print " horL = ",self.horL
+				self.horR -=5
+				print " horR = ",self.horR
+				self.pwm.set_pwm(0, 0, self.horR)
+				self.pwm.set_pwm(9, 0, self.horL)
 
 		if (self.joy.buttons[2] == 1):
-		    self.hor -=1
-		    print " hor = ",self.hor
-		    self.pwm.set_pwm(0, 0, self.hor)
-		    self.pwm.set_pwm(8, 0, self.hor)
+                                self.horL -=5
+                                print " horL = ",self.horL
+                                self.horR +=5
+                                print " horR = ",self.horR
+                                self.pwm.set_pwm(0, 0, self.horR)
+                                self.pwm.set_pwm(9, 0, self.horL)
 
 		if (self.joy.buttons[0] == 1):
-		    self.ver +=1
-		    print " ver = ",self.ver
-		    self.pwm.set_pwm(2, 0, self.ver)
-		    self.pwm.set_pwm(10, 0, self.ver)
+				self.ver +=5
+				print " ver = ",self.ver
+				self.pwm.set_pwm(2, 0, self.ver)
+				self.pwm.set_pwm(11, 0, self.ver)
+				self.pwm.set_pwm(6, 0, self.ver)
 
 		if (self.joy.buttons[3] == 1):
-		    self.ver -=1
-		    print " ver = ",self.ver
-		    self.pwm.set_pwm(2, 0, self.ver)
-		    self.pwm.set_pwm(10, 0, self.ver)
+				self.ver -=5
+				print " ver = ",self.ver
+				self.pwm.set_pwm(2, 0, self.ver)
+				self.pwm.set_pwm(11, 0, self.ver)
+				self.pwm.set_pwm(6, 0, self.ver)
 		
-
- 
     def onShutdown(self):
         rospy.loginfo("[camera_mount] Shutdown.")
 

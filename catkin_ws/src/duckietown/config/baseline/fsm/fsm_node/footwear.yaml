@@ -125,6 +125,7 @@ states:
   NO_LINE:
     transitions:
       found_lane: "LANE_FOLLOWING"
+      joystick_override_off: "JOYSTICK_CONTROL"
 
     active_nodes:
       - line_detector_node

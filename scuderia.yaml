@@ -251,7 +251,7 @@ redbull:
 jack:
   name: Jack 
 
-karissa:
+gc:
   name: JihShi Chen     
 
 topbot:
@@ -271,3 +271,6 @@ buyme:
 
 hercules:
   name: hercules
+
+gcdog:
+  name: GPU

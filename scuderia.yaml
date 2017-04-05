@@ -273,4 +273,4 @@ hercules:
   name: hercules
 
 gcdog:
-  name: GPU
+  name: PKG

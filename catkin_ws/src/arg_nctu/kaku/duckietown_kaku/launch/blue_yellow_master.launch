@@ -48,7 +48,7 @@
 
 
     <arg name="yellow" default="$(arg yellow)"/>
-    <arg name="gc" default="$(arg gc)"/>
+    <arg name="gc" default="false"/>
 
 	<!-- end switch args -->
 	
@@ -219,7 +219,7 @@
 			<include file="$(find lane_filter)/launch/lane_filter_node_kuo.launch">
 				<arg name="veh" value="$(arg veh)"/>
 				<arg name="config" value="$(arg config)"/>
-				<arg name="param_file_name" value="$(arg param_file_name)"/>
+				<arg name="param_file_name" value="gc"/>
                 <arg name="yellow" value="$(arg yellow)"/>      
 			</include>
 		</group>
@@ -255,6 +255,16 @@
 
 	</group>
 	<!-- End Lane Control -->
+
+	    <!-- Start anti-instagram -->
+	    <group if="$(arg anti_instagram)">
+	      <!-- NOT LOADING PARAMS FROM A YAML FILE -->
+            <remap from="anti_instagram_node/uncorrected_image" to="camera_node/image/compressed" />
+            <include file="$(find anti_instagram)/launch/anti_instagram_node.launch">
+		        <arg name="veh" value="$(arg veh)"/>
+            </include>
+        </group>
+	      <!-- End anti-instagram -->
 
 
 </launch>

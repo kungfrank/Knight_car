@@ -273,7 +273,7 @@ hercules:
   name: hercules
 
 gcdog:
-  name: GPU
+  name: GC
 
 sb1:
   name: spiderbot1

@@ -26,7 +26,10 @@ events: #Maps from subscribing topic to signal ids
     topic: "stop_line_filter_node/at_stop_line"
     msg_type: "BoolStamped"
     trigger: True
-
+  at_u_turn_line:
+    topic: "stop_line_filter_node/at_u_turn_line"
+    msg_type: "BoolStamped"
+    trigger: True
   time_is_up:
     topic: "timer/time_is_up"
     msg_type: "BoolStamped"
@@ -44,6 +47,12 @@ events: #Maps from subscribing topic to signal ids
     topic: "line_detector_node/have_lines"
     msg_type: "BoolStamped"
     trigger: True
+
+  u_turn_recovery:
+    topic: "fw_u_turn_node/u_turn_recovery"
+    msg_type: "BoolStamped"
+    trigger: True
+
 #  lost_lane: # not tested
 #    topic: "lane_filter_node/in_lane"
 #    msg_type: "BoolStamped"
@@ -75,6 +84,7 @@ nodes:
   stop_line_filter_node: "stop_line_filter_node/switch"
   framerate_high: "camera_node/framerate_high_switch"
   timer: "timer/switch"
+  fw_u_turn_node: "fw_u_turn_node/switch"
 
 
 # Define state transitions
@@ -91,6 +101,7 @@ states:
   LANE_FOLLOWING:
     transitions:
       at_stop_line: "STOP"
+      at_u_turn_line: "U_TURN"
       joystick_override_off: "JOYSTICK_CONTROL"
       lost_lane: "NO_LINE"
 
@@ -129,4 +140,15 @@ states:
 
     active_nodes:
       - line_detector_node
+
+  U_TURN:
+    transitions:
+      u_turn_recovery: "LANE_FOLLOWING"
+
+    active_nodes:
+      - line_detector_node
+      - lane_filter_node
+      - fw_u_turn_node
+
+
 

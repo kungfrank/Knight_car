@@ -16,11 +16,10 @@
     </node>
 
 
-    <!-- grab -->
-     <include file="$(find duckietown_kaku)/launch/grab.launch">
+    <!-- encoder_publisher -->
+     <include file="$(find duckietown_kaku)/launch/encoder_publisher_node.launch">
         <arg name="veh" value="$(arg veh)"/>
     </include>
-
 
 
 

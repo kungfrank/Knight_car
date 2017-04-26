@@ -8,7 +8,7 @@
   <arg name="cam_info" default="true" doc="If set to true, use cam_info_reader_node to pusblish CameraInfo."/>
   <arg name="live" default="true" doc="live set to false means we don't run the actual camera (i.e. running from a log file" />
 
-  <include file="$(find duckietown)/launch/joystick.launch">
+  <include file="$(find duckietown_nctu_gc)/launch/gc_joystick.launch">
     <arg name="veh" value="$(arg veh)"/>
     <arg name="local" value="$(arg local)"/>
     <arg name="config" value="$(arg config)"/>
@@ -26,3 +26,8 @@
     <arg name="live" value="$(arg live)"/>
   </include>
 </launch>
+
+
+
+
+

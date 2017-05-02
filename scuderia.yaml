@@ -275,6 +275,9 @@ hercules:
 gcdog:
   name: GC
 
+gcright:
+  name: PKG
+
 sb1:
   name: spiderbot1
 

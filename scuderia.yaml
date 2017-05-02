@@ -273,13 +273,12 @@ hercules:
   name: hercules
 
 gcdog:
-  name: GC
+  name: PKG
 
-<<<<<<< HEAD
 gcleft:
-=======
+  name: PKG
+
 gcright:
->>>>>>> f7c753b597e13d08934431578a2f715c0f2dd77c
   name: PKG
 
 sb1:

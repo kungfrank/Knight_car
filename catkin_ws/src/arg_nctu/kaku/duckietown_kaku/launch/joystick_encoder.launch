@@ -20,9 +20,7 @@
      <include file="$(find duckietown_kaku)/launch/encoder_publisher_node.launch">
         <arg name="veh" value="$(arg veh)"/>
     </include>
-
-
-
+    
     <!-- joy_mapper -->
     <include file="$(find joy_mapper)/launch/joy_mapper_node.launch">
         <arg name="veh" value="$(arg veh)"/>

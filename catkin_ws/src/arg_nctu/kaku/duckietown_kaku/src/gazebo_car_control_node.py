@@ -14,7 +14,7 @@ class gazebo_car_control_node(object):
 		self.motorhat = Adafruit_MotorHAT(addr=0x60)
 		self.gazebo_car_control_L = self.motorhat.getMotor(1)
 		self.gazebo_car_control_R = self.motorhat.getMotor(2)
-
+		self.threshold = 0
 		self.sub_control_value = rospy.Subscriber("~control_value", Point, self.cbControl_value, queue_size=1)
 		
 
@@ -23,17 +23,17 @@ class gazebo_car_control_node(object):
 		u_R = msg.x
 		u_L = msg.y
 
-		if u_R > 0:
+		if u_R > self.threshold:
 			self.gazebo_car_control_R.run(Adafruit_MotorHAT.FORWARD)
 			self.gazebo_car_control_R.setSpeed(u_R)
-		else:
+		if u_R < -(self.threshold):
 			self.gazebo_car_control_R.run(Adafruit_MotorHAT.BACKWARD)
 			self.gazebo_car_control_R.setSpeed(u_R)
 
-		if u_L > 0:
+		if u_L > self.threshold:
 			self.gazebo_car_control_R.run(Adafruit_MotorHAT.FORWARD)
 			self.gazebo_car_control_R.setSpeed(u_L)
-		else:
+		if u_L < -(self.threshold):
 			self.gazebo_car_control_R.run(Adafruit_MotorHAT.BACKWARD)
 			self.gazebo_car_control_R.setSpeed(u_L)
 

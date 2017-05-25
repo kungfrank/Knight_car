@@ -28,14 +28,14 @@ class gazebo_car_control_node(object):
 			self.gazebo_car_control_R.setSpeed(u_R)
 		if u_R < -(self.threshold):
 			self.gazebo_car_control_R.run(Adafruit_MotorHAT.BACKWARD)
-			self.gazebo_car_control_R.setSpeed(u_R)
+			self.gazebo_car_control_R.setSpeed(-u_R)
 
 		if u_L > self.threshold:
 			self.gazebo_car_control_R.run(Adafruit_MotorHAT.FORWARD)
 			self.gazebo_car_control_R.setSpeed(u_L)
 		if u_L < -(self.threshold):
 			self.gazebo_car_control_R.run(Adafruit_MotorHAT.BACKWARD)
-			self.gazebo_car_control_R.setSpeed(u_L)
+			self.gazebo_car_control_R.setSpeed(-u_L)
 
 		
 		# self.gazebo_car_control_.run(Adafruit_MotorHAT.RELEASE)

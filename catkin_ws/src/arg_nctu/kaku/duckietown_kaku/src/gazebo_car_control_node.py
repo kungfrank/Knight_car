@@ -27,29 +27,35 @@ class gazebo_car_control_node(object):
 		u_R = int(msg.x)
 		u_L = int(msg.y)
 		print "u_R = ",u_R,"\tu_L = ",u_L
-		if u_R > 200:
-			u_R = 200
-		if u_L > 200:
-			u_L = 200
-		if u_R < -200:
-			u_R = -200
-		if u_L < -200:
-			u_L = -200
+		# if u_R > 200:
+		# 	u_R = 200
+		# if u_L > 200:
+		# 	u_L = 200
+		# if u_R < -200:
+		# 	u_R = -200
+		# if u_L < -200:
+		# 	u_L = -200
 
 
 		if u_R > self.threshold:
 			self.gazebo_car_control_R.setSpeed(u_R)
 			self.gazebo_car_control_R.run(Adafruit_MotorHAT.FORWARD)
-		if u_R < -(self.threshold):
+		elif u_R < -(self.threshold):
 			self.gazebo_car_control_R.setSpeed(-u_R)
+			self.gazebo_car_control_R.run(Adafruit_MotorHAT.BACKWARD)
+		else:
+			self.gazebo_car_control_R.setSpeed(0)
 			self.gazebo_car_control_R.run(Adafruit_MotorHAT.BACKWARD)
 
 		if u_L > self.threshold:
 			self.gazebo_car_control_L.setSpeed(u_L)
 			self.gazebo_car_control_L.run(Adafruit_MotorHAT.FORWARD)
-		if u_L < -(self.threshold):
+		elif u_L < -(self.threshold):
 			self.gazebo_car_control_L.setSpeed(-u_L)
 			self.gazebo_car_control_L.run(Adafruit_MotorHAT.BACKWARD)
+		else:
+			self.gazebo_car_control_L.setSpeed(0)
+			self.gazebo_car_control_L.run(Adafruit_MotorHAT.FORWARD)
 
 		
 		# self.gazebo_car_control_.run(Adafruit_MotorHAT.RELEASE)

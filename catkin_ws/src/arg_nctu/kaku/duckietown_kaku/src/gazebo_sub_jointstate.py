@@ -24,11 +24,11 @@ class gazebo_sub_jointstate(object):
 		self.sub_joint_state_car = rospy.Subscriber('/duckiebot_with_gripper/joint_states', JointState, self.cbJoinstate, queue_size=1)
 		# Subscription
 		self.sub_encoder = rospy.Subscriber("/encoder", Point, self.cbEncoder, queue_size=1)
-		self.pub_car_cmd = rospy.Publisher("~control_value",Point,queue_size=1)
-		self.pub_threshold = rospy.Publisher("~threshold_value",Int64,queue_size=1)
+		self.pub_car_cmd = rospy.Publisher("/gazebo_sub_jointstate/control_value",Point,queue_size=1)
+		self.pub_threshold = rospy.Publisher("/gazebo_sub_jointstate/threshold_value",Int64,queue_size=1)
 		# self.timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
 		srv = Server(PIDConfig, self.callback)
-		
+
 		# safe shutdown
 		rospy.on_shutdown(self.custom_shutdown)
 

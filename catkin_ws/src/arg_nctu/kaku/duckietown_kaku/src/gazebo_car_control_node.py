@@ -2,6 +2,7 @@
 import rospy
 import numpy as np
 from geometry_msgs.msg import Point
+from std_msgs.msg import Int64
 import time
 import math
 from Adafruit_MotorHAT import Adafruit_MotorHAT
@@ -16,17 +17,24 @@ class gazebo_car_control_node(object):
 		self.gazebo_car_control_R = self.motorhat.getMotor(2)
 		self.threshold = 0
 		self.sub_control_value = rospy.Subscriber("/gazebo_sub_jointstate/control_value", Point, self.cbControl_value, queue_size=1)
+		self.sub_threshold_value = rospy.Subscriber("/gazebo_sub_jointstate/threshold_value", Int64, self.cbThreshold_value, queue_size=1)
 		
+    def cbThreshold_value(self, msg):
+		self.threshold = msg.data
 
     def cbControl_value(self, msg):
 		
 		u_R = int(msg.x)
 		u_L = int(msg.y)
 		print "u_R = ",u_R,"\tu_L = ",u_L
-		if u_R > 100:
-			u_R = 100
-		if u_L > 100:
-			u_L = 100
+		if u_R > 200:
+			u_R = 200
+		if u_L > 200:
+			u_L = 200
+		if u_R < -200:
+			u_R = -200
+		if u_L < -200:
+			u_L = -200
 
 
 		if u_R > self.threshold:

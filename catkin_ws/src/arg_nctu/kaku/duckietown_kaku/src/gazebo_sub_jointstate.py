@@ -21,14 +21,14 @@ class gazebo_sub_jointstate(object):
 		self.L = 0
 
 		self.pretime = 0.0
-
-		srv = Server(PIDConfig, self.callback)
-
 		self.sub_joint_state_car = rospy.Subscriber('/duckiebot_with_gripper/joint_states', JointState, self.cbJoinstate, queue_size=1)
 		# Subscription
 		self.sub_encoder = rospy.Subscriber("/encoder", Point, self.cbEncoder, queue_size=1)
 		self.pub_car_cmd = rospy.Publisher("~control_value",Point,queue_size=1)
+		self.pub_threshold = rospy.Publisher("~threshold_value",Int64,queue_size=1)
 		# self.timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
+		srv = Server(PIDConfig, self.callback)
+		
 		# safe shutdown
 		rospy.on_shutdown(self.custom_shutdown)
 
@@ -74,10 +74,15 @@ class gazebo_sub_jointstate(object):
 		self.L = encoder_msg.x
 		
 	def callback(self, config, level):
-   		rospy.loginfo("Reconfigure Request: P = {P_param}, \tI = {I_param},\tD = {D_param}".format(**config))
+   		rospy.loginfo("Reconfigure Request: P = {P_param}, \tI = {I_param},\tD = {D_param},\tT = {Threshold_param}".format(**config))
   		self.kp = config.P_param
    		self.ki = config.I_param
    		self.kd = config.D_param
+   		
+   		threshold_msg = Int64()
+   		threshold_msg.data = config.Threshold_param
+   		self.pub_threshold.publish(threshold_msg)
+   		
    		return config
 
 if __name__ == "__main__":

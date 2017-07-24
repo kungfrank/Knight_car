@@ -7,8 +7,10 @@ from geometry_msgs.msg import Pose, Point, Quaternion
 from std_msgs.msg import Int64
 from sensor_msgs.msg import JointState
 from duckietown_msgs.msg import Twist2DStamped
-import sys
 import time
+from dynamic_reconfigure.server import Server
+from dynamic_pid.cfg import PIDConfig
+
 class gazebo_sub_jointstate(object):
 	def __init__(self):
 		self.node_name = rospy.get_name() 
@@ -19,8 +21,8 @@ class gazebo_sub_jointstate(object):
 		self.L = 0
 
 		self.pretime = 0.0
-		self.kp = 0.4
-		self.kd = 0.4
+
+		srv = Server(PIDConfig, self.callback)
 
 		self.sub_joint_state_car = rospy.Subscriber('/duckiebot_with_gripper/joint_states', JointState, self.cbJoinstate, queue_size=1)
 		# Subscription
@@ -32,6 +34,9 @@ class gazebo_sub_jointstate(object):
 
 		# timer
 		rospy.loginfo("[%s] Initialized " %(rospy.get_name()))
+
+	# def updateParams(self,event):
+	# 	print "P = ",self.kp,"\tI = ",self.ki,"\tD = ",self.kd
 
 	def custom_shutdown(self):
 
@@ -52,7 +57,7 @@ class gazebo_sub_jointstate(object):
 
 		u_R = int(self.kp * err_R + self.kd * err_R/time_inteval)
 		u_L = int(self.kp * err_L + self.kd * err_L/time_inteval)
-		print "R_current = ",R_current,"\tL_current = ", L_current,"\t\tu_R = ",u_R,"\tu_L = ",u_L
+		print "R_current = ",R_current,"\tL_current = ", L_current,"\tR_real = ",self.R,"\tL_real = ", self.L,"\tu_R = ",u_R,"\tu_L = ",u_L
 
 		control_value_msg = Point()
 		control_value_msg.x = u_R
@@ -65,11 +70,17 @@ class gazebo_sub_jointstate(object):
 
 
 	def cbEncoder(self, encoder_msg):
-		self.R = encoder_msg.x
-		self.L = encoder_msg.y
+		self.R = encoder_msg.y
+		self.L = encoder_msg.x
 		
+	def callback(self, config, level):
+   		rospy.loginfo("Reconfigure Request: P = {P_param}, \tI = {I_param},\tD = {D_param}".format(**config))
+  		self.kp = config.P_param
+   		self.ki = config.I_param
+   		self.kd = config.D_param
+   		return config
 
 if __name__ == "__main__":
-	rospy.init_node("gazebo_sub_jointstate",anonymous=False)
+	rospy.init_node("gazebo_sub_jointstate",anonymous=True)
 	gazebo_sub_jointstate = gazebo_sub_jointstate()
 	rospy.spin()

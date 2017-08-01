@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+
+	<node pkg="rosserial_python" type="serial_node.py" name="serial_node" output="screen" clear_params="true" > 
+		<param name="port" value="/dev/ttyACM0" />
+		<param name="baud" value="9600" />
+	</node>	
+	
+	<node pkg="duckietown_kaku" type="gazebo_car_control_node.py" name="gazebo_car_control_node" output="screen" clear_params="true" > 
+	</node>	
+
+</launch>

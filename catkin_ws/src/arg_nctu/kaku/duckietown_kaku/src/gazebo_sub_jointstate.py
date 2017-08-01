@@ -23,12 +23,13 @@ class gazebo_sub_jointstate(object):
 		self.pretime = 0.0
 		self.sub_joint_state_car = rospy.Subscriber('/duckiebot_with_gripper/joint_states', JointState, self.cbJoinstate, queue_size=1)
 		# Subscription
-		self.sub_encoder = rospy.Subscriber("/encoder", Point, self.cbEncoder, queue_size=1)
+
 		self.pub_car_cmd = rospy.Publisher("/gazebo_sub_jointstate/control_value",Point,queue_size=1)
 		self.pub_threshold = rospy.Publisher("/gazebo_sub_jointstate/threshold_value",Int64,queue_size=1)
 		# self.timer = rospy.Timer(rospy.Duration.from_sec(1.0), self.updateParams)
 		srv = Server(PIDConfig, self.callback)
 
+		self.sub_encoder = rospy.Subscriber("/encoder", Point, self.cbEncoder, queue_size=1)
 		# safe shutdown
 		rospy.on_shutdown(self.custom_shutdown)
 
@@ -57,7 +58,7 @@ class gazebo_sub_jointstate(object):
 
 		u_R = int(self.kp * err_R + self.kd * err_R/time_inteval)
 		u_L = int(self.kp * err_L + self.kd * err_L/time_inteval)
-		print "R_current = ",R_current,"\tL_current = ", L_current,"\tR_real = ",self.R,"\tL_real = ", self.L,"\tu_R = ",u_R,"\tu_L = ",u_L
+		# print "u_R = ",u_R,"\tu_L = ",u_L
 
 		control_value_msg = Point()
 		control_value_msg.x = u_R

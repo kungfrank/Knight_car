@@ -17,11 +17,13 @@ find_package(catkin REQUIRED COMPONENTS
 #find_package(catkin REQUIRED dynamic_reconfigure)
 generate_dynamic_reconfigure_options(
   cfg/pid.cfg
+  cfg/virtual_gain.cfg
   #...
 )
 
 # make sure configure headers are built before any node using them
 #add_dependencies(gazebo_sub_jointstate ${PROJECT_NAME}_gencfg)
+#add_dependencies(virtual_joy ${PROJECT_NAME}_gencfg)
 
 
 

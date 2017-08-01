@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+
+	<include  file="$(find gazebo_ros)/launch/duckiebot_world.launch">
+	</include>
+
+	<node pkg="joy" type="joy_node" name="joy_node" output="screen" clear_params="true" > 
+	</node>	
+
+	<node pkg="duckietown_kaku" type="gazebo_sub_jointstate.py" name="gazebo_sub_jointstate" output="screen" clear_params="true" > 
+	</node>		
+
+	<node pkg="duckietown_kaku" type="virtual_joy.py" name="virtual_joy" output="screen" clear_params="true" > 
+	</node>	
+	
+	<node pkg="rqt_gui" type="rqt_gui" name="rqt_gui" output="screen" clear_params="true" > 
+	</node>	
+
+</launch>

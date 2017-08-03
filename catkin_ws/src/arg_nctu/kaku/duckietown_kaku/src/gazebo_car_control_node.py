@@ -62,7 +62,11 @@ class gazebo_car_control_node(object):
 
  
     def onShutdown(self):
-        rospy.loginfo("[gazebo_car_control_node] Shutdown.")
+		self.gazebo_car_control_R.setSpeed(0)
+		self.gazebo_car_control_R.run(Adafruit_MotorHAT.BACKWARD)
+		self.gazebo_car_control_L.setSpeed(0)
+		self.gazebo_car_control_L.run(Adafruit_MotorHAT.FORWARD)
+		rospy.loginfo("[gazebo_car_control_node] Shutdown.")
 
 if __name__ == '__main__': 
     rospy.init_node('gazebo_car_control_node',anonymous=False)

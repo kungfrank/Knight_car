@@ -52,7 +52,9 @@ class gazebo_sub_jointstate(object):
 
 		R_current = jointstate_msg.position[0] * ( 2970 / (2 * math.pi))
 		L_current = jointstate_msg.position[1] * ( 2970 / (2 * math.pi))
-
+		print "R_current = ",R_current,"\tL_current = ",L_current
+		print "R_real = ",self.R,"\tL_real = ",self.L,"\n"
+		
 		err_R = R_current - self.R
 		err_L = L_current - self.L
 

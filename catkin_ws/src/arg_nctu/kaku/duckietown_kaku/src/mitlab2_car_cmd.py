@@ -60,7 +60,11 @@ class gazebo_car_control_node(object):
 		# self.gazebo_car_control_.run(Adafruit_MotorHAT.RELEASE)
 
  
+<<<<<<< HEAD
     def onShutdown(self):
+=======
+	def onShutdown(self):
+>>>>>>> def80366ccdbdfc3a9f8c30536fd2a9855bfc833
 		self.gazebo_car_control_R.setSpeed(0)
 		self.gazebo_car_control_R.run(Adafruit_MotorHAT.BACKWARD)
 		self.gazebo_car_control_L.setSpeed(0)

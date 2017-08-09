@@ -8,7 +8,7 @@ import numpy as np
 from math import sin, cos, pi
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Point, Pose
-
+from std_msgs.msg import Float64MultiArray
 
 
 class Odometry(object):
@@ -25,7 +25,8 @@ class Odometry(object):
 		self.encoder_pos_R = 0 # post right wheel encoder
 		self.encoder_pre_L = 0 # present left wheel encoder
 		self.encoder_pre_R = 0 # present right wheel encoder
-        	
+        	self.R = 0
+		self.P = 0
 		# setup pi GPIO
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setup(22, GPIO.IN)
@@ -37,6 +38,8 @@ class Odometry(object):
 		GPIO.add_event_detect(23, GPIO.RISING, callback = self.Encoder_L)
 		GPIO.add_event_detect(27, GPIO.RISING, callback = self.Encoder_R)
 
+		# subscriber
+		self.sub_RP = rospy.Subscriber("~orientationRP", Float64MultiArray, self.cbOrientation)
 		rospy.on_shutdown(self.custom_shutdown) # shutdown method
 		self.update_timer = rospy.Timer(rospy.Duration.from_sec(1), self.update) # timer for update robot pose, update rate = 1 Hz
 
@@ -72,7 +75,7 @@ class Odometry(object):
 		self.encoder_pos_R = self.encoder_pre_R # encoder information refrash
 		# send tf from base_link to world
 		self.br.sendTransform((self.x, self.y, 0), # to 3d translation
-                                tf.transformations.quaternion_from_euler(0, 0, self.theta), # to 3d rotation
+                                tf.transformations.quaternion_from_euler(self.R, self.P, self.theta), # to 3d rotation
                                 rospy.Time.now(), # timestamp
                                 "base_link", # robot frame
                                 "map") # base frame
@@ -105,7 +108,9 @@ class Odometry(object):
 		marker_pose.orientation.w = pose[6]
 		marker.pose = marker_pose
 		self.pointMarkerPub.publish(marker)'''
-
+	def cbOrientation(self, msg):
+		self.R = msg.data[0]
+		self.P = msg.data[1]
 if __name__ == "__main__":
 	rospy.init_node("odometry", anonymous = False)
 	odometry_node = Odometry()

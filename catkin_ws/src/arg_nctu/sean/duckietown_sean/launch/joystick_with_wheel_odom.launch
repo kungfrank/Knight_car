@@ -15,4 +15,8 @@
 		<arg name="veh" value="$(arg veh)"/>
 		<!--arg name="local" value="$(arg local)"/-->
 	</include>
+	<remap from="imu/orientationRP" to="wheel_odometry/orientationRP"/>
+	<include file="$(find duckietown_sean)/launch/imu.launch">
+		<arg name="veh" value="$(arg veh)"/>
+	</include>
 </launch>

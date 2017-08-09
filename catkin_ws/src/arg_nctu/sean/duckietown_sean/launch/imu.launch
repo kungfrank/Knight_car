@@ -1,0 +1,13 @@
+<launch>
+        <arg name="veh"/>
+        <arg name="local" default="true"/>
+        <arg name="pkg_name" default="duckietown_sean"/>
+        <arg name="node_name" default="imu"/>
+        <group ns="$(arg veh)">
+        <!-- run remote -->
+                <node unless="$(arg local)" machine="$(arg veh)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen" clear_params="true" required="true"/>
+        <!-- run local -->
+                <node if="$(arg local)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen" clear_params="true" required="true"/>
+        </group>
+</launch>
+

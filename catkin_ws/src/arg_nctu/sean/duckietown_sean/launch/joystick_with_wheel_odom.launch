@@ -1,0 +1,22 @@
+<launch>
+	<arg name="veh" doc="name of vehicle"/>
+	<arg name="local" default="true" doc="false: running locally| true: running on laptop"/>
+	<arg name="config" default="baseline" doc="specify a config."/>
+	<arg name="param_file_name" default="default" doc="specify a param. file name"/>
+	<include file="$(find duckietown)/machines"/>
+	
+	<include file="$(find duckietown_demos)/launch/joystick.launch">
+		<arg name="veh" value="$(arg veh)"/>
+		<arg name="local" value="$(arg local)"/>
+		<arg name="config" value="$(arg config)"/>
+		<arg name="param_file_name" value="$(arg param_file_name)"/>
+	</include>
+	<include file="$(find duckietown_sean)/launch/wheel_odometry.launch">
+		<arg name="veh" value="$(arg veh)"/>
+		<!--arg name="local" value="$(arg local)"/-->
+	</include>
+	<remap from="imu/orientationRP" to="wheel_odometry/orientationRP"/>
+	<include file="$(find duckietown_sean)/launch/imu.launch">
+		<arg name="veh" value="$(arg veh)"/>
+	</include>
+</launch>

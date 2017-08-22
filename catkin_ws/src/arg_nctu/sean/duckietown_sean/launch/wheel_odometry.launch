@@ -1,0 +1,12 @@
+<launch>
+	<arg name="veh"/>
+	<arg name="local" default="true" doc="true for running on laptop. false for running on vehicle"/>
+	<arg name="pkg_name" default="duckietown_sean" doc="name of the package"/>
+	<arg name="node_name" default="wheel_odometry" doc="name of the node"/>
+	<group ns="$(arg veh)">
+	<!-- run remote -->
+		<node unless="$(arg local)" machine="$(arg veh)" pkg="$(arg pkg_name)" type="$(node_name).py" name="$(arg node_name)" output="screen" clear_params="true" required="true" />
+	<!-- run locally -->
+		<node if="$(arg local)" pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen" clear_params="true" required="true" />
+	</group>
+</launch>

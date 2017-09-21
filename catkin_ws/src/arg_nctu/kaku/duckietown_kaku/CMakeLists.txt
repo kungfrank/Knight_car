@@ -4,7 +4,7 @@ project(duckietown_kaku)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS actionlib_msgs geometry_msgs)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -54,17 +54,21 @@ find_package(catkin REQUIRED)
 # )
 
 ## Generate actions in the 'action' folder
-# add_action_files(
-#   FILES
-#   Action1.action
-#   Action2.action
-# )
+ add_action_files(
+   DIRECTORY action
+   FILES
+   path_following.action
+   gripper_mode.action
+   gripper_grab.action
+ )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+ generate_messages(
+   DEPENDENCIES
+   std_msgs actionlib_msgs geometry_msgs # Or other packages containing msgs
+ )
+
+
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -98,7 +102,7 @@ find_package(catkin REQUIRED)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES duckietown_kaku
-#  CATKIN_DEPENDS other_catkin_pkg
+   CATKIN_DEPENDS actionlib_msgs
 #  DEPENDS system_lib
 )
 
@@ -108,7 +112,10 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-# include_directories(include)
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+)
+
 
 ## Declare a C++ library
 # add_library(duckietown_kaku

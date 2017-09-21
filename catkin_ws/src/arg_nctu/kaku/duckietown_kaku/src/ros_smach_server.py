@@ -2,30 +2,133 @@
 import rospy
 import smach
 import smach_ros
-from geometry_msgs.msg import Twist, Point
-from std_msgs.msg import Bool
+from geometry_msgs.msg import Twist, Point, PoseArray, Pose
+from gazebo_msgs.srv import GetModelState
+from duckietown_kaku.msg import path_followingAction, path_followingGoal, gripper_modeAction, gripper_modeGoal, gripper_grabAction, gripper_grabGoal
+from std_msgs.msg import Bool, Float32
 
 
-class bar(smach.State):
+class decide_next_object(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['bar_succeeded'])
+        smach.State.__init__(self, outcomes=['finished'])
+        self.index = 0
+        print "================== now object ===================",self.index
+        
     def execute(self, userdata):
-        rospy.sleep(3.0)
-        return 'bar_succeeded'
- 
-def gripper_cb(ud, msg):
-    return False
-def grab_cb(ud, msg):
-    return False
- 
-def main():
-	rospy.init_node("monitor_example")
+        rospy.loginfo('DECIDE NEXT OBJECT')
+        self.index += 1
+        print "===================== index is %d =================" %self.index
+                
+        return 'finished'
 
-	sm = smach.StateMachine(outcomes=['DONE'])
+def way_point1():
+    waypoints = PoseArray()
+    
+    # waypoint_name = ["coke_can", "coke_can_0", "coke_can_1", "coke_can_2"]
+    waypoint_name = ["my_cylinder", "my_cylinder_0", "my_cylinder_1", "my_cylinder_2", "Stop Sign"]
+
+    for i in range(5):
+    	new_points = Pose()
+        rospy.wait_for_service('/gazebo/get_model_state')
+        try:
+            get_model_state = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
+            model_state = get_model_state(waypoint_name[i],"")
+            new_points.position.x = model_state.pose.position.x
+            new_points.position.y = model_state.pose.position.y
+            waypoints.poses.append(new_points)
+            # print new_points
+            # waypoints.poses.position.x.append(model_state.pose.position.x)
+            # waypoints.poses.position.y.append(model_state.pose.position.y)
+        except rospy.ServiceException, e:
+            print "Service call failed: %s"%e
+        
+    # print waypoints.poses
+    return waypoints
+
+def way_point2():
+    waypoints = PoseArray()
+    
+    # waypoint_name = ["coke_can", "coke_can_0", "coke_can_1", "coke_can_2"]
+    waypoint_name = ["my_cylinder_3", "my_cylinder_4", "my_cylinder_5"]
+
+    for i in range(3):
+    	new_points = Pose()
+        rospy.wait_for_service('/gazebo/get_model_state')
+        try:
+            get_model_state = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
+            model_state = get_model_state(waypoint_name[i],"")
+            new_points.position.x = model_state.pose.position.x
+            new_points.position.y = model_state.pose.position.y
+            waypoints.poses.append(new_points)
+            # print new_points
+            # waypoints.poses.position.x.append(model_state.pose.position.x)
+            # waypoints.poses.position.y.append(model_state.pose.position.y)
+        except rospy.ServiceException, e:
+            print "Service call failed: %s"%e
+        
+    # print waypoints.poses
+    return waypoints
+
+def stop_point_get():
+    stop_point = PoseArray()
+    new_points = Pose()
+    rospy.wait_for_service('/gazebo/get_model_state')
+    try:
+        get_model_state = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
+        model_state = get_model_state("Stop Sign","")
+        new_points.position.x = model_state.pose.position.x
+        new_points.position.y = model_state.pose.position.y
+        stop_point.poses.append(new_points)
+
+    except rospy.ServiceException, e:
+        print "Service call failed: %s"%e
+
+    return stop_point
+
+def object_point_get():
+    object_point = Point()
+    rospy.wait_for_service('/gazebo/get_model_state')
+    try:
+        get_model_state = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
+        model_state = get_model_state("my_cylinder_2","")
+        object_point.x = model_state.pose.position.x
+        object_point.y = model_state.pose.position.y
+
+    except rospy.ServiceException, e:
+        print "Service call failed: %s"%e
+
+    return object_point
+
+def main():
+	rospy.init_node("ros_smach_server")
+	waypoints1 = way_point1()
+	waypoints2 = way_point2()
+	stop_points = stop_point_get()
+	object_point = waypoints1.poses[0:3]
+	object_index = decide_next_object()
+	# object_point = object_point_get()
+	# print waypoints.poses
+	sm = smach.StateMachine(outcomes=['succeeded','aborted','preempted'])
 	with sm:
-	 smach.StateMachine.add('PATH_FOLLOWING', smach_ros.MonitorState("/gripper_mode/object", Point, gripper_cb), transitions={'invalid':'READY_TO_GRAB', 'valid':'PATH_FOLLOWING', 'preempted':'PATH_FOLLOWING'})
-	 smach.StateMachine.add('READY_TO_GRAB',smach_ros.MonitorState("/gripper_mode/grab_object", Bool, grab_cb), transitions={'invalid':'GO_TO_STOP_SIGN', 'valid':'READY_TO_GRAB', 'preempted':'READY_TO_GRAB'})
-	 smach.StateMachine.add('GO_TO_STOP_SIGN',smach_ros.MonitorState("/gripper_mode/finished", Bool, grab_cb), transitions={'invalid':'DONE', 'valid':'GO_TO_STOP_SIGN', 'preempted':'GO_TO_STOP_SIGN'})
+	 # smach.StateMachine.add('PATH_FOLLOWING', smach_ros.SimpleActionState("path_following_action", path_followingAction, goal=path_followingGoal(waypoints=waypoints)),{'succeeded':'GRIPPER_MODE'})	 
+	 
+	 sm_sub_grab = smach.StateMachine(outcomes=['succeeded','aborted','preempted'])
+	 with sm_sub_grab:
+	 	smach.StateMachine.add('APPROACH_OBJECT',smach_ros.SimpleActionState("gripper_mode_action", gripper_modeAction, goal=gripper_modeGoal(object_point=object_point[object_index.index].position)),{'succeeded':'GRASP_OBJECT'})
+	 	smach.StateMachine.add('GRASP_OBJECT',smach_ros.SimpleActionState("gripper_grab_action", gripper_grabAction, goal=gripper_grabGoal(grasping_state=True)))#,{'succeeded':'succeeded'})
+	 smach.StateMachine.add('GRIPPER_MODE', sm_sub_grab,transitions={'succeeded':'GO_TO_DESTINATION'})
+
+	 sm_sub_go_destination = smach.StateMachine(outcomes=['succeeded','aborted','preempted'])
+	 with sm_sub_go_destination:
+	 	smach.StateMachine.add('GO_TO_STOP_SIGN', smach_ros.SimpleActionState("path_following_action", path_followingAction, goal=path_followingGoal(waypoints=waypoints1)),{'succeeded':'DROP_OBJECT'})
+	 	smach.StateMachine.add('DROP_OBJECT',smach_ros.SimpleActionState("gripper_grab_action", gripper_grabAction, goal=gripper_grabGoal(grasping_state=False)))#,{'succeeded':'succeeded'})
+	 smach.StateMachine.add('GO_TO_DESTINATION', sm_sub_go_destination,transitions={'succeeded':'RESTART_AND_REDO'})
+
+	 sm_sub_init = smach.StateMachine(outcomes=['succeeded','aborted','preempted'])
+	 with sm_sub_init:
+	 	smach.StateMachine.add('DECIDE_NEXT_OBJECT', decide_next_object(),{'finished':'GO_TO_CHECKPOINT'})
+	 	smach.StateMachine.add('GO_TO_CHECKPOINT',smach_ros.SimpleActionState("path_following_action", path_followingAction, goal=path_followingGoal(waypoints=waypoints2)))#,{'succeeded':'succeeded'})
+	 smach.StateMachine.add('RESTART_AND_REDO', sm_sub_init,transitions={'succeeded':'GRIPPER_MODE'})	 
 
 	sis = smach_ros.IntrospectionServer('smach_server', sm, '/SM_ROOT')
 	sis.start()
@@ -35,61 +138,6 @@ def main():
 	sis.stop()
 
 def onShutdown(self):
-    rospy.loginfo("[dc_grab] Shutdown.")
+    rospy.loginfo("[ros_smach_server] Shutdown.")
 if __name__=="__main__":
     main()
-
-# class dc_grab(object):
-#     def __init__(self):
-# 	    self.node_name = "dc_grab"
-# 	    self.active = True
-# 	    self.motorhat = Adafruit_MotorHAT(addr=0x60)
-# 	    self.dc_grab = self.motorhat.getMotor(3)
-
-# 	    self.sub_joy_ = rospy.Subscriber("joy", Joy, self.cbJoy, queue_size=1)
-# 	    self.pub_gazebo_grab = rospy.Publisher('/duckiebot_with_gripper/gripper_cmd_vel', Twist, queue_size=1)
-
-#     def cbJoy(self, msg):
-# 		self.joy = msg
-# 		self.processButtons(msg)
-
-#     def processButtons(self, msg):
-# 		grab_state_msg = Twist()
-# 		grab_state_msg.linear.x = 0
-# 		grab_state_msg.linear.y = 0
-# 		grab_state_msg.linear.z = 0
-
-# 		grab_state_msg.angular.x = 0
-# 		grab_state_msg.angular.y = 0
-# 		grab_state_msg.angular.z = 0
-
-# 		if (self.joy.buttons[0] == 1):
-
-# 			self.dc_grab.setSpeed(200)
-# 			self.dc_grab.run(Adafruit_MotorHAT.BACKWARD)
-
-# 			grab_state_msg.angular.z = -1
-# 			self.pub_gazebo_grab.publish(grab_state_msg)
-
-# 		if (self.joy.buttons[1] == 1):
-
-# 			self.dc_grab.setSpeed(200)
-# 			self.dc_grab.run(Adafruit_MotorHAT.FORWARD)
-
-# 			grab_state_msg.angular.z = +1
-# 			self.pub_gazebo_grab.publish(grab_state_msg)
-
-# 		if (self.joy.buttons[2] == 1):
-
-# 			self.dc_grab.run(Adafruit_MotorHAT.RELEASE)
-
- 
-#     def onShutdown(self):
-#         rospy.loginfo("[dc_grab] Shutdown.")
-
-# if __name__ == '__main__': 
-#     rospy.init_node('dc_grab',anonymous=False)
-#     dc_grab = dc_grab()
-#     rospy.on_shutdown(dc_grab.onShutdown)
-#     rospy.spin()
-

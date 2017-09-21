@@ -1,0 +1,8 @@
+# Define the goal
+bool grasping_state 
+---
+# Define the result
+bool state
+---
+# Define a feedback message
+float32 distance 

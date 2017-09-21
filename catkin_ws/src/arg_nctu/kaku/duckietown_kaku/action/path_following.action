@@ -1,0 +1,8 @@
+# Define the goal
+geometry_msgs/PoseArray waypoints 
+---
+# Define the result
+bool state
+---
+# Define a feedback message
+uint32 waypoint_index

@@ -17,7 +17,7 @@ if len(argv) > 1:
 	param_file = sys.argv[1]
 
 #file_path = rospkg.RosPack().get_path("duckietown") + "/config/" + config + "/fsm/fsm_node/" + param_file + ".yaml"
-file_path = "/Users/lpaull/duckietown/Software/catkin_ws/src/" + "duckietown" + "/config/" + config + "/fsm/fsm_node/" + param_file + ".yaml"
+file_path = "/home/robotvision/duckietown/catkin_ws/src/" + "duckietown" + "/config/" + config + "/fsm/fsm_node/" + param_file + ".yaml"
 print "Load file: %s"%(file_path)
 # Load yaml as dictionary
 with file(file_path,"r") as f:

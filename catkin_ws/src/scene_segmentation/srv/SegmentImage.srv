@@ -1,5 +1,0 @@
-# image from camera
-sensor_msgs/Image image
----
-# segmented image
-duckietown_msgs/SceneSegments ss

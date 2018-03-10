@@ -1,3 +1,0 @@
-<launch>
-    <test test-name="quacker_tester" pkg="rostest_example" type="quacker_tester.py" />
-</launch>

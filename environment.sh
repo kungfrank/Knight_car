@@ -1,15 +1,15 @@
 #!/bin/bash
 
 echo "Activating ROS..."
-source /opt/ros/indigo/setup.bash
+source /opt/ros/kinetic/setup.bash
 echo "...done."
 
 echo "Setting up PYTHONPATH."
-export PYTHONPATH=/home/ubuntu/duckietown/catkin_ws/src:$PYTHONPATH
+export PYTHONPATH=/home/ubuntu/duckietown_nctu/catkin_ws/src:$PYTHONPATH
 
 echo "Setup ROS_HOSTNAME."
 export ROS_HOSTNAME=$HOSTNAME.local
-export DUCKIETOWN_ROOT=$HOME/duckietown
+export DUCKIETOWN_ROOT=$HOME/duckietown_nctu
 
 echo "Building machines file..."
 make -C  $DUCKIETOWN_ROOT

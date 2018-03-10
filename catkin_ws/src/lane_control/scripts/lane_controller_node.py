@@ -39,7 +39,7 @@ class lane_controller(object):
         k_d = - (k_theta ** 2) / ( 4.0 * v_bar)
         theta_thres = math.pi / 6
         d_thres = math.fabs(k_theta / k_d) * theta_thres
-        d_offset = 0.0
+        d_offset = 0
 
         self.v_bar = self.setupParameter("~v_bar",v_bar) # Linear velocity
         self.k_d = self.setupParameter("~k_d",k_theta) # P gain for theta
@@ -97,11 +97,11 @@ class lane_controller(object):
         #vel_right = (speed_gain*speed + steer_gain*steering)
         #wheels_cmd_msg.vel_left = np.clip(vel_left,-1.0,1.0)
         #wheels_cmd_msg.vel_right = np.clip(vel_right,-1.0,1.0)
-
         self.pub_car_cmd.publish(car_cmd_msg)
         #self.pub_wheels_cmd.publish(wheels_cmd_msg)
 
     def cbPose(self,lane_pose_msg):
+        self.d_offset = 0.23
         self.lane_reading = lane_pose_msg 
 
         cross_track_err = lane_pose_msg.d - self.d_offset

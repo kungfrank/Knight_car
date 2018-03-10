@@ -196,7 +196,9 @@ class LineDetectorNode(object):
         
         self.intermittent_log('# segments: white %3d yellow %3d red %3d' % (len(white.lines),
                 len(yellow.lines), len(red.lines)))
-        
+
+        #self.loginfo("self.verbose %d" % self.verbose)
+
         tk.completed('prepared')
 
         # Publish segmentList

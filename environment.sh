@@ -5,11 +5,11 @@ source /opt/ros/kinetic/setup.bash
 echo "...done."
 
 echo "Setting up PYTHONPATH."
-export PYTHONPATH=/home/ubuntu/duckietown_nctu/catkin_ws/src:$PYTHONPATH
+export PYTHONPATH=/home/ubuntu/Knight_car/catkin_ws/src:$PYTHONPATH
 
 echo "Setup ROS_HOSTNAME."
 export ROS_HOSTNAME=$HOSTNAME.local
-export DUCKIETOWN_ROOT=$HOME/duckietown_nctu
+export DUCKIETOWN_ROOT=$HOME/Knight_car
 
 echo "Building machines file..."
 make -C  $DUCKIETOWN_ROOT

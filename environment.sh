@@ -5,7 +5,7 @@ source /opt/ros/kinetic/setup.bash
 echo "...done."
 
 echo "Setting up PYTHONPATH."
-export PYTHONPATH=/home/ubuntu/Knight_car/catkin_ws/src:$PYTHONPATH
+export PYTHONPATH=~/Knight_car/catkin_ws/src:$PYTHONPATH
 
 echo "Setup ROS_HOSTNAME."
 export ROS_HOSTNAME=$HOSTNAME.local

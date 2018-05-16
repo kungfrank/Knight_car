@@ -1,8 +1,13 @@
 # Knight_car
 
-In this repository we will collect all the software, middleware, drivers, ROS modules, and so on, that would allow to run our cars. 
+This repository contains all the software that runs on the Knightcar.
+Knightcar is a low-cost platform base on raspberry pi 3, comes with rpi3 official camera and wide-angle lens for learning autonomy.
 
-The activity in this repo should be posted automatically to the channel #bot-github.
+## reference
 
 -----
+MIT duckietoen : https://github.com/duckietown/Software
 
+## Developer
+
+*PouChun, Kung (k3083518729@gmail.com)

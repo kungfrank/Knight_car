@@ -5,7 +5,6 @@ Knightcar is a low-cost platform base on raspberry pi 3, comes with rpi3 officia
 
 ## reference
 
------
 MIT duckietown : https://github.com/duckietown/Software
 
 ## Developer

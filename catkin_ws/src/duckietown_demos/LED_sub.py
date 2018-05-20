@@ -4,6 +4,7 @@ import rospy
 from std_msgs.msg import String
 temp = 0
 flag = 0
+gpio.setmode(gpio.BCM)
 
 def callback(data):
     global temp,flag

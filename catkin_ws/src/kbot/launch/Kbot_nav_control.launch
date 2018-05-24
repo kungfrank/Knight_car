@@ -7,23 +7,13 @@
 
     <include file="$(find duckietown)/machines"/>
 
-	<master unless="$(arg local)" machine="$(arg veh)" auto="start"/>
+    <!-- run nav_cmd_mapper_node -->
 
-    <!-- joy -->
-    <node ns="$(arg veh)" if="$(arg local)" pkg="joy" type="joy_node" name="joy" output="screen">
-        <rosparam command="load" file="$(find duckietown)/config/$(arg config)/joy/joy_node/$(arg param_file_name).yaml"/>
-    </node>
-    <node ns="$(arg veh)" unless="$(arg local)" machine="$(arg veh)" pkg="joy" type="joy_node" name="joy" output="screen">
-        <rosparam command="load" file="$(find duckietown)/config/$(arg config)/joy/joy_node/$(arg param_file_name).yaml"/>
-    </node>
-
-    <!-- joy_mapper -->
-    <include file="$(find joy_mapper)/launch/joy_mapper_node.launch">
-        <arg name="veh" value="$(arg veh)"/>
-        <arg name="local" value="$(arg local)"/>
-        <arg name="config" value="$(arg config)"/>
-        <arg name="param_file_name" value="$(arg param_file_name)"/>
-    </include>
+	<node if="$(arg local)" pkg="joy_mapper" type="nav_cmd_mapper.py" name="nav_cmd_mapper" output="screen" clear_params="true" required="true">
+	</node>
+	<include unless="$(arg local)" file="$(find duckietown)/machines"/>
+	<node unless="$(arg local)" machine="$(arg veh)" pkg="joy_mapper" type="nav_cmd_mapper.py" name="nav_cmd_mapper" output="screen" clear_params="true" required="true">
+	</node>	
 
     <!-- run inverse_kinematics_node -->
     <remap from="inverse_kinematics_node/car_cmd" to="joy_mapper_node/car_cmd"/>

@@ -1,7 +1,7 @@
 # Knight_car
 
 This repository contains all the software that runs on the Knightcar.
-Knightcar is a low-cost platform base on raspberry pi 3, comes with rpi3 official camera ,wide-angle len ,and YDlidar for learning autonomy.
+Knightcar is a low-cost platform base on raspberry pi 3, comes with rpi3 official camera, wide-angle len, and YDlidar for learning autonomy.
 
 ## reference
 

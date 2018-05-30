@@ -7,7 +7,7 @@ DWAPlannerROS:
 
 
   max_vel_x: 3.0 
-  min_vel_x: 0.0 
+  min_vel_x: -1.0
 
   max_vel_y: 0.0 
   min_vel_y: 0.0
@@ -32,7 +32,7 @@ DWAPlannerROS:
   vy_samples: 0 
   vtheta_samples: 10
   xy_goal_tolerance: 0.2 
-  yaw_goal_tolerance: 0.1 
+  yaw_goal_tolerance: 0.8
   rot_stopped_vel: 0.01 
   trans_stopped_vel: 0.01
 

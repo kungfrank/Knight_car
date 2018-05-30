@@ -24,11 +24,11 @@ class CmdMapper(object):
         # timer
         self.param_timer = rospy.Timer(rospy.Duration.from_sec(1.0),self.cbParamTimer)
         self.v_gain = self.setupParam("~speed_gain", 1) #0.41
-        self.omega_gain = self.setupParam("~steer_gain", 7) #8.3
+        self.omega_gain = self.setupParam("~steer_gain", 3.3) #8.3
 
     def cbParamTimer(self,event):
         self.v_gain = rospy.get_param("~speed_gain", 1.0)
-        self.omega_gain = rospy.get_param("~steer_gain", 10.0)
+        self.omega_gain = rospy.get_param("~steer_gain", 3.3)
 
     def setupParam(self,param_name,default_value):
         value = rospy.get_param(param_name,default_value)
@@ -43,8 +43,8 @@ class CmdMapper(object):
     def publishControl(self):
         car_cmd_msg = Twist2DStamped()
         #car_cmd_msg.header.stamp = self.joy.header.stamp
-        car_cmd_msg.v = self.cmd.linear.x * 1 #Left stick V-axis. Up is positive
-        car_cmd_msg.omega = self.cmd.angular.z * 5
+        car_cmd_msg.v = self.cmd.linear.x * self.v_gain #Left stick V-axis. Up is positive
+        car_cmd_msg.omega = self.cmd.angular.z * self.omega_gain
         self.pub_car_cmd.publish(car_cmd_msg)                                     
 
 if __name__ == "__main__":

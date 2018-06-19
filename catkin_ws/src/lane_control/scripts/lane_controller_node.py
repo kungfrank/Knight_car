@@ -101,7 +101,7 @@ class lane_controller(object):
         #self.pub_wheels_cmd.publish(wheels_cmd_msg)
 
     def cbPose(self,lane_pose_msg):
-        self.d_offset = 0.23
+        # self.d_offset = 0.23
         self.lane_reading = lane_pose_msg 
 
         cross_track_err = lane_pose_msg.d - self.d_offset

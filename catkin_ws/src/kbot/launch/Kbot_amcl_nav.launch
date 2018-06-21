@@ -11,11 +11,6 @@
 
     <arg name="use_rviz" default="false" />
 
-    <!-- for amcl -->    
-    <arg name="init_x" default="0.0" />
-    <arg name="init_y" default="0.0" />
-    <arg name="init_a" default="0.0" />
-
     <!-- Map server -->
     <node name="map_server" pkg="map_server" type="map_server" args="$(find kbot)/map/map_lab.yaml"/>
 

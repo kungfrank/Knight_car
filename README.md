@@ -16,6 +16,9 @@ MIT duckietown : https://github.com/duckietown/Software
 
 NCTU duckietown : https://github.com/Duckietown-NCTU/Software
 
+## Demo Video
+
+Navigation Demo Video: https://www.youtube.com/watch?v=UlBHKnV47X4
 
 ## Developer
 
